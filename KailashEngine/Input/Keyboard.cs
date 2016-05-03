@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
 using OpenTK.Input;
 
-namespace KailashEngine.Control
+namespace KailashEngine.Input
 {
     class Keyboard
     {
@@ -26,13 +27,13 @@ namespace KailashEngine.Control
         }
 
 
-        public void keyUp(object sender, KeyboardKeyEventArgs e)
+        public void keyUp(KeyboardKeyEventArgs e)
         {
 
         }
 
 
-        public void keyDown(object sender, KeyboardKeyEventArgs e)
+        public void keyDown(KeyboardKeyEventArgs e)
         {
 
         }

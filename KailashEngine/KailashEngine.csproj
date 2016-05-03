@@ -69,8 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Control\Keyboard.cs" />
-    <Compile Include="Control\Mouse.cs" />
+    <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Input\Mouse.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="OpenGLVersion.cs" />

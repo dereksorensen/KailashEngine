@@ -48,6 +48,22 @@ namespace KailashEngine.UI
         }
 
 
+        protected Resolution _resolution_windowed;
+        public Resolution resolution_windowed
+        {
+            get { return _resolution_windowed; }
+            set { _resolution_windowed = value; }
+        }
+
+
+        protected Resolution _resolution_fullscreen;
+        public Resolution resolution_fullscreen
+        {
+            get { return _resolution_fullscreen; }
+            set { _resolution_fullscreen = value; }
+        }
+
+
         protected bool _fullscreen;
         public bool fullscreen
         {
@@ -63,7 +79,9 @@ namespace KailashEngine.UI
         public Display(string title, int width, int height, bool fullscreen)
         {
             _title = title;
-            _resolution = new Resolution(width, height);
+            _resolution_windowed = new Resolution(width, height);
+            _resolution_fullscreen = new Resolution(DisplayDevice.Default.Width, DisplayDevice.Default.Height);
+            _resolution = fullscreen ? _resolution_fullscreen : _resolution_windowed;
             _fullscreen = fullscreen;
         }
 

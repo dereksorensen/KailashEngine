@@ -24,6 +24,13 @@ namespace KailashEngine
             set { _minor = value; }
         }
 
+        public string version
+        {
+            get
+            {
+                return _major + "." + _minor;
+            }
+        }
 
         public OpenGLVersion(int major_version, int minor_version)
         {

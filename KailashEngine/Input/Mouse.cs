@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using OpenTK.Input;
 
-namespace KailashEngine.Control
+namespace KailashEngine.Input
 {
     class Mouse
     {
