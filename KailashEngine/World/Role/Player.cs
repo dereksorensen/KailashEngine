@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
 using KailashEngine.Input;
 
-namespace KailashEngine.Role
+namespace KailashEngine.World.Role
 {
     class Player
     {
@@ -32,6 +34,14 @@ namespace KailashEngine.Role
             set { _name = value; }
         }
 
+        private Vector3 _position;
+        public Vector3 position
+        {
+            get { return _position; }
+            set { _position = value; }
+        }
+
+
 
 
         public Player(string name)
@@ -42,6 +52,11 @@ namespace KailashEngine.Role
         }
 
 
+        public void input_Buffer()
+        {
+            _keyboard.buffer();
+            _mouse.buffer();
+        }
 
     }
 }

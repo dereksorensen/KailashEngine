@@ -38,7 +38,10 @@ namespace KailashEngine.Input
 
         }
 
+        public void buffer()
+        {
 
+        }
 
     }
 }

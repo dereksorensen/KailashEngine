@@ -72,6 +72,14 @@ namespace KailashEngine.UI
         }
 
 
+        public Display(int width, int height)
+            : this("", width, height, false)
+        { }
+
+        public Display(int width, int height, bool fullscreen)
+            : this("", width, height, fullscreen)
+        { }
+
         public Display(string title, int width, int height)
             : this (title, width, height, false)
         { }

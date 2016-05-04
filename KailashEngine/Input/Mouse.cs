@@ -19,27 +19,36 @@ namespace KailashEngine.Input
 
 
 
-        public void mouseUp(object sender, MouseButtonEventArgs e)
+        public void buttonUp(MouseButtonEventArgs e)
         {
             
         }
 
-        public void mouseDown(object sender, MouseButtonEventArgs e)
+        public void buttonDown(MouseButtonEventArgs e)
         {
 
         }
 
-        public void mouseWheel(object sender, MouseWheelEventArgs e)
+        public void wheel(MouseWheelEventArgs e)
         {
 
         }
 
-        public void mouseMove()
+        public void buffer_Move()
         {
 
         }
 
+        public void buffer_Button()
+        {
 
+        }
+
+        public void buffer()
+        {
+            buffer_Move();
+            buffer_Button();
+        }
 
 
 
