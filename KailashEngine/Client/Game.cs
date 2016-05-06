@@ -12,11 +12,11 @@ namespace KailashEngine.Client
     class Game
     {
 
-        private OpenGLVersion _gl_version;
-        public OpenGLVersion gl_version
+        private ClientConfig _config;
+        public ClientConfig config
         {
-            get { return _gl_version; }
-            set { _gl_version = value; }
+            get { return _config; }
+            set { _config = value; }
         }
 
         private Display _main_display;
@@ -42,16 +42,13 @@ namespace KailashEngine.Client
 
 
 
-        public Game(string title, OpenGLVersion gl_version, Display default_display, Player main_player)
+        public Game(ClientConfig config, Display default_display, Player main_player)
         {
-            _title = title;
-            _gl_version = gl_version;
+            _title = config.title;
+            _config = config;
             _main_display = default_display;
             _main_player = main_player;
         }
-
-
-
 
     }
 }

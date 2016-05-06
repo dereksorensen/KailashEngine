@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Drawing;
+using System.Threading;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -20,10 +21,10 @@ namespace KailashEngine
         public EngineDriver(Game game) :
             base(game.main_display.resolution.W, game.main_display.resolution.H,
                 new GraphicsMode(new ColorFormat(32), 32, 32, 1),
-                game.main_display.title,
+                game.title,
                 game.main_display.fullscreen ? GameWindowFlags.Fullscreen : GameWindowFlags.Default,
                 DisplayDevice.Default,
-                game.gl_version.major, game.gl_version.minor,
+                game.config.gl_major_version, game.config.gl_minor_version,
                 GraphicsContextFlags.Debug)
         {
             _game = game;
@@ -109,6 +110,10 @@ namespace KailashEngine
         protected override void OnUnload(EventArgs e)
         {
             base.Dispose();
+
+
+            Console.WriteLine("\nGoodbye...");
+            Thread.Sleep(1000);
         }
 
     }

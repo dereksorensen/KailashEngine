@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Client;
@@ -18,26 +19,29 @@ namespace KailashEngine
         static void Main(string[] args)
         {
 
-            string game_name = "Das Udnt Gamen";
+            ClientConfig game_config = new ClientConfig(
+                "Das Undt Gamen",
+                4, 5,
+                60.0f,
+                0.01f, 1000.0f);
 
             Game game = new Game(
-                game_name,
-                new OpenGLVersion(4, 5),
-                new Display(game_name, 1440, 900, false),
+                game_config,
+                new Display(game_config.title, 1440, 900, false),
                 new Player("laydai"));
 
 
             using (EngineDriver KailashEngine = new EngineDriver(game))
             {
                 string version = GL.GetString(StringName.Version);
-                if (version.Substring(0, 3) == game.gl_version.version)
+                if (version.Substring(0, 3) == game.config.gl_version_string)
                 {
                     Console.WriteLine(version);
-                    KailashEngine.Run(60.0);
+                    KailashEngine.Run(game.config.fps_target);
                 }
                 else
                 {
-                    throw new OpenTK.GraphicsException("Requested OpenGL version not available\nRequested:\t" + game.gl_version.version + "\nHighest Available:\t" + version);
+                    throw new OpenTK.GraphicsException("Requested OpenGL version not available\nRequested:\t" + game.config.gl_version_string + "\nHighest Available:\t" + version);
                 }
             }
         }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OpenTK;
 
 using KailashEngine.Input;
+using KailashEngine.World.View;
 
 namespace KailashEngine.World.Role
 {
@@ -25,6 +26,13 @@ namespace KailashEngine.World.Role
         {
             get { return _mouse; }
             set { _mouse = value; }
+        }
+
+        private Camera _camera;
+        public Camera camera
+        {
+            get { return _camera; }
+            set { _camera = value; }
         }
 
         private string _name;

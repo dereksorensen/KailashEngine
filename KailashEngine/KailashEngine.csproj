@@ -72,13 +72,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\ClientConfig.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="EngineDriver.cs" />
     <Compile Include="Client\Game.cs" />
     <Compile Include="Launcher.cs" />
-    <Compile Include="OpenGLVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\View\Camera.cs" />
     <Compile Include="World\Role\Player.cs" />
     <Compile Include="UI\Display.cs" />
   </ItemGroup>
@@ -90,10 +91,14 @@
   <ItemGroup>
     <Folder Include="Debug\" />
     <Folder Include="Physics\" />
-    <Folder Include="Render\" />
-    <Folder Include="World\Camera\" />
+    <Folder Include="Render\FX\" />
+    <Folder Include="Render\Resources\" />
+    <Folder Include="Render\Shader\" />
     <Folder Include="World\Light\" />
     <Folder Include="World\Model\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="toolbox.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
