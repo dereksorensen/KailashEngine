@@ -9,7 +9,6 @@ using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Client;
 using KailashEngine.UI;
-using KailashEngine.World.Role;
 
 namespace KailashEngine
 {
@@ -19,17 +18,31 @@ namespace KailashEngine
         static void Main(string[] args)
         {
 
+            // Setup Game Objects
+
             ClientConfig game_config = new ClientConfig(
                 "Das Undt Gamen",
                 "KailashEngine",
                 4, 5,
                 60.0f,
                 0.01f, 1000.0f);
+            Display main_display = new Display(
+                game_config.title, 
+                1440, 900, 
+                false);
+            Player main_player = new Player(
+                new World.Role.PlayableCharacter(
+                    "laydai",
+                    0.2f,
+                    0.2f)
+                );
 
+
+            // Initialize Game
             Game game = new Game(
                 game_config,
-                new Display(game_config.title, 1440, 900, false),
-                new Player("laydai"));
+                main_display,
+                main_player);
 
 
             using (EngineDriver KailashEngine = new EngineDriver(game))

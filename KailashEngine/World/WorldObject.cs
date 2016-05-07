@@ -11,73 +11,27 @@ namespace KailashEngine.World
     class WorldObject
     {
 
-        protected Vector3 _position;
-        public Vector3 position
-        {
-            get { return _position; }
-            set { _position = value; }
-        }
 
-        protected Vector3 _look;
-        public Vector3 look
+        private SpatialData _spatial;
+        public SpatialData spatial
         {
-            get { return _look; }
-            set { _look = value; }
-        }
-
-        protected Vector3 _up;
-        public Vector3 up
-        {
-            get { return _up; }
-            set { _up = value; }
-        }
-
-        protected Vector3 _strafe;
-        public Vector3 strafe
-        {
-            get { return _strafe; }
-            set { _strafe = value; }
-        }
-
-
-        private Matrix4 _position_matrix;
-        public Matrix4 position_matrix
-        {
-            get { return Matrix4.CreateTranslation(_position); }
-        }
-
-        private Matrix4 _rotation_matrix;
-        public Matrix4 rotation_matrix
-        {
-            get { return _rotation_matrix; }
-            set
-            {
-                _rotation_matrix = value;
-                _look = _rotation_matrix.Column2.Xyz;
-                _strafe = Vector3.Cross(_look, _up);
-            }
-        }
-
-        protected Matrix4 _matrix;
-        public Matrix4 matrix
-        {
-            get
-            {
-                return Matrix4.Mult( _position_matrix, _rotation_matrix);
-            }
+            get { return _spatial; }
+            set { _spatial = value; }
         }
 
 
 
         public WorldObject()
-            : this (new Vector3(), new Vector3(), new Vector3())
+            : this (new SpatialData(new Vector3(), new Vector3(), new Vector3()))
         { }
 
         public WorldObject(Vector3 position, Vector3 look, Vector3 up)
+            : this (new SpatialData(position, look, up))
+        { }
+
+        public WorldObject(SpatialData spatial)
         {
-            _position = position;
-            _look = look;
-            _up = up;
+            _spatial = spatial;
         }
 
 
@@ -98,14 +52,11 @@ namespace KailashEngine.World
             z_rotation.Normalize();
 
             //Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
-            Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(x_rotation, y_rotation), z_rotation);
+            Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(x_rotation, z_rotation), y_rotation);
 
             xyz_rotation.Normalize();
-            _rotation_matrix = Matrix4.CreateFromQuaternion(xyz_rotation);
+            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(xyz_rotation);
 
-            _look = _matrix.Column2.Xyz;
-            _strafe = Vector3.Cross(_look, _up);
-            //_up = _matrix.Column1.Xyz;
         }
 
         //------------------------------------------------------
@@ -114,32 +65,32 @@ namespace KailashEngine.World
 
         public void moveForeward(float speed)
         {
-            _position += _look * speed;
+            _spatial.position += _spatial.look * speed;
         }
 
         public void moveBackward(float speed)
         {
-            _position -= _look * speed;
+            _spatial.position -= _spatial.look * speed;
         }
 
         public void moveUp(float speed)
         {
-            _position += _up * speed;
+            _spatial.position -= _spatial.up * speed;
         }
 
         public void moveDown(float speed)
         {
-            _position -= _up * speed;
+            _spatial.position += _spatial.up * speed;
         }
 
         public void strafeRight(float speed)
         {
-            _position += _strafe * speed;
+            _spatial.position -= _spatial.strafe * speed;
         }
 
         public void strafeLeft(float speed)
         {
-            _position -= _strafe * speed;
+            _spatial.position += _spatial.strafe * speed;
         }
 
     }

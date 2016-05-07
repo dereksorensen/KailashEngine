@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using KailashEngine.UI;
-using KailashEngine.World.Role;
+using KailashEngine.Input;
 
 namespace KailashEngine.Client
 {
@@ -24,6 +24,20 @@ namespace KailashEngine.Client
         {
             get { return _main_display; }
             set { _main_display = value; }
+        }
+
+        private Keyboard _keyboard;
+        public Keyboard keyboard
+        {
+            get { return _keyboard; }
+            set { _keyboard = value; }
+        }
+
+        private Mouse _mouse;
+        public Mouse mouse
+        {
+            get { return _mouse; }
+            set { _mouse = value; }
         }
 
         private Player _main_player;
@@ -48,6 +62,9 @@ namespace KailashEngine.Client
             _config = config;
             _main_display = default_display;
             _main_player = main_player;
+
+            _keyboard = new Keyboard();
+            _mouse = new Mouse(_main_player.character.look_sensitivity, true);
         }
 
 

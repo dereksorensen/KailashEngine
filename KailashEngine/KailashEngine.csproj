@@ -64,6 +64,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -73,6 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\ClientConfig.cs" />
+    <Compile Include="Client\Player.cs" />
+    <Compile Include="Debug\DebugHelper.cs" />
+    <Compile Include="EngineHelper.cs" />
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
@@ -80,8 +84,11 @@
     <Compile Include="Client\Game.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\Role\NonPlayableCharacter.cs" />
+    <Compile Include="World\Role\PlayableCharacter.cs" />
+    <Compile Include="World\SpatialData.cs" />
     <Compile Include="World\View\Camera.cs" />
-    <Compile Include="World\Role\Player.cs" />
+    <Compile Include="World\Role\Character.cs" />
     <Compile Include="UI\Display.cs" />
     <Compile Include="World\WorldObject.cs" />
   </ItemGroup>
@@ -91,7 +98,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Debug\" />
     <Folder Include="Physics\" />
     <Folder Include="Render\FX\" />
     <Folder Include="Render\Resources\" />

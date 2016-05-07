@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
+using KailashEngine.World.Role;
+
 namespace KailashEngine.World.View
 {
     class Camera : WorldObject
@@ -16,13 +18,22 @@ namespace KailashEngine.World.View
         { }
 
         public Camera(Vector3 position, Vector3 look, Vector3 up)
+            : base (position, look, up)
+        { }
+
+
+        public void followCharacter(Character character)
         {
-            _position = position;
-            _look = look;
-            _up = up;
+            try
+            {
+                this.spatial = character.spatial;
+            }
+            catch(Exception e)
+            {
+                Debug.DebugHelper.logError("followCharacter", e.Message);
+            }
+
         }
-
-
 
     }
 }

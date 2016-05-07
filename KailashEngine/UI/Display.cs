@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -62,6 +63,15 @@ namespace KailashEngine.UI
             get { return _resolution_fullscreen; }
             set { _resolution_fullscreen = value; }
         }
+
+
+        private Point _screen_center;
+        public Point screen_center
+        {
+            get { return _screen_center; }
+            set { _screen_center = value; }
+        }
+
 
 
         protected bool _fullscreen;

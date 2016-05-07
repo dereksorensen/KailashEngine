@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OpenTK.Input;
 
 using KailashEngine.World.View;
+using KailashEngine.World.Role;
 
 namespace KailashEngine.Input
 {
@@ -29,7 +30,9 @@ namespace KailashEngine.Input
         }
 
 
-
+        public Keyboard()
+            : this(false)
+        { }
 
         public Keyboard(bool key_repeat)
         {
@@ -42,10 +45,7 @@ namespace KailashEngine.Input
         {
             _keys[e.Key] = false;
 
-            switch (e.Key)
-            {
 
-            }
         }
 
 
@@ -60,58 +60,9 @@ namespace KailashEngine.Input
         }
 
 
-        private bool getKeyPress(Key key)
+        public bool getKeyPress(Key key)
         {
             return getInput(key, _keys);
-        }
-
-
-        public void buffer()
-        {
-            //------------------------------------------------------
-            // Player Movement
-            //------------------------------------------------------
-
-            if (getKeyPress(Key.W))
-            {
-                Console.WriteLine("Forward");
-            }
-
-            if (getKeyPress(Key.S))
-            {
-                Console.WriteLine("Backward");
-            }
-
-            if (getKeyPress(Key.A))
-            {
-                Console.WriteLine("Left");
-            }
-
-            if (getKeyPress(Key.D))
-            {
-                Console.WriteLine("Right");
-            }
-
-            if (getKeyPress(Key.Space))
-            {
-                Console.WriteLine("Jump");
-            }
-
-            if (getKeyPress(Key.ControlLeft))
-            {
-                Console.WriteLine("Crouch");
-            }
-
-            if (getKeyPress(Key.ShiftLeft))
-            {
-                Console.WriteLine("Run");
-            }
-
-            if (getKeyPress(Key.AltLeft))
-            {
-                Console.WriteLine("Sprint");
-            }
-
         }
 
     }

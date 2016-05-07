@@ -39,45 +39,204 @@ namespace KailashEngine
             Mouse.ButtonDown += mouse_ButtonDown;
             Mouse.WheelChanged += mouse_Wheel;
 
-            Keyboard.KeyRepeat = game.main_player.keyboard.repeat;
+
+            Keyboard.KeyRepeat = game.keyboard.repeat;
 
         }
+
+        //------------------------------------------------------
+        // Helpers
+        //------------------------------------------------------
+
+
 
         //------------------------------------------------------
         // Input Handling
         //------------------------------------------------------
 
+        //Centres the mouse
+        private void centreMouse()
+        {
+            Point windowCenter = new System.Drawing.Point(
+                (base.Width) / 2,
+                (base.Height) / 2);
+
+            System.Windows.Forms.Cursor.Position = base.PointToScreen(windowCenter);
+            _game.mouse.position_previous = base.PointToClient(System.Windows.Forms.Cursor.Position);
+        }
+
+        private void inputBuffer()
+        {
+            keyboard_Buffer();
+            mouse_ButtonBuffer();
+            mouse_MoveBuffer();
+        }
+
         // Keyboard
 
         protected void keyboard_KeyUp(object sender, KeyboardKeyEventArgs e)
         {
-            _game.main_player.keyboard.keyUp(e);
+            _game.keyboard.keyUp(e);
+            switch (e.Key)
+            {
+
+            }
         }
 
         protected void keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            _game.keyboard.keyDown(e);
+            switch (e.Key)
             {
-                Exit();
+
+
+                case Key.Escape:
+                    Exit();
+                    break;
             }
-            _game.main_player.keyboard.keyDown(e);
+        }
+
+        private void keyboard_Buffer()
+        {
+            //------------------------------------------------------
+            // Player Movement
+            //------------------------------------------------------
+
+            if (_game.keyboard.getKeyPress(Key.W))
+            {
+                Console.WriteLine("Forward");
+                _game.main_player.character.moveForeward();
+            }
+
+            if (_game.keyboard.getKeyPress(Key.S))
+            {
+                Console.WriteLine("Backward");
+                _game.main_player.character.moveBackward();
+            }
+
+            if (_game.keyboard.getKeyPress(Key.A))
+            {
+                Console.WriteLine("Left");
+                _game.main_player.character.strafeLeft();
+            }
+
+            if (_game.keyboard.getKeyPress(Key.D))
+            {
+                Console.WriteLine("Right");
+                _game.main_player.character.strafeRight();
+            }
+
+            if (_game.keyboard.getKeyPress(Key.Space))
+            {
+                Console.WriteLine("Jump");
+                _game.main_player.character.moveUp();
+            }
+
+            if (_game.keyboard.getKeyPress(Key.ControlLeft))
+            {
+                Console.WriteLine("Crouch");
+                _game.main_player.character.moveDown();
+            }
+
+            if (_game.keyboard.getKeyPress(Key.ShiftLeft))
+            {
+                Console.WriteLine("Run");
+            }
+
+            if (_game.keyboard.getKeyPress(Key.AltLeft))
+            {
+                Console.WriteLine("Sprint");
+            }
         }
 
         // Mouse
 
         protected void mouse_ButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _game.main_player.mouse.buttonUp(e);
+            _game.mouse.buttonUp(e);
+            switch (e.Button)
+            {
+
+            }
         }
 
         protected void mouse_ButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _game.main_player.mouse.buttonDown(e);
+            _game.mouse.buttonDown(e);
+            switch (e.Button)
+            {
+
+            }
         }
 
         protected void mouse_Wheel(object sender, MouseWheelEventArgs e)
         {
-            _game.main_player.mouse.wheel(e);
+            _game.mouse.wheel(e);
+            
+
+        }
+
+        private void mouse_ButtonBuffer()
+        {
+            if (_game.mouse.getButtonPress(MouseButton.Left))
+            {
+                Console.WriteLine("Left Click");
+            }
+
+            if (_game.mouse.getButtonPress(MouseButton.Right))
+            {
+                Console.WriteLine("Right Click");
+            }
+
+            if (_game.mouse.getButtonPress(MouseButton.Middle))
+            {
+                Console.WriteLine("Middle Click");
+            }
+        }
+
+
+
+        private void mouse_MoveBuffer()
+        {
+            _game.mouse.position_current = base.PointToClient(System.Windows.Forms.Cursor.Position);
+
+            // Get Deltas
+            Vector3 temp_delta_total = new Vector3();
+            Vector3 temp_delta_current = new Vector3(
+                (_game.mouse.position_current.Y - _game.mouse.position_previous.Y) * _game.mouse.sensitivity,
+                (_game.mouse.position_current.X - _game.mouse.position_previous.X) * _game.mouse.sensitivity,
+                (_game.mouse.position_current.X - _game.mouse.position_previous.X) * _game.mouse.sensitivity);
+            Vector3 temp_delta_previous = _game.mouse.delta_previous;
+
+            // Interpolate for smooth mouse
+            temp_delta_current.Z = MathHelper.Clamp(temp_delta_current.Z, -9.0f, 9.0f);
+            temp_delta_current.Xy = EngineHelper.lerp(temp_delta_previous.Xy, temp_delta_current.Xy, 1.0f / 2.0f);
+            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, 1.0f / 7.0f);
+
+            
+            temp_delta_total.X += (_game.mouse.delta_total.X + temp_delta_current.X);
+            temp_delta_total.Y += (_game.mouse.delta_total.Y + temp_delta_current.Y);
+            float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * (7.0f / 5.0f);
+            temp_delta_total.Z = temp_delta_current.Z * z_mod;
+
+            // Prevent looking beyond top and bottom
+            if (temp_delta_total.X < -90.0f)
+            {
+                temp_delta_total.X = -90.0f;
+            }
+            if (temp_delta_total.X > 90.0f)
+            {
+                temp_delta_total.X = 90.0f;
+            }
+
+            _game.mouse.delta_previous = temp_delta_current;
+            _game.mouse.delta_total = temp_delta_total;
+
+            // Rotate main character from mouse movement
+            _game.main_player.character.rotate(_game.mouse.delta_total.X, _game.mouse.delta_total.Y, _game.mouse.delta_total.Z);
+
+            
+            centreMouse();
         }
 
         //------------------------------------------------------
@@ -91,6 +250,7 @@ namespace KailashEngine
 
         protected override void OnLoad(EventArgs e)
         {
+            centreMouse();
             // this is called when the window starts running
         }
 
@@ -101,8 +261,10 @@ namespace KailashEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _game.main_player.input_Buffer();
+            inputBuffer();
 
+            
+            Console.WriteLine("=====" + _game.main_player.character.spatial.position);
 
             SwapBuffers();
         }
