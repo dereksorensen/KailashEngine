@@ -49,12 +49,20 @@ namespace KailashEngine.Input
         {
             _buttons[e.Button] = false;
 
+            switch (e.Button)
+            {
+
+            }
         }
 
         public void buttonDown(MouseButtonEventArgs e)
         {
             _buttons[e.Button] = true;
 
+            switch (e.Button)
+            {
+
+            }
         }
 
         public void wheel(MouseWheelEventArgs e)

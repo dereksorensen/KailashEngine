@@ -83,6 +83,7 @@
     <Compile Include="World\View\Camera.cs" />
     <Compile Include="World\Role\Player.cs" />
     <Compile Include="UI\Display.cs" />
+    <Compile Include="World\WorldObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

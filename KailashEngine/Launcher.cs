@@ -21,6 +21,7 @@ namespace KailashEngine
 
             ClientConfig game_config = new ClientConfig(
                 "Das Undt Gamen",
+                "KailashEngine",
                 4, 5,
                 60.0f,
                 0.01f, 1000.0f);

@@ -40,8 +40,12 @@ namespace KailashEngine.Input
 
         public void keyUp(KeyboardKeyEventArgs e)
         {
-            _keys[e.Key] = false; 
-          
+            _keys[e.Key] = false;
+
+            switch (e.Key)
+            {
+
+            }
         }
 
 
@@ -49,6 +53,10 @@ namespace KailashEngine.Input
         {
             _keys[e.Key] = true;
 
+            switch (e.Key)
+            {
+                
+            }
         }
 
 

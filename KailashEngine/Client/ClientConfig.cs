@@ -84,15 +84,31 @@ namespace KailashEngine.Client
             set { _near_far = value; }
         }
 
+        // Finds the base engine dir which all path defaults are based from
+        private string getBasePath(string base_dir)
+        {
+            bool path_found = false;
+            string cur_search = "../";
+            string base_path = "";
+
+            while (!path_found)
+            {
+                base_path = Path.GetFullPath(cur_search);
+                string[] dirs = base_path.Split('\\');
+                path_found = dirs[dirs.Length - 2] == base_dir;
+                cur_search += "../";
+            }
+
+            return base_path;
+        }
 
 
-
-        public ClientConfig(string title, int gl_major_version, int gl_minor_version, float target_fps, float near_plane, float far_plane)
+        public ClientConfig(string title, string engine_base_dir, int gl_major_version, int gl_minor_version, float target_fps, float near_plane, float far_plane)
         {
             _title = title;
 
-            // Set base engine path for defaults
-            _path_base = Path.GetFullPath("../../../");
+            // Get base engine path for defaults
+            _path_base = getBasePath(engine_base_dir);         
 
             _gl_major_version = gl_major_version;
             _gl_minor_version = gl_minor_version;
