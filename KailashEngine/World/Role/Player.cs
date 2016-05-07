@@ -55,7 +55,7 @@ namespace KailashEngine.World.Role
         public Player(string name)
         {
             _name = name;
-            _keyboard = new Keyboard(true);
+            _keyboard = new Keyboard(false);
             _mouse = new Mouse();
         }
 

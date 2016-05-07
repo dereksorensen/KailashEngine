@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 using OpenTK.Input;
 
+using KailashEngine.World.View;
+
 namespace KailashEngine.Input
 {
-    class Mouse
+    class Mouse : InputDevice
     {
 
         private float _sensitivity;
@@ -27,22 +29,31 @@ namespace KailashEngine.Input
         }
 
 
+        private Dictionary<Enum, bool> _buttons;
+        public Dictionary<Enum, bool> buttons
+        {
+            get { return _buttons; }
+            set { _buttons = value; }
+        }
+
 
 
         public Mouse()
         {
-
+            _buttons = new Dictionary<Enum, bool>();
         }
 
 
 
         public void buttonUp(MouseButtonEventArgs e)
         {
-            
+            _buttons[e.Button] = false;
+
         }
 
         public void buttonDown(MouseButtonEventArgs e)
         {
+            _buttons[e.Button] = true;
 
         }
 
@@ -56,9 +67,23 @@ namespace KailashEngine.Input
 
         }
 
+
+        private bool getButtonPress(MouseButton mouse_button)
+        {
+            return getInput(mouse_button, _buttons);
+        }
+
         public void buffer_Button()
         {
+            if (getButtonPress(MouseButton.Left))
+            {
+                Console.WriteLine("Left Click");
+            }
 
+            if (getButtonPress(MouseButton.Right))
+            {
+                Console.WriteLine("Right Click");
+            }
         }
 
         public void buffer()

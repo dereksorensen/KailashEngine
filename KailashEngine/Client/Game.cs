@@ -50,5 +50,12 @@ namespace KailashEngine.Client
             _main_player = main_player;
         }
 
+
+
+        public void unload()
+        {
+
+        }
+
     }
 }

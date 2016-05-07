@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\ClientConfig.cs" />
+    <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\Mouse.cs" />
     <Compile Include="EngineDriver.cs" />
