@@ -45,10 +45,5 @@ namespace KailashEngine.Debug
                 Console.WriteLine(full_message);
             }
         }
-
-        public static void test()
-        {
-
-        }
     }
 }

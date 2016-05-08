@@ -21,20 +21,21 @@ namespace KailashEngine
             // Setup Game Objects
 
             ClientConfig game_config = new ClientConfig(
-                "Das Undt Gamen",
-                "KailashEngine",
-                4, 5,
-                60.0f,
-                0.01f, 1000.0f);
+                "Das Undt Gamen",                                   // Game Name
+                "KailashEngine",                                    // Base Engine Path
+                4, 5,                                               // OpenGL Versions
+                60.0f,                                              // Target FPS
+                0.01f, 1000.0f,                                     // Near / Far Planes
+                2.0f, 7.0f);                                        // Smooth Keyboard / Mouse
             Display main_display = new Display(
                 game_config.title, 
-                1440, 900, 
+                1440, 900,                                          // Resolution
                 false);
             Player main_player = new Player(
                 new World.Role.PlayableCharacter(
-                    "laydai",
-                    0.2f,
-                    0.2f)
+                    "laydai",                                       // Character Name
+                    0.2f,                                           // Character Movement Speed
+                    0.2f)                                           // Character Look Sensitivity
                 );
 
 

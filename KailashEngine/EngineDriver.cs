@@ -119,9 +119,9 @@ namespace KailashEngine
             // Smooth Player Movement
             //------------------------------------------------------
             _game.player.character.position_current = _game.player.character.spatial.position - _game.player.character.position_current;
-            _game.player.character.position_current = EngineHelper.lerp(_game.player.character.position_previous, _game.player.character.position_current, 1.0f / 7.0f);
+            _game.player.character.position_current = EngineHelper.lerp(_game.player.character.position_previous, _game.player.character.position_current, _game.config.smooth_keyboard_delay);
             _game.player.character.position_previous = _game.player.character.position_current;
-            _game.player.character.spatial.position += _game.player.character.position_current * (1.4f);
+            _game.player.character.spatial.position += _game.player.character.position_current;
             _game.player.character.position_current = _game.player.character.spatial.position;
 
 
@@ -233,15 +233,15 @@ namespace KailashEngine
                 (_game.mouse.position_current.X - _game.mouse.position_previous.X) * _game.mouse.sensitivity);
             Vector3 temp_delta_previous = _game.mouse.delta_previous;
 
-            // Interpolate for smooth mouse
+            // Interpolate for smooth mouse       
+            temp_delta_current.Xy = EngineHelper.lerp(temp_delta_previous.Xy, temp_delta_current.Xy, _game.config.smooth_mouse_delay);
             temp_delta_current.Z = MathHelper.Clamp(temp_delta_current.Z, -9.0f, 9.0f);
-            temp_delta_current.Xy = EngineHelper.lerp(temp_delta_previous.Xy, temp_delta_current.Xy, 1.0f / 2.0f);
-            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, 1.0f / 5.0f);
+            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 1.5f);
 
             // Calculate total delta (which is rotation angle for character / camera)
             temp_delta_total.X += (_game.mouse.delta_total.X + temp_delta_current.X);
             temp_delta_total.Y += (_game.mouse.delta_total.Y + temp_delta_current.Y);
-            float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * (7.0f / 5.0f);
+            float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * _game.config.smooth_mouse_delay;
             temp_delta_total.Z = temp_delta_current.Z * z_mod;
 
             // Prevent looking beyond top and bottom
@@ -295,8 +295,8 @@ namespace KailashEngine
         {
             inputBuffer();
 
-            //Console.WriteLine(_game.main_player.character.spatial.position);
-            //Console.WriteLine(_game.main_player.character.spatial.position);
+            //Console.WriteLine(_game.player.character.spatial.position);
+            //Console.WriteLine(_game.player.character.spatial.look);
 
 
 

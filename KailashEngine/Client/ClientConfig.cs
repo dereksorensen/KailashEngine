@@ -108,7 +108,34 @@ namespace KailashEngine.Client
         }
 
 
-        public ClientConfig(string title, string engine_base_dir, int gl_major_version, int gl_minor_version, float target_fps, float near_plane, float far_plane)
+        //------------------------------------------------------
+        // Gameplay
+        //------------------------------------------------------
+
+        private float _smooth_mouse_delay;
+        public float smooth_mouse_delay
+        {
+            get { return _smooth_mouse_delay; }
+            set { _smooth_mouse_delay = value; }
+        }
+
+        private float _smooth_keyboard_delay;
+        public float smooth_keyboard_delay
+        {
+            get { return _smooth_keyboard_delay; }
+            set { _smooth_keyboard_delay = value; }
+        }
+
+
+
+
+        public ClientConfig(
+            string title, 
+            string engine_base_dir, 
+            int gl_major_version, int gl_minor_version, 
+            float target_fps, 
+            float near_plane, float far_plane,
+            float smooth_mouse_delay, float smooth_keyboard_delay)
         {
             _title = title;
 
@@ -121,6 +148,9 @@ namespace KailashEngine.Client
             _fps_target = target_fps;
 
             _near_far = new Vector2(near_plane, far_plane);
+
+            _smooth_mouse_delay = smooth_mouse_delay;
+            _smooth_keyboard_delay = smooth_keyboard_delay;
 
         }
 
