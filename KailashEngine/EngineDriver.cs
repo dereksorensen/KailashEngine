@@ -283,7 +283,6 @@ namespace KailashEngine
                 new ShaderFile[] {
                     new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null) });
 
-            Console.WriteLine(_game.config.glsl_version);
 
         }
 
@@ -298,8 +297,11 @@ namespace KailashEngine
 
             //Console.WriteLine(_game.main_player.character.spatial.position);
             //Console.WriteLine(_game.main_player.character.spatial.position);
-            
 
+
+
+
+            Debug.DebugHelper.logGLError();
 
             SwapBuffers();
         }
