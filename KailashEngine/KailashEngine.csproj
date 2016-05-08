@@ -84,6 +84,8 @@
     <Compile Include="Client\Game.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Render\Program.cs" />
+    <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="World\Role\NonPlayableCharacter.cs" />
     <Compile Include="World\Role\PlayableCharacter.cs" />
     <Compile Include="World\SpatialData.cs" />
@@ -96,12 +98,12 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Render\Shader\glsl\test.vert" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Physics\" />
     <Folder Include="Render\FX\" />
     <Folder Include="Render\Resources\" />
-    <Folder Include="Render\Shader\" />
     <Folder Include="World\Light\" />
     <Folder Include="World\Model\" />
   </ItemGroup>

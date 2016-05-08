@@ -40,11 +40,11 @@ namespace KailashEngine.Client
             set { _mouse = value; }
         }
 
-        private Player _main_player;
-        public Player main_player
+        private Player _player;
+        public Player player
         {
-            get { return _main_player; }
-            set { _main_player = value; }
+            get { return _player; }
+            set { _player = value; }
         }
 
         private string _title;
@@ -61,10 +61,10 @@ namespace KailashEngine.Client
             _title = config.title;
             _config = config;
             _main_display = default_display;
-            _main_player = main_player;
+            _player = main_player;
 
             _keyboard = new Keyboard();
-            _mouse = new Mouse(_main_player.character.look_sensitivity, true);
+            _mouse = new Mouse(_player.character.look_sensitivity, true);
         }
 
 

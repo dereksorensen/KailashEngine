@@ -10,7 +10,8 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
 using KailashEngine.Client;
-
+using KailashEngine.Render;
+using KailashEngine.Render.Shader;
 
 namespace KailashEngine
 {
@@ -117,11 +118,11 @@ namespace KailashEngine
             //------------------------------------------------------
             // Smooth Player Movement
             //------------------------------------------------------
-            _game.main_player.character.position_current = _game.main_player.character.spatial.position - _game.main_player.character.position_current;
-            _game.main_player.character.position_current = EngineHelper.lerp(_game.main_player.character.position_previous, _game.main_player.character.position_current, 1.0f / 7.0f);
-            _game.main_player.character.position_previous = _game.main_player.character.position_current;
-            _game.main_player.character.spatial.position += _game.main_player.character.position_current * (1.4f);
-            _game.main_player.character.position_current = _game.main_player.character.spatial.position;
+            _game.player.character.position_current = _game.player.character.spatial.position - _game.player.character.position_current;
+            _game.player.character.position_current = EngineHelper.lerp(_game.player.character.position_previous, _game.player.character.position_current, 1.0f / 7.0f);
+            _game.player.character.position_previous = _game.player.character.position_current;
+            _game.player.character.spatial.position += _game.player.character.position_current * (1.4f);
+            _game.player.character.position_current = _game.player.character.spatial.position;
 
 
             //------------------------------------------------------
@@ -131,37 +132,37 @@ namespace KailashEngine
             if (_game.keyboard.getKeyPress(Key.W))
             {
                 Console.WriteLine("Forward");
-                _game.main_player.character.moveForeward();
+                _game.player.character.moveForeward();
             }
 
             if (_game.keyboard.getKeyPress(Key.S))
             {
                 Console.WriteLine("Backward");
-                _game.main_player.character.moveBackward();
+                _game.player.character.moveBackward();
             }
 
             if (_game.keyboard.getKeyPress(Key.A))
             {
                 Console.WriteLine("Left");
-                _game.main_player.character.strafeLeft();
+                _game.player.character.strafeLeft();
             }
 
             if (_game.keyboard.getKeyPress(Key.D))
             {
                 Console.WriteLine("Right");
-                _game.main_player.character.strafeRight();
+                _game.player.character.strafeRight();
             }
 
             if (_game.keyboard.getKeyPress(Key.Space))
             {
                 Console.WriteLine("Jump");
-                _game.main_player.character.moveUp();
+                _game.player.character.moveUp();
             }
 
             if (_game.keyboard.getKeyPress(Key.ControlLeft))
             {
                 Console.WriteLine("Crouch");
-                _game.main_player.character.moveDown();
+                _game.player.character.moveDown();
             }
 
             if (_game.keyboard.getKeyPress(Key.ShiftLeft))
@@ -257,7 +258,7 @@ namespace KailashEngine
             _game.mouse.delta_total = temp_delta_total;
 
             // Rotate main character from mouse movement
-            _game.main_player.character.rotate(_game.mouse.delta_total.X, _game.mouse.delta_total.Y, _game.mouse.delta_total.Z);
+            _game.player.character.rotate(_game.mouse.delta_total.X, _game.mouse.delta_total.Y, _game.mouse.delta_total.Z);
 
             // Recenter
             centerMouse();
@@ -277,6 +278,13 @@ namespace KailashEngine
         {
             centerMouse();
             // this is called when the window starts running
+
+            Program test = new Program(_game.config.glsl_version,
+                new ShaderFile[] {
+                    new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null) });
+
+            Console.WriteLine(_game.config.glsl_version);
+
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -288,8 +296,10 @@ namespace KailashEngine
         {
             inputBuffer();
 
-            Console.WriteLine(_game.main_player.character.spatial.position);
             //Console.WriteLine(_game.main_player.character.spatial.position);
+            //Console.WriteLine(_game.main_player.character.spatial.position);
+            
+
 
             SwapBuffers();
         }

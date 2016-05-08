@@ -31,6 +31,8 @@ namespace KailashEngine.Client
             set { _path_base = value; }
         }
 
+        public string path_glsl_base { get { return Path.GetFullPath(_path_base + "Render/Shader/glsl/"); } }
+
 
         //------------------------------------------------------
         // OpenGL
@@ -53,7 +55,10 @@ namespace KailashEngine.Client
         private int _glsl_version;
         public int glsl_version
         {
-            get { return _glsl_version; }
+            get
+            {
+                return int.Parse(_gl_major_version + "" + _gl_minor_version + "0");
+            }
             set { _glsl_version = value; }
         }
 
