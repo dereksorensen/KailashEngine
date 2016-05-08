@@ -40,6 +40,19 @@ namespace KailashEngine.World.Role
             set { _look_sensitivity = value; }
         }
 
+        private Vector3 _position_current;
+        public Vector3 position_current
+        {
+            get { return _position_current; }
+            set { _position_current = value; }
+        }
+
+        private Vector3 _position_previous;
+        public Vector3 position_previous
+        {
+            get { return _position_previous; }
+            set { _position_previous = value; }
+        }
 
 
 

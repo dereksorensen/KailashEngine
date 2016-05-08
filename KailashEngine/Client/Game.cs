@@ -72,6 +72,7 @@ namespace KailashEngine.Client
         public void unload()
         {
 
+            _keyboard.turnOffCapLock();
         }
 
     }

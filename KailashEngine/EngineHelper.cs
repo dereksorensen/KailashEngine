@@ -23,6 +23,9 @@ namespace KailashEngine
         {
             return src0 + (src1 - src0) * t;
         }
-
+        public static Vector3 lerp(Vector3 src0, Vector3 src1, float t)
+        {
+            return src0 + (src1 - src0) * t;
+        }
     }
 }

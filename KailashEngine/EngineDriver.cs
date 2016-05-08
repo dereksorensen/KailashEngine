@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Threading;
 
+
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -41,7 +42,6 @@ namespace KailashEngine
 
 
             Keyboard.KeyRepeat = game.keyboard.repeat;
-
         }
 
         //------------------------------------------------------
@@ -55,16 +55,20 @@ namespace KailashEngine
         //------------------------------------------------------
 
         //Centres the mouse
-        private void centreMouse()
+        private void centerMouse()
         {
-            Point windowCenter = new System.Drawing.Point(
+            if (_game.mouse.locked)
+            {
+                Point windowCenter = new Point(
                 (base.Width) / 2,
                 (base.Height) / 2);
 
-            System.Windows.Forms.Cursor.Position = base.PointToScreen(windowCenter);
+                System.Windows.Forms.Cursor.Position = base.PointToScreen(windowCenter);
+            }
             _game.mouse.position_previous = base.PointToClient(System.Windows.Forms.Cursor.Position);
         }
 
+        // Process input per frame
         private void inputBuffer()
         {
             keyboard_Buffer();
@@ -89,6 +93,18 @@ namespace KailashEngine
             switch (e.Key)
             {
 
+                case Key.CapsLock:
+                    _game.mouse.locked = !_game.mouse.locked;
+                    if (_game.mouse.locked)
+                    {
+                        System.Windows.Forms.Cursor.Hide();
+                        centerMouse();                      
+                    }
+                    else
+                    {
+                        System.Windows.Forms.Cursor.Show();
+                    }
+                    break;
 
                 case Key.Escape:
                     Exit();
@@ -98,6 +114,16 @@ namespace KailashEngine
 
         private void keyboard_Buffer()
         {
+            //------------------------------------------------------
+            // Smooth Player Movement
+            //------------------------------------------------------
+            _game.main_player.character.position_current = _game.main_player.character.spatial.position - _game.main_player.character.position_current;
+            _game.main_player.character.position_current = EngineHelper.lerp(_game.main_player.character.position_previous, _game.main_player.character.position_current, 1.0f / 7.0f);
+            _game.main_player.character.position_previous = _game.main_player.character.position_current;
+            _game.main_player.character.spatial.position += _game.main_player.character.position_current * (1.4f);
+            _game.main_player.character.position_current = _game.main_player.character.spatial.position;
+
+
             //------------------------------------------------------
             // Player Movement
             //------------------------------------------------------
@@ -194,11 +220,9 @@ namespace KailashEngine
             }
         }
 
-
-
         private void mouse_MoveBuffer()
         {
-            _game.mouse.position_current = base.PointToClient(System.Windows.Forms.Cursor.Position);
+            _game.mouse.position_current = (_game.mouse.locked || _game.mouse.getButtonPress(MouseButton.Left)) ? base.PointToClient(System.Windows.Forms.Cursor.Position) : _game.mouse.position_previous;
 
             // Get Deltas
             Vector3 temp_delta_total = new Vector3();
@@ -211,9 +235,9 @@ namespace KailashEngine
             // Interpolate for smooth mouse
             temp_delta_current.Z = MathHelper.Clamp(temp_delta_current.Z, -9.0f, 9.0f);
             temp_delta_current.Xy = EngineHelper.lerp(temp_delta_previous.Xy, temp_delta_current.Xy, 1.0f / 2.0f);
-            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, 1.0f / 7.0f);
+            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, 1.0f / 5.0f);
 
-            
+            // Calculate total delta (which is rotation angle for character / camera)
             temp_delta_total.X += (_game.mouse.delta_total.X + temp_delta_current.X);
             temp_delta_total.Y += (_game.mouse.delta_total.Y + temp_delta_current.Y);
             float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * (7.0f / 5.0f);
@@ -235,9 +259,10 @@ namespace KailashEngine
             // Rotate main character from mouse movement
             _game.main_player.character.rotate(_game.mouse.delta_total.X, _game.mouse.delta_total.Y, _game.mouse.delta_total.Z);
 
-            
-            centreMouse();
+            // Recenter
+            centerMouse();
         }
+
 
         //------------------------------------------------------
         // Game Loop Handling
@@ -250,7 +275,7 @@ namespace KailashEngine
 
         protected override void OnLoad(EventArgs e)
         {
-            centreMouse();
+            centerMouse();
             // this is called when the window starts running
         }
 
@@ -263,8 +288,8 @@ namespace KailashEngine
         {
             inputBuffer();
 
-            
-            Console.WriteLine("=====" + _game.main_player.character.spatial.position);
+            Console.WriteLine(_game.main_player.character.spatial.position);
+            //Console.WriteLine(_game.main_player.character.spatial.position);
 
             SwapBuffers();
         }
@@ -273,6 +298,7 @@ namespace KailashEngine
         {
             base.Dispose();
 
+            _game.unload();
 
             Console.WriteLine("\nGoodbye...");
             Thread.Sleep(500);
