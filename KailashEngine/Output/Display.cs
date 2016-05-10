@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
-namespace KailashEngine.UI
+namespace KailashEngine.Output
 {
     class Display
     {

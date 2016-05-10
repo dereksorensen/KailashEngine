@@ -83,6 +83,7 @@
     <Compile Include="EngineDriver.cs" />
     <Compile Include="Client\Game.cs" />
     <Compile Include="Launcher.cs" />
+    <Compile Include="Output\Audio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\Program.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="World\SpatialData.cs" />
     <Compile Include="World\View\Camera.cs" />
     <Compile Include="World\Role\Character.cs" />
-    <Compile Include="UI\Display.cs" />
+    <Compile Include="Output\Display.cs" />
     <Compile Include="World\WorldObject.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -27,5 +27,11 @@ namespace KailashEngine
         {
             return src0 + (src1 - src0) * (1.0f / t);
         }
+
+        public static float slerp(float src0, float src1, float t)
+        {
+            src0 = Math.Max(src0, 0.000001f);
+            return (float)(Math.Pow(src1 / src0, t) * src0);
+        }
     }
 }

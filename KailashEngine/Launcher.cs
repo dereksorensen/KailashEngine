@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Client;
-using KailashEngine.UI;
+using KailashEngine.Output;
 
 namespace KailashEngine
 {

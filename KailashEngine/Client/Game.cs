@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using KailashEngine.UI;
+using KailashEngine.Output;
 using KailashEngine.Input;
 
 namespace KailashEngine.Client

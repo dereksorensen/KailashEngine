@@ -9,6 +9,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
+using KailashEngine.Output;
 using KailashEngine.Client;
 using KailashEngine.Render;
 using KailashEngine.Render.Shader;
@@ -93,6 +94,9 @@ namespace KailashEngine
             _game.keyboard.keyDown(e);
             switch (e.Key)
             {
+                case Key.P:
+                    Audio audio_test = new Audio(_game.config.path_base + "Output/piano2.wav", _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
+                    break;
 
                 case Key.CapsLock:
                     _game.mouse.locked = !_game.mouse.locked;
@@ -284,6 +288,7 @@ namespace KailashEngine
                     new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null) });
 
 
+            
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -297,7 +302,7 @@ namespace KailashEngine
 
             //Console.WriteLine(_game.player.character.spatial.position);
             //Console.WriteLine(_game.player.character.spatial.look);
-
+            
 
 
 
