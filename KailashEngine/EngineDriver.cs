@@ -9,6 +9,8 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
+using Cgen.Audio;
+
 using KailashEngine.Output;
 using KailashEngine.Client;
 using KailashEngine.Render;
@@ -20,6 +22,9 @@ namespace KailashEngine
     {
 
         private Game _game;
+        private Audio _audio;
+
+        private Sound _sound;
 
         public EngineDriver(Game game) :
             base(game.main_display.resolution.W, game.main_display.resolution.H,
@@ -95,7 +100,8 @@ namespace KailashEngine
             switch (e.Key)
             {
                 case Key.P:
-                    Audio audio_test = new Audio(_game.config.path_base + "Output/piano2.wav", _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
+                    
+                    _sound.Play();
                     break;
 
                 case Key.CapsLock:
@@ -103,7 +109,7 @@ namespace KailashEngine
                     if (_game.mouse.locked)
                     {
                         System.Windows.Forms.Cursor.Hide();
-                        centerMouse();                      
+                        centerMouse();
                     }
                     else
                     {
@@ -203,7 +209,7 @@ namespace KailashEngine
         protected void mouse_Wheel(object sender, MouseWheelEventArgs e)
         {
             _game.mouse.wheel(e);
-            
+
 
         }
 
@@ -287,13 +293,19 @@ namespace KailashEngine
                 new ShaderFile[] {
                     new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null) });
 
+            //_game.config.path_base + "Output/test1.ogg"
 
-            
+            //SoundSystem sound_system = new SoundSystem();
+            SoundSystem.Instance.Initialize();
+            _sound = new Sound(_game.config.path_base + "Output/test1.ogg");
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // this is called every frame, put game logic here
+            SoundSystem.Instance.Update(e.Time);
+            _sound.Position3D = new float[] { _game.player.character.spatial.position.X, _game.player.character.spatial.position.Y, _game.player.character.spatial.position.Z };
+
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -302,7 +314,7 @@ namespace KailashEngine
 
             //Console.WriteLine(_game.player.character.spatial.position);
             //Console.WriteLine(_game.player.character.spatial.look);
-            
+
 
 
 

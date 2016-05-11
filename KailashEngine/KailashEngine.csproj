@@ -57,6 +57,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NVorbis.0.8.4.0\lib\NVorbis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.1.1.2225.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -73,6 +77,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cgen\Audio\Sound.cs" />
+    <Compile Include="Cgen\Audio\SoundBuffer.cs" />
+    <Compile Include="Cgen\Audio\SoundSystem.cs" />
+    <Compile Include="Cgen\Audio\StreamReader\ISoundStreamReader.cs" />
+    <Compile Include="Cgen\Audio\StreamReader\VorbisStreamReader.cs" />
+    <Compile Include="Cgen\Audio\StreamReader\WaveStreamReader.cs" />
+    <Compile Include="Cgen\Entities\IUpdatable.cs" />
+    <Compile Include="Cgen\Internal\ActionDelegate.cs" />
+    <Compile Include="Cgen\Internal\AL\ALChecker.cs" />
+    <Compile Include="Cgen\Internal\AL\ALContext.cs" />
+    <Compile Include="Cgen\Internal\AL\ALExtensions.cs" />
+    <Compile Include="Cgen\IO\BufferStream.cs" />
+    <Compile Include="Cgen\Utilities\Logger.cs" />
     <Compile Include="Client\ClientConfig.cs" />
     <Compile Include="Client\Player.cs" />
     <Compile Include="Debug\DebugHelper.cs" />
@@ -102,6 +119,7 @@
     <None Include="Render\Shader\glsl\test.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Cgen\Dependencies\nvorbis\" />
     <Folder Include="Physics\" />
     <Folder Include="Render\FX\" />
     <Folder Include="Render\Resources\" />
