@@ -25,7 +25,7 @@
   >
   <APPLYFX_CFG
   >
-  RENDER_FILE "C:\Users\dersor\Google Drive\KailashEngine2\KailashEngine\Output\test1.wav"
+  RENDER_FILE "C:\Users\dersor\Google Drive\KailashEngine2\KailashEngine\Output\test1.ogg"
   RENDER_FMT 0 1 8000
   RENDER_1X 0
   RENDER_RANGE 1 0.00000000000000 0.00000000000000
@@ -40,7 +40,7 @@
   TAKELANE 1
   SAMPLERATE 44100 0 0
   <RENDER_CFG
-    ZXZhdxAD
+    dmdnbwAAAD8AgAAAAIAAAAAgAAAAAAEAAA==
   >
   LOCK 1
   <METRONOME 6 2.000000

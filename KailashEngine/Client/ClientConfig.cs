@@ -31,6 +31,10 @@ namespace KailashEngine.Client
             set { _path_base = value; }
         }
 
+        public string path_resources_base { get { return Path.GetFullPath(_path_base + "Resources/"); } }
+        public string path_resources_mesh { get { return Path.GetFullPath(_path_base + "Mesh/"); } }
+        public string path_resources_textures { get { return Path.GetFullPath(_path_base + "Textures/"); } }
+
         public string path_glsl_base { get { return Path.GetFullPath(_path_base + "Render/Shader/glsl/"); } }
 
 

@@ -22,9 +22,10 @@ namespace KailashEngine
     {
 
         private Game _game;
-        private Audio _audio;
 
-        private Sound _sound;
+
+        private Sound _sound_cow;
+        private Sound _sound_goat;
 
         public EngineDriver(Game game) :
             base(game.main_display.resolution.W, game.main_display.resolution.H,
@@ -99,10 +100,6 @@ namespace KailashEngine
             _game.keyboard.keyDown(e);
             switch (e.Key)
             {
-                case Key.P:
-                    
-                    _sound.Play();
-                    break;
 
                 case Key.CapsLock:
                     _game.mouse.locked = !_game.mouse.locked;
@@ -202,7 +199,14 @@ namespace KailashEngine
             _game.mouse.buttonDown(e);
             switch (e.Button)
             {
+                case MouseButton.Left:
 
+                    _sound_cow.Play();
+                    break;
+                case MouseButton.Right:
+
+                    _sound_goat.Play();
+                    break;
             }
         }
 
@@ -297,14 +301,14 @@ namespace KailashEngine
 
             //SoundSystem sound_system = new SoundSystem();
             SoundSystem.Instance.Initialize();
-            _sound = new Sound(_game.config.path_base + "Output/test1.ogg");
+            _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
+            _sound_cow.IsRelativeToListener = false;
+            _sound_goat = new Sound(_game.config.path_base + "Output/test1.ogg");
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // this is called every frame, put game logic here
-            SoundSystem.Instance.Update(e.Time);
-            _sound.Position3D = new float[] { _game.player.character.spatial.position.X, _game.player.character.spatial.position.Y, _game.player.character.spatial.position.Z };
 
         }
 
@@ -316,6 +320,7 @@ namespace KailashEngine
             //Console.WriteLine(_game.player.character.spatial.look);
 
 
+            SoundSystem.Instance.Update(e.Time, _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
 
             Debug.DebugHelper.logGLError();
