@@ -19,6 +19,13 @@ namespace KailashEngine.Client
             set { _config = value; }
         }
 
+        private string _title;
+        public string title
+        {
+            get { return _title; }
+            set { _title = value; }
+        }
+
         private Display _main_display;
         public Display main_display
         {
@@ -47,12 +54,13 @@ namespace KailashEngine.Client
             set { _player = value; }
         }
 
-        private string _title;
-        public string title
+        private Scene _scene;
+        public Scene scene
         {
-            get { return _title; }
-            set { _title = value; }
+            get { return _scene; }
+            set { _scene = value; }
         }
+
 
 
 
@@ -62,11 +70,17 @@ namespace KailashEngine.Client
             _config = config;
             _main_display = default_display;
             _player = main_player;
+            _scene = new Scene(_config.path_resources_mesh);
 
             _keyboard = new Keyboard();
             _mouse = new Mouse(_player.character.look_sensitivity, true);
         }
 
+
+        public void load()
+        {
+            _scene.load();
+        }
 
 
         public void unload()

@@ -2,7 +2,7 @@
 using System;
 using System.Drawing;
 using System.Threading;
-
+using System.Runtime.InteropServices;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -15,6 +15,7 @@ using KailashEngine.Output;
 using KailashEngine.Client;
 using KailashEngine.Render;
 using KailashEngine.Render.Shader;
+using KailashEngine.World.Model;
 
 namespace KailashEngine
 {
@@ -304,6 +305,8 @@ namespace KailashEngine
             _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
             _sound_cow.IsRelativeToListener = false;
             _sound_goat = new Sound(_game.config.path_base + "Output/test1.ogg");
+
+            _game.load();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

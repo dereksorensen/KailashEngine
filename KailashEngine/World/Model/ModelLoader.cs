@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace KailashEngine.World.Model
 {
-    class Polylist_DAE
+    abstract class ModelLoader
     {
 
 
-        public Polylist_DAE()
-        {
+        abstract public Dictionary<string, Mesh> load(string filename);
 
-        }
 
     }
 }

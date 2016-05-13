@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\Scene.cs" />
     <Compile Include="External\Cgen\Audio\Sound.cs" />
     <Compile Include="External\Cgen\Audio\SoundBuffer.cs" />
     <Compile Include="External\Cgen\Audio\SoundSystem.cs" />
@@ -442,12 +443,16 @@
     <Compile Include="Render\Program.cs" />
     <Compile Include="Render\RenderHelper.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
-    <Compile Include="World\Model\Material_DAE.cs" />
+    <Compile Include="World\Model\DAE_Material.cs" />
+    <Compile Include="World\Model\ModelLoader.cs" />
+    <Compile Include="World\Model\Material.cs" />
     <Compile Include="World\Model\Mesh.cs" />
-    <Compile Include="World\Model\Mesh_DAE.cs" />
-    <Compile Include="World\Model\Polylist_DAE.cs" />
+    <Compile Include="World\Model\DAE_Mesh.cs" />
+    <Compile Include="World\Model\DAE_Polylist.cs" />
     <Compile Include="World\Role\NonPlayableCharacter.cs" />
     <Compile Include="World\Role\PlayableCharacter.cs" />
+    <Compile Include="World\Model\DAE_Loader.cs" />
+    <Compile Include="World\Scene\SceneLoader.cs" />
     <Compile Include="World\SpatialData.cs" />
     <Compile Include="World\View\Camera.cs" />
     <Compile Include="World\Role\Character.cs" />
