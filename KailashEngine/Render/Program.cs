@@ -37,6 +37,7 @@ namespace KailashEngine.Render
         public Program(int glsl_version, ShaderFile[] shader_pipeline)
         {
             _glsl_version = glsl_version;
+            _uniforms = new Dictionary<string, int>();
 
             try
             {

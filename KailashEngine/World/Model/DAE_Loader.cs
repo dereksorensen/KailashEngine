@@ -30,6 +30,9 @@ namespace KailashEngine.World.Model
             int geometry_count = dae_file.Library_Geometries.Geometry.Count();
             Debug.DebugHelper.logInfo(2, "\tNumber of Meshes", geometry_count.ToString());
 
+
+            Dictionary<string, Mesh> mesh_dictionary = new Dictionary<string, Mesh>();
+
             //------------------------------------------------------
             // Create Image Dictionary
             //------------------------------------------------------
@@ -66,8 +69,8 @@ namespace KailashEngine.World.Model
             Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", "");
             foreach (Grendgine_Collada_Geometry g in dae_file.Library_Geometries.Geometry)
             {
+                // Load Mesh
                 DAE_Mesh temp_mesh = new DAE_Mesh(g.Name.Replace('.', '_') + "-mesh", g);
-
                 try
                 {
                     temp_mesh.load(material_collection);
@@ -78,13 +81,18 @@ namespace KailashEngine.World.Model
                     continue;
                 }
 
-                foreach (Mesh m in temp_mesh.submeshes)
+                // Load mesh's VAO
+                foreach(Mesh mesh in temp_mesh.submeshes)
                 {
-                    Console.WriteLine(m.id);
+                    mesh.setBufferIDs(initVAO(mesh));
                 }
+
+                // Add to mesh collection
+                mesh_dictionary.Add(temp_mesh.id, temp_mesh);
+                
             }
 
-            return null;
+            return mesh_dictionary;
         }
 
 

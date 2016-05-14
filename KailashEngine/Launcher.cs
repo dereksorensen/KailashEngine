@@ -25,8 +25,8 @@ namespace KailashEngine
                 "KailashEngine",                                    // Base Engine Path
                 4, 5,                                               // OpenGL Versions
                 60.0f,                                              // Target FPS
-                0.01f, 1000.0f,                                     // Near / Far Planes
-                2.0f, 7.0f);                                        // Smooth Keyboard / Mouse
+                1.0f, 1000.0f,                                     // Near / Far Planes
+                4.0f, 9.0f);                                        // Smooth Keyboard / Mouse
             Display main_display = new Display(
                 game_config.title, 
                 1440, 900,                                          // Resolution
@@ -34,8 +34,8 @@ namespace KailashEngine
             Player main_player = new Player(
                 new World.Role.PlayableCharacter(
                     "laydai",                                       // Character Name
-                    0.2f,                                           // Character Movement Speed
-                    0.2f)                                           // Character Look Sensitivity
+                    0.02f, 0.2f,                                    // Character Movement Speed
+                    0.1f)                                           // Character Look Sensitivity
                 );
 
 

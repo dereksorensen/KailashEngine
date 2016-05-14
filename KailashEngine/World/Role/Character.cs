@@ -26,12 +26,27 @@ namespace KailashEngine.World.Role
             set { _name = value; }
         }
 
-        private float _movement_speed;
-        public float movement_speed
+        private float _movement_speed_walk;
+        public float movement_speed_walk
         {
-            get { return _movement_speed; }
-            set { _movement_speed = value; }
+            get { return _movement_speed_walk; }
+            set { _movement_speed_walk = value; }
         }
+
+        private float _movement_speed_run;
+        public float movement_speed_run
+        {
+            get { return _movement_speed_run; }
+            set { _movement_speed_run = value; }
+        }
+
+        private bool _running;
+        public bool running
+        {
+            get { return _running; }
+            set { _running = value; }
+        }
+
 
         private float _look_sensitivity;
         public float look_sensitivity
@@ -56,11 +71,12 @@ namespace KailashEngine.World.Role
 
 
 
-        public Character(string name, float movement_speed, float look_sensitivity)
+        public Character(string name, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
             : base (new Vector3(), new Vector3(), new Vector3(0.0f, 1.0f, 0.0f))
         {
             _name = name;
-            _movement_speed = movement_speed;
+            _movement_speed_walk = movement_speed_walk;
+            _movement_speed_run = movement_speed_run;
             _look_sensitivity = look_sensitivity;
         }
 
@@ -69,34 +85,46 @@ namespace KailashEngine.World.Role
         // View Based Movement
         //------------------------------------------------------
 
+        private float getMovementSpeed()
+        {
+            if(_running)
+            {
+                return _movement_speed_run;
+            }
+            else
+            {
+                return _movement_speed_walk;
+            }
+        }
+
         public void moveForeward()
         {
-            moveForeward(_movement_speed);
+            moveForeward(getMovementSpeed());
         }
 
         public void moveBackward()
         {
-            moveBackward(_movement_speed);
+            moveBackward(getMovementSpeed());
         }
 
         public void moveUp()
         {
-            moveUp(_movement_speed);
+            moveUp(getMovementSpeed());
         }
 
         public void moveDown()
         {
-            moveDown(_movement_speed);
+            moveDown(getMovementSpeed());
         }
 
         public void strafeRight()
         {
-            strafeRight(_movement_speed);
+            strafeRight(getMovementSpeed());
         }
 
         public void strafeLeft()
         {
-            strafeLeft(_movement_speed);
+            strafeLeft(getMovementSpeed());
         }
 
 

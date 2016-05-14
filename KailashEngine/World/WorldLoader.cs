@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK.Graphics.OpenGL;
+
 using KailashEngine.World.Model;
 
 namespace KailashEngine.World
@@ -37,7 +39,30 @@ namespace KailashEngine.World
 
         public void draw()
         {
+            foreach (Mesh mesh in _meshes.Values)
+            {
+                foreach (Mesh submesh in mesh.submeshes)
+                {
 
+
+                    //foreach(Mesh.Vertex v in submesh.vertex_data)
+                    //{
+                    //    Console.WriteLine(v.position);
+                    //}
+
+
+                    try
+                    {
+                        GL.BindVertexArray(submesh.vao);
+                        GL.DrawElements(BeginMode.Triangles, submesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
+                        GL.BindVertexArray(0);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Failed drawing mesh", e);
+                    }
+                }
+            }
         }
 
 

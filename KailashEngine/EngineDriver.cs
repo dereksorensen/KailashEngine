@@ -24,7 +24,7 @@ namespace KailashEngine
 
         private Game _game;
 
-
+        private Program pTest;
         private Sound _sound_cow;
         private Sound _sound_goat;
 
@@ -77,6 +77,7 @@ namespace KailashEngine
             _game.mouse.position_previous = base.PointToClient(System.Windows.Forms.Cursor.Position);
         }
 
+
         // Process input per frame
         private void inputBuffer()
         {
@@ -103,15 +104,10 @@ namespace KailashEngine
             {
 
                 case Key.CapsLock:
-                    _game.mouse.locked = !_game.mouse.locked;
+                    _game.mouse.toggleLock();
                     if (_game.mouse.locked)
                     {
-                        System.Windows.Forms.Cursor.Hide();
                         centerMouse();
-                    }
-                    else
-                    {
-                        System.Windows.Forms.Cursor.Show();
                     }
                     break;
 
@@ -139,48 +135,46 @@ namespace KailashEngine
 
             if (_game.keyboard.getKeyPress(Key.W))
             {
-                Console.WriteLine("Forward");
+                //Console.WriteLine("Forward");
                 _game.player.character.moveForeward();
             }
 
             if (_game.keyboard.getKeyPress(Key.S))
             {
-                Console.WriteLine("Backward");
+                //Console.WriteLine("Backward");
                 _game.player.character.moveBackward();
             }
 
             if (_game.keyboard.getKeyPress(Key.A))
             {
-                Console.WriteLine("Left");
+                //Console.WriteLine("Left");
                 _game.player.character.strafeLeft();
             }
 
             if (_game.keyboard.getKeyPress(Key.D))
             {
-                Console.WriteLine("Right");
+                //Console.WriteLine("Right");
                 _game.player.character.strafeRight();
             }
 
             if (_game.keyboard.getKeyPress(Key.Space))
             {
-                Console.WriteLine("Jump");
+                //Console.WriteLine("Jump");
                 _game.player.character.moveUp();
             }
 
             if (_game.keyboard.getKeyPress(Key.ControlLeft))
             {
-                Console.WriteLine("Crouch");
+                //Console.WriteLine("Crouch");
                 _game.player.character.moveDown();
             }
 
-            if (_game.keyboard.getKeyPress(Key.ShiftLeft))
-            {
-                Console.WriteLine("Run");
-            }
+            // Running
+            _game.player.character.running = _game.keyboard.getKeyPress(Key.ShiftLeft);
 
             if (_game.keyboard.getKeyPress(Key.AltLeft))
             {
-                Console.WriteLine("Sprint");
+                //Console.WriteLine("Sprint");
             }
         }
 
@@ -250,8 +244,8 @@ namespace KailashEngine
 
             // Interpolate for smooth mouse       
             temp_delta_current.Xy = EngineHelper.lerp(temp_delta_previous.Xy, temp_delta_current.Xy, _game.config.smooth_mouse_delay);
-            temp_delta_current.Z = MathHelper.Clamp(temp_delta_current.Z, -9.0f, 9.0f);
-            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 1.5f);
+            temp_delta_current.Z = MathHelper.Clamp(temp_delta_current.Z, -7.0f, 7.0f);
+            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 2.0f);
 
             // Calculate total delta (which is rotation angle for character / camera)
             temp_delta_total.X += (_game.mouse.delta_total.X + temp_delta_current.X);
@@ -292,21 +286,38 @@ namespace KailashEngine
         protected override void OnLoad(EventArgs e)
         {
             centerMouse();
-            // this is called when the window starts running
 
-            Program test = new Program(_game.config.glsl_version,
+            // Default OpenGL Setup
+            GL.ClearColor(Color.Blue);
+            //GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+            GL.DepthFunc(DepthFunction.Lequal);
+            GL.DepthRange(0.0f, 1.0f);
+            GL.Enable(EnableCap.DepthClamp);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.FrontFace(FrontFaceDirection.Ccw);
+
+
+            pTest = new Program(_game.config.glsl_version,
                 new ShaderFile[] {
-                    new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null) });
+                    new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null),
+                    new ShaderFile(ShaderType.FragmentShader, _game.config.path_glsl_base + "test.frag", null)
+                }
+            );
+            pTest.addUniform("view");
+            pTest.addUniform("perspective");
+
 
             //_game.config.path_base + "Output/test1.ogg"
-
             //SoundSystem sound_system = new SoundSystem();
             SoundSystem.Instance.Initialize();
             _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
             _sound_cow.IsRelativeToListener = false;
             _sound_goat = new Sound(_game.config.path_base + "Output/test1.ogg");
 
-            _game.load();
+            _game.load();      
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -321,14 +332,26 @@ namespace KailashEngine
 
             //Console.WriteLine(_game.player.character.spatial.position);
             //Console.WriteLine(_game.player.character.spatial.look);
+            
+
+            Matrix4 view = _game.player.character.spatial.matrix;
+            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65.0f), _game.main_display.resolution.aspect, _game.config.near_far.X, _game.config.near_far.Y);
+
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer,0);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, this.Width, this.Height);
+
+            GL.UseProgram(pTest.pID);
+            GL.UniformMatrix4(pTest.uniforms["view"], false, ref view);
+            GL.UniformMatrix4(pTest.uniforms["perspective"], false, ref perspective);
+            _game.scene.render();
 
 
-            SoundSystem.Instance.Update(e.Time, _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
-
-            Debug.DebugHelper.logGLError();
-
+            SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
+  
             SwapBuffers();
+            Debug.DebugHelper.logGLError();
         }
 
         protected override void OnUnload(EventArgs e)

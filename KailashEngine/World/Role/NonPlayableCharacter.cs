@@ -9,8 +9,8 @@ namespace KailashEngine.World.Role
     class NonPlayableCharacter : Character
     {
 
-        public NonPlayableCharacter(string name, float movement_speed, float look_sensitivity)
-            : base(name, movement_speed, look_sensitivity)
+        public NonPlayableCharacter(string name, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
+            : base(name, movement_speed_walk, movement_speed_run, look_sensitivity)
         { }
     }
 }

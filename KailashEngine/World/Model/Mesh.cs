@@ -129,6 +129,11 @@ namespace KailashEngine.World.Model
             _id = id;
         }
 
-
+        public void setBufferIDs(int[] buffers)
+        {
+            _vbo = buffers[0];
+            _ibo = buffers[1];
+            _vao = buffers[2];
+        }
     }
 }

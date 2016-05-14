@@ -82,6 +82,7 @@ namespace KailashEngine.Input
             _sensitivity = sensitivity;
             _locked = locked;
             _buttons = new Dictionary<Enum, bool>();
+            hide();
         }
 
 
@@ -106,6 +107,23 @@ namespace KailashEngine.Input
             return getInput(mouse_button, _buttons);
         }
 
+        public void hide()
+        {
+            if (_locked)
+            {
+                System.Windows.Forms.Cursor.Hide();
+            }
+            else
+            {
+                System.Windows.Forms.Cursor.Show();
+            }
+        }
+
+        public void toggleLock()
+        {
+            _locked = !_locked;
+            hide();
+        }
 
     }
 }

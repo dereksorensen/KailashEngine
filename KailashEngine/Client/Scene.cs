@@ -34,7 +34,7 @@ namespace KailashEngine.Client
             }
             catch(Exception e)
             {
-                Debug.DebugHelper.logError("World Loading Failed", e.Message);
+                Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
                 return null;
             }
             
@@ -48,7 +48,7 @@ namespace KailashEngine.Client
 
         public void render()
         {
-            
+            _box.draw();
         }
 
     }
