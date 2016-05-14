@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-using KailashEngine.World.Scene;
+using KailashEngine.World;
 
 namespace KailashEngine.Client
 {
@@ -16,7 +16,7 @@ namespace KailashEngine.Client
 
 
         // Scene Objects
-        private SceneLoader _box;
+        private WorldLoader _box;
 
 
 
@@ -26,10 +26,23 @@ namespace KailashEngine.Client
 
         }
 
+        private WorldLoader loadHelper(string filename)
+        {
+            try
+            {
+                return new WorldLoader(_path_mesh + filename);
+            }
+            catch(Exception e)
+            {
+                Debug.DebugHelper.logError("World Loading Failed", e.Message);
+                return null;
+            }
+            
+        }
 
         public void load()
         {
-            _box = new SceneLoader(_path_mesh + "unit_cube.daee");
+            _box = loadHelper("unit_cube.dae");
         }
 
 

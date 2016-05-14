@@ -13,7 +13,7 @@ using OpenTK;
 
 namespace KailashEngine.World.Model
 {
-    class Mesh
+    class Mesh : WorldObject
     {
 
         [StructLayout(LayoutKind.Sequential)]
@@ -33,16 +33,23 @@ namespace KailashEngine.World.Model
             set { _id = value; }
         }
 
-        // Mesh can contain partial meshes with their own materials
-        protected List<Mesh> _partials;
-        public List<Mesh> partials
+        // Mesh can contain submeshes with their own materials
+        protected int _submesh_count;
+        public int submesh_count
         {
-            get { return _partials; }
-            set { _partials = value; }
+            get { return _submesh_count; }
+            set { _submesh_count = value; }
+        }
+
+        protected List<Mesh> _submeshes;
+        public List<Mesh> submeshes
+        {
+            get { return _submeshes; }
+            set { _submeshes = value; }
         }
 
         // Material
-        private Material _material;
+        protected Material _material;
         public Material material
         {
             get { return _material; }
@@ -74,49 +81,53 @@ namespace KailashEngine.World.Model
         }
 
         // Mesh Vertices
-        private List<Vertex> _vertices;
+        protected List<Vertex> _vertices;
         public List<Vertex> vertices
         {
             get { return _vertices; }
             set { _vertices = value; }
         }
         // Mesh Indices
-        private List<uint> _indices;
+        protected List<uint> _indices;
         public List<uint> indices
         {
             get { return _indices; }
             set { _indices = value; }
         }
         // Vertex to Index Mapper Dictionary
-        private Dictionary<Vertex, uint> _vtoi;
+        protected Dictionary<Vertex, uint> _vtoi;
 
         // VAO Helpers
-        private Vertex[] _vertex_data;
+        protected Vertex[] _vertex_data;
         public Vertex[] vertex_data
         {
             get { return _vertex_data; }
             set { _vertex_data = value; }
         }
-        private int _vertex_data_size;
+        protected int _vertex_data_size;
         public int vertex_data_size
         {
             get { return _vertex_data_size; }
             set { _vertex_data_size = value; }
         }
-        private uint[] _index_data;
+        protected uint[] _index_data;
         public uint[] index_data
         {
             get { return _index_data; }
             set { _index_data = value; }
         }
-        private int _index_data_size;
+        protected int _index_data_size;
         public int index_data_size
         {
             get { return _index_data_size; }
             set { _index_data_size = value; }
         }
 
-
+        
+        public Mesh(string id)
+        {
+            _id = id;
+        }
 
 
     }

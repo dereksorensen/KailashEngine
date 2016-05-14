@@ -14,7 +14,12 @@ namespace KailashEngine.World.Model
 
 
 
-        public DAE_Material()
+        public DAE_Material(string id)
+            : base (id)
+        { }
+
+
+        public void load(Grendgine_Collada_Effect effect, Dictionary<string, string> image_collection)
         {
 
         }

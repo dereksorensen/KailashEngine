@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 using KailashEngine.World.Model;
 
-namespace KailashEngine.World.Scene
+namespace KailashEngine.World
 {
-    class SceneLoader
+    class WorldLoader
     {
 
         private Dictionary<string, Mesh> _meshes;
@@ -20,7 +20,7 @@ namespace KailashEngine.World.Scene
         }
 
 
-        public SceneLoader(string filename)
+        public WorldLoader(string filename)
         {
             string file_extension = Path.GetExtension(filename);
             switch (file_extension)
