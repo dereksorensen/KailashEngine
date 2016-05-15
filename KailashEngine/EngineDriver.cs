@@ -15,7 +15,6 @@ using KailashEngine.Output;
 using KailashEngine.Client;
 using KailashEngine.Render;
 using KailashEngine.Render.Shader;
-using KailashEngine.World.Model;
 
 namespace KailashEngine
 {
@@ -24,20 +23,24 @@ namespace KailashEngine
 
         private Game _game;
 
-        private Program pTest;
+        private RenderDriver _render_driver;
+
+
+        
         private Sound _sound_cow;
         private Sound _sound_goat;
 
         public EngineDriver(Game game) :
-            base(game.main_display.resolution.W, game.main_display.resolution.H,
+            base(game.display.resolution.W, game.display.resolution.H,
                 new GraphicsMode(new ColorFormat(32), 32, 32, 1),
                 game.title,
-                game.main_display.fullscreen ? GameWindowFlags.Fullscreen : GameWindowFlags.Default,
+                game.display.fullscreen ? GameWindowFlags.Fullscreen : GameWindowFlags.Default,
                 DisplayDevice.Default,
                 game.config.gl_major_version, game.config.gl_minor_version,
                 GraphicsContextFlags.Debug)
         {
             _game = game;
+            _render_driver = new RenderDriver(_game.config.glsl_version, _game.config.path_glsl_base);
 
             VSync = VSyncMode.On;
 
@@ -172,10 +175,9 @@ namespace KailashEngine
             // Running
             _game.player.character.running = _game.keyboard.getKeyPress(Key.ShiftLeft);
 
-            if (_game.keyboard.getKeyPress(Key.AltLeft))
-            {
-                //Console.WriteLine("Sprint");
-            }
+            // Sprinting
+            _game.player.character.sprinting = _game.keyboard.getKeyPress(Key.AltLeft);
+
         }
 
         // Mouse
@@ -287,27 +289,16 @@ namespace KailashEngine
         {
             centerMouse();
 
-            // Default OpenGL Setup
-            GL.ClearColor(Color.Blue);
-            //GL.Enable(EnableCap.DepthTest);
-            GL.DepthMask(true);
-            GL.DepthFunc(DepthFunction.Lequal);
-            GL.DepthRange(0.0f, 1.0f);
-            GL.Enable(EnableCap.DepthClamp);
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            GL.FrontFace(FrontFaceDirection.Ccw);
+            _game.load();
+
+            _render_driver.load(_game);
 
 
-            pTest = new Program(_game.config.glsl_version,
-                new ShaderFile[] {
-                    new ShaderFile(ShaderType.VertexShader, _game.config.path_glsl_base + "test.vert", null),
-                    new ShaderFile(ShaderType.FragmentShader, _game.config.path_glsl_base + "test.frag", null)
-                }
-            );
-            pTest.addUniform("view");
-            pTest.addUniform("perspective");
+
+
+
+            
 
 
             //_game.config.path_base + "Output/test1.ogg"
@@ -317,7 +308,7 @@ namespace KailashEngine
             _sound_cow.IsRelativeToListener = false;
             _sound_goat = new Sound(_game.config.path_base + "Output/test1.ogg");
 
-            _game.load();      
+                
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -332,19 +323,12 @@ namespace KailashEngine
 
             //Console.WriteLine(_game.player.character.spatial.position);
             //Console.WriteLine(_game.player.character.spatial.look);
-            
+            //Console.WriteLine(_game.player.character.spatial.up);
 
-            Matrix4 view = _game.player.character.spatial.matrix;
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65.0f), _game.main_display.resolution.aspect, _game.config.near_far.X, _game.config.near_far.Y);
+            _render_driver.render(_game);
 
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer,0);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, this.Width, this.Height);
 
-            GL.UseProgram(pTest.pID);
-            GL.UniformMatrix4(pTest.uniforms["view"], false, ref view);
-            GL.UniformMatrix4(pTest.uniforms["perspective"], false, ref perspective);
-            _game.scene.render();
+
 
 
 

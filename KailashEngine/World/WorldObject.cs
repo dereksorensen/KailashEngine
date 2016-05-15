@@ -12,7 +12,7 @@ namespace KailashEngine.World
     {
 
 
-        private SpatialData _spatial;
+        protected SpatialData _spatial;
         public SpatialData spatial
         {
             get { return _spatial; }
@@ -39,7 +39,7 @@ namespace KailashEngine.World
         // Rotation
         //------------------------------------------------------
 
-        public void rotate(float x_angle, float y_angle, float z_angle)
+        public virtual void rotate(float x_angle, float y_angle, float z_angle)
         {
 
             Quaternion x_rotation = Quaternion.FromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), MathHelper.DegreesToRadians(x_angle));

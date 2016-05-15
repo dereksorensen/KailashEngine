@@ -86,12 +86,31 @@ namespace KailashEngine.Client
             set { _fps_target = value; }
         }
 
+        private float _fov;
+        public float fov
+        {
+            get { return _fov; }
+            set { _fov = value; }
+        }
+        public float fov_radian
+        {
+            get
+            {
+                return MathHelper.DegreesToRadians(_fov);
+            }
+            set
+            {
+                _fov = MathHelper.RadiansToDegrees(value);
+            }
+        }
+
         private Vector2 _near_far;
         public Vector2 near_far
         {
             get { return _near_far; }
             set { _near_far = value; }
         }
+
 
         // Finds the base engine dir which all path defaults are based from
         private string getBasePath(string base_dir)
@@ -138,7 +157,7 @@ namespace KailashEngine.Client
             string engine_base_dir, 
             int gl_major_version, int gl_minor_version, 
             float target_fps, 
-            float near_plane, float far_plane,
+            float fov, float near_plane, float far_plane,
             float smooth_mouse_delay, float smooth_keyboard_delay)
         {
             _title = title;
@@ -151,6 +170,7 @@ namespace KailashEngine.Client
 
             _fps_target = target_fps;
 
+            _fov = fov;
             _near_far = new Vector2(near_plane, far_plane);
 
             _smooth_mouse_delay = smooth_mouse_delay;

@@ -25,7 +25,8 @@ namespace KailashEngine
                 "KailashEngine",                                    // Base Engine Path
                 4, 5,                                               // OpenGL Versions
                 60.0f,                                              // Target FPS
-                1.0f, 1000.0f,                                     // Near / Far Planes
+                65.0f,                                              // Field of view
+                1.0f, 1000.0f,                                      // Near / Far Planes
                 4.0f, 9.0f);                                        // Smooth Keyboard / Mouse
             Display main_display = new Display(
                 game_config.title, 

@@ -26,11 +26,11 @@ namespace KailashEngine.Client
             set { _title = value; }
         }
 
-        private Display _main_display;
-        public Display main_display
+        private Display _display;
+        public Display display
         {
-            get { return _main_display; }
-            set { _main_display = value; }
+            get { return _display; }
+            set { _display = value; }
         }
 
         private Keyboard _keyboard;
@@ -68,7 +68,7 @@ namespace KailashEngine.Client
         {
             _title = config.title;
             _config = config;
-            _main_display = default_display;
+            _display = default_display;
             _player = main_player;
             _scene = new Scene(_config.path_resources_mesh);
 
@@ -79,6 +79,7 @@ namespace KailashEngine.Client
 
         public void load()
         {
+            _player.load(_config.fov_radian, _display.resolution.aspect, _config.near_far);
             _scene.load();
         }
 

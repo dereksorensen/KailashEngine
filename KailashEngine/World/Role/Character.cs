@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
-using KailashEngine.Input;
-using KailashEngine.World.View;
 
 namespace KailashEngine.World.Role
 {
@@ -47,6 +45,13 @@ namespace KailashEngine.World.Role
             set { _running = value; }
         }
 
+        private bool _sprinting;
+        public bool sprinting
+        {
+            get { return _sprinting; }
+            set { _sprinting = value; }
+        }
+
 
         private float _look_sensitivity;
         public float look_sensitivity
@@ -82,12 +87,48 @@ namespace KailashEngine.World.Role
 
 
         //------------------------------------------------------
+        // Rotation Override
+        //------------------------------------------------------
+
+        public override void rotate(float x_angle, float y_angle, float z_angle)
+        {
+
+            Quaternion x_rotation = Quaternion.FromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), MathHelper.DegreesToRadians(x_angle));
+            x_rotation.Normalize();
+
+            Quaternion y_rotation = Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), MathHelper.DegreesToRadians(y_angle));
+            y_rotation.Normalize();
+
+            Quaternion z_rotation = Quaternion.FromAxisAngle(new Vector3(0.0f, 0.0f, 1.0f), MathHelper.DegreesToRadians(z_angle));
+            z_rotation.Normalize();
+
+            Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
+            Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(x_rotation, z_rotation), y_rotation);
+
+            xyz_rotation.Normalize();
+            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(xyz_rotation);
+
+            // Added bit to set look and up based on xy rotation only
+            xy_rotation.Normalize();
+            Matrix4 temp_xy_rotation = Matrix4.CreateFromQuaternion(xy_rotation);
+            _spatial.look = temp_xy_rotation.Column2.Xyz;
+            _spatial.up = temp_xy_rotation.Column1.Xyz;
+            _spatial.strafe = Vector3.Cross(_spatial.look, _spatial.up);
+
+        }
+
+        //------------------------------------------------------
         // View Based Movement
         //------------------------------------------------------
 
+
         private float getMovementSpeed()
         {
-            if(_running)
+            if(_sprinting)
+            {
+                return _movement_speed_run * 10.0f;
+            }
+            else if(_running)
             {
                 return _movement_speed_run;
             }

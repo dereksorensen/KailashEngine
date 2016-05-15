@@ -57,13 +57,20 @@ namespace KailashEngine.World
             }
         }
 
-        private Matrix4 _matrix;
+        //private Matrix4 _matrix;
         public Matrix4 matrix
         {
             get
             {
                 return Matrix4.Mult(position_matrix, _rotation_matrix);
             }
+        }
+
+        private Matrix4 _perspective;
+        public Matrix4 perspective
+        {
+            get { return _perspective; }
+            set { _perspective = value; }
         }
 
 

@@ -440,7 +440,11 @@
     <Compile Include="Launcher.cs" />
     <Compile Include="Output\Audio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Render\FX\fx_gBuffer.cs" />
+    <Compile Include="Render\FX\RenderEffect.cs" />
     <Compile Include="Render\Program.cs" />
+    <Compile Include="Render\ProgramLoader.cs" />
+    <Compile Include="Render\RenderDriver.cs" />
     <Compile Include="Render\RenderHelper.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="World\Model\DAE_Material.cs" />
@@ -463,14 +467,12 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Render\Shader\glsl\test.frag" />
-    <None Include="Render\Shader\glsl\test.vert" />
+    <None Include="Render\Shader\glsl\gBuffer\test.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\test.vert" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
     <Folder Include="Physics\" />
-    <Folder Include="Render\FX\" />
-    <Folder Include="Render\Resources\" />
     <Folder Include="Resources\Blender\" />
     <Folder Include="Resources\Mesh\" />
     <Folder Include="Resources\Textures\" />
