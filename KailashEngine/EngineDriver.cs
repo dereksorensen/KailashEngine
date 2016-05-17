@@ -25,7 +25,8 @@ namespace KailashEngine
 
         private RenderDriver _render_driver;
 
-
+        private int UBO_TEST;
+        UBO test;
         
         private Sound _sound_cow;
         private Sound _sound_goat;
@@ -40,8 +41,8 @@ namespace KailashEngine
                 GraphicsContextFlags.Debug)
         {
             _game = game;
-            _render_driver = new RenderDriver(_game.config.glsl_version, _game.config.path_glsl_base);
 
+            // Display Settings
             VSync = VSyncMode.On;
 
             // Register Input Devices
@@ -51,7 +52,6 @@ namespace KailashEngine
             Mouse.ButtonUp += mouse_ButtonUp;
             Mouse.ButtonDown += mouse_ButtonDown;
             Mouse.WheelChanged += mouse_Wheel;
-
 
             Keyboard.KeyRepeat = game.keyboard.repeat;
         }
@@ -290,16 +290,31 @@ namespace KailashEngine
             centerMouse();
 
 
+            // Create Engine Objects
+            _render_driver = new RenderDriver(
+                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base),
+                _game.display.resolution
+            );
+
+
             _game.load();
 
-            _render_driver.load(_game);
+            _render_driver.load();
 
 
 
+            ////Create a uniform buffer
+            //GL.GenBuffers(1, out UBO_TEST);
+            //GL.BindBuffer(BufferTarget.UniformBuffer, UBO_TEST);
+            //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(sizeof(float) * 32), (IntPtr)null, BufferUsageHint.StreamDraw);
+            //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
+            ////Bind uniform buffer to binding index since the block location is set and ubo is created
+            //GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, UBO_TEST);
+
+            test = new UBO(4 * 32 + 4 * 4, BufferUsageHint.StreamDraw, 0);
 
             
-
 
             //_game.config.path_base + "Output/test1.ogg"
             //SoundSystem sound_system = new SoundSystem();
@@ -325,10 +340,13 @@ namespace KailashEngine
             //Console.WriteLine(_game.player.character.spatial.look);
             //Console.WriteLine(_game.player.character.spatial.up);
 
-            _render_driver.render(_game);
 
+            test.updateComponent(0, _game.player.character.spatial.view);
+            test.updateComponent((int)EngineHelper.size_of.mat4, _game.player.character.spatial.perspective);
+            test.updateComponent((int)EngineHelper.size_of.mat4 * 2, new Vector4(0.0f, 1.0f, 0.5f, 1.0f));
+            
 
-
+            _render_driver.render(_game.scene);
 
 
 

@@ -37,7 +37,7 @@ namespace KailashEngine.Render
                 shader_pipeline[i].filename = _path_glsl_base + temp_filename;
             }
 
-            return new Program(_glsl_version, shader_pipeline);
+            return new Program(glsl_version, shader_pipeline);
         }
 
     }

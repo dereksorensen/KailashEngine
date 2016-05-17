@@ -58,7 +58,7 @@ namespace KailashEngine.World
         }
 
         //private Matrix4 _matrix;
-        public Matrix4 matrix
+        public Matrix4 view
         {
             get
             {

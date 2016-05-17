@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using KailashEngine.Client;
+using KailashEngine.Output;
 
 namespace KailashEngine.Render.FX
 {
@@ -14,11 +15,16 @@ namespace KailashEngine.Render.FX
         protected ProgramLoader _pLoader;
         protected string _path_glsl_effect;
 
+        protected Resolution _resolution_full;
 
-        public RenderEffect(ProgramLoader pLoader, string glsl_effect_path)
+
+        public RenderEffect(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
         {
             _pLoader = pLoader;
             _path_glsl_effect = glsl_effect_path;
+            _resolution_full = full_resolution;
+
+            load_Programs();
         }
 
         protected abstract void load_Programs();
@@ -27,6 +33,6 @@ namespace KailashEngine.Render.FX
 
         public abstract void unload();
 
-
+        public abstract void reload();
     }
 }

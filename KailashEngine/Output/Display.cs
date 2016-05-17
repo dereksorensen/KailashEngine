@@ -12,27 +12,6 @@ namespace KailashEngine.Output
     class Display
     {
 
-        public struct Resolution
-        {
-            public int W;
-            public int H;
-            public Vector2 vSize;
-            public float aspect
-            {
-                get
-                {
-                    return (float)W / (float)H;
-                }
-            }
-
-            public Resolution(int width, int height)
-            {
-                W = width;
-                H = height;
-                vSize = new Vector2(width, height);
-            }
-        }
-
         protected string _title;
         public string title
         {

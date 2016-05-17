@@ -52,7 +52,7 @@ namespace KailashEngine
                 string version = GL.GetString(StringName.Version);
                 if (version.Substring(0, 3) == game.config.gl_version_string)
                 {
-                    Console.WriteLine(version);
+                    Console.WriteLine(version + "\n");
                     KailashEngine.Run(game.config.fps_target);
                 }
                 else

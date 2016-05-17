@@ -9,6 +9,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Client;
+using KailashEngine.Output;
 using KailashEngine.Render.FX;
 
 namespace KailashEngine.Render
@@ -16,20 +17,23 @@ namespace KailashEngine.Render
     class RenderDriver
     {
 
-        private Game _game;
-
         private ProgramLoader _pLoader;
+
+        private Resolution _resolution;
 
         private fx_gBuffer _gBuffer;
 
 
         public RenderDriver(
-            int glsl_version,
-            string glsl_base_path)
+            ProgramLoader pLoader,
+            Resolution resolution)
         {
-            _pLoader = new ProgramLoader(glsl_version, glsl_base_path);
+            _pLoader = pLoader;
+            _resolution = resolution;
 
-            _gBuffer = new fx_gBuffer(_pLoader, "gBuffer");
+            // Render FXs
+            _gBuffer = new fx_gBuffer(_pLoader, "gBuffer", _resolution);
+
 
         }
 
@@ -59,10 +63,13 @@ namespace KailashEngine.Render
             _gBuffer.load();
         }
 
-        public void load(Game game)
+        private void unload_FX()
         {
-            _game = game;
 
+        }
+
+        public void load()
+        {
             load_DefaultGL();
             load_FX();
         }
@@ -70,13 +77,19 @@ namespace KailashEngine.Render
         public void unload()
         {
 
+            unload_FX();
 
         }
 
 
-        public void render(Game game)
+        //------------------------------------------------------
+        // Rendering
+        //------------------------------------------------------
+
+
+        public void render(Scene scene)
         {
-            _gBuffer.render(game);
+            _gBuffer.render(scene);
         }
 
 

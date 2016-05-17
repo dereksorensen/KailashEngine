@@ -12,6 +12,19 @@ namespace KailashEngine
     {
 
         //------------------------------------------------------
+        // Constants
+        //------------------------------------------------------
+        public enum size_of : int
+        {
+            vec2 = sizeof(float) * 2,
+            vec3 = sizeof(float) * 3,
+            vec4 = sizeof(float) * 4,
+            mat2 = sizeof(float) * 4,
+            mat3 = sizeof(float) * 9,
+            mat4 = sizeof(float) * 16,
+        }
+
+        //------------------------------------------------------
         // Interpolation functions
         //------------------------------------------------------
 
@@ -33,5 +46,8 @@ namespace KailashEngine
             src0 = Math.Max(src0, 0.000001f);
             return (float)(Math.Pow(src1 / src0, t) * src0);
         }
+
+
+
     }
 }
