@@ -14,7 +14,7 @@ namespace KailashEngine
         //------------------------------------------------------
         // Constants
         //------------------------------------------------------
-        public enum size_of : int
+        public enum size : int
         {
             vec2 = sizeof(float) * 2,
             vec3 = sizeof(float) * 3,

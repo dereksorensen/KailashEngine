@@ -25,8 +25,6 @@ namespace KailashEngine
 
         private RenderDriver _render_driver;
 
-        private int UBO_TEST;
-        UBO test;
         
         private Sound _sound_cow;
         private Sound _sound_goat;
@@ -297,24 +295,12 @@ namespace KailashEngine
             );
 
 
+            // Load Objects
             _game.load();
-
             _render_driver.load();
 
 
-
-            ////Create a uniform buffer
-            //GL.GenBuffers(1, out UBO_TEST);
-            //GL.BindBuffer(BufferTarget.UniformBuffer, UBO_TEST);
-            //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(sizeof(float) * 32), (IntPtr)null, BufferUsageHint.StreamDraw);
-            //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-            ////Bind uniform buffer to binding index since the block location is set and ubo is created
-            //GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, UBO_TEST);
-
-            test = new UBO(4 * 32 + 4 * 4, BufferUsageHint.StreamDraw, 0);
-
-            
+ 
 
             //_game.config.path_base + "Output/test1.ogg"
             //SoundSystem sound_system = new SoundSystem();
@@ -323,35 +309,33 @@ namespace KailashEngine
             _sound_cow.IsRelativeToListener = false;
             _sound_goat = new Sound(_game.config.path_base + "Output/test1.ogg");
 
-                
+            
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // this is called every frame, put game logic here
+            inputBuffer();
+            _render_driver.updateUBO_Camera(_game.player.camera.spatial.view, _game.player.camera.spatial.perspective);
+
 
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            inputBuffer();
-
+            
             //Console.WriteLine(_game.player.character.spatial.position);
             //Console.WriteLine(_game.player.character.spatial.look);
             //Console.WriteLine(_game.player.character.spatial.up);
 
 
-            test.updateComponent(0, _game.player.character.spatial.view);
-            test.updateComponent((int)EngineHelper.size_of.mat4, _game.player.character.spatial.perspective);
-            test.updateComponent((int)EngineHelper.size_of.mat4 * 2, new Vector4(0.0f, 1.0f, 0.5f, 1.0f));
-            
 
             _render_driver.render(_game.scene);
 
 
 
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
-  
+            
             SwapBuffers();
             Debug.DebugHelper.logGLError();
         }

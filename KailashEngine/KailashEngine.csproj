@@ -443,13 +443,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\FX\fx_gBuffer.cs" />
     <Compile Include="Render\FX\RenderEffect.cs" />
+    <Compile Include="Render\MatrixStack.cs" />
     <Compile Include="Render\Program.cs" />
     <Compile Include="Render\ProgramLoader.cs" />
     <Compile Include="Render\RenderDriver.cs" />
     <Compile Include="Render\RenderHelper.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\UBO.cs" />
-    <Compile Include="Render\UBOManager.cs" />
     <Compile Include="World\Model\DAE_Material.cs" />
     <Compile Include="World\Model\ModelLoader.cs" />
     <Compile Include="World\Model\Material.cs" />

@@ -11,7 +11,6 @@ layout(std140, binding = 0) uniform cameraMatrices
 {
 	mat4 view;
 	mat4 perspective;
-	vec4 color;
 };
 
 out vec4 v_color;
@@ -24,6 +23,6 @@ void main()
 
 	gl_Position = clipPosition;
 
-	v_color = color;
+	v_color = vec4(0.9,0.3,0.4,1.0);
 
 }

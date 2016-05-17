@@ -21,6 +21,10 @@ namespace KailashEngine.Render
 
         private Resolution _resolution;
 
+        // Render UBOs
+        private UBO _ubo_camera;
+
+        // Render FXs
         private fx_gBuffer _gBuffer;
 
 
@@ -30,6 +34,13 @@ namespace KailashEngine.Render
         {
             _pLoader = pLoader;
             _resolution = resolution;
+
+            // Render UBOs
+            _ubo_camera = new UBO(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4
+            });
+
 
             // Render FXs
             _gBuffer = new fx_gBuffer(_pLoader, "gBuffer", _resolution);
@@ -79,6 +90,16 @@ namespace KailashEngine.Render
 
             unload_FX();
 
+        }
+
+        //------------------------------------------------------
+        // Updating
+        //------------------------------------------------------
+
+        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective)
+        {
+            _ubo_camera.update(0, view);
+            _ubo_camera.update(1, perspective);
         }
 
 

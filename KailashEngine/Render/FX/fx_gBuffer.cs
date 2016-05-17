@@ -50,7 +50,6 @@ namespace KailashEngine.Render.FX
 
         public void render(Scene scene)
         {
-
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
