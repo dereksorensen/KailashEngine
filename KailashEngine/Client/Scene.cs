@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
+using KailashEngine.Render;
 using KailashEngine.World;
 
 namespace KailashEngine.Client
@@ -14,16 +14,17 @@ namespace KailashEngine.Client
 
         private string _path_mesh;
 
+        private MatrixStack _MS;
 
         // Scene Objects
         private WorldLoader _box;
-
+        
 
 
         public Scene(string path_mesh)
         {
             _path_mesh = path_mesh;
-
+            _MS = new MatrixStack();
         }
 
         private WorldLoader loadHelper(string filename)
@@ -48,7 +49,7 @@ namespace KailashEngine.Client
 
         public void render()
         {
-            _box.draw();
+            _box.draw(_MS);
         }
 
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 
+using KailashEngine.Render;
 using KailashEngine.World.Model;
 
 namespace KailashEngine.World
@@ -37,7 +38,7 @@ namespace KailashEngine.World
 
 
 
-        public void draw()
+        public void draw(MatrixStack MS)
         {
             foreach (Mesh mesh in _meshes.Values)
             {
