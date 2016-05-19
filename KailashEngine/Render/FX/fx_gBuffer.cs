@@ -31,6 +31,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "/test.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "/test.frag", null)
             });
+            pTest.addUniform("model");
         }
 
         public override void load()
@@ -55,7 +56,7 @@ namespace KailashEngine.Render.FX
             GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
 
             GL.UseProgram(pTest.pID);
-            scene.render();
+            scene.render(pTest);
         }
     }
 }

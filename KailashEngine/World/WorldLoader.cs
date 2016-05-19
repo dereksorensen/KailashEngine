@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Render;
@@ -38,7 +39,7 @@ namespace KailashEngine.World
 
 
 
-        public void draw(MatrixStack MS)
+        public void draw(MatrixStack MS, Program program)
         {
             foreach (Mesh mesh in _meshes.Values)
             {
@@ -51,6 +52,9 @@ namespace KailashEngine.World
                     //    Console.WriteLine(v.position);
                     //}
 
+
+                    Matrix4 temp_mat = mesh.pre_transformation;
+                    GL.UniformMatrix4(program.uniforms["model"], false, ref temp_mat);
 
                     try
                     {

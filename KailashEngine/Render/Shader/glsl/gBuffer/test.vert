@@ -13,13 +13,15 @@ layout(std140, binding = 0) uniform cameraMatrices
 	mat4 perspective;
 };
 
+uniform mat4 model;
+
 out vec4 v_color;
 
 void main()
 {
 
 	vec4 objectPosition = vec4(position, 1.0);
-	vec4 clipPosition = perspective * (view * objectPosition);
+	vec4 clipPosition = perspective * (view * (model * objectPosition));
 
 	gl_Position = clipPosition;
 

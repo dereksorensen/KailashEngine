@@ -33,6 +33,14 @@ namespace KailashEngine.World.Model
             set { _id = value; }
         }
 
+        protected Matrix4 _pre_transformation;
+        public Matrix4 pre_transformation
+        {
+            get { return _pre_transformation; }
+            set { _pre_transformation = value; }
+        }
+
+
         // Mesh can contain submeshes with their own materials
         protected int _submesh_count;
         public int submesh_count
@@ -127,6 +135,7 @@ namespace KailashEngine.World.Model
         public Mesh(string id)
         {
             _id = id;
+            _pre_transformation = Matrix4.Identity;
         }
 
         public void setBufferIDs(int[] buffers)

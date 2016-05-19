@@ -47,9 +47,9 @@ namespace KailashEngine.Client
         }
 
 
-        public void render()
+        public void render(Program program)
         {
-            _box.draw(_MS);
+            _box.draw(_MS, program);
         }
 
     }

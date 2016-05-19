@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using grendgine_collada;
@@ -33,14 +34,15 @@ namespace KailashEngine.World.Model
 
             Dictionary<string, Mesh> mesh_dictionary = new Dictionary<string, Mesh>();
 
+            // Change Blender mesh's to y axis up
+            Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
+
             //------------------------------------------------------
             // Create Image Dictionary
             //------------------------------------------------------
             Debug.DebugHelper.logInfo(2, "\tCreating Image Dictionary", "");
             Dictionary<string, string> image_collection = new Dictionary<string, string>();
-
-            Grendgine_Collada_Library_Images images = dae_file.Library_Images;
-            foreach (Grendgine_Collada_Image i in images.Image)
+            foreach (Grendgine_Collada_Image i in dae_file.Library_Images.Image)
             {
                 string id = i.ID;
                 string path = i.Init_From.ToString();
@@ -61,6 +63,18 @@ namespace KailashEngine.World.Model
                 temp_material.load(e, image_collection);
 
                 material_collection.Add(temp_material.id, temp_material);
+            }
+
+            //------------------------------------------------------
+            // Create Visual Scene Dictionary
+            //------------------------------------------------------
+            Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", "");
+            Dictionary<string, Grendgine_Collada_Node> scene_collection = new Dictionary<string, Grendgine_Collada_Node>();
+            foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
+            {
+                string id = n.ID;
+
+                scene_collection.Add(id, n);
             }
 
             //------------------------------------------------------
@@ -87,10 +101,34 @@ namespace KailashEngine.World.Model
                     mesh.setBufferIDs(initVAO(mesh));
                 }
 
+                // Load mesh's transformation
+                Grendgine_Collada_Node node_match;
+                string node_match_string = g.Name.Replace('.', '_');
+                if (scene_collection.TryGetValue(node_match_string, out node_match))
+                {
+                    float[] m_array = node_match.Matrix[0].Value();
+
+                    Matrix4 temp_mat = Matrix4.Identity;
+                    temp_mat = new Matrix4(
+                        m_array[0], m_array[4], m_array[8], m_array[12],
+                        m_array[1], m_array[5], m_array[9], m_array[13],
+                        m_array[2], m_array[6], m_array[10], m_array[14],
+                        m_array[3], m_array[7], m_array[11], m_array[15]
+                                        );
+                    temp_mat = temp_mat * yup;
+
+                    temp_mesh.pre_transformation = temp_mat;
+                }
+
                 // Add to mesh collection
                 mesh_dictionary.Add(temp_mesh.id, temp_mesh);
                 
             }
+
+            // Clear dictionaries. dat mesh is loooaded
+            image_collection.Clear();
+            material_collection.Clear();
+            scene_collection.Clear();
 
             return mesh_dictionary;
         }
