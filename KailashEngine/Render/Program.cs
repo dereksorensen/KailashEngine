@@ -31,7 +31,6 @@ namespace KailashEngine.Render
         public Dictionary<string, int> uniforms
         {
             get { return _uniforms; }
-            set { _uniforms = value; }
         }
 
         public Program(int glsl_version, ShaderFile[] shader_pipeline)
@@ -49,13 +48,60 @@ namespace KailashEngine.Render
             }
         }
 
-        // Creates and fills the uniforms dictionary
+
+        //------------------------------------------------------
+        // Program Templating
+        //------------------------------------------------------
+
+        // Setup program to load meshes
+        public void enable_MeshLoading()
+        {
+            addUniform("model");
+        }
+
+        // Setup sampler uniforms for textures
+        public void enable_Samplers(int num_samplers)
+        {
+            string sampler_base = "sampler";
+            for (int i = 0; i < num_samplers; i ++)
+            {
+                addUniform(sampler_base + i);
+            }
+        }
+
+
+        //------------------------------------------------------
+        // Program Helpers
+        //------------------------------------------------------
+
+        // Add uniform to the uniforms dictionary
         public void addUniform(string uniform_name)
         {
             int temp = GL.GetUniformLocation(_pID, uniform_name);
-            uniforms.Add(uniform_name, temp);
+            _uniforms.Add(uniform_name, temp);
         }
 
+        // Retrieve uniform from the uniforms dictionary if it exists
+        public int getUniform(string uniform_name)
+        {
+            int temp_model_uniform = -1;
+            if (_uniforms.TryGetValue("model", out temp_model_uniform))
+            {
+                return temp_model_uniform;
+            }
+            else
+            {
+                Debug.DebugHelper.logError("Mising Uniform: ", "\"" + uniform_name + "\"");
+                return -1;
+            }
+        }
+
+
+        //------------------------------------------------------
+        // Program Creation
+        //------------------------------------------------------
+
+        // Loads the shader pipepine into a program
         private void createProgram(ShaderFile[] shaders)
         {
             _pID = GL.CreateProgram();

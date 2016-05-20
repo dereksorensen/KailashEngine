@@ -9,5 +9,13 @@ namespace KailashEngine.Render
     static class RenderHelper
     {
 
+
+        //------------------------------------------------------
+        // Image Loading
+        //------------------------------------------------------
+
+
+
+
     }
 }

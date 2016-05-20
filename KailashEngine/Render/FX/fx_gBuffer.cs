@@ -31,7 +31,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "/test.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "/test.frag", null)
             });
-            pTest.addUniform("model");
+            pTest.enable_MeshLoading();
         }
 
         public override void load()

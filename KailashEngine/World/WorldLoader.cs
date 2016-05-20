@@ -38,23 +38,25 @@ namespace KailashEngine.World
         }
 
 
+        private void setMeshUniform(string uniform_name)
+        {
+
+        }
+
 
         public void draw(MatrixStack MS, Program program)
         {
             foreach (Mesh mesh in _meshes.Values)
             {
+                // Load Mesh's pre-transformation Matrix
+                Matrix4 temp_mat = mesh.pre_transformation;
+                GL.UniformMatrix4(program.getUniform("model"), false, ref temp_mat);
+
+
                 foreach (Mesh submesh in mesh.submeshes)
                 {
 
-
-                    //foreach(Mesh.Vertex v in submesh.vertex_data)
-                    //{
-                    //    Console.WriteLine(v.position);
-                    //}
-
-
-                    Matrix4 temp_mat = mesh.pre_transformation;
-                    GL.UniformMatrix4(program.uniforms["model"], false, ref temp_mat);
+                    
 
                     try
                     {
