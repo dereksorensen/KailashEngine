@@ -9,6 +9,7 @@ using OpenTK;
 
 using grendgine_collada;
 
+
 namespace KailashEngine.World.Model
 {
     class DAE_Polylist : Mesh
@@ -144,7 +145,24 @@ namespace KailashEngine.World.Model
             //------------------------------------------------------
             // Load Material
             //------------------------------------------------------
-
+            try
+            {
+                string effect_id = polylist.Material.Replace("-material", "-effect");
+                DAE_Material material;
+                if (material_collection.TryGetValue(effect_id, out material))
+                {                  
+                    _material = material;
+                }
+                else
+                {
+                    _material = new DAE_Material("empty");
+                }
+            }
+            catch (Exception)
+            {
+                // If this polylist doesn't have a material, load an empty one
+                _material = new DAE_Material("empty");
+            }
 
         }
 
