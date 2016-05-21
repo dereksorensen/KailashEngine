@@ -150,11 +150,12 @@ namespace KailashEngine.World.Model
                 string effect_id = polylist.Material.Replace("-material", "-effect");
                 DAE_Material material;
                 if (material_collection.TryGetValue(effect_id, out material))
-                {                  
+                {
                     _material = material;
                 }
                 else
                 {
+                    
                     _material = new DAE_Material("empty");
                 }
             }

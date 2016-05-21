@@ -56,16 +56,28 @@ namespace KailashEngine.Render
         // Setup program to load meshes
         public void enable_MeshLoading()
         {
-            addUniform("model");
+            addUniform(RenderHelper.uModel);
+            addUniform(RenderHelper.uModel_Normal);
+
+            addUniform(RenderHelper.uDiffuseColor);
+            addUniform(RenderHelper.uDiffuseTexture);
+            addUniform(RenderHelper.uEmission);
+
+            addUniform(RenderHelper.uSpecularColor);
+            addUniform(RenderHelper.uSpecularShininess);
+            addUniform(RenderHelper.uSpecularTexture);
+
+            addUniform(RenderHelper.uDispacementTexture);
+
+            addUniform(RenderHelper.uParallaxTexture);
         }
 
         // Setup sampler uniforms for textures
         public void enable_Samplers(int num_samplers)
         {
-            string sampler_base = "sampler";
             for (int i = 0; i < num_samplers; i ++)
             {
-                addUniform(sampler_base + i);
+                addUniform(RenderHelper.uSamplerBase + i);
             }
         }
 
@@ -85,7 +97,7 @@ namespace KailashEngine.Render
         public int getUniform(string uniform_name)
         {
             int temp_model_uniform = -1;
-            if (_uniforms.TryGetValue("model", out temp_model_uniform))
+            if (_uniforms.TryGetValue(uniform_name, out temp_model_uniform))
             {
                 return temp_model_uniform;
             }

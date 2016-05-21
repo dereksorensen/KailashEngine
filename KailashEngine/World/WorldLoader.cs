@@ -50,13 +50,19 @@ namespace KailashEngine.World
             {
                 // Load Mesh's pre-transformation Matrix
                 Matrix4 temp_mat = mesh.pre_transformation;
-                GL.UniformMatrix4(program.getUniform("model"), false, ref temp_mat);
+                GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
 
 
                 foreach (Mesh submesh in mesh.submeshes)
                 {
 
-                    
+                    GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
+
+                    GL.ActiveTexture(TextureUnit.Texture0 + submesh.material.diffuse_texture_id);
+                    GL.BindTexture(TextureTarget.Texture2D, submesh.material.diffuse_texture_id);
+                    GL.Uniform1(program.getUniform(RenderHelper.uDiffuseTexture), submesh.material.diffuse_texture_id);
+
+                    //Console.WriteLine(submesh.material.id);
 
                     try
                     {

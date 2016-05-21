@@ -58,7 +58,20 @@ namespace KailashEngine.World.Model
         // Texture Properties
         //------------------------------------------------------
 
-        
+        protected int _diffuse_texture_id;
+        public int diffuse_texture_id
+        {
+            get { return _diffuse_texture_id; }
+            set { _diffuse_texture_id = value; }
+        }
+
+        protected string _diffuse_texture_filename;
+        public string diffuse_texture_filename
+        {
+            get { return _diffuse_texture_filename; }
+            set { _diffuse_texture_filename = value; }
+        }
+
 
 
         public Material(string id)

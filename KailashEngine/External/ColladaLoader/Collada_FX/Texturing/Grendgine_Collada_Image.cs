@@ -25,7 +25,7 @@ namespace grendgine_collada
 		public Grendgine_Collada_Renderable_Share Renderable_Share;			
 		
 	    [XmlElement(ElementName = "init_from")]
-		public Grendgine_Collada_Init_From Init_From;			
+		public string Init_From;			
 		
 	    [XmlElement(ElementName = "create_2d")]
 		public Grendgine_Collada_Create_2D Create_2D;			

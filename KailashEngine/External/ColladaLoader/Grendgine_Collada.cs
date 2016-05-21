@@ -107,7 +107,7 @@ namespace grendgine_collada
                 col_scenes = (Grendgine_Collada)(sr.Deserialize(tr));
 				
                 tr.Close();
-                
+
 				return col_scenes;
             }
             catch (Exception ex)

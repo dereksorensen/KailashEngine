@@ -3,6 +3,7 @@
 
 ## KaillashEngine Ignores
 KailashEngine/Resources/Textures
+KailashEngine/Resources/Blender/_working
 
 # User-specific files
 *.suo

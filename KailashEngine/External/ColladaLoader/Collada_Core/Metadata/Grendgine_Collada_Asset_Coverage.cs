@@ -10,6 +10,7 @@ namespace grendgine_collada
 	{
 	    [XmlElement(ElementName = "geographic_location")]
 		Grendgine_Collada_Geographic_Location Geographic_Location;
+        
 	}
 }
 

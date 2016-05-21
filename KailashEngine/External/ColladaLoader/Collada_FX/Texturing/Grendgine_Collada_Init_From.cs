@@ -29,7 +29,7 @@ namespace grendgine_collada
 		public string Ref;			
 		
 	    [XmlElement(ElementName = "hex")]
-		public Grendgine_Collada_Hex Hex;			
+		public Grendgine_Collada_Hex Hex; 
 	}
 }
 

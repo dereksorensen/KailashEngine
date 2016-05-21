@@ -18,8 +18,8 @@ namespace grendgine_collada
 		public string xmlns;
 
 		[XmlAnyElement]
-		public XmlElement[] Data;	
-
+		public XmlElement[] Data;
+        
 	}
 }
 

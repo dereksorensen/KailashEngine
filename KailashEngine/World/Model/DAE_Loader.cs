@@ -39,30 +39,46 @@ namespace KailashEngine.World.Model
 
             //------------------------------------------------------
             // Create Image Dictionary
-            //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tCreating Image Dictionary", "");
+            //------------------------------------------------------           
             Dictionary<string, string> image_collection = new Dictionary<string, string>();
-            foreach (Grendgine_Collada_Image i in dae_file.Library_Images.Image)
+            try
             {
-                string id = i.ID;
-                string path = i.Init_From.ToString();
+                Debug.DebugHelper.logInfo(2, "\tCreating Image Dictionary", dae_file.Library_Images.Image.Count() + " images found");
+                foreach (Grendgine_Collada_Image i in dae_file.Library_Images.Image)
+                {
+                    string id = i.ID;
+                    string path = i.Init_From;
 
-                image_collection.Add(id, path.Substring(1, path.Length - 1));
+                    image_collection.Add(id, path.Substring(1, path.Length - 1));
+                }
             }
+            catch
+            {
+                Debug.DebugHelper.logInfo(2, "\tCreating Image Dictionary", "0 images found :<");
+            }
+
 
             //------------------------------------------------------
             // Create Material Dictionary
             //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tCreating Material Dictionary", "");
+            
             Dictionary<string, DAE_Material> material_collection = new Dictionary<string, DAE_Material>();
-            foreach (Grendgine_Collada_Effect e in dae_file.Library_Effects.Effect)
+            try
             {
-                string id = e.ID;
+                Debug.DebugHelper.logInfo(2, "\tCreating Material Dictionary", dae_file.Library_Effects.Effect.Count() + " effects found");
+                foreach (Grendgine_Collada_Effect e in dae_file.Library_Effects.Effect)
+                {
+                    string id = e.ID;
 
-                DAE_Material temp_material = new DAE_Material(id);
-                temp_material.load(e, image_collection);
+                    DAE_Material temp_material = new DAE_Material(id);
+                    temp_material.load(e, image_collection);
 
-                material_collection.Add(temp_material.id, temp_material);
+                    material_collection.Add(temp_material.id, temp_material);
+                }
+            }
+            catch
+            {
+                Debug.DebugHelper.logInfo(2, "\tCreating Material Dictionary", "0 effects found :<");
             }
 
             //------------------------------------------------------
