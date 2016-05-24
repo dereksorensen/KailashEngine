@@ -39,7 +39,7 @@ namespace KailashEngine.World.Model
 
                 if (image_collection.TryGetValue(diffuse_texture_id, out filename))
                 {                 
-                    _diffuse_image = new Image(filename);
+                    _diffuse_image = new Image(filename, true);
                     _diffuse_image.load();
                     _diffuse_color = new Vector3(0.0f);
                 }

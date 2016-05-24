@@ -28,7 +28,7 @@ namespace KailashEngine.Render.Objects
         }
 
 
-        public Image(string filename)
+        public Image(string filename, bool use_srgb)
         {
 
             _filename = filename.Replace("%20", " ");
@@ -86,6 +86,8 @@ namespace KailashEngine.Render.Objects
 
                 }
 
+                if (use_srgb) pif = PixelInternalFormat.Srgb;
+
                 // Load new texture
                 _texture = new Texture(
                     TextureTarget.Texture2D,
@@ -109,6 +111,11 @@ namespace KailashEngine.Render.Objects
             // Dispose of bitmap in System memory
             _bitmap.UnlockBits(_bitmap_data);
             _bitmap.Dispose();
+        }
+
+        public void bind(int texture_uniform, int index)
+        {
+            _texture.bind(texture_uniform, index);
         }
 
     }

@@ -21,16 +21,22 @@ namespace KailashEngine.Render
         public static readonly string uModel = "model";
         public static readonly string uModel_Normal = "model_normal";
 
-        public static readonly string uDiffuseColor = "diffuse_color";
         public static readonly string uDiffuseTexture = "diffuse_texture";
+        public static readonly string uDiffuseColor = "diffuse_color";
         public static readonly string uEmission = "emission_strength";
 
+        public static readonly string uEnableSpecular = "enable_specular_texture";
+        public static readonly string uSpecularTexture = "specular_texture";
         public static readonly string uSpecularColor = "specular_color";
         public static readonly string uSpecularShininess = "specular_shininess";
-        public static readonly string uSpecularTexture = "specular_texture";
 
-        public static readonly string uDispacementTexture = "displacement_texture";
+        public static readonly string uEnableNormal = "enable_normal_texture";
+        public static readonly string uNormalTexture = "normal_texture";
 
+        public static readonly string uEnableDisplacement = "enable_displacement_texture";
+        public static readonly string uDisplacementTexture = "displacement_texture";
+
+        public static readonly string uEnableParallax = "enable_parallax_texture";
         public static readonly string uParallaxTexture = "parallax_texture";
 
 

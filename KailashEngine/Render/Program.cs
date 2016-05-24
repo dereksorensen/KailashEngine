@@ -67,7 +67,9 @@ namespace KailashEngine.Render
             addUniform(RenderHelper.uSpecularShininess);
             addUniform(RenderHelper.uSpecularTexture);
 
-            addUniform(RenderHelper.uDispacementTexture);
+            addUniform(RenderHelper.uNormalTexture);
+
+            addUniform(RenderHelper.uDisplacementTexture);
 
             addUniform(RenderHelper.uParallaxTexture);
         }

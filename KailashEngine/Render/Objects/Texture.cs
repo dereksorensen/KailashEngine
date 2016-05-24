@@ -233,7 +233,7 @@ namespace KailashEngine.Render.Objects
             }
         }
 
-        public void bind(int index, int texture_uniform)
+        public void bind(int texture_uniform, int index)
         {
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             GL.BindTexture(_target, _id);

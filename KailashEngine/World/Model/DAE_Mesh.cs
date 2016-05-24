@@ -67,7 +67,7 @@ namespace KailashEngine.World.Model
                     }
                     else if (s.ID.Contains("map"))
                     {
-                        temp_uv.Add(new Vector2(temp_array[i], temp_array[i + 1]));
+                        temp_uv.Add(new Vector2(temp_array[i], 1.0f - temp_array[i + 1]));
                     }
                 }
             }
