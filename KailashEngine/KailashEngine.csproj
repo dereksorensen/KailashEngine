@@ -444,12 +444,14 @@
     <Compile Include="Render\FX\fx_gBuffer.cs" />
     <Compile Include="Render\FX\RenderEffect.cs" />
     <Compile Include="Render\MatrixStack.cs" />
+    <Compile Include="Render\Objects\Image.cs" />
+    <Compile Include="Render\Objects\Texture.cs" />
     <Compile Include="Render\Program.cs" />
     <Compile Include="Render\ProgramLoader.cs" />
     <Compile Include="Render\RenderDriver.cs" />
     <Compile Include="Render\RenderHelper.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
-    <Compile Include="Render\UBO.cs" />
+    <Compile Include="Render\Objects\UBO.cs" />
     <Compile Include="World\Model\DAE_Material.cs" />
     <Compile Include="World\Model\ModelLoader.cs" />
     <Compile Include="World\Model\Material.cs" />
@@ -468,6 +470,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Render\Shader\glsl\gBuffer\test.frag" />

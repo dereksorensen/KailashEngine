@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 
 
-namespace KailashEngine.Render
+namespace KailashEngine.Render.Objects
 {
     class UBO
     {

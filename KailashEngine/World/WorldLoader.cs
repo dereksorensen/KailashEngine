@@ -58,11 +58,16 @@ namespace KailashEngine.World
 
                     GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
 
-                    GL.ActiveTexture(TextureUnit.Texture0 + submesh.material.diffuse_texture_id);
-                    GL.BindTexture(TextureTarget.Texture2D, submesh.material.diffuse_texture_id);
-                    GL.Uniform1(program.getUniform(RenderHelper.uDiffuseTexture), submesh.material.diffuse_texture_id);
 
-                    //Console.WriteLine(submesh.material.id);
+                    try
+                    {   
+                        submesh.material.diffuse_image.texture.bind(0, program.getUniform(RenderHelper.uDiffuseTexture));
+                    }
+                    catch
+                    {
+                        GL.BindTexture(TextureTarget.Texture2D, 0);
+                    }
+
 
                     try
                     {

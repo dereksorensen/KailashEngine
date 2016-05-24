@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Client;
 using KailashEngine.Output;
+using KailashEngine.Render.Objects;
 using KailashEngine.Render.FX;
 
 namespace KailashEngine.Render

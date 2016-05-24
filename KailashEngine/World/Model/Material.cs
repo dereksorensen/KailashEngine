@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
+using KailashEngine.Render.Objects;
+
 namespace KailashEngine.World.Model
 {
     class Material
@@ -58,26 +60,18 @@ namespace KailashEngine.World.Model
         // Texture Properties
         //------------------------------------------------------
 
-        protected int _diffuse_texture_id;
-        public int diffuse_texture_id
+        protected Image _diffuse_image;
+        public Image diffuse_image
         {
-            get { return _diffuse_texture_id; }
-            set { _diffuse_texture_id = value; }
+            get { return _diffuse_image; }
+            set { _diffuse_image = value; }
         }
-
-        protected string _diffuse_texture_filename;
-        public string diffuse_texture_filename
-        {
-            get { return _diffuse_texture_filename; }
-            set { _diffuse_texture_filename = value; }
-        }
-
 
 
         public Material(string id)
         {
             _id = id;
-
+            
             // Set Default Material Properties
             _diffuse_color = new Vector3(0.5f, 0.5f, 0.5f);
             _emission = 0.0f;
