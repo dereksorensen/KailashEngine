@@ -55,7 +55,7 @@ namespace KailashEngine.Render.FX
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
 
-            GL.UseProgram(pTest.pID);
+            pTest.bind();
             scene.render(pTest);
         }
     }

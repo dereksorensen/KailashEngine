@@ -116,6 +116,12 @@ namespace KailashEngine.World.Model
             _specular_color = new Vector3(1.0f, 1.0f, 1.0f);
             _specular_shininess = 50.0f;
             _displacement_strength = 1.0f;
+
+            _diffuse_image = null;
+            _specular_image = null;
+            _normal_image = null;
+            _displacement_image = null;
+            _parallax_image = null;
         }
     }
 }

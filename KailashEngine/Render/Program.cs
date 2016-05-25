@@ -65,18 +65,23 @@ namespace KailashEngine.Render
             addUniform(RenderHelper.uModel);
             addUniform(RenderHelper.uModel_Normal);
 
-            addUniform(RenderHelper.uDiffuseColor);
             addUniform(RenderHelper.uDiffuseTexture);
+            addUniform(RenderHelper.uDiffuseColor);   
             addUniform(RenderHelper.uEmission);
 
+            addUniform(RenderHelper.uEnableSpecularTexture);
+            addUniform(RenderHelper.uSpecularTexture);
             addUniform(RenderHelper.uSpecularColor);
             addUniform(RenderHelper.uSpecularShininess);
-            addUniform(RenderHelper.uSpecularTexture);
-
+            
+            addUniform(RenderHelper.uEnableNormalTexture);
             addUniform(RenderHelper.uNormalTexture);
 
+            addUniform(RenderHelper.uEnableDisplacementTexture);
             addUniform(RenderHelper.uDisplacementTexture);
+            addUniform(RenderHelper.uDisplacementStrength);
 
+            addUniform(RenderHelper.uEnableParallaxTexture);
             addUniform(RenderHelper.uParallaxTexture);
         }
 
@@ -93,6 +98,12 @@ namespace KailashEngine.Render
         //------------------------------------------------------
         // Program Helpers
         //------------------------------------------------------
+
+        public void bind()
+        {
+            GL.UseProgram(_pID);
+        }
+
 
         // Add uniform to the uniforms dictionary
         public void addUniform(string uniform_name)
@@ -114,6 +125,7 @@ namespace KailashEngine.Render
                 Debug.DebugHelper.logError("Mising Uniform: ", "\"" + uniform_name + "\"");
                 return -1;
             }
+            //return _uniforms[uniform_name];
         }
 
 

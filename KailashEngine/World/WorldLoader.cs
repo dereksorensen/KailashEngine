@@ -38,14 +38,14 @@ namespace KailashEngine.World
         }
 
 
-        private void trySetMatrialImage(Render.Objects.Image image, Program program, string uTexture, string uEnableTexture)
+        private void trySetMatrialImage(Program program, Render.Objects.Image image, string uTexture, string uEnableTexture, int index)
         {
-            try
+            if(image != null)
             {
-                image.bind(program.getUniform(uTexture), 0);
+                image.bind(program.getUniform(uTexture), index);
                 program.enable_MaterialTexture(uEnableTexture, 1);
             }
-            catch
+            else
             {
                 program.enable_MaterialTexture(uEnableTexture, 0);
             }
@@ -73,27 +73,21 @@ namespace KailashEngine.World
                     GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), submesh.material.specular_shininess);
                     GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
 
-                    // Diffuse 
-                    try
-                    {
-                        submesh.material.diffuse_image.bind(program.getUniform(RenderHelper.uDiffuseTexture), 0);
-                    }
-                    catch
-                    {
 
-                    }
+                    // Diffuse 
+                    if (submesh.material.diffuse_image != null) submesh.material.diffuse_image.bind(program.getUniform(RenderHelper.uDiffuseTexture), 31);
 
                     // Specular
-                    trySetMatrialImage(submesh.material.specular_image, program, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture);
+                    trySetMatrialImage(program, submesh.material.specular_image, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
 
                     // Normal
-                    trySetMatrialImage(submesh.material.normal_image, program, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture);
+                    trySetMatrialImage(program, submesh.material.normal_image, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture, 29);
 
                     // Displacement
-                    trySetMatrialImage(submesh.material.displacement_image, program, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture);
+                    trySetMatrialImage(program, submesh.material.displacement_image, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture, 28);
 
                     // Parallax
-                    trySetMatrialImage(submesh.material.parallax_image, program, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture);
+                    trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
 
 
                     try

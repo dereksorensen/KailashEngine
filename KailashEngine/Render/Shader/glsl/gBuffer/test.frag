@@ -9,6 +9,20 @@ in vec2 v_TexCoord;
 uniform sampler2D diffuse_texture;
 uniform vec3 diffuse_color;
 
+uniform int enable_specular_texture;
+uniform sampler2D specular_texture;
+uniform vec3 specular_color;
+uniform float specular_shininess;
+
+uniform int enable_normal_texture;
+uniform sampler2D normal_texture;
+
+uniform sampler2D displacement_texture;
+
+uniform int enable_parallax_texture;
+uniform sampler2D parallax_texture;
+
+
 
 void main()
 {

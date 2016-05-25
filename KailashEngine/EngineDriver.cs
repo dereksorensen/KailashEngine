@@ -36,7 +36,7 @@ namespace KailashEngine
                 game.display.fullscreen ? GameWindowFlags.Fullscreen : GameWindowFlags.Default,
                 DisplayDevice.Default,
                 game.config.gl_major_version, game.config.gl_minor_version,
-                GraphicsContextFlags.Debug)
+                GraphicsContextFlags.Default)
         {
             _game = game;
 
@@ -315,18 +315,17 @@ namespace KailashEngine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // this is called every frame, put game logic here
-            inputBuffer();
-            _render_driver.updateUBO_Camera(_game.player.camera.spatial.view, _game.player.camera.spatial.perspective);
-
 
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            
+
             //Console.WriteLine(_game.player.character.spatial.position);
             //Console.WriteLine(_game.player.character.spatial.look);
             //Console.WriteLine(_game.player.character.spatial.up);
+            inputBuffer();
+            _render_driver.updateUBO_Camera(_game.player.camera.spatial.view, _game.player.camera.spatial.perspective);
 
 
 
@@ -335,9 +334,12 @@ namespace KailashEngine
 
 
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
-            
-            SwapBuffers();
+
+            Console.WriteLine((float)(1.0d / e.Time));
+
             Debug.DebugHelper.logGLError();
+            SwapBuffers();
+            
         }
 
         protected override void OnUnload(EventArgs e)
