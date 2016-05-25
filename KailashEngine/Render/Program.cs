@@ -53,6 +53,12 @@ namespace KailashEngine.Render
         // Program Templating
         //------------------------------------------------------
 
+        // Helper to enable material feature
+        public void enable_MaterialTexture(string uTexture, int enable_flag)
+        {
+            GL.Uniform1(getUniform(uTexture), enable_flag);
+        }
+
         // Setup program to load meshes
         public void enable_MeshLoading()
         {

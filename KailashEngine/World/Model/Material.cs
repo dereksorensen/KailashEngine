@@ -56,6 +56,15 @@ namespace KailashEngine.World.Model
             set { _specular_color = value; }
         }
 
+        // Displacement
+        protected float _displacement_strength;
+        public float displacement_strength
+        {
+            get { return _displacement_strength; }
+            set { _displacement_strength = value; }
+        }
+
+
         //------------------------------------------------------
         // Texture Properties
         //------------------------------------------------------
@@ -67,6 +76,35 @@ namespace KailashEngine.World.Model
             set { _diffuse_image = value; }
         }
 
+        protected Image _specular_image;
+        public Image specular_image
+        {
+            get { return _specular_image; }
+            set { _specular_image = value; }
+        }
+
+        protected Image _normal_image;
+        public Image normal_image
+        {
+            get { return _normal_image; }
+            set { _normal_image = value; }
+        }
+
+        protected Image _displacement_image;
+        public Image displacement_image
+        {
+            get { return _displacement_image; }
+            set { _displacement_image = value; }
+        }
+
+        protected Image _parallax_image;
+        public Image parallax_image
+        {
+            get { return _parallax_image; }
+            set { _parallax_image = value; }
+        }
+
+
 
         public Material(string id)
         {
@@ -77,6 +115,7 @@ namespace KailashEngine.World.Model
             _emission = 0.0f;
             _specular_color = new Vector3(1.0f, 1.0f, 1.0f);
             _specular_shininess = 50.0f;
+            _displacement_strength = 1.0f;
         }
     }
 }

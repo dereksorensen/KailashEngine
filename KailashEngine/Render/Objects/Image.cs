@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,13 +28,16 @@ namespace KailashEngine.Render.Objects
             get { return _texture; }
         }
 
+        //------------------------------------------------------
+        // Constructor
+        //------------------------------------------------------
 
         public Image(string filename, bool use_srgb)
         {
 
             _filename = filename.Replace("%20", " ");
 
-            if (System.IO.File.Exists(_filename))
+            if (File.Exists(_filename))
             {
                 _bitmap = new System.Drawing.Bitmap(_filename);
                 
@@ -82,7 +86,7 @@ namespace KailashEngine.Render.Objects
                         break;
                     default:
                         Console.WriteLine(_bitmap.PixelFormat);
-                        throw new ArgumentException(Debug.DebugHelper.format("[ ERROR ] Unsupported Pixel Format", _bitmap.PixelFormat.ToString()));
+                        throw new ArgumentException(Debug.DebugHelper.format("[ ERROR ] Unsupported Pixel Format on " + Path.GetFileName(_filename), _bitmap.PixelFormat.ToString()));
 
                 }
 
@@ -102,6 +106,10 @@ namespace KailashEngine.Render.Objects
             }
         }
 
+
+        //------------------------------------------------------
+        // Main Methods
+        //------------------------------------------------------
 
         public void load()
         {

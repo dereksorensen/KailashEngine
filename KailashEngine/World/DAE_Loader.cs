@@ -9,7 +9,9 @@ using OpenTK.Graphics.OpenGL;
 
 using grendgine_collada;
 
-namespace KailashEngine.World.Model
+using KailashEngine.World.Model;
+
+namespace KailashEngine.World
 {
     static class DAE_Loader
     {

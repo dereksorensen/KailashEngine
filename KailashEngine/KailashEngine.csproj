@@ -460,7 +460,7 @@
     <Compile Include="World\Model\DAE_Polylist.cs" />
     <Compile Include="World\Role\NonPlayableCharacter.cs" />
     <Compile Include="World\Role\PlayableCharacter.cs" />
-    <Compile Include="World\Model\DAE_Loader.cs" />
+    <Compile Include="World\DAE_Loader.cs" />
     <Compile Include="World\WorldLoader.cs" />
     <Compile Include="World\SpatialData.cs" />
     <Compile Include="World\View\Camera.cs" />

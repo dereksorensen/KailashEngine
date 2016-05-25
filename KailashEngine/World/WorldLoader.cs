@@ -38,9 +38,17 @@ namespace KailashEngine.World
         }
 
 
-        private void setMeshUniform(string uniform_name)
+        private void trySetMatrialImage(Render.Objects.Image image, Program program, string uTexture, string uEnableTexture)
         {
-
+            try
+            {
+                image.bind(program.getUniform(uTexture), 0);
+                program.enable_MaterialTexture(uEnableTexture, 1);
+            }
+            catch
+            {
+                program.enable_MaterialTexture(uEnableTexture, 0);
+            }
         }
 
 
@@ -55,21 +63,37 @@ namespace KailashEngine.World
 
                 foreach (Mesh submesh in mesh.submeshes)
                 {
+                    //------------------------------------------------------
+                    // Set Material Properties
+                    //------------------------------------------------------
 
                     GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
+                    GL.Uniform1(program.getUniform(RenderHelper.uEmission), submesh.material.emission);
+                    GL.Uniform3(program.getUniform(RenderHelper.uSpecularColor), submesh.material.specular_color);
+                    GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), submesh.material.specular_shininess);
+                    GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
 
-                    // Diffuse
+                    // Diffuse 
                     try
                     {
                         submesh.material.diffuse_image.bind(program.getUniform(RenderHelper.uDiffuseTexture), 0);
                     }
                     catch
                     {
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
+
                     }
 
+                    // Specular
+                    trySetMatrialImage(submesh.material.specular_image, program, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture);
 
+                    // Normal
+                    trySetMatrialImage(submesh.material.normal_image, program, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture);
 
+                    // Displacement
+                    trySetMatrialImage(submesh.material.displacement_image, program, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture);
+
+                    // Parallax
+                    trySetMatrialImage(submesh.material.parallax_image, program, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture);
 
 
                     try
@@ -77,6 +101,7 @@ namespace KailashEngine.World
                         GL.BindVertexArray(submesh.vao);
                         GL.DrawElements(BeginMode.Triangles, submesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
                         GL.BindVertexArray(0);
+                        GL.BindTexture(TextureTarget.Texture2D, 0);
                     }
                     catch (Exception e)
                     {
