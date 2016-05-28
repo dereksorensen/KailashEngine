@@ -335,7 +335,7 @@ namespace KailashEngine
 
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
-            Console.WriteLine((float)(1.0d / e.Time));
+            //Console.WriteLine((float)(1.0d / e.Time));
 
             Debug.DebugHelper.logGLError();
             SwapBuffers();

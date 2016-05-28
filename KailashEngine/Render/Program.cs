@@ -44,7 +44,7 @@ namespace KailashEngine.Render
             }
             catch (Exception e)
             {
-                Debug.DebugHelper.logError("PROGRAM LINKING: ", "FAILED\n" + e.Message);
+                Debug.DebugHelper.logError("[ ERROR ] Program Linking", "FAILED\n" + e.Message);
             }
         }
 
@@ -157,15 +157,15 @@ namespace KailashEngine.Render
             GL.GetProgramInfoLog(_pID, max_error_length, out error_length, error_text);
 
 
-            string log_name = "PROGRAM LINKING: ";
+            string log_name = " Program Linking";
 
             if (error_length > 11)
             {
-                Debug.DebugHelper.logError(log_name, "FAILED\n" + error_text);
+                Debug.DebugHelper.logError("[ ERROR ]" + log_name, "FAILED\n" + error_text);
             }
             else
             {
-                Debug.DebugHelper.logInfo(2, log_name, "SUCCESS");
+                Debug.DebugHelper.logInfo(2, "[ INFO ]" + log_name, "SUCCESS");
             }
 
         }

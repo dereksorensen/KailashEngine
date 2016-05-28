@@ -10,13 +10,20 @@ using OpenTK.Graphics.OpenGL;
 using KailashEngine.Client;
 using KailashEngine.Output;
 using KailashEngine.Render.Shader;
+using KailashEngine.Render.Objects;
 
 namespace KailashEngine.Render.FX
 {
     class fx_gBuffer : RenderEffect
     {
-
+        // Programs
         private Program pTest;
+
+        // Frame Buffers
+        private FrameBuffer fGBuffer;
+
+        // Textures
+        private Texture tDiffuse;
 
 
         public fx_gBuffer(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
@@ -34,9 +41,27 @@ namespace KailashEngine.Render.FX
             pTest.enable_MeshLoading();
         }
 
+        protected override void load_Buffers()
+        {
+            fGBuffer = new FrameBuffer("gBuffer");
+
+            tDiffuse = new Texture(TextureTarget.Texture2D,
+                _resolution_full.W, _resolution_full.H,
+                0, false, false,
+                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            tDiffuse.load();
+
+            fGBuffer.load(new Dictionary<FramebufferAttachment, Texture>()
+            {
+                { FramebufferAttachment.ColorAttachment0, tDiffuse }
+            });
+        }
+
         public override void load()
         {
-            
+            load_Programs();
+            load_Buffers();
         }
 
         public override void unload()

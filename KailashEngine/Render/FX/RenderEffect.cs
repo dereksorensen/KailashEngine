@@ -23,11 +23,11 @@ namespace KailashEngine.Render.FX
             _pLoader = pLoader;
             _path_glsl_effect = glsl_effect_path;
             _resolution_full = full_resolution;
-
-            load_Programs();
         }
 
         protected abstract void load_Programs();
+
+        protected abstract void load_Buffers();
 
         public abstract void load();
 

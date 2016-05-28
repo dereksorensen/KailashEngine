@@ -23,7 +23,7 @@ namespace KailashEngine.Render
         private Resolution _resolution;
 
         // Render UBOs
-        private UBO _ubo_camera;
+        private UniformBuffer _ubo_camera;
 
         // Render FXs
         private fx_gBuffer _gBuffer;
@@ -37,7 +37,7 @@ namespace KailashEngine.Render
             _resolution = resolution;
 
             // Render UBOs
-            _ubo_camera = new UBO(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[] {
+            _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4
             });

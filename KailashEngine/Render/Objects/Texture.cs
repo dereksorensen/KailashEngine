@@ -183,10 +183,13 @@ namespace KailashEngine.Render.Objects
         // Main Methods
         //------------------------------------------------------
 
+        public void load()
+        {
+            load((IntPtr)0);
+        }
+
         public void load(IntPtr data)
         {
-            Debug.DebugHelper.logGLError();
-
             GL.BindTexture(_target, _id);
             GL.TexImage2D(
                 _target,

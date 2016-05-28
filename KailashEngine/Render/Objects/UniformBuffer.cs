@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace KailashEngine.Render.Objects
 {
-    class UBO
+    class UniformBuffer
     {
 
         private int _buffer_id;
@@ -22,7 +22,7 @@ namespace KailashEngine.Render.Objects
 
         private EngineHelper.size[] _ubo_stack;
 
-        public UBO(BufferUsageHint buffer_usage, int index, EngineHelper.size[] ubo_stack)
+        public UniformBuffer(BufferUsageHint buffer_usage, int index, EngineHelper.size[] ubo_stack)
         {
             // Calculate total UBO byte size based on ubo_stack items
             _ubo_stack = ubo_stack;
