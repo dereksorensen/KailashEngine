@@ -475,6 +475,8 @@
     <None Include="ClassDiagram2.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Render\Shader\glsl\common\draw_quad.frag" />
+    <None Include="Render\Shader\glsl\common\draw_quad.vert" />
     <None Include="Render\Shader\glsl\gBuffer\test.frag" />
     <None Include="Render\Shader\glsl\gBuffer\test.vert" />
   </ItemGroup>

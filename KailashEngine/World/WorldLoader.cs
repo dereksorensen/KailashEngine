@@ -93,8 +93,10 @@ namespace KailashEngine.World
                     try
                     {
                         GL.BindVertexArray(submesh.vao);
+                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, submesh.ibo);
                         GL.DrawElements(BeginMode.Triangles, submesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
                         GL.BindVertexArray(0);
+                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                         GL.BindTexture(TextureTarget.Texture2D, 0);
                     }
                     catch (Exception e)

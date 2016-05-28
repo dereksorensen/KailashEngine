@@ -192,14 +192,14 @@ namespace KailashEngine.World
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "tangent"));
 
-
             //Get uv data into attrib 3
             GL.EnableVertexAttribArray(3);
             GL.VertexAttribPointer(3, 2, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "uv"));
 
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, temp_ibo);
+            
             GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
 
             int[] temp_gl_vars = { temp_vbo, temp_ibo, temp_vao };
