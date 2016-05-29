@@ -22,6 +22,6 @@ void main()
     v_TexCoord.x = (x+1.0)*0.5;
     v_TexCoord.y = (y+1.0)*0.5;
 
-    //gl_Position = vec4(data[gl_VertexID], 0, 1);
-	gl_Position = vec4(position.xy, 0, 1);
+    gl_Position = vec4(data[gl_VertexID], 0, 1);
+	//gl_Position = vec4(position, 1);
 }

@@ -32,8 +32,8 @@ namespace KailashEngine.Render
         private fx_gBuffer _gBuffer;
 
 
-        int vao_bokeh = 0;
-        int vbo_bokeh = 0;
+        int vao = 0;
+        int vbo = 0;
 
         public RenderDriver(
             ProgramLoader pLoader,
@@ -91,39 +91,45 @@ namespace KailashEngine.Render
             load_DefaultGL();
             load_FX();
 
+
+
             _pDrawQuad = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, "common/draw_quad.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, "common/draw_quad.frag", null)
             });
+            _pDrawQuad.enable_Samplers(1);
 
 
-            //Vector3[] temp = { new Vector3(-1f, -1f, 0f), new Vector3(3f, -1f, 0f), new Vector3(-1f, 3f, 0f) };
-            Vector3[] temp = {
-                new Vector3(1f, -1f, 0f),
-                new Vector3(-1f, -1f, 0f),
-                new Vector3(1f, 1f, 0f),
-                new Vector3(-1f, 1f, 0f)
+
+
+
+
+
+            float[] temp = {
+                  -1.0f, -1.0f, 0.0f,
+                  3.0f, -1.0f, 0.0f,
+                  -1.0f, 3.0f, 0.0f
             };
-            //Vector3[] temp = { new Vector3(-1f, 3f, 0f), new Vector3(3f, -1f, 0f), new Vector3(-1f, -1f, 0f) };
 
-            int bSize = (int)EngineHelper.size.vec3 * 4;
-            
-            GL.GenBuffers(1, out vbo_bokeh);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bokeh);
+            int bSize = sizeof(float) * temp.Length;
+
+            GL.GenVertexArrays(1, out vao);
+            GL.BindVertexArray(vao);
+
+            GL.GenBuffers(1, out vbo);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
             GL.BufferData(
                 BufferTarget.ArrayBuffer,
                 (IntPtr)bSize,
                 temp,
                 BufferUsageHint.StaticDraw);
 
-
-            GL.GenVertexArrays(1, out vao_bokeh);
-            GL.BindVertexArray(vao_bokeh);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bokeh);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         public void unload()
@@ -151,18 +157,24 @@ namespace KailashEngine.Render
 
         public void render(Scene scene)
         {
-            //_gBuffer.render(scene);
-
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, _resolution.W/2, _resolution.H/2);
 
 
-            GL.BindVertexArray(vao_bokeh);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bokeh);
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
+            _gBuffer.render(scene);
+
+
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);  
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, _resolution.W / 2, _resolution.H / 2);
+
+            _pDrawQuad.bind();
+
+            _gBuffer.tDiffuse.bind(_pDrawQuad.getUniform("sampler0"), 0);
+
+            GL.BindVertexArray(vao);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            GL.BindVertexArray(0);
 
         }
 

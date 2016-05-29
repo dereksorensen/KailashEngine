@@ -81,9 +81,14 @@ namespace KailashEngine.Render.Objects
         }
         
         // Bind to Draw
+        public void bind(DrawBuffersEnum draw_attachment)
+        {
+            bind(new DrawBuffersEnum[] { draw_attachment });
+        }
+
         public void bind(DrawBuffersEnum[] draw_attachements)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _id);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _id);
 
             int buffer_count = draw_attachements.Length;
             GL.DrawBuffers(buffer_count, draw_attachements);
@@ -92,7 +97,7 @@ namespace KailashEngine.Render.Objects
         // Bind to Read
         public void bind(ReadBufferMode read_attachement)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _id);
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _id);
 
             GL.ReadBuffer(read_attachement);
         }

@@ -197,10 +197,10 @@ namespace KailashEngine.World
             GL.VertexAttribPointer(3, 2, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "uv"));
 
 
-            
+            // Unbind all buffers
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
             int[] temp_gl_vars = { temp_vbo, temp_ibo, temp_vao };
             return temp_gl_vars;

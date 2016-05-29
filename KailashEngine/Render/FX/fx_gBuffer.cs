@@ -17,13 +17,19 @@ namespace KailashEngine.Render.FX
     class fx_gBuffer : RenderEffect
     {
         // Programs
-        private Program pTest;
+        private Program _pTest;
 
         // Frame Buffers
-        private FrameBuffer fGBuffer;
+        private FrameBuffer _fGBuffer;
 
         // Textures
-        private Texture tDiffuse;
+        private Texture _tDepthStencil;
+
+        private Texture _tDiffuse;
+        public Texture tDiffuse
+        {
+            get { return _tDiffuse; }
+        }
 
 
         public fx_gBuffer(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
@@ -33,28 +39,38 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
-            pTest = _pLoader.createProgram(new ShaderFile[]
+            _pTest = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "/test.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "/test.frag", null)
             });
-            pTest.enable_MeshLoading();
+            _pTest.enable_MeshLoading();
         }
 
         protected override void load_Buffers()
         {
-            fGBuffer = new FrameBuffer("gBuffer");
 
-            tDiffuse = new Texture(TextureTarget.Texture2D,
+            _tDepthStencil = new Texture(TextureTarget.Texture2D,
+                _resolution_full.W, _resolution_full.H,
+                0, false, false,
+                PixelInternalFormat.Depth32fStencil8, PixelFormat.DepthComponent, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tDepthStencil.load();
+
+
+            _tDiffuse = new Texture(TextureTarget.Texture2D,
                 _resolution_full.W, _resolution_full.H,
                 0, false, false,
                 PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            tDiffuse.load();
+            _tDiffuse.load();
 
-            fGBuffer.load(new Dictionary<FramebufferAttachment, Texture>()
+
+            _fGBuffer = new FrameBuffer("gBuffer");
+            _fGBuffer.load(new Dictionary<FramebufferAttachment, Texture>()
             {
-                { FramebufferAttachment.ColorAttachment0, tDiffuse }
+                { FramebufferAttachment.DepthStencilAttachment, _tDepthStencil },
+                { FramebufferAttachment.ColorAttachment0, _tDiffuse }
             });
         }
 
@@ -76,12 +92,18 @@ namespace KailashEngine.Render.FX
 
         public void render(Scene scene)
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+
+            _fGBuffer.bind(DrawBuffersEnum.ColorAttachment0);
+            GL.Enable(EnableCap.DepthTest);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
 
-            pTest.bind();
-            scene.render(pTest);
+
+            _pTest.bind();
+            scene.render(_pTest);
+
         }
     }
 }
