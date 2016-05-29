@@ -23,7 +23,7 @@ namespace KailashEngine.Render.FX
         private FrameBuffer _fGBuffer;
 
         // Textures
-        private Texture _tDepthStencil;
+        public Texture _tDepthStencil;
 
         private Texture _tDiffuse;
         public Texture tDiffuse
@@ -92,7 +92,6 @@ namespace KailashEngine.Render.FX
 
         public void render(Scene scene)
         {
-
 
             _fGBuffer.bind(DrawBuffersEnum.ColorAttachment0);
             GL.Enable(EnableCap.DepthTest);

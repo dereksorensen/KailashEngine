@@ -446,6 +446,7 @@
     <Compile Include="Render\MatrixStack.cs" />
     <Compile Include="Render\Objects\FrameBuffer.cs" />
     <Compile Include="Render\Objects\Image.cs" />
+    <Compile Include="Render\FX\fx_Quad.cs" />
     <Compile Include="Render\Objects\Texture.cs" />
     <Compile Include="Render\Program.cs" />
     <Compile Include="Render\ProgramLoader.cs" />
@@ -475,8 +476,8 @@
     <None Include="ClassDiagram2.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Render\Shader\glsl\common\draw_quad.frag" />
-    <None Include="Render\Shader\glsl\common\draw_quad.vert" />
+    <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
+    <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\gBuffer\test.frag" />
     <None Include="Render\Shader\glsl\gBuffer\test.vert" />
   </ItemGroup>
