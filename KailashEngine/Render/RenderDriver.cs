@@ -64,7 +64,7 @@ namespace KailashEngine.Render
         private void load_DefaultGL()
         {
             // Default OpenGL Setup
-            GL.ClearColor(Color.Blue);
+            GL.ClearColor(Color.DarkSlateGray);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             GL.DepthFunc(DepthFunction.Lequal);
@@ -133,11 +133,15 @@ namespace KailashEngine.Render
 
 
 
-            _quad.render_Texture2D(_gBuffer.tDiffuse);
+            _quad.render_Texture2D(_gBuffer.tDiffuse_ID);
 
-            _quad.render_Texture2D(_gBuffer.tDiffuse, 0.5f, 0);
-            _quad.render_Texture2D(_gBuffer.tDiffuse, 0.25f, 0);
-            _quad.render_Texture2D(_gBuffer.tDiffuse, 0.125f, 0);
+
+            _quad.render_Texture2D(_gBuffer.tNormal_Depth, 0.25f, 0);
+            _quad.render_Texture2D(_gBuffer.tSpecular, 0.25f, 1);
+
+            //_quad.render_Texture2D(_gBuffer.tDiffuse, 0.5f, 0);
+            //_quad.render_Texture2D(_gBuffer.tDiffuse, 0.25f, 0);
+            //_quad.render_Texture2D(_gBuffer.tDiffuse, 0.125f, 0);
 
         }
 

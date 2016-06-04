@@ -4,6 +4,12 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec3 tangent;
 layout(location = 3) in vec2 texCoord;
 
+out vec2 v_TexCoord;
+out vec4 v_objectPosition;
+out vec3 v_worldPosition;
+out vec3 v_Normal;
+out vec3 v_Tangent;
+
 //------------------------------------------------------
 // perspective and view matrices
 //------------------------------------------------------
@@ -14,20 +20,22 @@ layout(std140, binding = 0) uniform cameraMatrices
 };
 
 uniform mat4 model;
+uniform mat4 model_normal;
 
-out vec4 v_color;
-out vec2 v_TexCoord;
 
 void main()
 {
 
+	// Position
 	vec4 objectPosition = vec4(position, 1.0);
 	vec4 clipPosition = perspective * (view * (model * objectPosition));
-
 	gl_Position = clipPosition;
 
-	v_color =  vec4(0.9,0.3,0.4,1.0);
-
+	// Texture Coordinates
 	v_TexCoord = texCoord;
+
+	// Put vertex normal in world space
+	v_Normal = (model_normal * vec4(normal, 0.0)).xyz;
+	v_Tangent = (model_normal * vec4(tangent, 0.0)).xyz;
 
 }

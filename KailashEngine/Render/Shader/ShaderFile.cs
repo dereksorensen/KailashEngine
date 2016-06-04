@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
@@ -18,6 +19,14 @@ namespace KailashEngine.Render.Shader
             get { return _type; }
             set { _type = value; }
         }
+
+        private string _base_path;
+        public string base_path
+        {
+            get { return _base_path; }
+            set { _base_path = value; }
+        }
+
 
         private string _filename;
         public string filename
@@ -47,7 +56,7 @@ namespace KailashEngine.Render.Shader
         {
             try
             {
-                StreamReader sr = new StreamReader(filename);
+                StreamReader sr = new StreamReader(_base_path + filename);
                 string shader = sr.ReadToEnd();
                 sr.Close();
                 return shader;
@@ -67,15 +76,19 @@ namespace KailashEngine.Render.Shader
 
             string shader_source = loadShaderFile(_filename);
 
+            int added_line_count = 1;
+
             // Add any depenancies into the shader file
             if (!(_dependancies == null))
             {
                 foreach (string s in _dependancies)
                 {
-                    shader_source = loadShaderFile(s) + "\n" + shader_source;
+                    string dependancy = loadShaderFile(s);
+                    added_line_count += dependancy.Split('\n').Length;
+                    shader_source = dependancy + "\n" + shader_source;
                 }
             }
-
+           
             // Add glsl version at top of shader file
             shader_source = "#version " + glsl_version + "\n" + shader_source;
 
@@ -102,10 +115,28 @@ namespace KailashEngine.Render.Shader
                 }
 
                 string log_name = shader_type_string + ": " + _filename;
-
                 if (error_length > 11)
                 {
-                    Debug.DebugHelper.logError(log_name, "FAILED\n" + error_text);
+                    // Complicated mess to add included shader files line length to error line number
+                    string error_text_final = "";
+                    foreach(string error in error_text.ToString().Split('\n'))
+                    {
+                        Match error_lines = Regex.Match(error, "0\\((\\d+)\\)");
+                        int line_number = 0;
+                        try
+                        {
+                            line_number = int.Parse(error_lines.Groups[1].ToString());
+                            line_number = line_number - added_line_count;
+                        }
+                        catch
+                        {
+                            error_text_final += error + "\n";
+                            continue;
+                        }
+
+                        error_text_final += "0(" + line_number + ") / " + error + "\n";
+                    }
+                    Debug.DebugHelper.logError(log_name, "FAILED\n" + error_text_final);
                     return 0;
                 }
                 else

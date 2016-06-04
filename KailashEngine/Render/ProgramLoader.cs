@@ -33,8 +33,7 @@ namespace KailashEngine.Render
         {
             for(int i = 0; i < shader_pipeline.Length; i++)
             {
-                string temp_filename = shader_pipeline[i].filename;
-                shader_pipeline[i].filename = _path_glsl_base + temp_filename;
+                shader_pipeline[i].base_path = _path_glsl_base;
             }
 
             return new Program(glsl_version, shader_pipeline);

@@ -59,6 +59,10 @@ namespace KailashEngine.World
                 // Load Mesh's pre-transformation Matrix
                 Matrix4 temp_mat = mesh.pre_transformation;
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
+                // Convert matrix for normals
+                temp_mat = Matrix4.Invert(temp_mat);
+                temp_mat = Matrix4.Transpose(temp_mat);
+                GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
 
                 foreach (Mesh submesh in mesh.submeshes)

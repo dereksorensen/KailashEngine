@@ -1,0 +1,25 @@
+﻿
+
+// Normal Mapping
+vec3 calcNormalMapping(sampler2D normal_texture, vec2 tex_coords, vec3 normal, vec3 tangent)
+{
+	vec3 N = normalize(normal);
+	vec3 T = normalize(tangent);
+	T = normalize(T - dot(T, N) * N);
+	vec3 BT = cross(T,N);
+
+	vec3 mapNormal = texture(normal_texture, tex_coords).xyz;
+	mapNormal = 2.0 * mapNormal - vec3(1.0);
+
+	vec3 finalNormal;
+	mat3 TBN = mat3(T,BT,N);
+	finalNormal = TBN * mapNormal;
+	finalNormal = normalize(finalNormal);
+
+	return finalNormal;
+}
+
+
+
+
+
