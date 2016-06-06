@@ -1,24 +1,89 @@
 ﻿
 
-// Normal Mapping
-vec3 calcNormalMapping(sampler2D normal_texture, vec2 tex_coords, vec3 normal, vec3 tangent)
+//------------------------------------------------------
+// Common
+//------------------------------------------------------
+mat3 calcTBN(vec3 normal, vec3 tangent)
 {
 	vec3 N = normalize(normal);
 	vec3 T = normalize(tangent);
 	T = normalize(T - dot(T, N) * N);
 	vec3 BT = cross(T,N);
+	return mat3(T,BT,N);
+}
 
+//------------------------------------------------------
+// Normal Mapping
+//------------------------------------------------------
+vec3 calcNormalMapping(sampler2D normal_texture, vec2 tex_coords, mat3 TBN)
+{
 	vec3 mapNormal = texture(normal_texture, tex_coords).xyz;
 	mapNormal = 2.0 * mapNormal - vec3(1.0);
 
 	vec3 finalNormal;
-	mat3 TBN = mat3(T,BT,N);
 	finalNormal = TBN * mapNormal;
-	finalNormal = normalize(finalNormal);
-
-	return finalNormal;
+	return normalize(finalNormal);
 }
 
+
+
+//------------------------------------------------------
+// Parallax Mapping
+//------------------------------------------------------
+vec2 calcParallaxMapping(sampler2D parallax_texture, vec2 tex_coords, mat3 TBN, vec3 camera_position, vec3 world_position)
+{ 
+	float height_scale = 0.04;
+
+	mat3 tTBN = transpose(TBN);
+
+	vec3 t_camPosition = tTBN * camera_position;
+	vec3 t_worldPosition = tTBN * world_position;
+
+	vec3 viewDir = normalize(-t_camPosition - t_worldPosition);
+
+
+
+
+	// number of depth layers
+	const float minLayers = 10;
+	const float maxLayers = 20;
+	float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));  
+	// calculate the size of each layer
+	float layerDepth = 1.0 / numLayers;
+	// depth of current layer
+	float currentLayerDepth = 0.0;
+	// the amount to shift the texture coordinates per layer (from vector P)
+	vec2 P = viewDir.xy / viewDir.z * height_scale; 
+	vec2 deltaTexCoords = P / numLayers;
+
+	// get initial values
+	vec2  currentTexCoords     = tex_coords;
+	float currentDepthMapValue = 1.0 - texture(parallax_texture, currentTexCoords).r;
+
+	while(currentLayerDepth < currentDepthMapValue)
+	{
+		// shift texture coordinates along direction of P
+		currentTexCoords -= deltaTexCoords;
+		// get depthmap value at current texture coordinates
+		currentDepthMapValue = 1.0 - texture(parallax_texture, currentTexCoords).r;  
+		// get depth of next layer
+		currentLayerDepth += layerDepth;  
+	}
+
+	// -- parallax occlusion mapping interpolation from here on
+	// get texture coordinates before collision (reverse operations)
+	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+	// get depth after and before collision for linear interpolation
+	float afterDepth  = currentDepthMapValue - currentLayerDepth;
+	float beforeDepth = 1.0 - texture(parallax_texture, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+	// interpolation of texture coordinates
+	float weight = afterDepth / (afterDepth - beforeDepth);
+	vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+	return finalTexCoords;
+} 
 
 
 

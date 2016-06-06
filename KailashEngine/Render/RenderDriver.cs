@@ -45,7 +45,8 @@ namespace KailashEngine.Render
             // Render UBOs
             _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
-                EngineHelper.size.mat4
+                EngineHelper.size.mat4,
+                EngineHelper.size.vec3
             });
 
 
@@ -105,10 +106,11 @@ namespace KailashEngine.Render
         // Updating
         //------------------------------------------------------
 
-        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective)
+        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Vector3 position)
         {
             _ubo_camera.update(0, view);
             _ubo_camera.update(1, perspective);
+            _ubo_camera.update(2, position);
         }
 
 

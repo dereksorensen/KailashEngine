@@ -325,7 +325,7 @@ namespace KailashEngine
             //Console.WriteLine(_game.player.character.spatial.look);
             //Console.WriteLine(_game.player.character.spatial.up);
             inputBuffer();
-            _render_driver.updateUBO_Camera(_game.player.camera.spatial.view, _game.player.camera.spatial.perspective);
+            _render_driver.updateUBO_Camera(_game.player.camera.spatial.view, _game.player.camera.spatial.perspective, _game.player.camera.spatial.position);
 
 
 

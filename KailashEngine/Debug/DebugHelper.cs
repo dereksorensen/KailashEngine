@@ -47,7 +47,7 @@ namespace KailashEngine.Debug
             if (gl_error != "NoError")
             {
                 string full_message = format("OpenGL Error: ", gl_error);
-                //Console.WriteLine(full_message);
+                Console.WriteLine(full_message);
             }
         }
     }
