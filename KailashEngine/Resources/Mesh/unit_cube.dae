@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.76.0 commit date:2015-11-03, commit time:10:56, hash:f337fea</authoring_tool>
     </contributor>
-    <created>2016-06-05T18:37:43</created>
-    <modified>2016-06-05T18:37:43</modified>
+    <created>2016-06-06T20:04:05</created>
+    <modified>2016-06-06T20:04:05</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -238,17 +238,20 @@
     </light>
   </library_lights>
   <library_images>
-    <image id="brick1-d_jpg" name="brick1-d_jpg">
-      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-d.jpg</init_from>
+    <image id="brick2-d_jpg" name="brick2-d_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick2-d.jpg</init_from>
     </image>
-    <image id="brick1-s_jpg" name="brick1-s_jpg">
-      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-s.jpg</init_from>
+    <image id="brick2-s_jpg" name="brick2-s_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick2-s.jpg</init_from>
     </image>
-    <image id="brick1-n_jpg" name="brick1-n_jpg">
-      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-n.jpg</init_from>
+    <image id="brick2-n_jpg" name="brick2-n_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick2-n.jpg</init_from>
     </image>
-    <image id="brick1-h_jpg" name="brick1-h_jpg">
-      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-h.jpg</init_from>
+    <image id="brick2-h_jpg" name="brick2-h_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick2-h.jpg</init_from>
+    </image>
+    <image id="brick2-b_jpg" name="brick2-b_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick2-b.jpg</init_from>
     </image>
   </library_images>
   <library_effects>
@@ -280,14 +283,14 @@
     </effect>
     <effect id="Material_001-effect">
       <profile_COMMON>
-        <newparam sid="brick1-d_jpg-surface">
+        <newparam sid="brick2-d_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-d_jpg</init_from>
+            <init_from>brick2-d_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-d_jpg-sampler">
+        <newparam sid="brick2-d_jpg-sampler">
           <sampler2D>
-            <source>brick1-d_jpg-surface</source>
+            <source>brick2-d_jpg-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -299,7 +302,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="brick1-d_jpg-sampler"/>
+              <texture texture="brick2-d_jpg-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -316,14 +319,14 @@
     </effect>
     <effect id="Material_002-effect">
       <profile_COMMON>
-        <newparam sid="brick1-s_jpg-surface">
+        <newparam sid="brick2-s_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-s_jpg</init_from>
+            <init_from>brick2-s_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-s_jpg-sampler">
+        <newparam sid="brick2-s_jpg-sampler">
           <sampler2D>
-            <source>brick1-s_jpg-surface</source>
+            <source>brick2-s_jpg-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -338,7 +341,7 @@
               <color sid="diffuse">0.1870997 0.64 0.04101593 1</color>
             </diffuse>
             <specular>
-              <texture texture="brick1-s_jpg-sampler"/>
+              <texture texture="brick2-s_jpg-sampler"/>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -352,14 +355,14 @@
     </effect>
     <effect id="Material_003-effect">
       <profile_COMMON>
-        <newparam sid="brick1-n_jpg-surface">
+        <newparam sid="brick2-n_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-n_jpg</init_from>
+            <init_from>brick2-n_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-n_jpg-sampler">
+        <newparam sid="brick2-n_jpg-sampler">
           <sampler2D>
-            <source>brick1-n_jpg-surface</source>
+            <source>brick2-n_jpg-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -386,7 +389,7 @@
           <extra>
             <technique profile="FCOLLADA">
               <bump>
-                <texture texture="brick1-n_jpg-sampler"/>
+                <texture texture="brick2-n_jpg-sampler"/>
               </bump>
             </technique>
           </extra>
@@ -395,24 +398,24 @@
     </effect>
     <effect id="Material_004-effect">
       <profile_COMMON>
-        <newparam sid="brick1-h_jpg-surface">
+        <newparam sid="brick2-h_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-h_jpg</init_from>
+            <init_from>brick2-h_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-h_jpg-sampler">
+        <newparam sid="brick2-h_jpg-sampler">
           <sampler2D>
-            <source>brick1-h_jpg-surface</source>
+            <source>brick2-h_jpg-surface</source>
           </sampler2D>
         </newparam>
-        <newparam sid="brick1-d_jpg-surface">
+        <newparam sid="brick2-d_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-d_jpg</init_from>
+            <init_from>brick2-d_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-d_jpg-sampler">
+        <newparam sid="brick2-d_jpg-sampler">
           <sampler2D>
-            <source>brick1-d_jpg-surface</source>
+            <source>brick2-d_jpg-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -421,10 +424,10 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <texture texture="brick1-h_jpg-sampler"/>
+              <texture texture="brick2-h_jpg-sampler"/>
             </ambient>
             <diffuse>
-              <texture texture="brick1-d_jpg-sampler"/>
+              <texture texture="brick2-d_jpg-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -441,34 +444,34 @@
     </effect>
     <effect id="Material_005-effect">
       <profile_COMMON>
-        <newparam sid="brick1-d_jpg-surface">
+        <newparam sid="brick2-d_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-d_jpg</init_from>
+            <init_from>brick2-d_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-d_jpg-sampler">
+        <newparam sid="brick2-d_jpg-sampler">
           <sampler2D>
-            <source>brick1-d_jpg-surface</source>
+            <source>brick2-d_jpg-surface</source>
           </sampler2D>
         </newparam>
-        <newparam sid="brick1-h_jpg-surface">
+        <newparam sid="brick2-b_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-h_jpg</init_from>
+            <init_from>brick2-b_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-h_jpg-sampler">
+        <newparam sid="brick2-b_jpg-sampler">
           <sampler2D>
-            <source>brick1-h_jpg-surface</source>
+            <source>brick2-b_jpg-surface</source>
           </sampler2D>
         </newparam>
-        <newparam sid="brick1-n_jpg-surface">
+        <newparam sid="brick2-n_jpg-surface">
           <surface type="2D">
-            <init_from>brick1-n_jpg</init_from>
+            <init_from>brick2-n_jpg</init_from>
           </surface>
         </newparam>
-        <newparam sid="brick1-n_jpg-sampler">
+        <newparam sid="brick2-n_jpg-sampler">
           <sampler2D>
-            <source>brick1-n_jpg-surface</source>
+            <source>brick2-n_jpg-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -480,7 +483,7 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <texture texture="brick1-d_jpg-sampler"/>
+              <texture texture="brick2-d_jpg-sampler"/>
             </diffuse>
             <specular>
               <color sid="specular">0.5 0.5 0.5 1</color>
@@ -489,7 +492,7 @@
               <float sid="shininess">50</float>
             </shininess>
             <reflective>
-              <texture texture="brick1-h_jpg-sampler"/>
+              <texture texture="brick2-b_jpg-sampler"/>
             </reflective>
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
@@ -498,7 +501,7 @@
           <extra>
             <technique profile="FCOLLADA">
               <bump>
-                <texture texture="brick1-n_jpg-sampler"/>
+                <texture texture="brick2-n_jpg-sampler"/>
               </bump>
             </technique>
           </extra>

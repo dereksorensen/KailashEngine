@@ -480,7 +480,7 @@
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.vert" />
-    <None Include="Render\Shader\glsl\gBuffer\helpers\functions.include" />
+    <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />

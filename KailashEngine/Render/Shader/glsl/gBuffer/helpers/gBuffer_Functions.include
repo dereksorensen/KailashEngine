@@ -32,7 +32,7 @@ vec3 calcNormalMapping(sampler2D normal_texture, vec2 tex_coords, mat3 TBN)
 //------------------------------------------------------
 vec2 calcParallaxMapping(sampler2D parallax_texture, vec2 tex_coords, mat3 TBN, vec3 camera_position, vec3 world_position)
 { 
-	float height_scale = 0.04;
+	float height_scale = 0.02;
 
 	mat3 tTBN = transpose(TBN);
 

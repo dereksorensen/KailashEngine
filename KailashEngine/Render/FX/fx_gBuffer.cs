@@ -64,7 +64,7 @@ namespace KailashEngine.Render.FX
         {
             string[] functions = new string[]
             {
-                _path_glsl_effect + "/helpers/functions.include"
+                _path_glsl_effect + "/helpers/gBuffer_Functions.include"
             };
 
             _pTest = _pLoader.createProgram(new ShaderFile[]

@@ -20,7 +20,7 @@ in vec3 v_worldPosition;
 in vec3 v_Normal;
 in vec3 v_Tangent;
 
-
+uniform int enable_diffuse_texture;
 uniform sampler2D diffuse_texture;
 uniform vec3 diffuse_color;
 
@@ -57,12 +57,15 @@ void main()
 	//------------------------------------------------------
 	// Diffuse Mapping + Material ID
 	//------------------------------------------------------
-	vec4 tDiffuse = texture(diffuse_texture, tex_coords);
-	vec4 temp_color = vec4(diffuse_color, 1.0) + tDiffuse;
+	vec4 diffuse_color_final = vec4(diffuse_color, 1.0);
+	if (enable_diffuse_texture == 1)
+	{
+		diffuse_color_final = texture(diffuse_texture, tex_coords);
+	}
 
 	float gamma = 1.8;
 	vec3 gamma_correction = vec3(1.0 / gamma);
-	vec3 final = pow(temp_color.xyz, gamma_correction);
+	vec3 final = pow(diffuse_color_final.xyz, gamma_correction);
 
 	diffuse_id = vec4(final.xyz, 1.0);
 

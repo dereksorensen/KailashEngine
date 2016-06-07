@@ -21,6 +21,7 @@ namespace KailashEngine.Render
         public static readonly string uModel = "model";
         public static readonly string uModel_Normal = "model_normal";
 
+        public static readonly string uEnableDiffuseTexture = "enable_diffuse_texture";
         public static readonly string uDiffuseTexture = "diffuse_texture";
         public static readonly string uDiffuseColor = "diffuse_color";
         public static readonly string uEmission = "emission_strength";

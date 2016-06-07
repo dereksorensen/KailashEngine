@@ -65,6 +65,7 @@ namespace KailashEngine.Render
             addUniform(RenderHelper.uModel);
             addUniform(RenderHelper.uModel_Normal);
 
+            addUniform(RenderHelper.uEnableDiffuseTexture);
             addUniform(RenderHelper.uDiffuseTexture);
             addUniform(RenderHelper.uDiffuseColor);   
             addUniform(RenderHelper.uEmission);

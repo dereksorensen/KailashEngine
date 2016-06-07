@@ -79,7 +79,7 @@ namespace KailashEngine.World
 
 
                     // Diffuse 
-                    if (submesh.material.diffuse_image != null) submesh.material.diffuse_image.bind(program.getUniform(RenderHelper.uDiffuseTexture), 31);
+                    trySetMatrialImage(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTexture, RenderHelper.uEnableDiffuseTexture, 31);
 
                     // Specular
                     trySetMatrialImage(program, submesh.material.specular_image, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
