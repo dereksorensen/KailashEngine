@@ -123,16 +123,16 @@ namespace KailashEngine.Render
         {
 
             //------------------------------------------------------
-            // Pre-processing
+            // Scene Processing
             //------------------------------------------------------
 
-            _gBuffer.render(scene);
+            _gBuffer.pass_DeferredShading(scene);
 
 
             //------------------------------------------------------
             // Post-processing
             //------------------------------------------------------
-
+            GL.Disable(EnableCap.DepthTest);
 
 
             _quad.render_Texture2D(_gBuffer.tDiffuse_ID);

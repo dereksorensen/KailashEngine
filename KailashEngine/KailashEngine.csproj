@@ -481,12 +481,14 @@
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.vert" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
+    <None Include="Resources\Blender\Scripts\export_collada.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
     <Folder Include="Physics\" />
-    <Folder Include="Resources\Blender\" />
+    <Folder Include="Resources\Lights\" />
     <Folder Include="Resources\Mesh\" />
+    <Folder Include="Resources\Physics\" />
     <Folder Include="Resources\Textures\" />
     <Folder Include="World\Light\" />
   </ItemGroup>

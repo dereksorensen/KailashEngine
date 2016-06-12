@@ -27,6 +27,7 @@ namespace KailashEngine.World
         public WorldLoader(string filename)
         {
             string file_extension = Path.GetExtension(filename);
+            Console.WriteLine(filename);
             switch (file_extension)
             {
                 case ".dae":

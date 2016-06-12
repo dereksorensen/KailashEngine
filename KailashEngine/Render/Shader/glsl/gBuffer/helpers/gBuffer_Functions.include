@@ -41,9 +41,6 @@ vec2 calcParallaxMapping(sampler2D parallax_texture, vec2 tex_coords, mat3 TBN, 
 
 	vec3 viewDir = normalize(-t_camPosition - t_worldPosition);
 
-
-
-
 	// number of depth layers
 	const float minLayers = 10;
 	const float maxLayers = 20;

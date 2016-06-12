@@ -141,7 +141,7 @@ namespace KailashEngine.Render.FX
             
         }
 
-        public void render(Scene scene)
+        private void pass_Geometry(Scene scene)
         {
             
             _fGBuffer.bind(new DrawBuffersEnum[] 
@@ -160,5 +160,31 @@ namespace KailashEngine.Render.FX
             scene.render(_pTest);
 
         }
+
+
+        private void pass_Stencil()
+        {
+
+        }
+
+        private void pass_pLight()
+        {
+
+        }
+
+        private void pass_sLight()
+        {
+
+        }
+
+
+        public void pass_DeferredShading(Scene scene)
+        {
+            pass_Geometry(scene);
+
+
+        }
+
+
     }
 }

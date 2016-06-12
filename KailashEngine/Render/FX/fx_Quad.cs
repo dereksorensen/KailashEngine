@@ -104,8 +104,7 @@ namespace KailashEngine.Render.FX
 
             // Render it!
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
-            GL.Disable(EnableCap.DepthTest);
-
+            
             GL.Viewport(pos_x, pos_y, size_x, size_y);
 
             _pRenderTexture2D.bind();
