@@ -13,6 +13,8 @@ namespace KailashEngine.World.View
     class Camera : WorldObject
     {
 
+
+
         public Camera()
             : base (new Vector3(), new Vector3(), new Vector3())
         { }

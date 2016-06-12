@@ -13,17 +13,21 @@ namespace KailashEngine.Client
     {
 
         private string _path_mesh;
+        private string _path_physics;
+        private string _path_lights;
 
         private MatrixStack _MS;
 
         // Scene Objects
-        private WorldLoader _box;
+        private WorldLoader _test_scene;
         
 
 
-        public Scene(string path_mesh)
+        public Scene(string path_mesh, string path_physics, string path_lights)
         {
             _path_mesh = path_mesh;
+            _path_physics = path_physics;
+            _path_lights = path_lights;
             _MS = new MatrixStack();
         }
 
@@ -31,7 +35,7 @@ namespace KailashEngine.Client
         {
             try
             {
-                return new WorldLoader(_path_mesh + filename);
+                return new WorldLoader(filename, _path_mesh, _path_physics, _path_lights);
             }
             catch(Exception e)
             {
@@ -43,13 +47,13 @@ namespace KailashEngine.Client
 
         public void load()
         {
-            _box = loadHelper("unit_cube.dae");
+            _test_scene = loadHelper("test_scene");
         }
 
 
         public void render(Program program)
         {
-            _box.draw(_MS, program);
+            _test_scene.draw(_MS, program);
         }
 
     }

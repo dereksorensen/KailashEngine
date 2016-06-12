@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Render;
 using KailashEngine.World.Model;
+using KailashEngine.World.Lights;
 
 namespace KailashEngine.World
 {
@@ -20,22 +21,33 @@ namespace KailashEngine.World
         public Dictionary<string, Mesh> meshes
         {
             get { return _meshes; }
-            set { _meshes = value; }
+        }
+
+        private Dictionary<string, Light> _lights;
+        public Dictionary<string, Light> lights
+        {
+            get { return _lights; }
         }
 
 
-        public WorldLoader(string filename)
+
+        public WorldLoader(string filename, string path_mesh, string path_physics, string path_lights)
         {
-            string file_extension = Path.GetExtension(filename);
-            Console.WriteLine(filename);
-            switch (file_extension)
-            {
-                case ".dae":
-                    _meshes = DAE_Loader.load(filename);
-                    break;
-                default:
-                    throw new Exception("Unsupported Model File Type: "+ file_extension + "\n" + filename);
-            }
+            Debug.DebugHelper.logInfo(1, "Loading World", filename);
+
+
+            string mesh_filename = path_mesh + filename + ".dae";
+            string physics_filename = path_physics + filename + ".physics";
+            string lights_filename = path_lights + filename + ".lights";
+
+
+            _meshes = DAE_Loader.load(mesh_filename);
+            _lights = LightLoader.load(lights_filename);
+
+
+
+
+            Debug.DebugHelper.logInfo(1, "", "");
         }
 
 
@@ -58,7 +70,7 @@ namespace KailashEngine.World
             foreach (Mesh mesh in _meshes.Values)
             {
                 // Load Mesh's pre-transformation Matrix
-                Matrix4 temp_mat = mesh.pre_transformation;
+                Matrix4 temp_mat = mesh.transformation;
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
                 // Convert matrix for normals
                 temp_mat = Matrix4.Invert(temp_mat);

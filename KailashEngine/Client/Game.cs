@@ -70,7 +70,7 @@ namespace KailashEngine.Client
             _config = config;
             _display = default_display;
             _player = main_player;
-            _scene = new Scene(_config.path_resources_mesh);
+            _scene = new Scene(_config.path_resources_mesh, _config.path_resources_physics, _config.path_resources_lights);
 
             _keyboard = new Keyboard();
             _mouse = new Mouse(_player.character.look_sensitivity, true);

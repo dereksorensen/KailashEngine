@@ -454,6 +454,10 @@
     <Compile Include="Render\RenderHelper.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
+    <Compile Include="World\LightLoader.cs" />
+    <Compile Include="World\Lights\Light.cs" />
+    <Compile Include="World\Lights\pLight.cs" />
+    <Compile Include="World\Lights\sLight.cs" />
     <Compile Include="World\Model\DAE_Material.cs" />
     <Compile Include="World\Model\ModelLoader.cs" />
     <Compile Include="World\Model\Material.cs" />
@@ -490,7 +494,6 @@
     <Folder Include="Resources\Mesh\" />
     <Folder Include="Resources\Physics\" />
     <Folder Include="Resources\Textures\" />
-    <Folder Include="World\Light\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="toolbox.txt" />

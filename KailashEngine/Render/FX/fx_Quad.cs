@@ -25,7 +25,6 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
-
             _pRenderTexture2D = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "/render_Texture2D.vert", null),

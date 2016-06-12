@@ -24,7 +24,7 @@ namespace KailashEngine.Render
         
 
         // Local Programs
-        private Program _pDrawQuad;
+
 
         // Render UBOs
         private UniformBuffer _ubo_camera;

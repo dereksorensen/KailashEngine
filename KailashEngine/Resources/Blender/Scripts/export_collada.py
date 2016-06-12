@@ -79,8 +79,12 @@ for item in bpy.data.objects:
         #rotations
             rotation = "rot " + str(-item.rotation_euler.x) + " " + str(-item.rotation_euler.z) + " " + str(item.rotation_euler.y) + '\n'
             lights_file.write(rotation)
+        #size
+            size_float = (item.scale.x + item.scale.y + item.scale.z) / 3.0
+            size = "siz " + str(size_float) + '\n'
+            lights_file.write(size)
         #intensity
-            intensity = "int " + str(bpy.data.lamps[item.name].energy) + '\n'
+            intensity = "ity " + str(bpy.data.lamps[item.name].energy) + '\n'
             lights_file.write(intensity)
         #color
             color = "col " + str(bpy.data.lamps[item.name].color.r) + " " + str(bpy.data.lamps[item.name].color.g) + " " + str(bpy.data.lamps[item.name].color.b) + '\n'
@@ -94,9 +98,8 @@ for item in bpy.data.objects:
             lights_file.write(shadow)
             
             lights_file.write('\n')
-            print(bpy.data.lamps[item.name].shadow_method)
 
-numL_string = "nl " + str(numL)
+numL_string = "num " + str(numL)
 lights_file.write(numL_string)
 
 print("Info: Exported " + str(numL) + " Lights")
@@ -146,7 +149,7 @@ for item in bpy.data.objects:
 			
 			physics_file.write('\n')
 			
-numRB_string = "nrb " + str(numRB)
+numRB_string = "num " + str(numRB)
 physics_file.write(numRB_string)
 
 

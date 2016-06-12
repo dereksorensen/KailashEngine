@@ -68,7 +68,7 @@ namespace KailashEngine.Render.Objects
             }
             else
             {
-                Debug.DebugHelper.logInfo(2, "[ INFO ] FrameBuffer (" + _name + ")", "Loading successful");
+                Debug.DebugHelper.logInfo(2, "[ INFO ] FrameBuffer (" + _name + ")", "SUCCESS");
             }
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

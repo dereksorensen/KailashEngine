@@ -135,7 +135,7 @@ namespace KailashEngine.World
                                         );
                     temp_mat = temp_mat * yup;
 
-                    temp_mesh.pre_transformation = temp_mat;
+                    temp_mesh.transformation = temp_mat;
                 }
 
                 // Add to mesh collection

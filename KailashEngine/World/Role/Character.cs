@@ -77,7 +77,7 @@ namespace KailashEngine.World.Role
 
 
         public Character(string name, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
-            : base (new Vector3(), new Vector3(), new Vector3(0.0f, 1.0f, 0.0f))
+            : base (new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f))
         {
             _name = name;
             _movement_speed_walk = movement_speed_walk;

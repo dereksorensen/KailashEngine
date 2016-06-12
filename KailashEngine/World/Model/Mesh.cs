@@ -33,11 +33,11 @@ namespace KailashEngine.World.Model
             set { _id = value; }
         }
 
-        protected Matrix4 _pre_transformation;
-        public Matrix4 pre_transformation
+        protected Matrix4 _transformation;
+        public Matrix4 transformation
         {
-            get { return _pre_transformation; }
-            set { _pre_transformation = value; }
+            get { return _transformation; }
+            set { _transformation = value; }
         }
 
 
@@ -136,7 +136,7 @@ namespace KailashEngine.World.Model
         public Mesh(string id)
         {
             _id = id;
-            _pre_transformation = Matrix4.Identity;
+            _transformation = Matrix4.Identity;
         }
 
         public void setBufferIDs(int[] buffers)

@@ -29,6 +29,7 @@ namespace KailashEngine
         private Sound _sound_cow;
         private Sound _sound_goat;
 
+
         public EngineDriver(Game game) :
             base(game.display.resolution.W, game.display.resolution.H,
                 new GraphicsMode(new ColorFormat(32), 32, 32, 1),
@@ -280,6 +281,8 @@ namespace KailashEngine
 
         protected override void OnResize(EventArgs e)
         {
+            //_game.display.resolution.W = this.Width;
+            //_game.display.resolution.H = this.Height;
             GL.Viewport(0, 0, this.Width, this.Height);
         }
 
@@ -320,12 +323,11 @@ namespace KailashEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-
-            //Console.WriteLine(_game.player.character.spatial.position);
-            //Console.WriteLine(_game.player.character.spatial.look);
-            //Console.WriteLine(_game.player.character.spatial.up);
             inputBuffer();
-            _render_driver.updateUBO_Camera(_game.player.camera.spatial.view, _game.player.camera.spatial.perspective, _game.player.camera.spatial.position);
+            _render_driver.updateUBO_Camera(
+                _game.player.camera.spatial.view, 
+                _game.player.camera.spatial.perspective, 
+                _game.player.camera.spatial.position);
 
 
 
@@ -348,7 +350,7 @@ namespace KailashEngine
 
             _game.unload();
 
-            Console.WriteLine("\nGoodbye...");
+            Console.WriteLine("\nBaaiiii...");
             Thread.Sleep(500);
         }
 

@@ -39,6 +39,9 @@ namespace KailashEngine.World
             set { _strafe = value; }
         }
 
+
+
+
         public Matrix4 position_matrix
         {
             get { return Matrix4.CreateTranslation(_position); }
@@ -57,7 +60,6 @@ namespace KailashEngine.World
             }
         }
 
-        //private Matrix4 _matrix;
         public Matrix4 view
         {
             get
@@ -74,11 +76,14 @@ namespace KailashEngine.World
         }
 
 
+
         public SpatialData(Vector3 position, Vector3 look, Vector3 up)
         {
             _position = position;
             _look = look;
             _up = up;
+
+            rotation_matrix = Matrix4.LookAt(_position, _look, _up);
         }
 
     }
