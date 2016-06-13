@@ -17,8 +17,8 @@ namespace KailashEngine.World
     class WorldLoader
     {
 
-        private Dictionary<string, Mesh> _meshes;
-        public Dictionary<string, Mesh> meshes
+        private Dictionary<string, UniqueMesh> _meshes;
+        public Dictionary<string, UniqueMesh> meshes
         {
             get { return _meshes; }
         }
@@ -31,7 +31,8 @@ namespace KailashEngine.World
 
 
 
-        public WorldLoader(string filename, string path_mesh, string path_physics, string path_lights)
+
+        public WorldLoader(string filename, string path_mesh, string path_physics, string path_lights, UniqueMesh sLight_mesh, UniqueMesh pLight_mesh)
         {
             Debug.DebugHelper.logInfo(1, "Loading World", filename);
 
@@ -41,9 +42,46 @@ namespace KailashEngine.World
             string lights_filename = path_lights + filename + ".lights";
 
 
-            _meshes = DAE_Loader.load(mesh_filename);
             _lights = LightLoader.load(lights_filename);
+            _meshes = DAE_Loader.load(mesh_filename);
 
+            foreach (Light light in _lights.Values)
+            {
+                switch(light.GetType().ToString())
+                {
+                    case "KailashEngine.World.Lights.sLight":                        
+                        UniqueMesh temp_sLight = new UniqueMesh(sLight_mesh.id, sLight_mesh.mesh, Matrix4.Identity);
+                        UniqueMesh temp_sLight_bounds = new UniqueMesh(sLight_mesh.id, sLight_mesh.mesh, Matrix4.Identity);
+                        temp_sLight.transformation = Matrix4.CreateScale(light.size) * light.spatial.model_view;
+                        temp_sLight.mesh.submeshes[0].material.diffuse_color = light.color;
+                        temp_sLight.mesh.submeshes[0].material.emission = light.intensity;
+                        _meshes.Add(light.id, temp_sLight);
+
+
+
+                        temp_sLight_bounds.transformation =
+                            Matrix4.CreateScale(
+                                light.size * light.falloff,
+                                light.size * light.falloff,
+                                light.size * light.falloff
+                            ) *
+                            light.spatial.rotation_matrix *
+                            (Matrix4.CreateTranslation(light.spatial.position - (new Vector3(0.0f, -light.spatial.look.Y, light.spatial.look.Z) * light.size * light.falloff)));
+                        temp_sLight_bounds.mesh.submeshes[0].material.diffuse_color = light.color;
+                        temp_sLight_bounds.mesh.submeshes[0].material.emission = light.intensity;
+                        _meshes.Add(light.id + "-bounds", temp_sLight_bounds);
+
+
+                        break;
+                    case "KailashEngine.World.Lights.pLight":
+                        //Mesh temp_pLight = pLight_mesh;
+                        //temp_pLight.transformation = Matrix4.CreateScale(light.size) * light.spatial.position_matrix;
+                        //temp_pLight.submeshes[0].material.diffuse_color = light.color;
+                        //temp_pLight.submeshes[0].material.emission = light.intensity;
+                        //_meshes.Add(light.id, temp_pLight);
+                        break;
+                }
+            }
 
 
 
@@ -65,12 +103,18 @@ namespace KailashEngine.World
         }
 
 
+
         public void draw(MatrixStack MS, Program program)
         {
-            foreach (Mesh mesh in _meshes.Values)
+            draw(MS, program, Matrix4.Identity);
+        }
+
+        public void draw(MatrixStack MS, Program program, Matrix4 transformation)
+        {
+            foreach (UniqueMesh unique_mesh in _meshes.Values)
             {
                 // Load Mesh's pre-transformation Matrix
-                Matrix4 temp_mat = mesh.transformation;
+                Matrix4 temp_mat = unique_mesh.transformation;
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
                 // Convert matrix for normals
                 temp_mat = Matrix4.Invert(temp_mat);
@@ -78,7 +122,7 @@ namespace KailashEngine.World
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
 
-                foreach (Mesh submesh in mesh.submeshes)
+                foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {
                     //------------------------------------------------------
                     // Set Material Properties

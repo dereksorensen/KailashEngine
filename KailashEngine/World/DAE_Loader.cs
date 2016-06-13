@@ -19,7 +19,7 @@ namespace KailashEngine.World
         
 
 
-        public static Dictionary<string, Mesh> load(string filename)
+        public static Dictionary<string, UniqueMesh> load(string filename)
         {
             if(!File.Exists(filename))
             {
@@ -33,8 +33,8 @@ namespace KailashEngine.World
             int geometry_count = dae_file.Library_Geometries.Geometry.Count();
             Debug.DebugHelper.logInfo(2, "\tNumber of Meshes", geometry_count.ToString());
 
-
-            Dictionary<string, Mesh> mesh_dictionary = new Dictionary<string, Mesh>();
+            // Dictionary to return
+            Dictionary<string, UniqueMesh> unique_mesh_dictionary = new Dictionary<string, UniqueMesh>();
 
             // Change Blender mesh's to y axis up
             Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
@@ -62,8 +62,7 @@ namespace KailashEngine.World
 
             //------------------------------------------------------
             // Create Material Dictionary
-            //------------------------------------------------------
-            
+            //------------------------------------------------------           
             Dictionary<string, DAE_Material> material_collection = new Dictionary<string, DAE_Material>();
             try
             {
@@ -83,22 +82,12 @@ namespace KailashEngine.World
                 Debug.DebugHelper.logInfo(2, "\tCreating Material Dictionary", "0 effects found :<");
             }
 
-            //------------------------------------------------------
-            // Create Visual Scene Dictionary
-            //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", "");
-            Dictionary<string, Grendgine_Collada_Node> scene_collection = new Dictionary<string, Grendgine_Collada_Node>();
-            foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
-            {
-                string id = n.ID;
-
-                scene_collection.Add(id, n);
-            }
 
             //------------------------------------------------------
             // Create Mesh Dictionary
             //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", "");
+            Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", dae_file.Library_Geometries.Geometry.Count() + " meshes found");
+            Dictionary<string, DAE_Mesh> mesh_collection = new Dictionary<string, DAE_Mesh>();
             foreach (Grendgine_Collada_Geometry g in dae_file.Library_Geometries.Geometry)
             {
                 // Load Mesh
@@ -119,12 +108,35 @@ namespace KailashEngine.World
                     mesh.setBufferIDs(initVAO(mesh));
                 }
 
-                // Load mesh's transformation
-                Grendgine_Collada_Node node_match;
-                string node_match_string = g.Name.Replace('.', '_');
-                if (scene_collection.TryGetValue(node_match_string, out node_match))
+                // Add to Mesh Collection
+                mesh_collection.Add(temp_mesh.id, temp_mesh);
+                
+            }
+
+            //------------------------------------------------------
+            // Run Through Visual Scenes
+            //------------------------------------------------------
+            Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", "");
+            foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
+            {
+                string id = n.ID;
+                Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
+
+                string mesh_id = "";
+                try
                 {
-                    float[] m_array = node_match.Matrix[0].Value();
+                    mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+
+                // Load unique Mesh and its transformation
+                DAE_Mesh m;
+                if (mesh_collection.TryGetValue(mesh_id, out m))
+                {
+                    float[] m_array = n.Matrix[0].Value();
 
                     Matrix4 temp_mat = Matrix4.Identity;
                     temp_mat = new Matrix4(
@@ -135,20 +147,18 @@ namespace KailashEngine.World
                                         );
                     temp_mat = temp_mat * yup;
 
-                    temp_mesh.transformation = temp_mat;
+                    // Add to mesh collection
+                    unique_mesh_dictionary.Add(id, new UniqueMesh(id, m, temp_mat));
                 }
-
-                // Add to mesh collection
-                mesh_dictionary.Add(temp_mesh.id, temp_mesh);
-                
             }
+
 
             // Clear dictionaries. dat mesh is loooaded
             image_collection.Clear();
             material_collection.Clear();
-            scene_collection.Clear();
+            mesh_collection.Clear();
 
-            return mesh_dictionary;
+            return unique_mesh_dictionary;
         }
 
 

@@ -13,6 +13,13 @@ namespace KailashEngine.World.View
     class Camera : WorldObject
     {
 
+        public Matrix4 view
+        {
+            get
+            {
+                return (spatial.position_matrix * spatial.rotation_matrix);
+            }
+        }
 
 
         public Camera()

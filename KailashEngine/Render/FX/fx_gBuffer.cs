@@ -17,7 +17,7 @@ namespace KailashEngine.Render.FX
     class fx_gBuffer : RenderEffect
     {
         // Programs
-        private Program _pTest;
+        private Program _pGeometry;
 
         // Frame Buffers
         private FrameBuffer _fGBuffer;
@@ -67,12 +67,12 @@ namespace KailashEngine.Render.FX
                 _path_glsl_effect + "/helpers/gBuffer_Functions.include"
             };
 
-            _pTest = _pLoader.createProgram(new ShaderFile[]
+            _pGeometry = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "/gen_gBuffer.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "/gen_gBuffer.frag", functions)
             });
-            _pTest.enable_MeshLoading();
+            _pGeometry.enable_MeshLoading();
         }
 
         protected override void load_Buffers()
@@ -156,9 +156,8 @@ namespace KailashEngine.Render.FX
             GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
 
 
-            _pTest.bind();
-            scene.render(_pTest);
-
+            _pGeometry.bind();
+            scene.render(_pGeometry);
         }
 
 

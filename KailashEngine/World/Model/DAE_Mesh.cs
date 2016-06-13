@@ -29,8 +29,6 @@ namespace KailashEngine.World.Model
 
         public void load(Dictionary<string, DAE_Material> material_collection)
         {
-            Debug.DebugHelper.logInfo(3, "\tLoading Mesh", _id);
-
 
             List<Vector3> temp_position = new List<Vector3>();         
             List<Vector3> temp_normal = new List<Vector3>();

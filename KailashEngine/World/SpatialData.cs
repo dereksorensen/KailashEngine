@@ -60,13 +60,15 @@ namespace KailashEngine.World
             }
         }
 
-        public Matrix4 view
+
+        public Matrix4 model_view
         {
             get
             {
-                return Matrix4.Mult(position_matrix, _rotation_matrix);
+                return (rotation_matrix * position_matrix);
             }
         }
+
 
         private Matrix4 _perspective;
         public Matrix4 perspective

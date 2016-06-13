@@ -34,12 +34,14 @@ namespace KailashEngine.World
             List<float> sizes = new List<float>();
             List<float> intensities = new List<float>();
             List<Vector3> colors = new List<Vector3>();
+            List<float> falloffs = new List<float>();
+            List<float> spot_angles = new List<float>();
             List<bool> shadows = new List<bool>();
 
             int num_lights = 0;
 
             StreamReader sr = new StreamReader(filename);
-
+            
             string line;
             while (!sr.EndOfStream)
             {
@@ -94,6 +96,16 @@ namespace KailashEngine.World
                             sha = (single_value == "1") ? true : false;
                             shadows.Add(sha);
                             break;
+                        case "fal ":
+                            float fal;
+                            fal = float.Parse(single_value);
+                            falloffs.Add(fal);
+                            break;
+                        case "ang ":
+                            float ang;
+                            ang = float.Parse(single_value);
+                            spot_angles.Add(ang);
+                            break;
                         case "num ":
                             num_lights = int.Parse(single_value);
                             break;
@@ -114,6 +126,8 @@ namespace KailashEngine.World
                 float size = sizes[i];
                 float intensity = intensities[i];
                 Vector3 color = colors[i];
+                float falloff = falloffs[i];
+                float spot_angle = spot_angles[i];
                 bool shadow = shadows[i];
 
                 switch (type)
@@ -123,7 +137,7 @@ namespace KailashEngine.World
                             id,
                             position, rotation,
                             size,
-                            color, intensity,
+                            color, intensity, falloff, spot_angle,
                             shadow));
                         break;
                     case "POINT":
@@ -131,7 +145,7 @@ namespace KailashEngine.World
                             id,
                             position,
                             size,
-                            color, intensity,
+                            color, intensity, falloff,
                             shadow));
                         break;
                 }
@@ -144,6 +158,8 @@ namespace KailashEngine.World
             sizes.Clear();
             intensities.Clear();
             colors.Clear();
+            falloffs.Clear();
+            spot_angles.Clear();
             shadows.Clear();
 
             return light_dictionary;

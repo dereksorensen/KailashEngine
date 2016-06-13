@@ -325,7 +325,7 @@ namespace KailashEngine
         {
             inputBuffer();
             _render_driver.updateUBO_Camera(
-                _game.player.camera.spatial.view, 
+                _game.player.camera.view, 
                 _game.player.camera.spatial.perspective, 
                 _game.player.camera.spatial.position);
 

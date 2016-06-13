@@ -12,8 +12,8 @@ namespace KailashEngine.World.Lights
     {
 
 
-        public pLight(string id, Vector3 position, float size, Vector3 color, float intensity, bool shadow)
-            : base(id, position, new Vector3(), size, color, intensity, shadow)
+        public pLight(string id, Vector3 position, float size, Vector3 color, float intensity, float falloff, bool shadow)
+            : base(id, position, new Vector3(), size, color, intensity, falloff, shadow)
         {
 
         }

@@ -77,7 +77,7 @@ for item in bpy.data.objects:
             position = "pos " + str(item.location.x) + " " + str(item.location.z) + " " + str(-item.location.y) + '\n'
             lights_file.write(position)
         #rotations
-            rotation = "rot " + str(-item.rotation_euler.x) + " " + str(-item.rotation_euler.z) + " " + str(item.rotation_euler.y) + '\n'
+            rotation = "rot " + str(-(math.degrees(item.rotation_euler.x))) + " " + str(-math.degrees(item.rotation_euler.z)) + " " + str(item.rotation_euler.y) + '\n'
             lights_file.write(rotation)
         #size
             size_float = (item.scale.x + item.scale.y + item.scale.z) / 3.0
@@ -88,7 +88,15 @@ for item in bpy.data.objects:
             lights_file.write(intensity)
         #color
             color = "col " + str(bpy.data.lamps[item.name].color.r) + " " + str(bpy.data.lamps[item.name].color.g) + " " + str(bpy.data.lamps[item.name].color.b) + '\n'
-            lights_file.write(color)  
+            lights_file.write(color)
+        #falloff
+            falloff = "fal " + str(bpy.data.lamps[item.name].distance) + '\n'
+            lights_file.write(falloff)
+        #spot_angle
+            spot_angle = "ang 0" + '\n'
+            if (bpy.data.lamps[item.name].type == 'SPOT'):
+                spot_angle = "ang " + str(bpy.data.lamps[item.name].spot_size) + '\n'                
+            lights_file.write(spot_angle)
         #shadow
             shadow_method = str(bpy.data.lamps[item.name].shadow_method)
             has_shadow = 0

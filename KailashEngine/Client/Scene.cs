@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using KailashEngine.Render;
 using KailashEngine.World;
+using KailashEngine.World.Model;
 
 namespace KailashEngine.Client
 {
@@ -18,7 +19,11 @@ namespace KailashEngine.Client
 
         private MatrixStack _MS;
 
+
+
         // Scene Objects
+        private UniqueMesh _sLight;
+        private UniqueMesh _pLight;
         private WorldLoader _test_scene;
         
 
@@ -35,7 +40,7 @@ namespace KailashEngine.Client
         {
             try
             {
-                return new WorldLoader(filename, _path_mesh, _path_physics, _path_lights);
+                return new WorldLoader(filename, _path_mesh, _path_physics, _path_lights, _sLight, _pLight);
             }
             catch(Exception e)
             {
@@ -47,6 +52,12 @@ namespace KailashEngine.Client
 
         public void load()
         {
+            // Load standard light objects
+            _sLight = DAE_Loader.load(_path_mesh + "sLight.dae").ElementAt(0).Value;
+            _pLight = DAE_Loader.load(_path_mesh + "pLight.dae").ElementAt(0).Value;
+            
+
+            // Load Scenes
             _test_scene = loadHelper("test_scene");
         }
 
