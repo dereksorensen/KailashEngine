@@ -38,7 +38,7 @@ void main()
 	v_TexCoords = texCoord;
 
 	// Put vertex normal in world space
-	v_Normal = (model_normal * vec4(normal, 0.0)).xyz;
+	v_Normal = normalize((model_normal * vec4(normal, 0.0)).xyz);
 	v_Tangent = (model_normal * vec4(tangent, 0.0)).xyz;
 
 }

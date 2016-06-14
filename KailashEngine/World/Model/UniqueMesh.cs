@@ -8,8 +8,16 @@ using OpenTK;
 
 namespace KailashEngine.World.Model
 {
-    class UniqueMesh : Mesh
+    class UniqueMesh
     {
+
+        private string _id;
+        public string id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
 
         protected Matrix4 _transformation;
         public Matrix4 transformation
@@ -28,8 +36,8 @@ namespace KailashEngine.World.Model
 
 
         public UniqueMesh(string id, Mesh mesh, Matrix4 transformation)
-            : base(id)
         {
+            _id = id;
             _mesh = mesh;
             _transformation = transformation;
         }

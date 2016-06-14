@@ -19,7 +19,7 @@ namespace KailashEngine.World
         
 
 
-        public static Dictionary<string, UniqueMesh> load(string filename)
+        public static void load(string filename, out Dictionary<string, UniqueMesh> unique_mesh_collection, out Dictionary<string, Matrix4> light_matrix_collection)
         {
             if(!File.Exists(filename))
             {
@@ -29,12 +29,8 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(1, "Loading Collada File", Path.GetFileName(filename));
             Grendgine_Collada dae_file = Grendgine_Collada.Grendgine_Load_File(filename);
 
-
             int geometry_count = dae_file.Library_Geometries.Geometry.Count();
             Debug.DebugHelper.logInfo(2, "\tNumber of Meshes", geometry_count.ToString());
-
-            // Dictionary to return
-            Dictionary<string, UniqueMesh> unique_mesh_dictionary = new Dictionary<string, UniqueMesh>();
 
             // Change Blender mesh's to y axis up
             Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
@@ -117,38 +113,56 @@ namespace KailashEngine.World
             // Run Through Visual Scenes
             //------------------------------------------------------
             Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", "");
+            unique_mesh_collection = new Dictionary<string, UniqueMesh>();
+            light_matrix_collection = new Dictionary<string, Matrix4>();
             foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
             {
                 string id = n.ID;
                 Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
 
                 string mesh_id = "";
+                string light_id = "";
+
                 try
                 {
                     mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
                 }
                 catch (Exception)
                 {
-                    continue;
+                    try
+                    {
+                        light_id = n.Instance_Light[0].URL.Replace("#", "");
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
                 }
+
+                // Temp transformmation matrix
+                float[] m_array = n.Matrix[0].Value();
+
+                Matrix4 temp_mat = Matrix4.Identity;
+                temp_mat = new Matrix4(
+                    m_array[0], m_array[4], m_array[8], m_array[12],
+                    m_array[1], m_array[5], m_array[9], m_array[13],
+                    m_array[2], m_array[6], m_array[10], m_array[14],
+                    m_array[3], m_array[7], m_array[11], m_array[15]
+                                    );
+                temp_mat = temp_mat * yup;
+
 
                 // Load unique Mesh and its transformation
                 DAE_Mesh m;
                 if (mesh_collection.TryGetValue(mesh_id, out m))
                 {
-                    float[] m_array = n.Matrix[0].Value();
-
-                    Matrix4 temp_mat = Matrix4.Identity;
-                    temp_mat = new Matrix4(
-                        m_array[0], m_array[4], m_array[8], m_array[12],
-                        m_array[1], m_array[5], m_array[9], m_array[13],
-                        m_array[2], m_array[6], m_array[10], m_array[14],
-                        m_array[3], m_array[7], m_array[11], m_array[15]
-                                        );
-                    temp_mat = temp_mat * yup;
-
                     // Add to mesh collection
-                    unique_mesh_dictionary.Add(id, new UniqueMesh(id, m, temp_mat));
+                    unique_mesh_collection.Add(id, new UniqueMesh(id, m, temp_mat));
+                }
+                else if (light_id != "")
+                {
+                    // Add to light matrix collection
+                    light_matrix_collection.Add(light_id, temp_mat);
                 }
             }
 
@@ -158,7 +172,6 @@ namespace KailashEngine.World
             material_collection.Clear();
             mesh_collection.Clear();
 
-            return unique_mesh_dictionary;
         }
 
 

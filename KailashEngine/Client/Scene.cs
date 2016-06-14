@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
 using KailashEngine.Render;
 using KailashEngine.World;
 using KailashEngine.World.Model;
@@ -18,7 +20,6 @@ namespace KailashEngine.Client
         private string _path_lights;
 
         private MatrixStack _MS;
-
 
 
         // Scene Objects
@@ -52,10 +53,15 @@ namespace KailashEngine.Client
 
         public void load()
         {
+            Dictionary<string, Matrix4> dirt;
+            Dictionary<string, UniqueMesh> light_objects;
+
             // Load standard light objects
-            _sLight = DAE_Loader.load(_path_mesh + "sLight.dae").ElementAt(0).Value;
-            _pLight = DAE_Loader.load(_path_mesh + "pLight.dae").ElementAt(0).Value;
-            
+            DAE_Loader.load(_path_mesh + "light_objects.dae", out light_objects, out dirt);
+            _sLight = light_objects["sLight"];
+            _pLight = light_objects["pLight"];
+
+            light_objects.Clear();
 
             // Load Scenes
             _test_scene = loadHelper("test_scene");

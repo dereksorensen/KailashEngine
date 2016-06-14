@@ -77,7 +77,7 @@ for item in bpy.data.objects:
             position = "pos " + str(item.location.x) + " " + str(item.location.z) + " " + str(-item.location.y) + '\n'
             lights_file.write(position)
         #rotations
-            rotation = "rot " + str(-(math.degrees(item.rotation_euler.x))) + " " + str(-math.degrees(item.rotation_euler.z)) + " " + str(item.rotation_euler.y) + '\n'
+            rotation = "rot " + str(-item.rotation_euler.x) + " " + str(-item.rotation_euler.z) + " " + str(item.rotation_euler.y) + '\n'
             lights_file.write(rotation)
         #size
             size_float = (item.scale.x + item.scale.y + item.scale.z) / 3.0

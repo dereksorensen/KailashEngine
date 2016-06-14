@@ -69,9 +69,9 @@ namespace KailashEngine.World
                             break;
                         case "rot ":
                             Vector3 rot;
-                            rot.X = float.Parse(multi_value[0]);
-                            rot.Y = float.Parse(multi_value[1]);
-                            rot.Z = float.Parse(multi_value[2]);
+                            rot.X = MathHelper.RadiansToDegrees(float.Parse(multi_value[0])) - 90.0f;
+                            rot.Y = MathHelper.RadiansToDegrees(float.Parse(multi_value[1])) - 180.0f;
+                            rot.Z = MathHelper.RadiansToDegrees(float.Parse(multi_value[2]));
                             rotations.Add(rot);
                             break;
                         case "siz ":

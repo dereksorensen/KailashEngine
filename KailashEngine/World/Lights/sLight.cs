@@ -11,13 +11,6 @@ namespace KailashEngine.World.Lights
     class sLight : Light
     {
 
-        private float _spot_angle;
-        public float spot_angle
-        {
-            get { return _spot_angle; }
-            set { _spot_angle = value; }
-        }
-
 
 
         public sLight(string id, Vector3 position, Vector3 rotation, float size, Vector3 color, float intensity, float falloff, float spot_angle, bool shadow)
