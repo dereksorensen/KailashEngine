@@ -120,24 +120,6 @@ namespace KailashEngine.World
                 string id = n.ID;
                 Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
 
-                string mesh_id = "";
-                string light_id = "";
-
-                try
-                {
-                    mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
-                }
-                catch (Exception)
-                {
-                    try
-                    {
-                        light_id = n.Instance_Light[0].URL.Replace("#", "");
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
-                }
 
                 // Temp transformmation matrix
                 float[] m_array = n.Matrix[0].Value();
@@ -152,18 +134,27 @@ namespace KailashEngine.World
                 temp_mat = temp_mat * yup;
 
 
-                // Load unique Mesh and its transformation
-                DAE_Mesh m;
-                if (mesh_collection.TryGetValue(mesh_id, out m))
+                // Meshes
+                if(n.Instance_Geometry != null)
                 {
-                    // Add to mesh collection
-                    unique_mesh_collection.Add(id, new UniqueMesh(id, m, temp_mat));
+                    string mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
+                    // Load unique Mesh and its transformation
+                    DAE_Mesh m;
+                    if (mesh_collection.TryGetValue(mesh_id, out m))
+                    {
+                        // Add to mesh collection
+                        unique_mesh_collection.Add(id, new UniqueMesh(id, m, temp_mat));
+                    }
                 }
-                else if (light_id != "")
+
+                // Lights
+                if (n.Instance_Light != null)
                 {
+                    string light_id = n.Instance_Light[0].URL.Replace("#", "");
                     // Add to light matrix collection
                     light_matrix_collection.Add(light_id, temp_mat);
                 }
+
             }
 
 

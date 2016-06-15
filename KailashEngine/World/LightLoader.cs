@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OpenTK;
 
 using KailashEngine.World.Lights;
+using KailashEngine.World.Model;
 
 namespace KailashEngine.World
 {
@@ -15,7 +16,7 @@ namespace KailashEngine.World
     {
 
 
-        public static Dictionary<string, Light> load(string filename)
+        public static List<Light> load(string filename, Dictionary<string, Matrix4> light_matrix_collection, Mesh sLight_mesh, Mesh pLight_mesh)
         {
             if (!File.Exists(filename))
             {
@@ -24,8 +25,8 @@ namespace KailashEngine.World
 
             Debug.DebugHelper.logInfo(1, "Loading Lights File", Path.GetFileName(filename));
 
-            Dictionary<string, Light> light_dictionary = new Dictionary<string, Light>();
-
+            List<Light> light_list = new List<Light>();
+            
 
             List<string> ids = new List<string>();
             List<string> types = new List<string>();
@@ -119,7 +120,7 @@ namespace KailashEngine.World
 
             for (int i = 0; i < num_lights; i++)
             {
-                string id = ids[i];
+                string id = ids[i].Replace('.', '_');
                 string type = types[i];
                 Vector3 position = positions[i];
                 Vector3 rotation = rotations[i];
@@ -130,23 +131,69 @@ namespace KailashEngine.World
                 float spot_angle = spot_angles[i];
                 bool shadow = shadows[i];
 
+                Vector3 scaler;
+                Vector3 shifter;
+                Light temp_light;
+                Matrix4 temp_matrix = Matrix4.Identity;
+                light_matrix_collection.TryGetValue(id + "-light", out temp_matrix);
+
                 switch (type)
                 {
                     case "SPOT":
-                        light_dictionary.Add(id, new sLight(
+                        // Create New Light
+                        temp_light = new sLight(
                             id,
                             position, rotation,
                             size,
                             color, intensity, falloff, spot_angle,
-                            shadow));
+                            shadow);
+
+                        // Create Light Object Mesh
+                        temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
+
+                        // Create Light Bounds Mesh
+                        float spot_height = falloff / 1.0f;
+                        float spot_radius = spot_height * (float)Math.Tan(spot_angle);
+                        scaler = new Vector3(
+                                spot_radius,
+                                spot_radius,
+                                spot_height * 2.0f
+                            );
+                        scaler *= temp_matrix.ExtractScale();
+                        shifter = new Vector3(
+                                0.0f,
+                                0.0f,
+                                -scaler.Z
+                            );
+                        temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * temp_matrix;
+                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", sLight_mesh, temp_matrix);
+
+                        // Add Spot Light to Dictionary
+                        light_list.Add(temp_light);
                         break;
                     case "POINT":
-                        light_dictionary.Add(id, new pLight(
+                        temp_light = new pLight(
                             id,
                             position,
                             size,
                             color, intensity, falloff,
-                            shadow));
+                            shadow);
+
+                        // Create Light Object Mesh
+                        temp_light.unique_mesh = new UniqueMesh(id, pLight_mesh, temp_matrix);
+
+                        // Create Light Bounds Mesh
+                        float point_radius = falloff;
+                        Vector3 light_object_scaler = temp_matrix.ExtractScale();
+                        scaler = new Vector3(
+                                point_radius / light_object_scaler.X,
+                                point_radius / light_object_scaler.Y,
+                                point_radius / light_object_scaler.Z
+                            );
+                        temp_matrix = Matrix4.CreateScale(scaler) * temp_matrix;
+                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix);
+
+                        light_list.Add(temp_light);
                         break;
                 }
             }
@@ -162,7 +209,7 @@ namespace KailashEngine.World
             spot_angles.Clear();
             shadows.Clear();
 
-            return light_dictionary;
+            return light_list;
         }
 
 

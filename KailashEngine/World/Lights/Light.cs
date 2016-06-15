@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
+using KailashEngine.World.Model;
+
 namespace KailashEngine.World.Lights
 {
     class Light : WorldObject
@@ -63,6 +65,23 @@ namespace KailashEngine.World.Lights
         }
 
 
+        private UniqueMesh _unique_mesh;
+        public UniqueMesh unique_mesh
+        {
+            get { return _unique_mesh; }
+            set { _unique_mesh = value; }
+        }
+
+        private UniqueMesh _bounding_unique_mesh;
+        public UniqueMesh bounding_unique_mesh
+        {
+            get { return _bounding_unique_mesh; }
+            set { _bounding_unique_mesh = value; }
+        }
+
+
+
+
         public Light(string id, Vector3 position, Vector3 rotation, float size, Vector3 color, float intensity, float falloff, bool shadow)
             : base(position, new Vector3(), new Vector3())
         {
@@ -74,14 +93,6 @@ namespace KailashEngine.World.Lights
             _shadow = shadow;
 
             rotate(rotation.X, rotation.Y, rotation.Z);
-        }
-
-
-        public float getBoundingBoxScale()
-        {
-            float MaxChannel = Math.Max(Math.Max(_color.X, _color.Y), _color.Z);
-            float c = MaxChannel * (_intensity);
-            return (11.0f * (float)Math.Sqrt(c) + 1.0f);
         }
 
 

@@ -459,16 +459,15 @@
     <Compile Include="World\Lights\pLight.cs" />
     <Compile Include="World\Lights\sLight.cs" />
     <Compile Include="World\Model\DAE_Material.cs" />
-    <Compile Include="World\Model\ModelLoader.cs" />
     <Compile Include="World\Model\Material.cs" />
     <Compile Include="World\Model\Mesh.cs" />
     <Compile Include="World\Model\DAE_Mesh.cs" />
     <Compile Include="World\Model\DAE_Polylist.cs" />
-    <Compile Include="World\Model\UniqueLightMesh.cs" />
     <Compile Include="World\Model\UniqueMesh.cs" />
     <Compile Include="World\Role\NonPlayableCharacter.cs" />
     <Compile Include="World\Role\PlayableCharacter.cs" />
     <Compile Include="World\DAE_Loader.cs" />
+    <Compile Include="World\WorldDrawer.cs" />
     <Compile Include="World\WorldLoader.cs" />
     <Compile Include="World\SpatialData.cs" />
     <Compile Include="World\View\Camera.cs" />

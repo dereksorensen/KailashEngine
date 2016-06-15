@@ -17,214 +17,71 @@ namespace KailashEngine.World
     class WorldLoader
     {
 
-        private Dictionary<string, UniqueMesh> _meshes;
-        public Dictionary<string, UniqueMesh> meshes
+        
+        private string _path_mesh;
+        private string _path_physics;
+        private string _path_lights;
+
+        private Mesh _sLight_mesh;
+        public Mesh sLight_mesh
         {
-            get { return _meshes; }
+            get { return _sLight_mesh; }
+            set { _sLight_mesh = value; }
         }
 
-        private Dictionary<string, Light> _lights;
-        public Dictionary<string, Light> lights
+        private Mesh _pLight_mesh;
+        public Mesh pLight_mesh
         {
-            get { return _lights; }
+            get { return _pLight_mesh; }
+            set { _pLight_mesh = value; }
         }
 
 
+        public WorldLoader(string path_mesh, string path_physics, string path_lights, string light_objects_filename)
+        {
+
+            // Fill Base Paths
+            _path_mesh = path_mesh;
+            _path_physics = path_physics;
+            _path_lights = path_lights;
 
 
-        public WorldLoader(string filename, string path_mesh, string path_physics, string path_lights, UniqueMesh sLight_mesh, UniqueMesh pLight_mesh)
+            // Load standard light object meshes
+            Dictionary<string, Matrix4> dirt;
+            Dictionary<string, UniqueMesh> light_objects;
+            DAE_Loader.load(_path_mesh + light_objects_filename, out light_objects, out dirt);
+            _sLight_mesh = light_objects["sLight"].mesh;
+            _pLight_mesh = light_objects["pLight"].mesh;
+            light_objects.Clear();
+
+        }
+
+
+        public void createWorld(string filename, out List<UniqueMesh> meshes, out List<Light> lights)
         {
             Debug.DebugHelper.logInfo(1, "Loading World", filename);
 
+            // Build filenames
+            string mesh_filename = _path_mesh + filename + ".dae";
+            string physics_filename = _path_physics + filename + ".physics";
+            string lights_filename = _path_lights + filename + ".lights";
 
-            string mesh_filename = path_mesh + filename + ".dae";
-            string physics_filename = path_physics + filename + ".physics";
-            string lights_filename = path_lights + filename + ".lights";
-
-
+            
+            Dictionary<string, UniqueMesh> temp_meshes;
             Dictionary<string, Matrix4> light_matrix_collection;
 
-            _lights = LightLoader.load(lights_filename);
-            DAE_Loader.load(mesh_filename, 
-                out _meshes, 
+
+            DAE_Loader.load(
+                mesh_filename,
+                out temp_meshes,
                 out light_matrix_collection);
+            lights = LightLoader.load(lights_filename, light_matrix_collection, _sLight_mesh, _pLight_mesh);
 
-            foreach (Light light in _lights.Values)
-            {
-
-                string light_id = light.id.Replace('.', '_');
-                Matrix4 light_transformation = Matrix4.Identity;
-                Vector3 scaler;
-                Vector3 shifter;
-                if (light_matrix_collection.TryGetValue(light_id + "-light", out light_transformation))
-                {
-                    switch (light.GetType().ToString())
-                    {
-                        case "KailashEngine.World.Lights.sLight":
-
-                            UniqueLightMesh temp_sLight = new UniqueLightMesh(light_id, sLight_mesh.mesh, Matrix4.Identity, light.color);
-                            temp_sLight.transformation = light_transformation;
-                            temp_sLight.mesh.submeshes[0].material.diffuse_color = light.color;
-                            temp_sLight.mesh.submeshes[0].material.emission = light.intensity;
-                            _meshes.Add(light.id, temp_sLight);
-
-
-                            // Light Volume Spatials
-                            float spot_height = light.falloff / 2.0f;
-                            float spot_radius = spot_height * (float)Math.Tan(light.spot_angle);
-                            scaler = new Vector3(
-                                    spot_radius,
-                                    spot_radius,
-                                    spot_height * 2.0f
-                                );
-                            scaler *= light_transformation.ExtractScale();
-                            shifter = new Vector3(
-                                    0.0f,
-                                    0.0f,
-                                    -scaler.Z
-                                );
-
-                            UniqueLightMesh temp_sLight_bounds = new UniqueLightMesh(light_id + "-bounds", sLight_mesh.mesh, Matrix4.Identity, light.color);
-                            temp_sLight_bounds.transformation =
-                                Matrix4.CreateScale(scaler) *
-                                Matrix4.CreateTranslation(shifter) *
-                                light_transformation;
-                            _meshes.Add(light.id + "-bounds", temp_sLight_bounds);
-
-
-                            break;
-                        case "KailashEngine.World.Lights.pLight":
-                            UniqueLightMesh temp_pLight = new UniqueLightMesh(light_id, pLight_mesh.mesh, Matrix4.Identity, light.color);
-                            temp_pLight.transformation = Matrix4.CreateScale(light.size) * light.spatial.position_matrix;
-                            temp_pLight.mesh.submeshes[0].material.diffuse_color = light.color;
-                            temp_pLight.mesh.submeshes[0].material.emission = light.intensity;
-                            _meshes.Add(light.id, temp_pLight);
-
-
-                            float point_radius = light.falloff;
-                            Vector3 light_object_scaler = light_transformation.ExtractScale();
-                            scaler = new Vector3(
-                                    point_radius / light_object_scaler.X,
-                                    point_radius / light_object_scaler.Y,
-                                    point_radius / light_object_scaler.Z
-                                );
-
-                            UniqueLightMesh temp_pLight_bounds = new UniqueLightMesh(light_id + "-bounds", pLight_mesh.mesh, Matrix4.Identity, light.color);
-                            temp_pLight_bounds.transformation =
-                                Matrix4.CreateScale(scaler) *
-                                light_transformation;
-                            _meshes.Add(light.id + "-bounds", temp_pLight_bounds);
-
-
-                            break;
-                    }
-                }
-            }
-
+            meshes = temp_meshes.Values.ToList();
 
 
             Debug.DebugHelper.logInfo(1, "", "");
         }
-
-
-        private void trySetMatrialImage(Program program, Render.Objects.Image image, string uTexture, string uEnableTexture, int index)
-        {
-            if(image != null)
-            {
-                image.bind(program.getUniform(uTexture), index);
-                program.enable_MaterialTexture(uEnableTexture, 1);
-            }
-            else
-            {
-                program.enable_MaterialTexture(uEnableTexture, 0);
-            }
-        }
-
-
-
-        public void draw(MatrixStack MS, Program program)
-        {
-            draw(MS, program, Matrix4.Identity);
-        }
-
-        public void draw(MatrixStack MS, Program program, Matrix4 transformation)
-        {
-            foreach (UniqueMesh unique_mesh in _meshes.Values)
-            {
-                // Load Mesh's pre-transformation Matrix
-                Matrix4 temp_mat = unique_mesh.transformation;
-                GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
-                // Convert matrix for normals
-                temp_mat = Matrix4.Invert(temp_mat);
-                temp_mat = Matrix4.Transpose(temp_mat);
-                GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
-
-
-                foreach (Mesh submesh in unique_mesh.mesh.submeshes)
-                {
-                    //------------------------------------------------------
-                    // Set Material Properties
-                    //------------------------------------------------------
-
-                    GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
-                    GL.Uniform1(program.getUniform(RenderHelper.uEmission), submesh.material.emission);
-                    GL.Uniform3(program.getUniform(RenderHelper.uSpecularColor), submesh.material.specular_color);
-                    GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), submesh.material.specular_shininess);
-                    GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
-
-
-                    // Diffuse 
-                    trySetMatrialImage(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTexture, RenderHelper.uEnableDiffuseTexture, 31);
-
-                    // Specular
-                    trySetMatrialImage(program, submesh.material.specular_image, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
-
-                    // Normal
-                    trySetMatrialImage(program, submesh.material.normal_image, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture, 29);
-
-                    // Displacement
-                    trySetMatrialImage(program, submesh.material.displacement_image, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture, 28);
-
-                    // Parallax
-                    trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
-
-
-
-
-                    if (unique_mesh.id.Contains("-bounds"))
-                    {
-                        GL.Disable(EnableCap.CullFace);
-                        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                    }
-
-
-                    try
-                    {
-                        GL.BindVertexArray(submesh.vao);
-                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, submesh.ibo);
-                        GL.DrawElements(BeginMode.Triangles, submesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
-                        GL.BindVertexArray(0);
-                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed drawing mesh", e);
-                    }
-
-
-
-
-                    if (unique_mesh.id.Contains("-bounds"))
-                    {
-                        GL.Enable(EnableCap.CullFace);
-                        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                    }
-                    
-                }
-            }
-        }
-
 
     }
 }

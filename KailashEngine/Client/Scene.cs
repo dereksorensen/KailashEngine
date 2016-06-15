@@ -9,6 +9,7 @@ using OpenTK;
 using KailashEngine.Render;
 using KailashEngine.World;
 using KailashEngine.World.Model;
+using KailashEngine.World.Lights;
 
 namespace KailashEngine.Client
 {
@@ -21,13 +22,27 @@ namespace KailashEngine.Client
 
         private MatrixStack _MS;
 
+        private WorldLoader _world_loader;
 
-        // Scene Objects
-        private UniqueMesh _sLight;
-        private UniqueMesh _pLight;
-        private WorldLoader _test_scene;
-        
 
+        // Master Lists
+        private List<UniqueMesh> _meshes;
+        public List<UniqueMesh> meshes
+        {
+            get { return _meshes; }
+            set { _meshes = value; }
+        }
+
+        private List<Light> _lights;
+        public List<Light> lights
+        {
+            get { return _lights; }
+            set { _lights = value; }
+        }
+
+
+        private List<UniqueMesh> oscar;
+        List<Light> light_oscar;
 
         public Scene(string path_mesh, string path_physics, string path_lights)
         {
@@ -35,42 +50,73 @@ namespace KailashEngine.Client
             _path_physics = path_physics;
             _path_lights = path_lights;
             _MS = new MatrixStack();
+        
+
+            _meshes = new List<UniqueMesh>();
+            _lights = new List<Light>();
         }
 
-        private WorldLoader loadHelper(string filename)
+        private void addWorldToScene(string[] filenames)
+        {
+            foreach (string filename in filenames)
+            {
+                try
+                {
+                    List<UniqueMesh> temp_meshes;
+                    List<Light> temp_lights;
+
+                    _world_loader.createWorld(filename, out temp_meshes, out temp_lights);
+
+                    _meshes.AddRange(temp_meshes);
+                    _lights.AddRange(temp_lights);
+
+                    temp_meshes.Clear();
+                    temp_lights.Clear();
+                }
+                catch (Exception e)
+                {
+                    Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
+                }
+            }
+        }
+
+        private void loadWorld(string filename, out List<UniqueMesh> mesh_list, out List<Light> light_list)
         {
             try
             {
-                return new WorldLoader(filename, _path_mesh, _path_physics, _path_lights, _sLight, _pLight);
+                _world_loader.createWorld(filename, out mesh_list, out light_list);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
-                return null;
+                mesh_list = null;
+                light_list = null;
             }
-            
         }
 
         public void load()
         {
-            Dictionary<string, Matrix4> dirt;
-            Dictionary<string, UniqueMesh> light_objects;
+            _world_loader = new WorldLoader(_path_mesh, _path_physics, _path_lights, "light_objects.dae");
 
-            // Load standard light objects
-            DAE_Loader.load(_path_mesh + "light_objects.dae", out light_objects, out dirt);
-            _sLight = light_objects["sLight"];
-            _pLight = light_objects["pLight"];
-
-            light_objects.Clear();
 
             // Load Scenes
-            _test_scene = loadHelper("test_scene");
+            addWorldToScene(new string[]
+            {
+                "test_scene"
+            });
+
+
+            loadWorld("oscar", out oscar, out light_oscar);
+
         }
 
 
         public void render(Program program)
         {
-            _test_scene.draw(_MS, program);
+            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
+            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, true);
+
+            WorldDrawer.drawMeshes(oscar, program, Matrix4.Identity);
         }
 
     }
