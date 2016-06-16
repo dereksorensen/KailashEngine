@@ -86,6 +86,16 @@ namespace KailashEngine.Render
             addUniform(RenderHelper.uParallaxTexture);
         }
 
+        // Setup program to calculate lighting
+        public void enable_LightCalculation()
+        {
+            addUniform(RenderHelper.uLightPosition);
+            addUniform(RenderHelper.uLightDirection);
+            addUniform(RenderHelper.uLightColor);
+            addUniform(RenderHelper.uLightIntensity);
+            addUniform(RenderHelper.uLightFalloff);
+        }
+
         // Setup sampler uniforms for textures
         public void enable_Samplers(int num_samplers)
         {

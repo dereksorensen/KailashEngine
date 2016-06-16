@@ -39,7 +39,6 @@ namespace KailashEngine.World
 
         public WorldLoader(string path_mesh, string path_physics, string path_lights, string light_objects_filename)
         {
-
             // Fill Base Paths
             _path_mesh = path_mesh;
             _path_physics = path_physics;
@@ -53,7 +52,6 @@ namespace KailashEngine.World
             _sLight_mesh = light_objects["sLight"].mesh;
             _pLight_mesh = light_objects["pLight"].mesh;
             light_objects.Clear();
-
         }
 
 
@@ -70,17 +68,82 @@ namespace KailashEngine.World
             Dictionary<string, UniqueMesh> temp_meshes;
             Dictionary<string, Matrix4> light_matrix_collection;
 
+            DAE_Loader.load(mesh_filename, out temp_meshes, out light_matrix_collection);
+            lights = LightLoader.load(lights_filename, light_matrix_collection, _sLight_mesh, _pLight_mesh);
+            meshes = temp_meshes.Values.ToList();
+
+            temp_meshes.Clear();
+            light_matrix_collection.Clear();
+
+            Debug.DebugHelper.logInfo(1, "", "");
+        }
+
+        public void createWorld(string filename, out List<UniqueMesh> meshes)
+        {
+            Debug.DebugHelper.logInfo(1, "Loading World", filename);
+
+            // Build filenames
+            string mesh_filename = _path_mesh + filename + ".dae";
+            string physics_filename = _path_physics + filename + ".physics";
+            string lights_filename = _path_lights + filename + ".lights";
+
+
+            Dictionary<string, UniqueMesh> temp_meshes;
+            Dictionary<string, Matrix4> light_matrix_collection;
+
 
             DAE_Loader.load(
                 mesh_filename,
                 out temp_meshes,
                 out light_matrix_collection);
-            lights = LightLoader.load(lights_filename, light_matrix_collection, _sLight_mesh, _pLight_mesh);
 
             meshes = temp_meshes.Values.ToList();
 
+            temp_meshes.Clear();
+            light_matrix_collection.Clear();
+
 
             Debug.DebugHelper.logInfo(1, "", "");
+        }
+
+
+        public void addWorldToScene(string[] filenames, List<UniqueMesh> meshes, List<Light> lights)
+        {
+            foreach (string filename in filenames)
+            {
+                try
+                {
+                    List<UniqueMesh> temp_meshes;
+                    List<Light> temp_lights;
+
+                    createWorld(filename, out temp_meshes, out temp_lights);
+
+                    meshes.AddRange(temp_meshes);
+                    lights.AddRange(temp_lights);
+
+                    temp_meshes.Clear();
+                    temp_lights.Clear();
+                }
+                catch (Exception e)
+                {
+                    Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
+                }
+            }
+        }
+
+
+        public void loadWorld(string filename, out List<UniqueMesh> mesh_list, out List<Light> light_list)
+        {
+            try
+            {
+                createWorld(filename, out mesh_list, out light_list);
+            }
+            catch (Exception e)
+            {
+                Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
+                mesh_list = null;
+                light_list = null;
+            }
         }
 
     }

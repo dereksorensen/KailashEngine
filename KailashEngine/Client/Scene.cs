@@ -56,43 +56,9 @@ namespace KailashEngine.Client
             _lights = new List<Light>();
         }
 
-        private void addWorldToScene(string[] filenames)
-        {
-            foreach (string filename in filenames)
-            {
-                try
-                {
-                    List<UniqueMesh> temp_meshes;
-                    List<Light> temp_lights;
 
-                    _world_loader.createWorld(filename, out temp_meshes, out temp_lights);
 
-                    _meshes.AddRange(temp_meshes);
-                    _lights.AddRange(temp_lights);
 
-                    temp_meshes.Clear();
-                    temp_lights.Clear();
-                }
-                catch (Exception e)
-                {
-                    Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
-                }
-            }
-        }
-
-        private void loadWorld(string filename, out List<UniqueMesh> mesh_list, out List<Light> light_list)
-        {
-            try
-            {
-                _world_loader.createWorld(filename, out mesh_list, out light_list);
-            }
-            catch (Exception e)
-            {
-                Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
-                mesh_list = null;
-                light_list = null;
-            }
-        }
 
         public void load()
         {
@@ -100,22 +66,24 @@ namespace KailashEngine.Client
 
 
             // Load Scenes
-            addWorldToScene(new string[]
+            _world_loader.addWorldToScene(new string[]
             {
                 "test_scene"
-            });
+            }, _meshes, _lights);
 
-
-            loadWorld("oscar", out oscar, out light_oscar);
+             
+            _world_loader.loadWorld("oscar", out oscar, out light_oscar);
 
         }
 
 
         public void render(Program program)
         {
+            // Draw Scene
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
             WorldDrawer.drawLights(_lights, program, Matrix4.Identity, true);
 
+            // Draw Other Meshes
             WorldDrawer.drawMeshes(oscar, program, Matrix4.Identity);
         }
 

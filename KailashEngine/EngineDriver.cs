@@ -293,7 +293,7 @@ namespace KailashEngine
 
             // Create Engine Objects
             _render_driver = new RenderDriver(
-                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base),
+                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common),
                 _game.display.resolution
             );
 

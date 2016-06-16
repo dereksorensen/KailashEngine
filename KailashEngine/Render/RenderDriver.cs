@@ -51,8 +51,8 @@ namespace KailashEngine.Render
 
 
             // Render FXs
-            _quad = new fx_Quad(_pLoader, "common", _resolution);
-            _gBuffer = new fx_gBuffer(_pLoader, "gBuffer", _resolution);
+            _quad = new fx_Quad(_pLoader, "common/", _resolution);
+            _gBuffer = new fx_gBuffer(_pLoader, "gBuffer/", _resolution);
 
 
         }
@@ -140,10 +140,7 @@ namespace KailashEngine.Render
 
             _quad.render_Texture2D(_gBuffer.tNormal_Depth, 0.25f, 0);
             _quad.render_Texture2D(_gBuffer.tSpecular, 0.25f, 1);
-
-            //_quad.render_Texture2D(_gBuffer.tDiffuse, 0.5f, 0);
-            //_quad.render_Texture2D(_gBuffer.tDiffuse, 0.25f, 0);
-            //_quad.render_Texture2D(_gBuffer.tDiffuse, 0.125f, 0);
+            _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 2);
 
         }
 

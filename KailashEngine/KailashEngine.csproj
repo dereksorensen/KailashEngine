@@ -483,6 +483,10 @@
     <None Include="packages.config" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_PL.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Stencil.vert" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_SL.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.vert" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />

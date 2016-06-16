@@ -193,5 +193,29 @@ namespace KailashEngine.World
                 }
             }
         }
+
+        //------------------------------------------------------
+        // Light Bounds Drawing
+        //------------------------------------------------------
+        public static void drawLightBounds(Light light, Program program)
+        {
+            
+            Matrix4 temp_mat = light.bounding_unique_mesh.transformation;
+            GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
+
+            try
+            {
+                GL.BindVertexArray(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).vao);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).ibo);
+                GL.DrawElements(BeginMode.Triangles, light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).index_data.Length, DrawElementsType.UnsignedInt, 0);
+                GL.BindVertexArray(0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed drawing mesh", e);
+            }
+        }
     }
 }

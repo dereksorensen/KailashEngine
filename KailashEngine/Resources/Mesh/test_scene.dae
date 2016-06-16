@@ -5,82 +5,12 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.76.0 commit date:2015-11-03, commit time:10:56, hash:f337fea</authoring_tool>
     </contributor>
-    <created>2016-06-14T19:00:50</created>
-    <modified>2016-06-14T19:00:50</modified>
+    <created>2016-06-15T17:53:42</created>
+    <modified>2016-06-15T17:53:42</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_lights>
-    <light id="Lamp_000-light" name="Lamp.000">
-      <technique_common>
-        <spot>
-          <color sid="color">0.02119863 0.01090955 1</color>
-          <constant_attenuation>1</constant_attenuation>
-          <linear_attenuation>0</linear_attenuation>
-          <quadratic_attenuation>0.00111109</quadratic_attenuation>
-          <falloff_angle sid="fall_off_angle">70</falloff_angle>
-          <falloff_exponent sid="fall_off_exponent">0.15</falloff_exponent>
-        </spot>
-      </technique_common>
-      <extra>
-        <technique profile="blender">
-          <adapt_thresh>0.000999987</adapt_thresh>
-          <area_shape>1</area_shape>
-          <area_size>0.1</area_size>
-          <area_sizey>0.1</area_sizey>
-          <area_sizez>1</area_sizez>
-          <atm_distance_factor>1</atm_distance_factor>
-          <atm_extinction_factor>1</atm_extinction_factor>
-          <atm_turbidity>2</atm_turbidity>
-          <att1>0</att1>
-          <att2>1</att2>
-          <backscattered_light>1</backscattered_light>
-          <bias>1</bias>
-          <blue>1</blue>
-          <buffers>1</buffers>
-          <bufflag>0</bufflag>
-          <bufsize>2880</bufsize>
-          <buftype>2</buftype>
-          <clipend>30.002</clipend>
-          <clipsta>1.000799</clipsta>
-          <compressthresh>0.04999995</compressthresh>
-          <dist sid="blender_dist">30</dist>
-          <energy sid="blender_energy">1</energy>
-          <falloff_type>2</falloff_type>
-          <filtertype>0</filtertype>
-          <flag>0</flag>
-          <gamma sid="blender_gamma">1</gamma>
-          <green>0.01090955</green>
-          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
-          <horizon_brightness>1</horizon_brightness>
-          <mode>0</mode>
-          <ray_samp>1</ray_samp>
-          <ray_samp_method>1</ray_samp_method>
-          <ray_samp_type>0</ray_samp_type>
-          <ray_sampy>1</ray_sampy>
-          <ray_sampz>1</ray_sampz>
-          <red>0.02119863</red>
-          <samp>3</samp>
-          <shadhalostep>0</shadhalostep>
-          <shadow_b sid="blender_shadow_b">0</shadow_b>
-          <shadow_g sid="blender_shadow_g">0</shadow_g>
-          <shadow_r sid="blender_shadow_r">0</shadow_r>
-          <sky_colorspace>0</sky_colorspace>
-          <sky_exposure>1</sky_exposure>
-          <skyblendfac>1</skyblendfac>
-          <skyblendtype>1</skyblendtype>
-          <soft>3</soft>
-          <spotblend>0.15</spotblend>
-          <spotsize>70</spotsize>
-          <spread>1</spread>
-          <sun_brightness>1</sun_brightness>
-          <sun_effect_type>0</sun_effect_type>
-          <sun_intensity>1</sun_intensity>
-          <sun_size>1</sun_size>
-          <type>2</type>
-        </technique>
-      </extra>
-    </light>
     <light id="Lamp_002-light" name="Lamp.002">
       <technique_common>
         <spot>
@@ -844,10 +774,6 @@
             </technique_common>
           </bind_material>
         </instance_geometry>
-      </node>
-      <node id="Lamp_000" name="Lamp_000" type="NODE">
-        <matrix sid="transform">-0.5 -3.30012e-15 -7.54979e-8 3.086903 -7.54979e-8 2.18557e-8 0.5 -2.561473 0 0.5 -2.18557e-8 0 0 0 0 1</matrix>
-        <instance_light url="#Lamp_000-light"/>
       </node>
       <node id="Lamp_002" name="Lamp_002" type="NODE">
         <matrix sid="transform">0.5 0 0 0 0 -2.18557e-8 -0.5 0 0 0.5 -2.18557e-8 0 0 0 0 1</matrix>

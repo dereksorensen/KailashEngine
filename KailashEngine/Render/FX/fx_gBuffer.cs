@@ -12,12 +12,19 @@ using KailashEngine.Output;
 using KailashEngine.Render.Shader;
 using KailashEngine.Render.Objects;
 
+using KailashEngine.World;
+using KailashEngine.World.Lights;
+
 namespace KailashEngine.Render.FX
 {
     class fx_gBuffer : RenderEffect
     {
         // Programs
         private Program _pGeometry;
+        private Program _pStencil;
+        private Program _pLighting_SL;
+        private Program _pLighting_PL;
+        private Program _pAccumulation;
 
         // Frame Buffers
         private FrameBuffer _fGBuffer;
@@ -62,17 +69,47 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
-            string[] functions = new string[]
+            string[] geometry_functions = new string[]
             {
-                _path_glsl_effect + "/helpers/gBuffer_Functions.include"
+                _path_glsl_effect + "helpers/gBuffer_Functions.include"
             };
 
             _pGeometry = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "/gen_gBuffer.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "/gen_gBuffer.frag", functions)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gen_gBuffer.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gen_gBuffer.frag", geometry_functions)
             });
             _pGeometry.enable_MeshLoading();
+
+            _pStencil = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null)
+            });
+            _pStencil.addUniform(RenderHelper.uModel);
+
+            _pLighting_SL = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SL.frag", null)
+            });
+            _pLighting_SL.addUniform(RenderHelper.uModel);
+            _pLighting_SL.enable_LightCalculation();
+            _pLighting_SL.enable_Samplers(3);
+
+            _pLighting_PL = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SL.frag", null)
+            });
+            _pLighting_PL.addUniform(RenderHelper.uModel);
+            _pLighting_PL.enable_LightCalculation();
+
+            _pAccumulation = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Accumulation.frag", null)
+            });
+            _pAccumulation.enable_Samplers(1);
         }
 
         protected override void load_Buffers()
@@ -133,24 +170,25 @@ namespace KailashEngine.Render.FX
 
         public override void unload()
         {
-            
+
         }
 
         public override void reload()
         {
-            
+
         }
 
         private void pass_Geometry(Scene scene)
         {
-            
-            _fGBuffer.bind(new DrawBuffersEnum[] 
+
+            _fGBuffer.bind(new DrawBuffersEnum[]
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1,
                 DrawBuffersEnum.ColorAttachment2
             });
 
+            GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
@@ -161,29 +199,105 @@ namespace KailashEngine.Render.FX
         }
 
 
-        private void pass_Stencil()
+        private void pass_Stencil(Light l)
         {
+            _fGBuffer.bind(DrawBuffersEnum.None);
+
+            GL.DepthMask(false);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+
+            GL.StencilFunc(StencilFunction.Always, 0, 0);
+            GL.StencilOpSeparate(StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
+            GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
+
+            _pStencil.bind();
+            WorldDrawer.drawLightBounds(l, _pStencil);
+        }
+
+        private void pass_sLight(Light l)
+        {
+            _fGBuffer.bind(DrawBuffersEnum.ColorAttachment7);
+
+            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
+
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+
+            _pLighting_SL.bind();
+
+            // Bind gBuffer Textures
+            _tNormal_Depth.bind(_pLighting_SL.uniforms["sampler0"], 0);
+            _tSpecular.bind(_pLighting_SL.uniforms["sampler1"], 1);
+
+
+
+            WorldDrawer.drawLightBounds(l, _pLighting_SL);
 
         }
+
 
         private void pass_pLight()
         {
 
         }
 
-        private void pass_sLight()
-        {
-
-        }
 
 
         public void pass_DeferredShading(Scene scene)
         {
+            //------------------------------------------------------
+            // Clear Lighting Buffer from last frame
+            //------------------------------------------------------
+            _fGBuffer.bind(DrawBuffersEnum.ColorAttachment7);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            //------------------------------------------------------
+            // Fill gBuffer with Scene
+            //------------------------------------------------------
             pass_Geometry(scene);
 
+            //------------------------------------------------------
+            // Accumulate Lighting from Scene
+            //------------------------------------------------------
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            foreach (Light l in scene.lights)
+            {
 
+                pass_Stencil(l);
+
+
+                switch (l.type)
+                {
+                    case Light.type_spot:
+                        pass_sLight(l);
+                        break;
+
+                    case Light.type_point:
+                        pass_sLight(l);
+                        break;
+                }
+
+
+
+            }
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);
+            GL.CullFace(CullFaceMode.Back);
+            //GL.Disable(EnableCap.DepthTest);
         }
 
+        public void pass_LightAccumulation()
+        {
 
+        }
     }
 }

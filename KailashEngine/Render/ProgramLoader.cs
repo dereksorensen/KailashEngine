@@ -15,13 +15,20 @@ namespace KailashEngine.Render
         private int _glsl_version;
         private string _path_glsl_base;
 
+        private string _path_glsl_common;
+        public string path_glsl_common
+        {
+            get { return _path_glsl_common; }
+            set { _path_glsl_common = value; }
+        }
 
 
-        public ProgramLoader(int glsl_version, string glsl_base_path)
+
+        public ProgramLoader(int glsl_version, string glsl_base_path, string glsl_common_path)
         {
             _glsl_version = glsl_version;
             _path_glsl_base = glsl_base_path;
-
+            _path_glsl_common = glsl_common_path;
         }
 
         public Program createProgram(ShaderFile[] shader_pipeline)

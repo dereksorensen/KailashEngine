@@ -13,8 +13,8 @@ namespace KailashEngine.World.Lights
 
 
 
-        public sLight(string id, Vector3 position, Vector3 rotation, float size, Vector3 color, float intensity, float falloff, float spot_angle, bool shadow)
-            : base(id, position, rotation, size, color, intensity, falloff, shadow)
+        public sLight(string id,  Vector3 position, Vector3 rotation, float size, Vector3 color, float intensity, float falloff, float spot_angle, bool shadow)
+            : base(id, type_spot, position, rotation, size, color, intensity, falloff, shadow)
         {
             _spot_angle = spot_angle;
         }

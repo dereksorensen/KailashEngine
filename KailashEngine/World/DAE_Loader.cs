@@ -172,7 +172,7 @@ namespace KailashEngine.World
 
             int temp_vbo, temp_ibo, temp_vao = 0;
 
-
+            
             //Create and fill Vertex Buffer
             GL.GenBuffers(1, out temp_vbo);
             GL.BindBuffer(BufferTarget.ArrayBuffer, temp_vbo);

@@ -41,6 +41,12 @@ namespace KailashEngine.Render
         public static readonly string uEnableParallaxTexture = "enable_parallax_texture";
         public static readonly string uParallaxTexture = "parallax_texture";
 
+        // Light Calculation
+        public static readonly string uLightPosition = "light_position";
+        public static readonly string uLightDirection = "light_direction";
+        public static readonly string uLightColor = "light_color";
+        public static readonly string uLightIntensity = "light_intensity";
+        public static readonly string uLightFalloff = "light_falloff";
 
         // Samplers
         public static readonly string uSamplerBase = "sampler";
