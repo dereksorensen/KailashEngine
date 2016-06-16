@@ -7,13 +7,14 @@ layout(location = 3) in vec2 texCoord;
 out vec2 v_TexCoords;
 out vec4 v_objectPosition;
 out vec3 v_worldPosition;
+out vec3 v_viewPosition;
 out vec3 v_Normal;
 out vec3 v_Tangent;
 
 //------------------------------------------------------
 // perspective and view matrices
 //------------------------------------------------------
-layout(std140, binding = 0) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraMatrices
 {
 	mat4 view;
 	mat4 perspective;
@@ -31,7 +32,9 @@ void main()
 	v_objectPosition = vec4(position, 1.0);
 	vec4 world_position = (model * v_objectPosition);
 	v_worldPosition = world_position.xyz;
-	vec4 clipPosition = perspective * (view *  world_position);
+	vec4 viewPosition = view *  world_position;
+	v_viewPosition = viewPosition.xyz;
+	vec4 clipPosition = perspective * viewPosition;
 	gl_Position = clipPosition;
 
 	// Texture Coordinates

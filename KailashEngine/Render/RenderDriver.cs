@@ -28,6 +28,7 @@ namespace KailashEngine.Render
 
         // Render UBOs
         private UniformBuffer _ubo_camera;
+        private UniformBuffer _ubo_game_config;
 
         // Render FXs
         private fx_Quad _quad;
@@ -40,14 +41,22 @@ namespace KailashEngine.Render
         {
             _pLoader = pLoader;
             _resolution = resolution;
-            
+
 
             // Render UBOs
-            _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[] {
+            _ubo_game_config = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[]
+            {
+                EngineHelper.size.vec2,
+                EngineHelper.size.f
+            });
+
+            _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 1, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.vec3
             });
+
+
 
 
             // Render FXs
@@ -105,6 +114,12 @@ namespace KailashEngine.Render
         //------------------------------------------------------
         // Updating
         //------------------------------------------------------
+        public void updateUBO_GameConfig(Vector2 near_far, float target_fps)
+        {
+
+            _ubo_game_config.update(0, near_far);
+            _ubo_game_config.update(1, target_fps);
+        }
 
         public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Vector3 position)
         {

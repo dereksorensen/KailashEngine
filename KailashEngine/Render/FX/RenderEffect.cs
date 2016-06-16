@@ -15,14 +15,14 @@ namespace KailashEngine.Render.FX
         protected ProgramLoader _pLoader;
         protected string _path_glsl_effect;
 
-        protected Resolution _resolution_full;
+        protected Resolution _resolution;
 
 
         public RenderEffect(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
         {
             _pLoader = pLoader;
             _path_glsl_effect = glsl_effect_path;
-            _resolution_full = full_resolution;
+            _resolution = full_resolution;
         }
 
         protected abstract void load_Programs();

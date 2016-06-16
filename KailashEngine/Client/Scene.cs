@@ -41,9 +41,6 @@ namespace KailashEngine.Client
         }
 
 
-        private List<UniqueMesh> oscar;
-        List<Light> light_oscar;
-
         public Scene(string path_mesh, string path_physics, string path_lights)
         {
             _path_mesh = path_mesh;
@@ -57,9 +54,6 @@ namespace KailashEngine.Client
         }
 
 
-
-
-
         public void load()
         {
             _world_loader = new WorldLoader(_path_mesh, _path_physics, _path_lights, "light_objects.dae");
@@ -71,8 +65,6 @@ namespace KailashEngine.Client
                 "test_scene"
             }, _meshes, _lights);
 
-             
-            _world_loader.loadWorld("oscar", out oscar, out light_oscar);
 
         }
 
@@ -83,8 +75,6 @@ namespace KailashEngine.Client
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
             WorldDrawer.drawLights(_lights, program, Matrix4.Identity, true);
 
-            // Draw Other Meshes
-            WorldDrawer.drawMeshes(oscar, program, Matrix4.Identity);
         }
 
     }

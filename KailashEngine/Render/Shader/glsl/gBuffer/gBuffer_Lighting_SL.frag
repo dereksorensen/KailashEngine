@@ -6,7 +6,7 @@ out vec4 color;
 //------------------------------------------------------
 // perspective and view matrices
 //------------------------------------------------------
-layout(std140, binding = 0) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraMatrices
 {
 	mat4 view;
 	mat4 perspective;
@@ -31,6 +31,6 @@ void main()
 
 	vec4 normal_depth = texture(sampler0, texCoord);
 	
-	color = vec4(normal_depth);
+	color = vec4(normal_depth.a);
 
 }

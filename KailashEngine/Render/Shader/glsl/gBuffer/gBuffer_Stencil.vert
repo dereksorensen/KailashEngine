@@ -8,7 +8,7 @@ layout(location = 3) in vec2 texCoord;
 //------------------------------------------------------
 // perspective and view matrices
 //------------------------------------------------------
-layout(std140, binding = 0) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraMatrices
 {
 	mat4 view;
 	mat4 perspective;

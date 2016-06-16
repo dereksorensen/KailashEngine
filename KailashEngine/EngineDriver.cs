@@ -303,6 +303,7 @@ namespace KailashEngine
             _render_driver.load();
 
 
+            
  
 
             //_game.config.path_base + "Output/test1.ogg"
@@ -318,12 +319,15 @@ namespace KailashEngine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // this is called every frame, put game logic here
-
+            
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             inputBuffer();
+            _render_driver.updateUBO_GameConfig(
+                _game.config.near_far,
+                _game.config.fps_target);
             _render_driver.updateUBO_Camera(
                 _game.player.camera.view, 
                 _game.player.camera.spatial.perspective, 

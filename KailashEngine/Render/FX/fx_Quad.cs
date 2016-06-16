@@ -95,10 +95,10 @@ namespace KailashEngine.Render.FX
         public void render_Texture2D(Texture texture, float size, int position)
         {
             // Calculate Quad Positioning
-            int size_x = (int)(_resolution_full.W * size);
-            int size_y = (int)(_resolution_full.H * size);
+            int size_x = (int)(_resolution.W * size);
+            int size_y = (int)(_resolution.H * size);
 
-            int pos_x = _resolution_full.W - size_x;
+            int pos_x = _resolution.W - size_x;
             int pos_y = size_y * position;
 
             // Render it!

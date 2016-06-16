@@ -5,4 +5,25 @@
 //------------------------------------------------------
 
 
+//------------------------------------------------------
+// Game Config
+//------------------------------------------------------
+layout(std140, binding = 0) uniform gameConfig
+{
+	float target_fps;
+	vec2 near_far;
+};
+
+//------------------------------------------------------
+// perspective and view matrices
+//------------------------------------------------------
+layout(std140, binding = 1) uniform cameraMatrices
+{
+	mat4 view;
+	mat4 perspective;
+	vec3 cam_position;
+};
+
+
+
 

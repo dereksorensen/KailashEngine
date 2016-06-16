@@ -16,6 +16,7 @@ namespace KailashEngine
         //------------------------------------------------------
         public enum size : int
         {
+            f = sizeof(float),
             vec2 = sizeof(float) * 2,
             vec3 = sizeof(float) * 3,
             vec4 = sizeof(float) * 4,

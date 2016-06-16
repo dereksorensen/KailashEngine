@@ -6,7 +6,7 @@ out vec4 color;
 //------------------------------------------------------
 // perspective and view matrices
 //------------------------------------------------------
-layout(std140, binding = 0) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraMatrices
 {
 	mat4 view;
 	mat4 perspective;
@@ -24,6 +24,6 @@ uniform float light_falloff;
 void main()
 {
 	
-	color = vec4(1.0);
+	color = vec4(0.5);
 
 }

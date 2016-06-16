@@ -74,6 +74,7 @@ namespace KailashEngine.Render.FX
                 _path_glsl_effect + "helpers/gBuffer_Functions.include"
             };
 
+            // Rendering Geometry into gBuffer
             _pGeometry = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gen_gBuffer.vert", null),
@@ -81,12 +82,14 @@ namespace KailashEngine.Render.FX
             });
             _pGeometry.enable_MeshLoading();
 
+            // Stencil light bounds for lighting pass
             _pStencil = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null)
             });
             _pStencil.addUniform(RenderHelper.uModel);
 
+            // Calculate Lighting for Spot Lights
             _pLighting_SL = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
@@ -96,14 +99,17 @@ namespace KailashEngine.Render.FX
             _pLighting_SL.enable_LightCalculation();
             _pLighting_SL.enable_Samplers(3);
 
+            // Calculate Lighting for Point Lights
             _pLighting_PL = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SL.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_PL.frag", null)
             });
             _pLighting_PL.addUniform(RenderHelper.uModel);
             _pLighting_PL.enable_LightCalculation();
+            _pLighting_PL.enable_Samplers(3);
 
+            // Accumulate Lighting
             _pAccumulation = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
@@ -116,7 +122,7 @@ namespace KailashEngine.Render.FX
         {
 
             _tDepthStencil = new Texture(TextureTarget.Texture2D,
-                _resolution_full.W, _resolution_full.H,
+                _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Depth32fStencil8, PixelFormat.DepthComponent, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -124,28 +130,28 @@ namespace KailashEngine.Render.FX
 
 
             _tDiffuse_ID = new Texture(TextureTarget.Texture2D,
-                _resolution_full.W, _resolution_full.H,
+                _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tDiffuse_ID.load();
 
             _tNormal_Depth = new Texture(TextureTarget.Texture2D,
-                _resolution_full.W, _resolution_full.H,
+                _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tNormal_Depth.load();
 
             _tSpecular = new Texture(TextureTarget.Texture2D,
-                _resolution_full.W, _resolution_full.H,
+                _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tSpecular.load();
 
             _tLighting = new Texture(TextureTarget.Texture2D,
-                _resolution_full.W, _resolution_full.H,
+                _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -191,7 +197,7 @@ namespace KailashEngine.Render.FX
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, _resolution_full.W, _resolution_full.H);
+            GL.Viewport(0, 0, _resolution.W, _resolution.H);
 
 
             _pGeometry.bind();
@@ -201,7 +207,7 @@ namespace KailashEngine.Render.FX
 
         private void pass_Stencil(Light l)
         {
-            _fGBuffer.bind(DrawBuffersEnum.None);
+            _fGBuffer.bindAttachements(DrawBuffersEnum.None);
 
             GL.DepthMask(false);
             GL.Enable(EnableCap.DepthTest);
@@ -219,10 +225,8 @@ namespace KailashEngine.Render.FX
 
         private void pass_sLight(Light l)
         {
-            _fGBuffer.bind(DrawBuffersEnum.ColorAttachment7);
-
+            _fGBuffer.bindAttachements(DrawBuffersEnum.ColorAttachment7);
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
-
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
@@ -235,15 +239,28 @@ namespace KailashEngine.Render.FX
             _tSpecular.bind(_pLighting_SL.uniforms["sampler1"], 1);
 
 
-
             WorldDrawer.drawLightBounds(l, _pLighting_SL);
 
         }
 
 
-        private void pass_pLight()
+        private void pass_pLight(Light l)
         {
+            _fGBuffer.bindAttachements(DrawBuffersEnum.ColorAttachment7);
+            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
+            GL.Disable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+
+            _pLighting_PL.bind();
+
+            // Bind gBuffer Textures
+            _tNormal_Depth.bind(_pLighting_PL.uniforms["sampler0"], 0);
+            _tSpecular.bind(_pLighting_PL.uniforms["sampler1"], 1);
+
+
+            WorldDrawer.drawLightBounds(l, _pLighting_PL);
         }
 
 
@@ -281,7 +298,7 @@ namespace KailashEngine.Render.FX
                         break;
 
                     case Light.type_point:
-                        pass_sLight(l);
+                        pass_pLight(l);
                         break;
                 }
 

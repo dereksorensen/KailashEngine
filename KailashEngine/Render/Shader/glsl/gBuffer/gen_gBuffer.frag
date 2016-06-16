@@ -5,9 +5,18 @@ layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec4 specular;
 
 //------------------------------------------------------
+// Game Config
+//------------------------------------------------------
+layout(std140, binding = 0) uniform gameConfig
+{
+	vec2 near_far;
+	float target_fps;
+};
+
+//------------------------------------------------------
 // perspective and view matrices
 //------------------------------------------------------
-layout(std140, binding = 0) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraMatrices
 {
 	mat4 view;
 	mat4 perspective;
@@ -17,6 +26,7 @@ layout(std140, binding = 0) uniform cameraMatrices
 in vec2 v_TexCoords;
 in vec4 v_objectPosition;
 in vec3 v_worldPosition;
+in vec3 v_viewPosition;
 in vec3 v_Normal;
 in vec3 v_Tangent;
 
@@ -73,11 +83,12 @@ void main()
 	//------------------------------------------------------
 	// Normal Mapping + Linear Depth
 	//------------------------------------------------------
-	normal_depth = vec4(v_Normal, 0.0);
+	float depth = length(v_viewPosition) / (near_far.y - near_far.x);
+	normal_depth = vec4(v_Normal, depth);
 	if (enable_normal_texture == 1)
-	{
+	{	
 		vec3 normal_map = calcNormalMapping(normal_texture, tex_coords, TBN);
-		normal_depth = vec4(normal_map,1.0);
+		normal_depth = vec4(normal_map, depth);
 	}
 
 

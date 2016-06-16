@@ -79,19 +79,37 @@ namespace KailashEngine.Render.Objects
         {
 
         }
-        
+
+        // Bind Draw Attachements Only
+        public void bindAttachements(DrawBuffersEnum draw_attachment)
+        {
+            DrawBuffersEnum[] temp_attchements = new DrawBuffersEnum[] { draw_attachment };
+
+            int buffer_count = temp_attchements.Length;
+            GL.DrawBuffers(buffer_count, temp_attchements);
+        }
+        public void bindAttachements(DrawBuffersEnum[] draw_attachements)
+        {
+            int buffer_count = draw_attachements.Length;
+            GL.DrawBuffers(buffer_count, draw_attachements);
+        }
+
+        // Bind Read Attachements Only
+        public void bindAttachements(ReadBufferMode read_attachement)
+        {
+            GL.ReadBuffer(read_attachement);
+        }
+
         // Bind to Draw
         public void bind(DrawBuffersEnum draw_attachment)
         {
             bind(new DrawBuffersEnum[] { draw_attachment });
         }
-
         public void bind(DrawBuffersEnum[] draw_attachements)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _id);
 
-            int buffer_count = draw_attachements.Length;
-            GL.DrawBuffers(buffer_count, draw_attachements);
+            bindAttachements(draw_attachements);
         }
 
         // Bind to Read
@@ -99,7 +117,7 @@ namespace KailashEngine.Render.Objects
         {
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _id);
 
-            GL.ReadBuffer(read_attachement);
+            bindAttachements(read_attachement);
         }
     }
 }
