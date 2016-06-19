@@ -153,7 +153,7 @@ namespace KailashEngine.World
 
                         // Create Light Bounds Mesh
                         float spot_height = falloff * 1.0f;
-                        float spot_radius = spot_height * (float)Math.Tan(spot_angle) * 1.5f;
+                        float spot_radius = spot_height * (float)Math.Tan(spot_angle) * 1.0f;
                         scaler = new Vector3(
                                 spot_radius,
                                 spot_radius,

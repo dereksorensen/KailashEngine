@@ -59,7 +59,7 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 	float spotAngleCutoff_outer = outerAngle;
 	float spotAngleCutoff_inner = spotAngleCutoff_outer+(spotLightBlurCoefficient);
 
-	float spotAngle = dot(normalize(-light_direction),-L);
+	float spotAngle = dot(normalize(vec3(-light_direction.x, light_direction.y, -light_direction.z)),-L);
 	//spotAngle = max(spotAngle,0);
 
 	float spotAngleDifference = spotAngleCutoff_inner-spotAngleCutoff_outer;
@@ -85,7 +85,7 @@ vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
 	//------------------------------------------------------
 	float max_light_brightness = 10.0;
 	float light_bright = (light_intensity / max_light_brightness);
-	float light_falloff_2 = light_falloff * light_falloff * 4.0;
+	float light_falloff_2 = light_falloff * light_falloff * 1.0;
 
 	vec3 light_distance = (light_position - world_position);
 	float light_distance_2 = dot(light_distance, light_distance);
@@ -129,6 +129,8 @@ vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
 					specular_color, 1.0);
 
 
+
+
 	//------------------------------------------------------
 	// Add it all together
 	//------------------------------------------------------
@@ -138,7 +140,8 @@ vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
 			specular
 		);
 
-	float cone = calcSpotLightCone(L, 0.85, 0.02);
+
+	float cone = calcSpotLightCone(L, 0.85, 0.05);
 
 	return lighting * cone;
 }

@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.76.0 commit date:2015-11-03, commit time:10:56, hash:f337fea</authoring_tool>
     </contributor>
-    <created>2016-06-18T19:33:06</created>
-    <modified>2016-06-18T19:33:06</modified>
+    <created>2016-06-19T12:05:51</created>
+    <modified>2016-06-19T12:05:51</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -151,7 +151,7 @@
         </technique>
       </extra>
     </light>
-    <light id="Lamp_002-light" name="Lamp.003">
+    <light id="Lamp_002-light" name="Lamp.002">
       <technique_common>
         <spot>
           <color sid="color">10 10 10</color>
@@ -254,10 +254,10 @@
               <color sid="diffuse">0.64 0.64 0.64 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.5 0.5 0.5 1</color>
+              <color sid="specular">1 1 1 1</color>
             </specular>
             <shininess>
-              <float sid="shininess">50</float>
+              <float sid="shininess">377</float>
             </shininess>
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
@@ -280,7 +280,7 @@
               <color sid="diffuse">0.2463646 0.64 0.03434642 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.5 0.5 0.5 1</color>
+              <color sid="specular">1 1 1 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -1778,7 +1778,7 @@
         </instance_geometry>
       </node>
       <node id="Lamp_000" name="Lamp_000" type="NODE">
-        <matrix sid="transform">-2.18557e-8 -0.209004 0.4542217 -4.099599 0.5 -2.90203e-9 2.27231e-8 7.753721 -6.86209e-9 0.4542217 0.209004 15 0 0 0 1</matrix>
+        <matrix sid="transform">-2.18557e-8 -0.209004 0.4542217 16.82344 0.5 -2.90203e-9 2.27231e-8 7.753721 -6.86209e-9 0.4542217 0.209004 15 0 0 0 1</matrix>
         <instance_light url="#Lamp_000-light"/>
       </node>
       <node id="Lamp_001" name="Lamp_001" type="NODE">
@@ -1786,7 +1786,7 @@
         <instance_light url="#Lamp_001-light"/>
       </node>
       <node id="Lamp_002" name="Lamp_002" type="NODE">
-        <matrix sid="transform">-0.3134883 1.2724e-8 0.3895191 -4.099599 0.3895191 1.90488e-8 0.3134883 21.03748 -6.86209e-9 0.5 -2.18557e-8 15 0 0 0 1</matrix>
+        <matrix sid="transform">-2.18557e-8 0.2759038 0.4169858 -4.099599 0.5 1.77829e-8 1.44405e-8 21.18221 -6.86209e-9 0.4169858 -0.2759038 3.661876 0 0 0 1</matrix>
         <instance_light url="#Lamp_002-light"/>
       </node>
     </visual_scene>

@@ -32,6 +32,7 @@ namespace KailashEngine.Render
 
         // Render FXs
         private fx_Quad _quad;
+        private fx_Final _final;
         private fx_gBuffer _gBuffer;
 
 
@@ -60,6 +61,7 @@ namespace KailashEngine.Render
 
             // Render FXs
             _quad = new fx_Quad(_pLoader, "common/", _resolution);
+            _final = new fx_Final(_pLoader, "final/", _resolution);
             _gBuffer = new fx_gBuffer(_pLoader, "gBuffer/", _resolution);
 
 
@@ -88,20 +90,23 @@ namespace KailashEngine.Render
         private void load_FX()
         {
             _quad.load();
+            _final.load();
             _gBuffer.load();
-        }
-
-        private void unload_FX()
-        {
-
         }
 
         public void load()
         {
             load_DefaultGL();
             load_FX();
+        }
+
+
+        private void unload_FX()
+        {
 
         }
+
+
 
         public void unload()
         {
@@ -148,12 +153,14 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             GL.Disable(EnableCap.DepthTest);
 
+            _gBuffer.pass_LightAccumulation(_quad, _final.fFinalScene);
 
-            _quad.render_Texture2D(_gBuffer.tLighting);
+
+            _quad.render_Texture2D(_final.tFinalScene);
 
 
             //_quad.render_Texture2D(_gBuffer.tNormal_Depth, 0.125f, 0);
-            //_quad.render_Texture2D(_gBuffer.tSpecular, 0.125f, 1);
+            _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 1);
             _quad.render_Texture2D(_gBuffer.tDiffuse_ID, 0.25f, 0);
 
         }

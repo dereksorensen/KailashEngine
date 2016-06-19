@@ -122,7 +122,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Accumulation.frag", null)
             });
-            _pAccumulation.enable_Samplers(1);
+            _pAccumulation.enable_Samplers(2);
         }
 
         protected override void load_Buffers()
@@ -191,6 +191,8 @@ namespace KailashEngine.Render.FX
 
         }
 
+
+
         private void pass_Geometry(Scene scene)
         {
 
@@ -210,6 +212,7 @@ namespace KailashEngine.Render.FX
             _pGeometry.bind();
             scene.render(_pGeometry);
         }
+
 
 
         private void pass_Stencil(Light l)
@@ -256,7 +259,6 @@ namespace KailashEngine.Render.FX
             WorldDrawer.drawLightBounds(l, _pLighting_SL);
 
         }
-
 
         private void pass_pLight(Light l)
         {
@@ -327,8 +329,19 @@ namespace KailashEngine.Render.FX
             //GL.Disable(EnableCap.DepthTest);
         }
 
-        public void pass_LightAccumulation()
+        public void pass_LightAccumulation(fx_Quad quad,FrameBuffer fFinalScene)
         {
+            fFinalScene.bind(DrawBuffersEnum.ColorAttachment0);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            GL.Viewport(0, 0, _resolution.W, _resolution.H);
+
+            _pAccumulation.bind();
+
+            _tLighting.bind(_pAccumulation.uniforms["sampler0"], 0);
+            _tDiffuse_ID.bind(_pAccumulation.uniforms["sampler1"], 1);
+
+            quad.render();
 
         }
     }
