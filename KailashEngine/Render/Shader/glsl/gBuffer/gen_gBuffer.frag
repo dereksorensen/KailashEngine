@@ -4,31 +4,34 @@ layout(location = 0) out vec4 diffuse_id;
 layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec4 specular;
 
-//------------------------------------------------------
-// Game Config
-//------------------------------------------------------
-layout(std140, binding = 0) uniform gameConfig
-{
-	vec2 near_far;
-	float target_fps;
-};
-
-//------------------------------------------------------
-// perspective and view matrices
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraMatrices
-{
-	mat4 view;
-	mat4 perspective;
-	vec3 cam_position;
-};
-
 in vec2 v_TexCoords;
 in vec4 v_objectPosition;
 in vec3 v_worldPosition;
 in vec3 v_viewPosition;
 in vec3 v_Normal;
 in vec3 v_Tangent;
+
+
+//------------------------------------------------------
+// Game Config
+//------------------------------------------------------
+layout(std140, binding = 0) uniform gameConfig
+{
+	vec4 near_far;
+	float target_fps;
+};
+
+//------------------------------------------------------
+// Camera Spatials
+//------------------------------------------------------
+layout(std140, binding = 1) uniform cameraSpatials
+{
+	mat4 view;
+	mat4 perspective;
+	vec3 cam_position;
+	vec3 cam_look;
+};
+
 
 uniform int enable_diffuse_texture;
 uniform sampler2D diffuse_texture;
@@ -83,7 +86,7 @@ void main()
 	//------------------------------------------------------
 	// Normal Mapping + Linear Depth
 	//------------------------------------------------------
-	float depth = length(v_viewPosition) / (near_far.y - near_far.x);
+	float depth = length(v_viewPosition);
 	normal_depth = vec4(v_Normal, depth);
 	if (enable_normal_texture == 1)
 	{	
@@ -101,6 +104,5 @@ void main()
 		specular_color_final = texture(specular_texture, tex_coords).xyz;
 	}
 	specular = vec4(specular_color_final, specular_shininess);
-
 
 }

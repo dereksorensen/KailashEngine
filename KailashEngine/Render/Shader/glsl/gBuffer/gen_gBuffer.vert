@@ -12,13 +12,14 @@ out vec3 v_Normal;
 out vec3 v_Tangent;
 
 //------------------------------------------------------
-// perspective and view matrices
+// Camera Spatials
 //------------------------------------------------------
-layout(std140, binding = 1) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraSpatials
 {
 	mat4 view;
 	mat4 perspective;
 	vec3 cam_position;
+	vec3 cam_look;
 };
 
 uniform mat4 model;

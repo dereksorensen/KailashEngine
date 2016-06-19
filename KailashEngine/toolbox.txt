@@ -10,18 +10,19 @@
 //------------------------------------------------------
 layout(std140, binding = 0) uniform gameConfig
 {
+	vec4 near_far;
 	float target_fps;
-	vec2 near_far;
 };
 
 //------------------------------------------------------
-// perspective and view matrices
+// Camera Spatials
 //------------------------------------------------------
-layout(std140, binding = 1) uniform cameraMatrices
+layout(std140, binding = 1) uniform cameraSpatials
 {
 	mat4 view;
 	mat4 perspective;
 	vec3 cam_position;
+	vec3 cam_look;
 };
 
 

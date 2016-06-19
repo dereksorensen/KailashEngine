@@ -293,7 +293,7 @@ namespace KailashEngine
 
             // Create Engine Objects
             _render_driver = new RenderDriver(
-                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common),
+                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common, _game.config.path_glsl_common_helpers),
                 _game.display.resolution
             );
 
@@ -326,12 +326,13 @@ namespace KailashEngine
         {
             inputBuffer();
             _render_driver.updateUBO_GameConfig(
-                _game.config.near_far,
+                _game.config.near_far_full,
                 _game.config.fps_target);
             _render_driver.updateUBO_Camera(
                 _game.player.camera.view, 
                 _game.player.camera.spatial.perspective, 
-                _game.player.camera.spatial.position);
+                _game.player.camera.spatial.position,
+                _game.player.camera.spatial.look);
 
 
 

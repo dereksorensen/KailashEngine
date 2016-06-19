@@ -69,16 +69,23 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
-            string[] geometry_functions = new string[]
+            string[] geometry_helpers = new string[]
             {
-                _path_glsl_effect + "helpers/gBuffer_Functions.include"
+                _path_glsl_effect + "helpers/gBuffer_Functions.include",
+                _pLoader.path_glsl_common_helpers + "linearDepth.include"
+
+            };
+            string[] lighting_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "linearDepth.include"
+
             };
 
             // Rendering Geometry into gBuffer
             _pGeometry = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gen_gBuffer.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gen_gBuffer.frag", geometry_functions)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gen_gBuffer.frag", geometry_helpers)
             });
             _pGeometry.enable_MeshLoading();
 
@@ -93,7 +100,7 @@ namespace KailashEngine.Render.FX
             _pLighting_SL = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SL.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SL.frag", lighting_helpers)
             });
             _pLighting_SL.addUniform(RenderHelper.uModel);
             _pLighting_SL.enable_LightCalculation();
@@ -103,7 +110,7 @@ namespace KailashEngine.Render.FX
             _pLighting_PL = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_PL.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_PL.frag", lighting_helpers)
             });
             _pLighting_PL.addUniform(RenderHelper.uModel);
             _pLighting_PL.enable_LightCalculation();
@@ -239,6 +246,13 @@ namespace KailashEngine.Render.FX
             _tSpecular.bind(_pLighting_SL.uniforms["sampler1"], 1);
 
 
+            GL.Uniform3(_pLighting_SL.uniforms["light_position"], l.spatial.position);
+            GL.Uniform3(_pLighting_SL.uniforms["light_direction"], l.spatial.look);
+            GL.Uniform3(_pLighting_SL.uniforms["light_color"], l.color);
+            GL.Uniform1(_pLighting_SL.uniforms["light_intensity"], l.intensity);
+            GL.Uniform1(_pLighting_SL.uniforms["light_falloff"], l.falloff);
+
+
             WorldDrawer.drawLightBounds(l, _pLighting_SL);
 
         }
@@ -298,7 +312,7 @@ namespace KailashEngine.Render.FX
                         break;
 
                     case Light.type_point:
-                        pass_pLight(l);
+                        //pass_pLight(l);
                         break;
                 }
 
@@ -308,6 +322,7 @@ namespace KailashEngine.Render.FX
 
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.Blend);
+            GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
             //GL.Disable(EnableCap.DepthTest);
         }

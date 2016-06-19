@@ -481,6 +481,7 @@
     <None Include="ClassDiagram2.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />

@@ -152,8 +152,8 @@ namespace KailashEngine.World
                         temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
 
                         // Create Light Bounds Mesh
-                        float spot_height = falloff / 1.0f;
-                        float spot_radius = spot_height * (float)Math.Tan(spot_angle);
+                        float spot_height = falloff * 1.0f;
+                        float spot_radius = spot_height * (float)Math.Tan(spot_angle) * 1.5f;
                         scaler = new Vector3(
                                 spot_radius,
                                 spot_radius,

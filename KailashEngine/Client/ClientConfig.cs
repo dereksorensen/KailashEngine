@@ -39,6 +39,7 @@ namespace KailashEngine.Client
 
         public string path_glsl_base { get { return Path.GetFullPath(_path_base + "Render/Shader/glsl/"); } }
         public string path_glsl_common { get { return "common/"; } }
+        public string path_glsl_common_helpers { get { return "common/helpers/"; } }
 
         //------------------------------------------------------
         // OpenGL
@@ -112,6 +113,31 @@ namespace KailashEngine.Client
             get { return _near_far; }
             set { _near_far = value; }
         }
+
+        public Vector2 near_far_projection
+        {
+            get
+            {
+                return new Vector2(
+                        _near_far.Y / (_near_far.Y - _near_far.X),
+                        (_near_far.Y * _near_far.X) / (_near_far.Y - _near_far.X)
+                    );
+            }
+        }
+
+        public Vector4 near_far_full
+        {
+            get
+            {
+                return new Vector4(
+                        _near_far.X,
+                        _near_far.Y,
+                        near_far_projection.X,
+                        near_far_projection.Y
+                    );
+            }
+        }
+
 
 
         // Finds the base engine dir which all path defaults are based from

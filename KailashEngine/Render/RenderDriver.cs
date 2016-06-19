@@ -46,17 +46,16 @@ namespace KailashEngine.Render
             // Render UBOs
             _ubo_game_config = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[]
             {
-                EngineHelper.size.vec2,
+                EngineHelper.size.vec4,
                 EngineHelper.size.f
             });
 
             _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 1, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
+                EngineHelper.size.vec3,
                 EngineHelper.size.vec3
             });
-
-
 
 
             // Render FXs
@@ -74,7 +73,7 @@ namespace KailashEngine.Render
         private void load_DefaultGL()
         {
             // Default OpenGL Setup
-            GL.ClearColor(Color.DarkSlateGray);
+            GL.ClearColor(Color.Black);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             GL.DepthFunc(DepthFunction.Lequal);
@@ -114,18 +113,18 @@ namespace KailashEngine.Render
         //------------------------------------------------------
         // Updating
         //------------------------------------------------------
-        public void updateUBO_GameConfig(Vector2 near_far, float target_fps)
+        public void updateUBO_GameConfig(Vector4 near_far, float target_fps)
         {
-
             _ubo_game_config.update(0, near_far);
             _ubo_game_config.update(1, target_fps);
         }
 
-        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Vector3 position)
+        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Vector3 position, Vector3 look)
         {
             _ubo_camera.update(0, view);
             _ubo_camera.update(1, perspective);
             _ubo_camera.update(2, position);
+            _ubo_camera.update(3, look);
         }
 
 
@@ -150,12 +149,12 @@ namespace KailashEngine.Render
             GL.Disable(EnableCap.DepthTest);
 
 
-            _quad.render_Texture2D(_gBuffer.tDiffuse_ID);
+            _quad.render_Texture2D(_gBuffer.tLighting);
 
 
-            _quad.render_Texture2D(_gBuffer.tNormal_Depth, 0.25f, 0);
-            _quad.render_Texture2D(_gBuffer.tSpecular, 0.25f, 1);
-            _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 2);
+            //_quad.render_Texture2D(_gBuffer.tNormal_Depth, 0.125f, 0);
+            //_quad.render_Texture2D(_gBuffer.tSpecular, 0.125f, 1);
+            _quad.render_Texture2D(_gBuffer.tDiffuse_ID, 0.25f, 0);
 
         }
 
