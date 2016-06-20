@@ -36,6 +36,7 @@ layout(std140, binding = 1) uniform cameraSpatials
 uniform int enable_diffuse_texture;
 uniform sampler2D diffuse_texture;
 uniform vec3 diffuse_color;
+uniform float emission_strength;
 
 uniform int enable_specular_texture;
 uniform sampler2D specular_texture;
@@ -75,12 +76,13 @@ void main()
 	{
 		diffuse_color_final = texture(diffuse_texture, tex_coords);
 	}
-
-	float gamma = 1.8;
-	vec3 gamma_correction = vec3(1.0 / gamma);
-	vec3 final = pow(diffuse_color_final.xyz, gamma_correction);
-
-	diffuse_id = vec4(final.xyz, 1.0);
+	int material_id = 0;
+	if (emission_strength > 0)
+	{
+		material_id = 1;
+		diffuse_color_final.xyz *= emission_strength;
+	}
+	diffuse_id = vec4(diffuse_color_final.xyz, material_id);
 
 
 	//------------------------------------------------------

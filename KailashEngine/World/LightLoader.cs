@@ -165,7 +165,7 @@ namespace KailashEngine.World
                                 0.0f,
                                 -scaler.Z
                             );
-                        temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * temp_matrix;
+                        temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * temp_matrix.ClearScale();
                         temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", sLight_mesh, temp_matrix);
 
                         // Add Spot Light to Dictionary
@@ -191,7 +191,7 @@ namespace KailashEngine.World
                                 point_radius / light_object_scaler.Z
                             );
                         temp_matrix = Matrix4.CreateScale(scaler) * temp_matrix;
-                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix);
+                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix.ClearScale());
 
                         light_list.Add(temp_light);
                         break;

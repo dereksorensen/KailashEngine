@@ -1,9 +1,9 @@
 ﻿
-
-out vec4 color;
-
+layout(location = 0) out vec4 diffuse;
+layout(location = 1) out vec4 specular;
 
 in vec3 v_viewRay;
+
 
 //------------------------------------------------------
 // Game Config
@@ -60,7 +60,6 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 	float spotAngleCutoff_inner = spotAngleCutoff_outer+(spotLightBlurCoefficient);
 
 	float spotAngle = dot(normalize(vec3(-light_direction.x, light_direction.y, -light_direction.z)),-L);
-	//spotAngle = max(spotAngle,0);
 
 	float spotAngleDifference = spotAngleCutoff_inner-spotAngleCutoff_outer;
 	float spotLightBlur = (spotAngle - spotAngleCutoff_outer)/spotAngleDifference;
@@ -68,16 +67,14 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 }
 
 
-vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
+void calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal, out vec3 L, out vec4 diffuse_out, out vec4 specular_out)
 {
 	
 	//------------------------------------------------------
-	// Attenuation
+	// Lighting Vectors
 	//------------------------------------------------------
-	vec3 L = vec3(0.0);
 	vec3 N = normalize(world_normal);
 	vec3 E = normalize(-cam_position - world_position);
-
 
 
 	//------------------------------------------------------
@@ -85,7 +82,7 @@ vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
 	//------------------------------------------------------
 	float max_light_brightness = 10.0;
 	float light_bright = (light_intensity / max_light_brightness);
-	float light_falloff_2 = light_falloff * light_falloff * 1.0;
+	float light_falloff_2 = light_falloff * light_falloff;
 
 	vec3 light_distance = (light_position - world_position);
 	float light_distance_2 = dot(light_distance, light_distance);
@@ -93,7 +90,7 @@ vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
 
 	float attenuation = clamp(1.0 - light_distance_2 / light_falloff_2, 0.0, 1.0);
 	attenuation *= attenuation;
-	//attenuation *= light_bright;
+	attenuation *= light_bright;
 
 
 	//------------------------------------------------------
@@ -130,20 +127,19 @@ vec4 calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal)
 
 
 
-
 	//------------------------------------------------------
 	// Add it all together
 	//------------------------------------------------------
-	vec4 lighting = 
+	diffuse_out = 
 		attenuation * (
-			diffuse +
+			diffuse
+		);
+
+	specular_out = 
+		attenuation * (
 			specular
 		);
 
-
-	float cone = calcSpotLightCone(L, 0.85, 0.05);
-
-	return lighting * cone;
 }
 
 
@@ -159,12 +155,15 @@ void main()
 
 	vec3 world_position = calcWorldPosition(depth, v_viewRay, cam_position);
 
+	vec3 L;
+	vec4 temp_diffuse;
+	vec4 temp_specular;
 
+	calcLighting(tex_coord, world_position, normal_depth.xyz, L, temp_diffuse, temp_specular);
 
+	float cone = calcSpotLightCone(L, 0.85, 0.03);
 
-	vec4 lighting = calcLighting(tex_coord, world_position, normal_depth.xyz);
-
-
-	color = lighting;
+	diffuse = temp_diffuse * cone;
+	specular = temp_specular * cone;
 
 }

@@ -33,7 +33,6 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
-
         public static void drawMeshes(List<UniqueMesh> meshes, Program program, Matrix4 transformation)
         {
             foreach (UniqueMesh unique_mesh in meshes)
@@ -99,7 +98,6 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Light Drawing
         //------------------------------------------------------
-
         public static void drawLights(List<Light> lights, Program program, Matrix4 transformation, bool display_light_bounds)
         {
             //------------------------------------------------------

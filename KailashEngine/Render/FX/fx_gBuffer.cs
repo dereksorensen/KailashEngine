@@ -60,6 +60,12 @@ namespace KailashEngine.Render.FX
             get { return _tLighting; }
         }
 
+        private Texture _tLighting_Specular;
+        public Texture tLighting_Specular
+        {
+            get { return _tLighting_Specular; }
+        }
+
 
 
         public fx_gBuffer(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
@@ -122,7 +128,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Accumulation.frag", null)
             });
-            _pAccumulation.enable_Samplers(2);
+            _pAccumulation.enable_Samplers(3);
         }
 
         protected override void load_Buffers()
@@ -134,7 +140,6 @@ namespace KailashEngine.Render.FX
                 PixelInternalFormat.Depth32fStencil8, PixelFormat.DepthComponent, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tDepthStencil.load();
-
 
             _tDiffuse_ID = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
@@ -164,6 +169,13 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tLighting.load();
 
+            _tLighting_Specular = new Texture(TextureTarget.Texture2D,
+                _resolution.W, _resolution.H,
+                0, false, false,
+                PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tLighting_Specular.load();
+
             _fGBuffer = new FrameBuffer("gBuffer");
             _fGBuffer.load(new Dictionary<FramebufferAttachment, Texture>()
             {
@@ -171,7 +183,8 @@ namespace KailashEngine.Render.FX
                 { FramebufferAttachment.ColorAttachment0, _tDiffuse_ID },
                 { FramebufferAttachment.ColorAttachment1, _tNormal_Depth },
                 { FramebufferAttachment.ColorAttachment2, _tSpecular },
-                { FramebufferAttachment.ColorAttachment7, _tLighting }
+                { FramebufferAttachment.ColorAttachment6, _tLighting },
+                { FramebufferAttachment.ColorAttachment7, _tLighting_Specular }
             });
         }
 
@@ -235,7 +248,10 @@ namespace KailashEngine.Render.FX
 
         private void pass_sLight(Light l)
         {
-            _fGBuffer.bindAttachements(DrawBuffersEnum.ColorAttachment7);
+            _fGBuffer.bindAttachements(new DrawBuffersEnum[] {
+                DrawBuffersEnum.ColorAttachment6,
+                DrawBuffersEnum.ColorAttachment7
+            });
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
             GL.Disable(EnableCap.DepthTest);
@@ -262,7 +278,7 @@ namespace KailashEngine.Render.FX
 
         private void pass_pLight(Light l)
         {
-            _fGBuffer.bindAttachements(DrawBuffersEnum.ColorAttachment7);
+            _fGBuffer.bindAttachements(DrawBuffersEnum.ColorAttachment6);
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
             GL.Disable(EnableCap.DepthTest);
@@ -286,7 +302,10 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Clear Lighting Buffer from last frame
             //------------------------------------------------------
-            _fGBuffer.bind(DrawBuffersEnum.ColorAttachment7);
+            _fGBuffer.bind(new DrawBuffersEnum[] {
+                DrawBuffersEnum.ColorAttachment6,
+                DrawBuffersEnum.ColorAttachment7
+            });
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             //------------------------------------------------------
@@ -329,7 +348,7 @@ namespace KailashEngine.Render.FX
             //GL.Disable(EnableCap.DepthTest);
         }
 
-        public void pass_LightAccumulation(fx_Quad quad,FrameBuffer fFinalScene)
+        public void pass_LightAccumulation(fx_Quad quad, FrameBuffer fFinalScene)
         {
             fFinalScene.bind(DrawBuffersEnum.ColorAttachment0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -339,10 +358,10 @@ namespace KailashEngine.Render.FX
             _pAccumulation.bind();
 
             _tLighting.bind(_pAccumulation.uniforms["sampler0"], 0);
-            _tDiffuse_ID.bind(_pAccumulation.uniforms["sampler1"], 1);
+            _tLighting_Specular.bind(_pAccumulation.uniforms["sampler1"], 1);
+            _tDiffuse_ID.bind(_pAccumulation.uniforms["sampler2"], 2);
 
             quad.render();
-
         }
     }
 }

@@ -156,8 +156,8 @@ namespace KailashEngine.Render
             _gBuffer.pass_LightAccumulation(_quad, _final.fFinalScene);
 
 
-            _quad.render_Texture2D(_final.tFinalScene);
-
+            //_quad.render_Texture2D(_final.tFinalScene);
+            _final.render(_quad);
 
             //_quad.render_Texture2D(_gBuffer.tNormal_Depth, 0.125f, 0);
             _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 1);

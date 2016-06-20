@@ -87,9 +87,18 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void render()
+        public void render(fx_Quad quad)
         {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            GL.Viewport(0, 0, _resolution.W, _resolution.H);
+
+            _pFinalScene.bind();
+
+            _tFinalScene.bind(_pFinalScene.uniforms["sampler0"], 0);
+
+            quad.render();
         }
 
 
