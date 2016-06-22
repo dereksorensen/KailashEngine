@@ -101,10 +101,11 @@ void main()
 	// Specular Mapping
 	//------------------------------------------------------	
 	vec3 specular_color_final = specular_color;
+	float specular_shininess_final = specular_shininess / 511.0;
 	if (enable_specular_texture == 1)
 	{
 		specular_color_final = texture(specular_texture, tex_coords).xyz;
 	}
-	specular = vec4(specular_color_final, specular_shininess);
+	specular = vec4(specular_color_final, specular_shininess_final);
 
 }

@@ -63,7 +63,7 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 
 	float spotAngleDifference = spotAngleCutoff_inner-spotAngleCutoff_outer;
 	float spotLightBlur = (spotAngle - spotAngleCutoff_outer)/spotAngleDifference;
-	return clamp(spotLightBlur,0.0,1.0) * 2.0;
+	return clamp(spotLightBlur,0.0,1.0) * 1.0;
 }
 
 
@@ -115,7 +115,7 @@ void calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal, out ve
 	vec3 half_angle = normalize(L + E);
 
 	float angleNormalHalf = acos(dot(half_angle,N));
-	float exponent = angleNormalHalf * (specular_shininess * 5.0);
+	float exponent = angleNormalHalf * (specular_shininess * 15.0);
 	exponent = -(exponent * exponent);
 	float gaussianTerm = exp(exponent);
 
@@ -161,9 +161,10 @@ void main()
 
 	calcLighting(tex_coord, world_position, normal_depth.xyz, L, temp_diffuse, temp_specular);
 
-	float cone = calcSpotLightCone(L, 0.85, 0.03);
+	float cone = calcSpotLightCone(L, 0.85, 0.02);
 
 	diffuse = temp_diffuse * cone;
 	specular = temp_specular * cone;
 
+	//diffuse = vec4(depth);
 }

@@ -278,7 +278,10 @@ namespace KailashEngine.Render.FX
 
         private void pass_pLight(Light l)
         {
-            _fGBuffer.bindAttachements(DrawBuffersEnum.ColorAttachment6);
+            _fGBuffer.bindAttachements(new DrawBuffersEnum[] {
+                DrawBuffersEnum.ColorAttachment6,
+                DrawBuffersEnum.ColorAttachment7
+            });
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
             GL.Disable(EnableCap.DepthTest);
@@ -291,6 +294,11 @@ namespace KailashEngine.Render.FX
             _tNormal_Depth.bind(_pLighting_PL.uniforms["sampler0"], 0);
             _tSpecular.bind(_pLighting_PL.uniforms["sampler1"], 1);
 
+            GL.Uniform3(_pLighting_PL.uniforms["light_position"], l.spatial.position);
+            GL.Uniform3(_pLighting_PL.uniforms["light_direction"], l.spatial.look);
+            GL.Uniform3(_pLighting_PL.uniforms["light_color"], l.color);
+            GL.Uniform1(_pLighting_PL.uniforms["light_intensity"], l.intensity);
+            GL.Uniform1(_pLighting_PL.uniforms["light_falloff"], l.falloff);
 
             WorldDrawer.drawLightBounds(l, _pLighting_PL);
         }
