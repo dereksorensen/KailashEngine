@@ -83,8 +83,9 @@ namespace KailashEngine.Render.FX
             };
             string[] lighting_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "linearDepth.include"
-
+                _pLoader.path_glsl_common_helpers + "linearDepth.include",
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
+                _path_glsl_effect + "helpers/gBuffer_Lighting.include"
             };
 
             // Rendering Geometry into gBuffer
@@ -341,7 +342,7 @@ namespace KailashEngine.Render.FX
                         break;
 
                     case Light.type_point:
-                        //pass_pLight(l);
+                        pass_pLight(l);
                         break;
                 }
 

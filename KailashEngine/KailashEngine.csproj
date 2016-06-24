@@ -482,6 +482,7 @@
     <None Include="ClassDiagram2.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
@@ -492,6 +493,7 @@
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_SL.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.vert" />
+    <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Lighting.include" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
     <None Include="Resources\Blender\Scripts\export_collada.py" />
   </ItemGroup>

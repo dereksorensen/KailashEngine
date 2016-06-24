@@ -38,17 +38,6 @@ uniform float light_falloff;
 
 
 
-vec3 calcWorldPosition(float depth, vec3 view_ray, vec3 cam_position)
-{
-	view_ray = normalize(view_ray);
-	return view_ray * depth - cam_position;
-}
-
-vec3 calcViewPosition(float depth, vec3 view_ray, vec3 cam_position, mat4 view_matrix)
-{
-	vec3 world_position = calcWorldPosition(depth, view_ray, cam_position);
-	return (view_matrix * vec4(world_position, 1.0)).xyz;
-}
 
 
 float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
@@ -67,81 +56,6 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 }
 
 
-void calcLighting(vec2 tex_coord, vec3 world_position, vec3 world_normal, out vec3 L, out vec4 diffuse_out, out vec4 specular_out)
-{
-	
-	//------------------------------------------------------
-	// Lighting Vectors
-	//------------------------------------------------------
-	vec3 N = normalize(world_normal);
-	vec3 E = normalize(-cam_position - world_position);
-
-
-	//------------------------------------------------------
-	// Attenuation
-	//------------------------------------------------------
-	float max_light_brightness = 10.0;
-	float light_bright = (light_intensity / max_light_brightness);
-	float light_falloff_2 = light_falloff * light_falloff;
-
-	vec3 light_distance = (light_position - world_position);
-	float light_distance_2 = dot(light_distance, light_distance);
-	L = light_distance * inversesqrt(light_distance_2);
-
-	float attenuation = clamp(1.0 - light_distance_2 / light_falloff_2, 0.0, 1.0);
-	attenuation *= attenuation;
-	attenuation *= light_bright;
-
-
-	//------------------------------------------------------
-	// Angle of Inclination
-	//------------------------------------------------------
-	float angle_of_inc = dot(N,L);
-	
-
-	//------------------------------------------------------
-	// Diffuse
-	//------------------------------------------------------
-	vec4 diffuse = vec4(light_color * max(angle_of_inc, 0.0), 1.0);
-
-
-	//------------------------------------------------------
-	// Specular
-	//------------------------------------------------------
-	vec4 specular_properties = texture(sampler1, tex_coord);
-	float specular_shininess = specular_properties.a;
-	vec3 specular_color = specular_properties.xyz;
-
-	vec3 half_angle = normalize(L + E);
-
-	float angleNormalHalf = acos(dot(half_angle,N));
-	float exponent = angleNormalHalf * (specular_shininess * 15.0);
-	exponent = -(exponent * exponent);
-	float gaussianTerm = exp(exponent);
-
-	gaussianTerm = angle_of_inc != 0.0 ? gaussianTerm : 0.0;
-
-	vec4 specular = vec4(light_color *
-					gaussianTerm *
-					specular_color, 1.0);
-
-
-
-	//------------------------------------------------------
-	// Add it all together
-	//------------------------------------------------------
-	diffuse_out = 
-		attenuation * (
-			diffuse
-		);
-
-	specular_out = 
-		attenuation * (
-			specular
-		);
-
-}
-
 
 void main()
 {
@@ -159,7 +73,16 @@ void main()
 	vec4 temp_diffuse;
 	vec4 temp_specular;
 
-	calcLighting(tex_coord, world_position, normal_depth.xyz, L, temp_diffuse, temp_specular);
+
+
+
+	calcLighting(
+		tex_coord, 
+		world_position, normal_depth.xyz, 
+		cam_position,
+		light_position, light_color, light_intensity, light_falloff,
+		sampler1,
+		L, temp_diffuse, temp_specular);
 
 	float cone = calcSpotLightCone(L, 0.85, 0.02);
 

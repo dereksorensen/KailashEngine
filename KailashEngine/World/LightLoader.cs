@@ -176,7 +176,7 @@ namespace KailashEngine.World
                             id,
                             position,
                             size,
-                            color, intensity, falloff,
+                            color, intensity, falloff / 4.0f,
                             shadow);
 
                         // Create Light Object Mesh
@@ -186,12 +186,12 @@ namespace KailashEngine.World
                         float point_radius = falloff;
                         Vector3 light_object_scaler = temp_matrix.ExtractScale();
                         scaler = new Vector3(
-                                point_radius / light_object_scaler.X,
-                                point_radius / light_object_scaler.Y,
-                                point_radius / light_object_scaler.Z
+                                point_radius,
+                                point_radius,
+                                point_radius
                             );
-                        temp_matrix = Matrix4.CreateScale(scaler) * temp_matrix;
-                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix.ClearScale());
+                        temp_matrix = Matrix4.CreateScale(scaler) * temp_matrix.ClearScale();
+                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix);
 
                         light_list.Add(temp_light);
                         break;

@@ -1,0 +1,15 @@
+﻿
+
+
+vec3 calcWorldPosition(float depth, vec3 view_ray, vec3 cam_position)
+{
+	view_ray = normalize(view_ray);
+	return view_ray * depth - cam_position;
+}
+
+vec3 calcViewPosition(float depth, vec3 view_ray, vec3 cam_position, mat4 view_matrix)
+{
+	vec3 world_position = calcWorldPosition(depth, view_ray, cam_position);
+	return (view_matrix * vec4(world_position, 1.0)).xyz;
+}
+

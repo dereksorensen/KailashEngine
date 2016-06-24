@@ -101,7 +101,7 @@ void main()
 	// Specular Mapping
 	//------------------------------------------------------	
 	vec3 specular_color_final = specular_color;
-	float specular_shininess_final = specular_shininess / 511.0;
+	float specular_shininess_final =  (log2(specular_shininess) / 9.0);
 	if (enable_specular_texture == 1)
 	{
 		specular_color_final = texture(specular_texture, tex_coords).xyz;

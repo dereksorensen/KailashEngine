@@ -1,7 +1,19 @@
 ﻿
 
-out vec4 color;
+layout(location = 0) out vec4 diffuse;
+layout(location = 1) out vec4 specular;
 
+in vec3 v_viewRay;
+
+
+//------------------------------------------------------
+// Game Config
+//------------------------------------------------------
+layout(std140, binding = 0) uniform gameConfig
+{
+	vec4 near_far;
+	float target_fps;
+};
 
 //------------------------------------------------------
 // Camera Spatials
@@ -13,6 +25,10 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_position;
 	vec3 cam_look;
 };
+
+
+uniform sampler2D sampler0;		// Normal & Depth
+uniform sampler2D sampler1;		// Specular
 
 
 uniform vec3 light_position;
@@ -27,6 +43,30 @@ uniform float light_falloff;
 void main()
 {
 	
-	color = vec4(0.5);
+	//Calculate Texture Coordinates
+	vec2 Resolution = textureSize(sampler0, 0);
+	vec2 tex_coord = gl_FragCoord.xy / Resolution;
+
+	vec4 normal_depth = texture(sampler0, tex_coord);
+	float depth = normal_depth.a;
+
+	vec3 world_position = calcWorldPosition(depth, v_viewRay, cam_position);
+
+	vec3 L;
+	vec4 temp_diffuse;
+	vec4 temp_specular;
+
+
+	calcLighting(
+		tex_coord, 
+		world_position, normal_depth.xyz, 
+		cam_position,
+		light_position, light_color, light_intensity, light_falloff,
+		sampler1,
+		L, temp_diffuse, temp_specular);
+
+
+	diffuse = temp_diffuse;
+	specular = temp_specular;
 
 }
