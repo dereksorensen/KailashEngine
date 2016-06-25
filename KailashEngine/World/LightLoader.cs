@@ -176,7 +176,7 @@ namespace KailashEngine.World
                             id,
                             position,
                             size,
-                            color, intensity, falloff / 4.0f,
+                            color, intensity, falloff,
                             shadow);
 
                         // Create Light Object Mesh
@@ -184,7 +184,6 @@ namespace KailashEngine.World
 
                         // Create Light Bounds Mesh
                         float point_radius = falloff;
-                        Vector3 light_object_scaler = temp_matrix.ExtractScale();
                         scaler = new Vector3(
                                 point_radius,
                                 point_radius,

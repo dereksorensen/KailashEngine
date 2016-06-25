@@ -59,7 +59,7 @@ namespace KailashEngine.Render.FX
             _tFinalScene = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
-                PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tFinalScene.load();
 

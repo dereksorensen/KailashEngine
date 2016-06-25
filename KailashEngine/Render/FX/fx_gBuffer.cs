@@ -145,7 +145,7 @@ namespace KailashEngine.Render.FX
             _tDiffuse_ID = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
-                PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tDiffuse_ID.load();
 
@@ -166,14 +166,14 @@ namespace KailashEngine.Render.FX
             _tLighting = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
-                PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tLighting.load();
 
             _tLighting_Specular = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
-                PixelInternalFormat.Rgba16, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tLighting_Specular.load();
 

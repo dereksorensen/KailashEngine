@@ -19,22 +19,47 @@ void calcLighting(
 	// View Direction
 	vec3 E = normalize(-cam_position - world_position);
 
+	// Light to Object Vector
+	vec3 light_to_object = (light_position - world_position);
+
+	// Light to Object Distance Squared
+	float light_distance_2 = dot(light_to_object, light_to_object);
+
+	// Light to Object Distance
+	float light_distance = sqrt(light_distance_2);
+
+	// Light to Object Direction
+	L = light_to_object / light_distance;
 
 	//------------------------------------------------------
 	// Attenuation
 	//------------------------------------------------------
-	float max_light_brightness = 10.0;
+	float max_light_brightness = 1.0;
 	float light_bright = (light_intensity / max_light_brightness);
 	float light_falloff_2 = light_falloff * light_falloff;
 
-	vec3 light_distance = (light_position - world_position);
-	float light_distance_2 = dot(light_distance, light_distance);
-	L = light_distance * inversesqrt(light_distance_2);
 
-	float attenuation = clamp(1.0 - light_distance_2 / light_falloff_2, 0.0, 1.0);
+	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
+	attenuation *= attenuation;
 	attenuation *= attenuation;
 	attenuation *= light_bright;
 
+	float light_constant = 1.0;
+	float linear = 0.9;
+	float quad = 0.032;
+
+	float LD = light_distance / light_falloff;
+	float LD_2 = LD * LD;
+
+
+	
+	attenuation = 1.0 / (
+		light_constant + 
+		linear * LD + 
+		quad * LD_2
+	);
+	/*
+	*/
 
 	//------------------------------------------------------
 	// Angle of Inclination
