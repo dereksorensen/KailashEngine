@@ -61,9 +61,10 @@ numL = 0
 
 
 for item in bpy.data.objects:
-    print(item.name)
     if(item.type == 'LAMP'):
-        if(bpy.data.lamps[item.name].type == 'SPOT' or bpy.data.lamps[item.name].type == 'POINT'):
+        lamp = bpy.data.lamps[item.data.name]
+        print(lamp.name + " == " + item.name)
+        if(lamp.type == 'SPOT' or lamp.type == 'POINT'):
             numL = numL + 1
         # border
             border = "== == ==" + '\n'
@@ -72,7 +73,7 @@ for item in bpy.data.objects:
             name = "nam " + item.name + '\n'
             lights_file.write(name)
         # type
-            shape = "typ " + str(bpy.data.lamps[item.name].type) + '\n'
+            shape = "typ " + str(lamp.type) + '\n'
             lights_file.write(shape)
         #position
             position = "pos " + str(item.location.x) + " " + str(item.location.z) + " " + str(-item.location.y) + '\n'
@@ -85,21 +86,21 @@ for item in bpy.data.objects:
             size = "siz " + str(size_float) + '\n'
             lights_file.write(size)
         #intensity
-            intensity = "ity " + str(bpy.data.lamps[item.name].energy) + '\n'
+            intensity = "ity " + str(lamp.energy) + '\n'
             lights_file.write(intensity)
         #color
-            color = "col " + str(bpy.data.lamps[item.name].color.r) + " " + str(bpy.data.lamps[item.name].color.g) + " " + str(bpy.data.lamps[item.name].color.b) + '\n'
+            color = "col " + str(lamp.color.r) + " " + str(lamp.color.g) + " " + str(lamp.color.b) + '\n'
             lights_file.write(color)
         #falloff
-            falloff = "fal " + str(bpy.data.lamps[item.name].distance) + '\n'
+            falloff = "fal " + str(lamp.distance) + '\n'
             lights_file.write(falloff)
         #spot_angle
             spot_angle = "ang 0" + '\n'
             if (bpy.data.lamps[item.name].type == 'SPOT'):
-                spot_angle = "ang " + str(bpy.data.lamps[item.name].spot_size) + '\n'                
+                spot_angle = "ang " + str(lamp.spot_size) + '\n'                
             lights_file.write(spot_angle)
         #shadow
-            shadow_method = str(bpy.data.lamps[item.name].shadow_method)
+            shadow_method = str(lamp.shadow_method)
             has_shadow = 0
             if (not(shadow_method == 'NOSHADOW')):
                 has_shadow = 1

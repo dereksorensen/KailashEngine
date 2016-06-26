@@ -488,9 +488,9 @@
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\final\final_Scene.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />
-    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_PL.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_POINT.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Stencil.vert" />
-    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_SL.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_SPOT.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.vert" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Lighting.include" />

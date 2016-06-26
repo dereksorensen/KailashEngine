@@ -58,7 +58,6 @@ void main()
 	mat3 TBN = calcTBN(v_Normal, v_Tangent);
 	
 
-
 	//------------------------------------------------------
 	// Parallax Mapping
 	//------------------------------------------------------
@@ -101,7 +100,7 @@ void main()
 	// Specular Mapping
 	//------------------------------------------------------	
 	vec3 specular_color_final = specular_color;
-	float specular_shininess_final =  (log2(specular_shininess) / 9.0);
+	float specular_shininess_final = 0.9 - (log2(specular_shininess) / 9.0);
 	if (enable_specular_texture == 1)
 	{
 		specular_color_final = texture(specular_texture, tex_coords).xyz;

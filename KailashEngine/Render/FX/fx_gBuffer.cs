@@ -22,8 +22,8 @@ namespace KailashEngine.Render.FX
         // Programs
         private Program _pGeometry;
         private Program _pStencil;
-        private Program _pLighting_SL;
-        private Program _pLighting_PL;
+        private Program _pLighting_SPOT;
+        private Program _pLighting_POINT;
         private Program _pAccumulation;
 
         // Frame Buffers
@@ -104,24 +104,24 @@ namespace KailashEngine.Render.FX
             _pStencil.addUniform(RenderHelper.uModel);
 
             // Calculate Lighting for Spot Lights
-            _pLighting_SL = _pLoader.createProgram(new ShaderFile[]
+            _pLighting_SPOT = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SL.frag", lighting_helpers)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SPOT.frag", lighting_helpers)
             });
-            _pLighting_SL.addUniform(RenderHelper.uModel);
-            _pLighting_SL.enable_LightCalculation();
-            _pLighting_SL.enable_Samplers(3);
+            _pLighting_SPOT.addUniform(RenderHelper.uModel);
+            _pLighting_SPOT.enable_LightCalculation();
+            _pLighting_SPOT.enable_Samplers(3);
 
             // Calculate Lighting for Point Lights
-            _pLighting_PL = _pLoader.createProgram(new ShaderFile[]
+            _pLighting_POINT = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_PL.frag", lighting_helpers)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_POINT.frag", lighting_helpers)
             });
-            _pLighting_PL.addUniform(RenderHelper.uModel);
-            _pLighting_PL.enable_LightCalculation();
-            _pLighting_PL.enable_Samplers(3);
+            _pLighting_POINT.addUniform(RenderHelper.uModel);
+            _pLighting_POINT.enable_LightCalculation();
+            _pLighting_POINT.enable_Samplers(3);
 
             // Accumulate Lighting
             _pAccumulation = _pLoader.createProgram(new ShaderFile[]
@@ -259,21 +259,21 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
 
-            _pLighting_SL.bind();
+            _pLighting_SPOT.bind();
 
             // Bind gBuffer Textures
-            _tNormal_Depth.bind(_pLighting_SL.uniforms["sampler0"], 0);
-            _tSpecular.bind(_pLighting_SL.uniforms["sampler1"], 1);
+            _tNormal_Depth.bind(_pLighting_SPOT.uniforms["sampler0"], 0);
+            _tSpecular.bind(_pLighting_SPOT.uniforms["sampler1"], 1);
 
 
-            GL.Uniform3(_pLighting_SL.uniforms["light_position"], l.spatial.position);
-            GL.Uniform3(_pLighting_SL.uniforms["light_direction"], l.spatial.look);
-            GL.Uniform3(_pLighting_SL.uniforms["light_color"], l.color);
-            GL.Uniform1(_pLighting_SL.uniforms["light_intensity"], l.intensity);
-            GL.Uniform1(_pLighting_SL.uniforms["light_falloff"], l.falloff);
+            GL.Uniform3(_pLighting_SPOT.uniforms["light_position"], l.spatial.position);
+            GL.Uniform3(_pLighting_SPOT.uniforms["light_direction"], l.spatial.look);
+            GL.Uniform3(_pLighting_SPOT.uniforms["light_color"], l.color);
+            GL.Uniform1(_pLighting_SPOT.uniforms["light_intensity"], l.intensity);
+            GL.Uniform1(_pLighting_SPOT.uniforms["light_falloff"], l.falloff);
 
 
-            WorldDrawer.drawLightBounds(l, _pLighting_SL);
+            WorldDrawer.drawLightBounds(l, _pLighting_SPOT);
 
         }
 
@@ -289,19 +289,19 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
 
-            _pLighting_PL.bind();
+            _pLighting_POINT.bind();
 
             // Bind gBuffer Textures
-            _tNormal_Depth.bind(_pLighting_PL.uniforms["sampler0"], 0);
-            _tSpecular.bind(_pLighting_PL.uniforms["sampler1"], 1);
+            _tNormal_Depth.bind(_pLighting_POINT.uniforms["sampler0"], 0);
+            _tSpecular.bind(_pLighting_POINT.uniforms["sampler1"], 1);
 
-            GL.Uniform3(_pLighting_PL.uniforms["light_position"], l.spatial.position);
-            GL.Uniform3(_pLighting_PL.uniforms["light_direction"], l.spatial.look);
-            GL.Uniform3(_pLighting_PL.uniforms["light_color"], l.color);
-            GL.Uniform1(_pLighting_PL.uniforms["light_intensity"], l.intensity);
-            GL.Uniform1(_pLighting_PL.uniforms["light_falloff"], l.falloff);
+            GL.Uniform3(_pLighting_POINT.uniforms["light_position"], l.spatial.position);
+            GL.Uniform3(_pLighting_POINT.uniforms["light_direction"], l.spatial.look);
+            GL.Uniform3(_pLighting_POINT.uniforms["light_color"], l.color);
+            GL.Uniform1(_pLighting_POINT.uniforms["light_intensity"], l.intensity);
+            GL.Uniform1(_pLighting_POINT.uniforms["light_falloff"], l.falloff);
 
-            WorldDrawer.drawLightBounds(l, _pLighting_PL);
+            WorldDrawer.drawLightBounds(l, _pLighting_POINT);
         }
 
 
