@@ -29,8 +29,7 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(1, "Loading Collada File", Path.GetFileName(filename));
             Grendgine_Collada dae_file = Grendgine_Collada.Grendgine_Load_File(filename);
 
-            int geometry_count = dae_file.Library_Geometries.Geometry.Count();
-            Debug.DebugHelper.logInfo(2, "\tNumber of Meshes", geometry_count.ToString());
+
 
             // Change Blender mesh's to y axis up
             Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
@@ -82,31 +81,38 @@ namespace KailashEngine.World
             //------------------------------------------------------
             // Create Mesh Dictionary
             //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", dae_file.Library_Geometries.Geometry.Count() + " meshes found");
             Dictionary<string, DAE_Mesh> mesh_collection = new Dictionary<string, DAE_Mesh>();
-            foreach (Grendgine_Collada_Geometry g in dae_file.Library_Geometries.Geometry)
+            try
             {
-                // Load Mesh
-                DAE_Mesh temp_mesh = new DAE_Mesh(g.Name.Replace('.', '_') + "-mesh", g);
-                try
+                Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", dae_file.Library_Geometries.Geometry.Count() + " meshes found");            
+                foreach (Grendgine_Collada_Geometry g in dae_file.Library_Geometries.Geometry)
                 {
-                    temp_mesh.load(material_collection);
-                }
-                catch (Exception e)
-                {
-                    Debug.DebugHelper.logError(e.Message, "");
-                    continue;
-                }
+                    // Load Mesh
+                    DAE_Mesh temp_mesh = new DAE_Mesh(g.Name.Replace('.', '_') + "-mesh", g);
+                    try
+                    {
+                        temp_mesh.load(material_collection);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.DebugHelper.logError(e.Message, "");
+                        continue;
+                    }
 
-                // Load mesh's VAO
-                foreach(Mesh mesh in temp_mesh.submeshes)
-                {
-                    mesh.setBufferIDs(initVAO(mesh));
-                }
+                    // Load mesh's VAO
+                    foreach (Mesh mesh in temp_mesh.submeshes)
+                    {
+                        mesh.setBufferIDs(initVAO(mesh));
+                    }
 
-                // Add to Mesh Collection
-                mesh_collection.Add(temp_mesh.id, temp_mesh);
-                
+                    // Add to Mesh Collection
+                    mesh_collection.Add(temp_mesh.id, temp_mesh);
+
+                }
+            }
+            catch
+            {
+                Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", "0 meshes found:<");
             }
 
             //------------------------------------------------------

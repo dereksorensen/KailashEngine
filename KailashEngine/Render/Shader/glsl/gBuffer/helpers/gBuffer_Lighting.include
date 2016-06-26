@@ -1,8 +1,5 @@
 ﻿
 
-float att(float r, float f, float d) {
-  return pow(max(0.0, 1.0 - (d / r)), f + 1.0);
-}
 
 void calcLighting(
 	vec2 tex_coord, 
@@ -41,25 +38,9 @@ void calcLighting(
 	float light_falloff_2 = light_falloff * light_falloff;
 
 
-	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
+	float attenuation = max(1.0 - light_distance / light_falloff, 0.0);
 	attenuation *= attenuation;
-	//attenuation *= attenuation;
 	attenuation *= light_bright;
-
-	attenuation = att(light_falloff, 1.0, light_distance) * light_bright;
-
-	/*
-	float radius = 1.0 / max(-light_falloff + light_distance, 0.0);
-
-	float d = max(light_distance, 0);
-	float denom = d / radius + 1;
-	attenuation = 1 / (denom * denom);
-	attenuation *= light_bright;
-
-	float cutoff = 0.02;
-	//attenuation = (attenuation - cutoff) / (1 - cutoff);
-	//attenuation = max(attenuation, 0);
-	*/
 
 
 	//------------------------------------------------------
