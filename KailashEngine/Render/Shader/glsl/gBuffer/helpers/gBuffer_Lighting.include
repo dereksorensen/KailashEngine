@@ -1,6 +1,8 @@
 ﻿
 
-
+float att(float r, float f, float d) {
+  return pow(max(0.0, 1.0 - (d / r)), f + 1.0);
+}
 
 void calcLighting(
 	vec2 tex_coord, 
@@ -41,36 +43,35 @@ void calcLighting(
 
 	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
 	attenuation *= attenuation;
-	attenuation *= attenuation;
+	//attenuation *= attenuation;
 	attenuation *= light_bright;
 
-	float light_constant = 1.0;
-	float linear = 0.9;
-	float quad = 0.032;
+	attenuation = att(light_falloff, 1.0, light_distance) * light_bright;
 
-	float LD = light_distance / light_falloff;
-	float LD_2 = LD * LD;
-
-
-	
-	attenuation = 1.0 / (
-		light_constant + 
-		linear * LD + 
-		quad * LD_2
-	);
 	/*
+	float radius = 1.0 / max(-light_falloff + light_distance, 0.0);
+
+	float d = max(light_distance, 0);
+	float denom = d / radius + 1;
+	attenuation = 1 / (denom * denom);
+	attenuation *= light_bright;
+
+	float cutoff = 0.02;
+	//attenuation = (attenuation - cutoff) / (1 - cutoff);
+	//attenuation = max(attenuation, 0);
 	*/
+
 
 	//------------------------------------------------------
 	// Angle of Inclination
 	//------------------------------------------------------
-	float angle_of_inc = dot(N,L);
-	
+	float angle_of_inc = dot(L,N);
+	float max_inc = max(angle_of_inc, 0.0);
 
 	//------------------------------------------------------
 	// Diffuse
 	//------------------------------------------------------
-	vec4 diffuse = vec4(light_color * max(angle_of_inc, 0.0), 1.0);
+	vec4 diffuse = vec4(light_color * max_inc, 1.0);
 
 
 	//------------------------------------------------------

@@ -118,6 +118,8 @@ namespace KailashEngine.World
 
             Debug.DebugHelper.logInfo(2, "\tNumber of Lights", num_lights.ToString());
 
+
+
             for (int i = 0; i < num_lights; i++)
             {
                 string id = ids[i].Replace('.', '_');
@@ -152,14 +154,13 @@ namespace KailashEngine.World
                         temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
 
                         // Create Light Bounds Mesh
-                        float spot_height = falloff * 1.0f;
-                        float spot_radius = spot_height * (float)Math.Tan(spot_angle) * 1.0f;
+                        float spot_depth = falloff / 2.0f;
+                        float spot_radius = spot_depth * (float)Math.Tan(spot_angle) / 2.0f;
                         scaler = new Vector3(
                                 spot_radius,
                                 spot_radius,
-                                spot_height * 2.0f
+                                spot_depth
                             );
-                        scaler *= temp_matrix.ExtractScale();
                         shifter = new Vector3(
                                 0.0f,
                                 0.0f,
@@ -168,7 +169,7 @@ namespace KailashEngine.World
                         temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * temp_matrix.ClearScale();
                         temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", sLight_mesh, temp_matrix);
 
-                        // Add Spot Light to Dictionary
+                        // Add Spot Light to List
                         light_list.Add(temp_light);
                         break;
                     case "POINT":
@@ -192,10 +193,18 @@ namespace KailashEngine.World
                         temp_matrix = Matrix4.CreateScale(scaler) * temp_matrix.ClearScale();
                         temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix);
 
+                        // Add Point Light to List
                         light_list.Add(temp_light);
                         break;
                 }
             }
+
+
+            foreach (KeyValuePair<string, Matrix4> entry in light_matrix_collection)
+            {
+                Console.WriteLine(entry.Key);
+            }
+
 
             ids.Clear();
             types.Clear();

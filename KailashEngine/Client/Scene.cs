@@ -73,7 +73,7 @@ namespace KailashEngine.Client
         {
             // Draw Scene
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
-            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, true);
+            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
 
         }
 

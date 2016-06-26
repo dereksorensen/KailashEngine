@@ -83,9 +83,9 @@ namespace KailashEngine.Render.FX
             };
             string[] lighting_helpers = new string[]
             {
+                _path_glsl_effect + "helpers/gBuffer_Lighting.include",
                 _pLoader.path_glsl_common_helpers + "linearDepth.include",
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
-                _path_glsl_effect + "helpers/gBuffer_Lighting.include"
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include"
             };
 
             // Rendering Geometry into gBuffer

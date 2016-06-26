@@ -61,6 +61,7 @@ numL = 0
 
 
 for item in bpy.data.objects:
+    print(item.name)
     if(item.type == 'LAMP'):
         if(bpy.data.lamps[item.name].type == 'SPOT' or bpy.data.lamps[item.name].type == 'POINT'):
             numL = numL + 1

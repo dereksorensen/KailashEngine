@@ -5,22 +5,20 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.76.0 commit date:2015-11-03, commit time:10:56, hash:f337fea</authoring_tool>
     </contributor>
-    <created>2016-06-25T12:12:19</created>
-    <modified>2016-06-25T12:12:19</modified>
+    <created>2016-06-25T19:02:14</created>
+    <modified>2016-06-25T19:02:14</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
   <library_lights>
-    <light id="Spot_001-light" name="Spot.001">
+    <light id="Spot_000-light" name="Spot.000">
       <technique_common>
-        <spot>
-          <color sid="color">10 10 10</color>
+        <point>
+          <color sid="color">10 0.2102083 0.1082873</color>
           <constant_attenuation>1</constant_attenuation>
           <linear_attenuation>0</linear_attenuation>
-          <quadratic_attenuation>7.42047e-4</quadratic_attenuation>
-          <falloff_angle sid="fall_off_angle">70</falloff_angle>
-          <falloff_exponent sid="fall_off_exponent">0.15</falloff_exponent>
-        </spot>
+          <quadratic_attenuation>0.006122589</quadratic_attenuation>
+        </point>
       </technique_common>
       <extra>
         <technique profile="blender">
@@ -32,11 +30,11 @@
           <atm_distance_factor>1</atm_distance_factor>
           <atm_extinction_factor>1</atm_extinction_factor>
           <atm_turbidity>2</atm_turbidity>
-          <att1>0</att1>
+          <att1>1</att1>
           <att2>1</att2>
           <backscattered_light>1</backscattered_light>
           <bias>1</bias>
-          <blue>1</blue>
+          <blue>0.01082873</blue>
           <buffers>1</buffers>
           <bufflag>0</bufflag>
           <bufsize>512</bufsize>
@@ -44,13 +42,13 @@
           <clipend>40</clipend>
           <clipsta>0.5</clipsta>
           <compressthresh>0.04999995</compressthresh>
-          <dist sid="blender_dist">36.70999</dist>
+          <dist sid="blender_dist">12.78</dist>
           <energy sid="blender_energy">10</energy>
           <falloff_type>2</falloff_type>
           <filtertype>0</filtertype>
           <flag>0</flag>
           <gamma sid="blender_gamma">1</gamma>
-          <green>1</green>
+          <green>0.02102082</green>
           <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
           <horizon_brightness>1</horizon_brightness>
           <mode>64</mode>
@@ -77,17 +75,17 @@
           <sun_effect_type>0</sun_effect_type>
           <sun_intensity>1</sun_intensity>
           <sun_size>1</sun_size>
-          <type>2</type>
+          <type>0</type>
         </technique>
       </extra>
     </light>
-    <light id="Spot_003-light" name="Spot.003">
+    <light id="Spot_001-light" name="Spot.000">
       <technique_common>
         <point>
-          <color sid="color">10 10 10</color>
+          <color sid="color">10 0.2102083 0.1082873</color>
           <constant_attenuation>1</constant_attenuation>
           <linear_attenuation>0</linear_attenuation>
-          <quadratic_attenuation>0.00382924</quadratic_attenuation>
+          <quadratic_attenuation>0.006122589</quadratic_attenuation>
         </point>
       </technique_common>
       <extra>
@@ -100,11 +98,11 @@
           <atm_distance_factor>1</atm_distance_factor>
           <atm_extinction_factor>1</atm_extinction_factor>
           <atm_turbidity>2</atm_turbidity>
-          <att1>0.6703703</att1>
+          <att1>1</att1>
           <att2>1</att2>
           <backscattered_light>1</backscattered_light>
           <bias>1</bias>
-          <blue>1</blue>
+          <blue>0.01082873</blue>
           <buffers>1</buffers>
           <bufflag>0</bufflag>
           <bufsize>512</bufsize>
@@ -112,13 +110,81 @@
           <clipend>40</clipend>
           <clipsta>0.5</clipsta>
           <compressthresh>0.04999995</compressthresh>
-          <dist sid="blender_dist">16.16</dist>
+          <dist sid="blender_dist">12.78</dist>
           <energy sid="blender_energy">10</energy>
           <falloff_type>2</falloff_type>
           <filtertype>0</filtertype>
           <flag>0</flag>
           <gamma sid="blender_gamma">1</gamma>
-          <green>1</green>
+          <green>0.02102082</green>
+          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
+          <horizon_brightness>1</horizon_brightness>
+          <mode>64</mode>
+          <ray_samp>1</ray_samp>
+          <ray_samp_method>1</ray_samp_method>
+          <ray_samp_type>0</ray_samp_type>
+          <ray_sampy>1</ray_sampy>
+          <ray_sampz>1</ray_sampz>
+          <red>1</red>
+          <samp>3</samp>
+          <shadhalostep>0</shadhalostep>
+          <shadow_b sid="blender_shadow_b">0</shadow_b>
+          <shadow_g sid="blender_shadow_g">0</shadow_g>
+          <shadow_r sid="blender_shadow_r">0</shadow_r>
+          <sky_colorspace>2</sky_colorspace>
+          <sky_exposure>1</sky_exposure>
+          <skyblendfac>1</skyblendfac>
+          <skyblendtype>1</skyblendtype>
+          <soft>3</soft>
+          <spotblend>0.15</spotblend>
+          <spotsize>70</spotsize>
+          <spread>1</spread>
+          <sun_brightness>1</sun_brightness>
+          <sun_effect_type>0</sun_effect_type>
+          <sun_intensity>1</sun_intensity>
+          <sun_size>1</sun_size>
+          <type>0</type>
+        </technique>
+      </extra>
+    </light>
+    <light id="Spot_002-light" name="Spot.000">
+      <technique_common>
+        <point>
+          <color sid="color">10 0.2102083 0.1082873</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.006122589</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <adapt_thresh>0.000999987</adapt_thresh>
+          <area_shape>0</area_shape>
+          <area_size>0.1</area_size>
+          <area_sizey>0.1</area_sizey>
+          <area_sizez>0.1</area_sizez>
+          <atm_distance_factor>1</atm_distance_factor>
+          <atm_extinction_factor>1</atm_extinction_factor>
+          <atm_turbidity>2</atm_turbidity>
+          <att1>1</att1>
+          <att2>1</att2>
+          <backscattered_light>1</backscattered_light>
+          <bias>1</bias>
+          <blue>0.01082873</blue>
+          <buffers>1</buffers>
+          <bufflag>0</bufflag>
+          <bufsize>512</bufsize>
+          <buftype>2</buftype>
+          <clipend>40</clipend>
+          <clipsta>0.5</clipsta>
+          <compressthresh>0.04999995</compressthresh>
+          <dist sid="blender_dist">12.78</dist>
+          <energy sid="blender_energy">10</energy>
+          <falloff_type>2</falloff_type>
+          <filtertype>0</filtertype>
+          <flag>0</flag>
+          <gamma sid="blender_gamma">1</gamma>
+          <green>0.02102082</green>
           <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
           <horizon_brightness>1</horizon_brightness>
           <mode>64</mode>
@@ -1056,7 +1122,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_001" name="Cube_001" type="NODE">
-        <matrix sid="transform">4.81267e-15 -23.76762 1.79441e-6 -0.5842276 6.37457e-8 1.79441e-6 23.76762 8.964214 -0.8443378 0 1.79441e-6 -3.722165 0 0 0 1</matrix>
+        <matrix sid="transform">4.81267e-15 -40 3.01992e-6 -0.5842276 6.37457e-8 3.01992e-6 40 -5.71957 -0.8443378 0 3.01992e-6 -3.722165 0 0 0 1</matrix>
         <instance_geometry url="#Cube-mesh" name="Cube_001">
           <bind_material>
             <technique_common>
@@ -1195,13 +1261,17 @@
           </bind_material>
         </instance_geometry>
       </node>
+      <node id="Spot_000" name="Spot_000" type="NODE">
+        <matrix sid="transform">3.09316e-9 0.3119332 0.1652932 -11.50046 -0.2593869 0.1121225 -0.211592 -30.94706 -0.2394632 -0.1214512 0.2291968 3.885613 0 0 0 1</matrix>
+        <instance_light url="#Spot_000-light"/>
+      </node>
       <node id="Spot_001" name="Spot_001" type="NODE">
-        <matrix sid="transform">4.20974e-9 0.0913687 0.3409926 33.04831 -0.3530215 1.08956e-9 4.0663e-9 18.64966 0 -0.3409926 0.0913687 4.781206 0 0 0 1</matrix>
+        <matrix sid="transform">3.09316e-9 0.3119332 0.1652932 15.44197 -0.2593869 0.1121225 -0.211592 -30.94706 -0.2394632 -0.1214512 0.2291968 3.885613 0 0 0 1</matrix>
         <instance_light url="#Spot_001-light"/>
       </node>
-      <node id="Spot_003" name="Spot_003" type="NODE">
-        <matrix sid="transform">3.09316e-9 0.3119332 0.1652932 -9.660286 -0.2593869 0.1121225 -0.211592 -3.694978 -0.2394632 -0.1214512 0.2291968 0.7625827 0 0 0 1</matrix>
-        <instance_light url="#Spot_003-light"/>
+      <node id="Spot_002" name="Spot_002" type="NODE">
+        <matrix sid="transform">3.09316e-9 0.3119332 0.1652932 1.978622 -0.2593869 0.1121225 -0.211592 -30.94706 -0.2394632 -0.1214512 0.2291968 3.885613 0 0 0 1</matrix>
+        <instance_light url="#Spot_002-light"/>
       </node>
     </visual_scene>
   </library_visual_scenes>
