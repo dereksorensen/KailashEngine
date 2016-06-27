@@ -334,7 +334,7 @@ namespace KailashEngine.Render.FX
 
                 pass_Stencil(l);
 
-
+                
                 switch (l.type)
                 {
                     case Light.type_spot:
@@ -344,11 +344,11 @@ namespace KailashEngine.Render.FX
                     case Light.type_point:
                         pass_pLight(l);
                         break;
+                    
                 }
-
-
-
             }
+            pass_Stencil(scene.flashlight);
+            pass_sLight(scene.flashlight);
 
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.Blend);

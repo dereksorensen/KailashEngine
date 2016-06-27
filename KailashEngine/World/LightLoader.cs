@@ -149,7 +149,7 @@ namespace KailashEngine.World
                             size,
                             color, intensity, falloff, spot_angle,
                             shadow);
-
+                        Console.WriteLine(spot_angle);
                         // Create Light Object Mesh
                         temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
 

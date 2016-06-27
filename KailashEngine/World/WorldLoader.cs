@@ -26,14 +26,12 @@ namespace KailashEngine.World
         public Mesh sLight_mesh
         {
             get { return _sLight_mesh; }
-            set { _sLight_mesh = value; }
         }
 
         private Mesh _pLight_mesh;
         public Mesh pLight_mesh
         {
             get { return _pLight_mesh; }
-            set { _pLight_mesh = value; }
         }
 
 

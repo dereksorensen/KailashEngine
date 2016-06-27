@@ -40,6 +40,12 @@ namespace KailashEngine.Client
             set { _lights = value; }
         }
 
+        private Light _flashlight;
+        public Light flashlight
+        {
+            get { return _flashlight; }
+        }
+
 
         public Scene(string path_mesh, string path_physics, string path_lights)
         {
@@ -65,6 +71,36 @@ namespace KailashEngine.Client
                 "test_scene"
             }, _meshes, _lights);
 
+
+
+
+
+            // Load Flashlight
+            _flashlight = new sLight(
+                "flashlight",
+                Vector3.Zero, Vector3.Zero,
+                1.0f,
+                new Vector3(1.0f), 10.0f, 30.0f, MathHelper.DegreesToRadians(70.0f),
+                false);
+
+            // Create Light Object Mesh
+            _flashlight.unique_mesh = new UniqueMesh(_flashlight.id, _world_loader.sLight_mesh, Matrix4.Identity);
+
+            // Create Light Bounds Mesh
+            float spot_depth = _flashlight.falloff / 2.0f;
+            float spot_radius = spot_depth * (float)Math.Tan(_flashlight.spot_angle) / 2.0f;
+            Vector3 scaler = new Vector3(
+                    spot_radius,
+                    spot_radius,
+                    spot_depth
+                );
+            Vector3 shifter = new Vector3(
+                    0.0f,
+                    0.0f,
+                    -scaler.Z
+                );
+            Matrix4 temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter);
+            _flashlight.bounding_unique_mesh = new UniqueMesh(_flashlight.id + "-bounds", _world_loader.sLight_mesh, temp_matrix);
 
         }
 

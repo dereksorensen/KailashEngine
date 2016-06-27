@@ -325,6 +325,7 @@ namespace KailashEngine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             inputBuffer();
+
             _render_driver.updateUBO_GameConfig(
                 _game.config.near_far_full,
                 _game.config.fps_target);
@@ -334,11 +335,14 @@ namespace KailashEngine
                 _game.player.camera.spatial.position,
                 _game.player.camera.spatial.look);
 
-
+            Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
+            _game.scene.flashlight.bounding_unique_mesh.transformation = _game.scene.flashlight.bounding_unique_mesh.transformation * Matrix4.Invert(_game.player.character.spatial.rotation_matrix) * Matrix4.Invert(_game.player.character.spatial.position_matrix);
+            _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
+            _game.scene.flashlight.spatial.look = new Vector3(_game.player.character.spatial.look.X, -_game.player.character.spatial.look.Y, _game.player.character.spatial.look.Z);
 
             _render_driver.render(_game.scene);
 
-
+            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;
 
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
