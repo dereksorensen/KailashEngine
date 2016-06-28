@@ -331,10 +331,8 @@ namespace KailashEngine.Render.FX
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
             foreach (Light l in scene.lights)
             {
-
                 pass_Stencil(l);
-
-                
+           
                 switch (l.type)
                 {
                     case Light.type_spot:
@@ -343,12 +341,10 @@ namespace KailashEngine.Render.FX
 
                     case Light.type_point:
                         pass_pLight(l);
-                        break;
-                    
+                        break;                  
                 }
             }
-            pass_Stencil(scene.flashlight);
-            pass_sLight(scene.flashlight);
+
 
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.Blend);

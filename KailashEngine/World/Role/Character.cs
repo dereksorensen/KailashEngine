@@ -52,6 +52,13 @@ namespace KailashEngine.World.Role
             set { _sprinting = value; }
         }
 
+        private bool _enable_flashlight;
+        public bool enable_flashlight
+        {
+            get { return _enable_flashlight; }
+            set { _enable_flashlight = value; }
+        }
+
 
         private float _look_sensitivity;
         public float look_sensitivity
@@ -111,7 +118,7 @@ namespace KailashEngine.World.Role
             // Added bit to set look and up based on xy rotation only
             xy_rotation.Normalize();
             Matrix4 temp_xy_rotation = Matrix4.CreateFromQuaternion(xy_rotation);
-            _spatial.look = temp_xy_rotation.Column2.Xyz;
+            _spatial.look = _spatial.rotation_matrix.Column2.Xyz;
             _spatial.up = temp_xy_rotation.Column1.Xyz;
             _spatial.strafe = Vector3.Cross(_spatial.look, _spatial.up);
 

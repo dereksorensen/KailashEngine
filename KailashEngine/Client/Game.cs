@@ -81,6 +81,7 @@ namespace KailashEngine.Client
         {
             _player.load(_config.fov_radian, _display.resolution.aspect, _config.near_far);
             _scene.load();
+            _scene.toggleFlashlight(_player.character.enable_flashlight);
         }
 
 

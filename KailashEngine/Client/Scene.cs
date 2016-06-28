@@ -102,6 +102,21 @@ namespace KailashEngine.Client
             Matrix4 temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter);
             _flashlight.bounding_unique_mesh = new UniqueMesh(_flashlight.id + "-bounds", _world_loader.sLight_mesh, temp_matrix);
 
+            _lights.Insert(0, _flashlight);
+
+        }
+
+        public void toggleFlashlight(bool enabled)
+        {
+            if(enabled)
+            {
+                _lights.Insert(0, _flashlight);
+            }
+            else
+            {
+                _lights.RemoveAt(0);
+            }
+            
         }
 
 

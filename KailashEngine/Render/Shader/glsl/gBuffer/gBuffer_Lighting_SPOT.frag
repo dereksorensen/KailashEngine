@@ -45,14 +45,14 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 
 	//Blur the spotlight based on distance
 	float spotLightBlurCoefficient = blurAmount;
-	float spotAngleCutoff_outer = outerAngle;
+	float spotAngleCutoff_outer = outerAngle * MATH_PI / 180.0;
 	float spotAngleCutoff_inner = spotAngleCutoff_outer+(spotLightBlurCoefficient);
 
 	float spotAngle = dot(normalize(vec3(-light_direction.x, light_direction.y, -light_direction.z)),-L);
 
 	float spotAngleDifference = spotAngleCutoff_inner-spotAngleCutoff_outer;
 	float spotLightBlur = (spotAngle - spotAngleCutoff_outer)/spotAngleDifference;
-	return clamp(spotLightBlur,0.0,1.0) * 1.0;
+	return clamp(spotLightBlur,0.0,1.0);
 }
 
 
@@ -84,7 +84,7 @@ void main()
 		specular_properties,
 		L, temp_diffuse, temp_specular);
 
-	float cone = calcSpotLightCone(L, 0.85, 0.02);
+	float cone = calcSpotLightCone(L, 47.5, 0.02);
 
 	diffuse = temp_diffuse * cone;
 	specular = temp_specular * cone;
