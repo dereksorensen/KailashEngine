@@ -112,6 +112,7 @@ namespace KailashEngine.Render.Shader
                     case ShaderType.TessEvaluationShader: shader_type_string = "TE"; break;
                     case ShaderType.GeometryShader: shader_type_string = "GS"; break;
                     case ShaderType.FragmentShader: shader_type_string = "FS"; break;
+                    case ShaderType.ComputeShader: shader_type_string = "CS"; break;
                     default: shader_type_string = "SHADER"; break;
                 }
 

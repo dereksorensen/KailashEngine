@@ -149,7 +149,7 @@ namespace KailashEngine.World
                             size,
                             color, intensity, falloff, spot_angle,
                             shadow);
-                        Console.WriteLine(spot_angle);
+
                         // Create Light Object Mesh
                         temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
 
@@ -200,10 +200,10 @@ namespace KailashEngine.World
             }
 
 
-            foreach (KeyValuePair<string, Matrix4> entry in light_matrix_collection)
-            {
-                Console.WriteLine(entry.Key);
-            }
+            //foreach (KeyValuePair<string, Matrix4> entry in light_matrix_collection)
+            //{
+            //    Console.WriteLine(entry.Key);
+            //}
 
 
             ids.Clear();

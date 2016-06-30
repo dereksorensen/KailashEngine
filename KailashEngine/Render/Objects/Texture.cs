@@ -243,5 +243,19 @@ namespace KailashEngine.Render.Objects
             GL.Uniform1(texture_uniform, index);
         }
 
+        public void bindImageUnit(int texture_uniform, int index, TextureAccess access)
+        {
+            GL.ActiveTexture(TextureUnit.Texture0 + index);
+            GL.BindImageTexture(
+                index,
+                _id,
+                0,
+                false,
+                0,
+                access,
+                (SizedInternalFormat)_pif);
+            GL.Uniform1(texture_uniform, index);
+        }
+
     }
 }

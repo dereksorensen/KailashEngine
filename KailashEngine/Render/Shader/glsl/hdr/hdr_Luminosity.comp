@@ -1,0 +1,20 @@
+﻿
+layout (local_size_x = 32, local_size_y = 32) in;
+
+layout(rgba32f) readonly uniform image2D sampler0;		// Last Frame's Scene
+writeonly uniform image2D sampler1;		// Luminosity
+
+void main() 
+{
+	ivec2 texCoord = ivec2(gl_GlobalInvocationID.xy);
+	vec4 scene = imageLoad(sampler0, texCoord);
+
+	vec3 W = vec3(0.2125, 0.7154, 0.0721);
+	float luminance = dot(scene.xyz, W);
+
+	imageStore(sampler1, texCoord, vec4(0.2 + luminance)); 
+}
+
+
+
+

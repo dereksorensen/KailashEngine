@@ -28,10 +28,7 @@ namespace KailashEngine.Render
         }
 
         private Dictionary<string, int> _uniforms;
-        public Dictionary<string, int> uniforms
-        {
-            get { return _uniforms; }
-        }
+
 
         public Program(int glsl_version, ShaderFile[] shader_pipeline)
         {

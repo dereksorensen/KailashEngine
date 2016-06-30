@@ -34,6 +34,7 @@ namespace KailashEngine.Render
         private fx_Quad _quad;
         private fx_Final _final;
         private fx_gBuffer _gBuffer;
+        private fx_HDR _hdr;
 
 
         public RenderDriver(
@@ -63,6 +64,7 @@ namespace KailashEngine.Render
             _quad = new fx_Quad(_pLoader, "common/", _resolution);
             _final = new fx_Final(_pLoader, "final/", _resolution);
             _gBuffer = new fx_gBuffer(_pLoader, "gBuffer/", _resolution);
+            _hdr = new fx_HDR(_pLoader, "hdr/", _resolution);
 
 
         }
@@ -92,6 +94,7 @@ namespace KailashEngine.Render
             _quad.load();
             _final.load();
             _gBuffer.load();
+            _hdr.load();
         }
 
         public void load()
@@ -142,9 +145,14 @@ namespace KailashEngine.Render
         {
 
             //------------------------------------------------------
+            // Pre-Processing
+            //------------------------------------------------------
+            _hdr.autoExposure(_final.tFinalScene);
+
+
+            //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
-
             _gBuffer.pass_DeferredShading(scene);
 
 
@@ -153,15 +161,19 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             GL.Disable(EnableCap.DepthTest);
 
+
             _gBuffer.pass_LightAccumulation(_quad, _final.fFinalScene);
 
+            
 
-            //_quad.render_Texture2D(_final.tFinalScene);
+
             _final.render(_quad);
 
-            _quad.render_Texture2D(_gBuffer.tLighting_Specular, 0.25f, 2);
-            _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 1);
-            _quad.render_Texture2D(_gBuffer.tDiffuse_ID, 0.25f, 0);
+
+
+            //_quad.render_Texture2D(_gBuffer.tLighting_Specular, 0.25f, 2);
+            _quad.render_Texture2D(_hdr.tLuminosity, 0.25f, 1);
+            _quad.render_Texture2D(_final.tFinalScene, 0.25f, 0);
 
         }
 

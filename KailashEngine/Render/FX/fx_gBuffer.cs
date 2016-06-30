@@ -262,15 +262,15 @@ namespace KailashEngine.Render.FX
             _pLighting_SPOT.bind();
 
             // Bind gBuffer Textures
-            _tNormal_Depth.bind(_pLighting_SPOT.uniforms["sampler0"], 0);
-            _tSpecular.bind(_pLighting_SPOT.uniforms["sampler1"], 1);
+            _tNormal_Depth.bind(_pLighting_SPOT.getUniform("sampler0"), 0);
+            _tSpecular.bind(_pLighting_SPOT.getUniform("sampler1"), 1);
 
 
-            GL.Uniform3(_pLighting_SPOT.uniforms["light_position"], l.spatial.position);
-            GL.Uniform3(_pLighting_SPOT.uniforms["light_direction"], l.spatial.look);
-            GL.Uniform3(_pLighting_SPOT.uniforms["light_color"], l.color);
-            GL.Uniform1(_pLighting_SPOT.uniforms["light_intensity"], l.intensity);
-            GL.Uniform1(_pLighting_SPOT.uniforms["light_falloff"], l.falloff);
+            GL.Uniform3(_pLighting_SPOT.getUniform("light_position"), l.spatial.position);
+            GL.Uniform3(_pLighting_SPOT.getUniform("light_direction"), l.spatial.look);
+            GL.Uniform3(_pLighting_SPOT.getUniform("light_color"), l.color);
+            GL.Uniform1(_pLighting_SPOT.getUniform("light_intensity"), l.intensity);
+            GL.Uniform1(_pLighting_SPOT.getUniform("light_falloff"), l.falloff);
 
 
             WorldDrawer.drawLightBounds(l, _pLighting_SPOT);
@@ -292,14 +292,14 @@ namespace KailashEngine.Render.FX
             _pLighting_POINT.bind();
 
             // Bind gBuffer Textures
-            _tNormal_Depth.bind(_pLighting_POINT.uniforms["sampler0"], 0);
-            _tSpecular.bind(_pLighting_POINT.uniforms["sampler1"], 1);
+            _tNormal_Depth.bind(_pLighting_POINT.getUniform("sampler0"), 0);
+            _tSpecular.bind(_pLighting_POINT.getUniform("sampler1"), 1);
 
-            GL.Uniform3(_pLighting_POINT.uniforms["light_position"], l.spatial.position);
-            GL.Uniform3(_pLighting_POINT.uniforms["light_direction"], l.spatial.look);
-            GL.Uniform3(_pLighting_POINT.uniforms["light_color"], l.color);
-            GL.Uniform1(_pLighting_POINT.uniforms["light_intensity"], l.intensity);
-            GL.Uniform1(_pLighting_POINT.uniforms["light_falloff"], l.falloff);
+            GL.Uniform3(_pLighting_POINT.getUniform("light_position"), l.spatial.position);
+            GL.Uniform3(_pLighting_POINT.getUniform("light_direction"), l.spatial.look);
+            GL.Uniform3(_pLighting_POINT.getUniform("light_color"), l.color);
+            GL.Uniform1(_pLighting_POINT.getUniform("light_intensity"), l.intensity);
+            GL.Uniform1(_pLighting_POINT.getUniform("light_falloff"), l.falloff);
 
             WorldDrawer.drawLightBounds(l, _pLighting_POINT);
         }
@@ -362,9 +362,9 @@ namespace KailashEngine.Render.FX
 
             _pAccumulation.bind();
 
-            _tLighting.bind(_pAccumulation.uniforms["sampler0"], 0);
-            _tLighting_Specular.bind(_pAccumulation.uniforms["sampler1"], 1);
-            _tDiffuse_ID.bind(_pAccumulation.uniforms["sampler2"], 2);
+            _tLighting.bind(_pAccumulation.getUniform("sampler0"), 0);
+            _tLighting_Specular.bind(_pAccumulation.getUniform("sampler1"), 1);
+            _tDiffuse_ID.bind(_pAccumulation.getUniform("sampler2"), 2);
 
             quad.render();
         }

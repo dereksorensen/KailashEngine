@@ -80,7 +80,7 @@ namespace KailashEngine.Client
                 "flashlight",
                 Vector3.Zero, Vector3.Zero,
                 1.0f,
-                new Vector3(1.0f), 10.0f, 30.0f, MathHelper.DegreesToRadians(70.0f),
+                new Vector3(1.0f), 2.0f, 40.0f, MathHelper.DegreesToRadians(70.0f),
                 false);
 
             // Create Light Object Mesh
