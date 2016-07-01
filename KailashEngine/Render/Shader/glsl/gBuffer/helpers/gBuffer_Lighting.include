@@ -30,7 +30,7 @@ float wardSpecular(vec3 lightDirection, vec3 viewDirection, vec3 surfaceNormal, 
 	float coeff = sqrt(NdotL/NdotR) / (4.0 * MATH_PI * slope.x * slope.y); 
 	float theta = (pow(XdotH/slope.x, 2.0) + pow(YdotH/slope.y, 2.0)) / (1.0 + NdotH);
 
-	float F = pow(1.0 - dot(viewDirection,H), 0.3);
+	//float F = pow(1.0 - dot(viewDirection,H), 0.3);
 
 	return coeff * exp(-2.0 * theta);
 }
@@ -168,17 +168,6 @@ void calcLighting(
 	//------------------------------------------------------
 	float specular_shininess = specular_properties.a;
 	vec3 specular_color = specular_properties.xyz;
-
-	/*
-	vec3 half_angle = normalize(L + E);
-
-	float angleNormalHalf = acos(dot(half_angle,N));
-	float exponent = angleNormalHalf * (specular_shininess * 1.0);
-	exponent = -(exponent * exponent);
-	float gaussianTerm = exp(exponent);
-
-	//gaussianTerm = max_inc != 0.0 ? gaussianTerm : 0.0;
-	*/
 
 	vec2 slope = vec2(specular_shininess);
 	float gaussianTerm = wardSpecular(L, E, N, slope);

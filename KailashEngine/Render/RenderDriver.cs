@@ -144,7 +144,7 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Pre-Processing
             //------------------------------------------------------
-            _hdr.autoExposure(_final.tFinalScene);
+            _hdr.calcExposure(_final.tFinalScene);
 
 
             //------------------------------------------------------

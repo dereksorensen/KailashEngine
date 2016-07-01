@@ -11,6 +11,7 @@ using OpenTK.Input;
 
 using Cgen.Audio;
 
+using KailashEngine.Debug;
 using KailashEngine.Output;
 using KailashEngine.Client;
 using KailashEngine.Render;
@@ -21,11 +22,17 @@ namespace KailashEngine
     class EngineDriver : GameWindow
     {
 
-        private Game _game;
-
+        // Engine Objects
         private RenderDriver _render_driver;
 
-        
+        // Game Objects
+        private Game _game;
+
+        // Debug Objects
+        private DebugWindow _debug_window;
+
+
+
         private Sound _sound_cow;
         private Sound _sound_goat;
 
@@ -287,6 +294,7 @@ namespace KailashEngine
             //_game.display.resolution.W = this.Width;
             //_game.display.resolution.H = this.Height;
             GL.Viewport(0, 0, this.Width, this.Height);
+            _debug_window.resize(ClientSize);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -299,18 +307,17 @@ namespace KailashEngine
                 new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common, _game.config.path_glsl_common_helpers),
                 _game.display.resolution
             );
+            _debug_window = new DebugWindow();
+
 
 
             // Load Objects
             _game.load();
-            _render_driver.load();
-
-
+            _render_driver.load();        
+            _debug_window.load();
+            
             
  
-
-            //_game.config.path_base + "Output/test1.ogg"
-            //SoundSystem sound_system = new SoundSystem();
             SoundSystem.Instance.Initialize();
             _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
             _sound_cow.IsRelativeToListener = false;
@@ -349,9 +356,16 @@ namespace KailashEngine
 
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;
 
+
+
+
+
+
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
             //Console.WriteLine((float)(1.0d / e.Time));
+
+            _debug_window.render((float)(1.0d / e.Time));
 
             Debug.DebugHelper.logGLError();
             SwapBuffers();
@@ -363,6 +377,7 @@ namespace KailashEngine
             base.Dispose();
 
             _game.unload();
+            _debug_window.unload();
 
             Console.WriteLine("\nBaaiiii...");
             Thread.Sleep(500);

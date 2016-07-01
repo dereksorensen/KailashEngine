@@ -68,9 +68,8 @@ namespace KailashEngine.Client
             // Load Scenes
             _world_loader.addWorldToScene(new string[]
             {
-                "sponza"
+                "test_scene"
             }, _meshes, _lights);
-
 
 
 
@@ -102,7 +101,7 @@ namespace KailashEngine.Client
             Matrix4 temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter);
             _flashlight.bounding_unique_mesh = new UniqueMesh(_flashlight.id + "-bounds", _world_loader.sLight_mesh, temp_matrix);
 
-            _lights.Insert(0, _flashlight);
+            toggleFlashlight(true);
 
         }
 

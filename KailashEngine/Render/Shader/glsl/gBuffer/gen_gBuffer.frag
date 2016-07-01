@@ -79,7 +79,7 @@ void main()
 	if (emission_strength > 0)
 	{
 		material_id = 1;
-		diffuse_color_final.xyz *= emission_strength;
+		diffuse_color_final.xyz *= (emission_strength);
 	}
 	diffuse_id = vec4(diffuse_color_final.xyz, material_id);
 

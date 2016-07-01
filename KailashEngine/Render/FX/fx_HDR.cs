@@ -148,17 +148,23 @@ namespace KailashEngine.Render.FX
 
             GL.MemoryBarrier(MemoryBarrierFlags.AllBarrierBits);
             Vector2 lumRead = new Vector2();
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _ssboExposure.id);
-            GL.GetBufferSubData<Vector2>(BufferTarget.ShaderStorageBuffer, (IntPtr)0, exp_size, ref lumRead);
-            Console.WriteLine(lumRead);
-            Console.WriteLine("==================");
+
+            _ssboExposure.bind();
+            GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, (IntPtr)0, exp_size, ref lumRead);
+
+            Debug.DebugHelper.logInfo(1, "Scene Luminosity", lumRead.ToString());
         }
 
-        public void autoExposure(Texture scene_texture)
+
+
+
+
+
+        public void calcExposure(Texture scene_texture)
         {
             luminosity(scene_texture);
             autoExposure();
-            printExposure();
+            //printExposure();
         }
 
 
