@@ -45,6 +45,10 @@ namespace KailashEngine.World.View
         }
 
 
+        public void zoom()
+        {
+
+        }
 
 
     }

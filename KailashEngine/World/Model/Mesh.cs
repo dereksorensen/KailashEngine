@@ -13,7 +13,7 @@ using OpenTK;
 
 namespace KailashEngine.World.Model
 {
-    class Mesh : WorldObject
+    class Mesh
     {
 
         [StructLayout(LayoutKind.Sequential)]

@@ -7,6 +7,8 @@ using System.IO;
 
 using OpenTK;
 
+using KailashEngine.Output;
+
 namespace KailashEngine.Client
 {
     class ClientConfig
@@ -24,6 +26,25 @@ namespace KailashEngine.Client
         // Paths
         //------------------------------------------------------
 
+
+        // Finds the base engine dir which all path defaults are based from
+        private string getBasePath(string base_dir)
+        {
+            bool path_found = false;
+            string cur_search = "../";
+            string base_path = "";
+
+            while (!path_found)
+            {
+                base_path = Path.GetFullPath(cur_search);
+                string[] dirs = base_path.Split('\\');
+                path_found = dirs[dirs.Length - 2] == base_dir;
+                cur_search += "../";
+            }
+
+            return base_path;
+        }
+
         private string _path_base;
         public string path_base
         {
@@ -32,6 +53,7 @@ namespace KailashEngine.Client
         }
 
         public string path_resources_base { get { return Path.GetFullPath(_path_base + "Resources/"); } }
+        public string path_resources_save_data { get { return Path.GetFullPath(path_resources_base + "SaveData/"); } }
         public string path_resources_mesh { get { return Path.GetFullPath(path_resources_base + "Mesh/"); } }
         public string path_resources_physics { get { return Path.GetFullPath(path_resources_base + "Physics/"); } }
         public string path_resources_lights { get { return Path.GetFullPath(path_resources_base + "Lights/"); } }
@@ -40,6 +62,8 @@ namespace KailashEngine.Client
         public string path_glsl_base { get { return Path.GetFullPath(_path_base + "Render/Shader/glsl/"); } }
         public string path_glsl_common { get { return "common/"; } }
         public string path_glsl_common_helpers { get { return "common/helpers/"; } }
+
+
 
         //------------------------------------------------------
         // OpenGL
@@ -75,6 +99,23 @@ namespace KailashEngine.Client
             {
                 return _gl_major_version + "." + _gl_minor_version;
             }
+        }
+
+
+        //------------------------------------------------------
+        // Display
+        //------------------------------------------------------
+
+        protected Resolution _default_resolution;
+        public Resolution default_resolution
+        {
+            get { return _default_resolution; }
+        }
+
+        protected bool _default_fullscreen;
+        public bool default_fullscreen
+        {
+            get { return _default_fullscreen; }
         }
 
 
@@ -139,26 +180,6 @@ namespace KailashEngine.Client
         }
 
 
-
-        // Finds the base engine dir which all path defaults are based from
-        private string getBasePath(string base_dir)
-        {
-            bool path_found = false;
-            string cur_search = "../";
-            string base_path = "";
-
-            while (!path_found)
-            {
-                base_path = Path.GetFullPath(cur_search);
-                string[] dirs = base_path.Split('\\');
-                path_found = dirs[dirs.Length - 2] == base_dir;
-                cur_search += "../";
-            }
-
-            return base_path;
-        }
-
-
         //------------------------------------------------------
         // Gameplay
         //------------------------------------------------------
@@ -178,6 +199,31 @@ namespace KailashEngine.Client
         }
 
 
+        //------------------------------------------------------
+        // Player
+        //------------------------------------------------------
+
+        private float _default_movement_speed_walk;
+        public float default_movement_speed_walk
+        {
+            get { return _default_movement_speed_walk; }
+            set { _default_movement_speed_walk = value; }
+        }
+
+        private float _default_movement_speed_run;
+        public float default_movement_speed_run
+        {
+            get { return _default_movement_speed_run; }
+            set { _default_movement_speed_run = value; }
+        }
+
+        private float _default_look_sensitivity;
+        public float default_look_sensitivity
+        {
+            get { return _default_look_sensitivity; }
+            set { _default_look_sensitivity = value; }
+        }
+
 
 
         public ClientConfig(
@@ -186,7 +232,9 @@ namespace KailashEngine.Client
             int gl_major_version, int gl_minor_version, 
             float target_fps, 
             float fov, float near_plane, float far_plane,
-            float smooth_mouse_delay, float smooth_keyboard_delay)
+            float smooth_mouse_delay, float smooth_keyboard_delay,
+            int width, int height, bool fullscreen,
+            float movement_speed_walk, float movement_speed_run, float look_sensitivity)
         {
             _title = title;
 
@@ -203,6 +251,14 @@ namespace KailashEngine.Client
 
             _smooth_mouse_delay = smooth_mouse_delay;
             _smooth_keyboard_delay = smooth_keyboard_delay;
+
+            _default_resolution = new Resolution(width, height);
+            _default_fullscreen = fullscreen;
+
+
+            _default_movement_speed_walk = movement_speed_walk;
+            _default_movement_speed_run = movement_speed_run;
+            _default_look_sensitivity = look_sensitivity;
 
         }
 

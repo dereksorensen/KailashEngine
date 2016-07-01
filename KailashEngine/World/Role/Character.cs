@@ -67,6 +67,7 @@ namespace KailashEngine.World.Role
             set { _look_sensitivity = value; }
         }
 
+
         private Vector3 _position_current;
         public Vector3 position_current
         {
@@ -83,13 +84,15 @@ namespace KailashEngine.World.Role
 
 
 
-        public Character(string name, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
-            : base (new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f))
+        public Character(string name, SpatialData spatial_data, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
+            : base (spatial_data)
         {
             _name = name;
             _movement_speed_walk = movement_speed_walk;
             _movement_speed_run = movement_speed_run;
             _look_sensitivity = look_sensitivity;
+
+            _position_current = _spatial.position;
         }
 
 
@@ -99,6 +102,7 @@ namespace KailashEngine.World.Role
 
         public override void rotate(float x_angle, float y_angle, float z_angle)
         {
+            _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
 
             Quaternion x_rotation = Quaternion.FromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), MathHelper.DegreesToRadians(x_angle));
             x_rotation.Normalize();

@@ -68,13 +68,6 @@ namespace KailashEngine.Input
             set { _delta_previous = value; }
         }
 
-        private Vector3 _delta_total;
-        public Vector3 delta_total
-        {
-            get { return _delta_total; }
-            set { _delta_total = value; }
-        }
-
 
 
         public Mouse(float sensitivity, bool locked)

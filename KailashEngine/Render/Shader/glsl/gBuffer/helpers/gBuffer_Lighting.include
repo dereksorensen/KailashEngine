@@ -139,15 +139,13 @@ void calcLighting(
 	//------------------------------------------------------
 	// Attenuation
 	//------------------------------------------------------
-	float max_light_brightness = 1.0;
-	float light_bright = (light_intensity / max_light_brightness);
 	float light_falloff_2 = light_falloff * light_falloff;
-
 
 	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
 	attenuation *= attenuation;
 	attenuation *= attenuation;
-	attenuation *= light_bright;
+	attenuation *= attenuation;
+	attenuation *= light_intensity;
 
 
 	//------------------------------------------------------
@@ -160,7 +158,6 @@ void calcLighting(
 	// Diffuse
 	//------------------------------------------------------
 	vec4 diffuse = vec4(light_color * max_inc, 1.0);
-
 	//diffuse *= orenNayarDiffuse(L, E, N, 0.1, 1.0);
 
 	//------------------------------------------------------
@@ -185,13 +182,6 @@ void calcLighting(
 	// Add it all together
 	//------------------------------------------------------
 	diffuse_out = attenuation * diffuse;
-
 	specular_out = attenuation * specular;
 
-
-	vec3 spec;
-	vec3 diff;
-
-	//diffuse_out = vec4(attenuation * diff,1.0);
-	//specular_out = vec4(light_color * spec * attenuation * specular_color, 1.0);
 }

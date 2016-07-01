@@ -57,14 +57,19 @@ namespace KailashEngine.Debug
             _bar_fps = new Bar(context);
             _bar_fps.Label = "FPS";
             _bar_fps.Contained = true;
-            _bar_fps.Color = Color.DarkRed;
-            _bar_fps.Size = new Size(420, 1);
+            _bar_fps.Color = Color.Black;
+            _bar_fps.Size = new Size(370, 100);
             _bar_fps.ValueColumnWidth = 120;
             _bar_fps.Position = new Point(10, 10);
 
 
             _fps = new FloatVariable(_bar_fps, 0.0f);
             _fps.Label = "FPS";
+
+            new Separator(_bar_fps);
+
+            FloatVariable test = new FloatVariable(_bar_fps, 10.0f);
+            test.Label = "Timing - gBuffer";
         }
 
 
@@ -86,18 +91,9 @@ namespace KailashEngine.Debug
                 _fps.Value = current_fps;
                 _context_debug.Draw();
             }
-            catch (AntTweakBarException e)
-            {
-                Console.WriteLine("AntTweakBar error: " + e.Message);
-                Console.WriteLine("Exception details: " + e.Details);
-                Console.WriteLine("\n======= STACK TRACE =======\n");
-                Console.WriteLine(e.StackTrace);
-            }
             catch (Exception e)
             {
-                Console.WriteLine("An error occurred: " + e.Message);
-                Console.WriteLine("\n======= STACK TRACE =======\n");
-                Console.WriteLine(e.StackTrace);
+                DebugHelper.logError("AntTweakBar error:", e.Message);
             }
         }
 

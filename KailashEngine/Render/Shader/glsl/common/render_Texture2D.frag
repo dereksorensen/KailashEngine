@@ -12,6 +12,6 @@ void main()
 	
 	vec4 tex = texture(sampler0, v_TexCoord);
 
-	color = vec4(tex);
+	color = tex;
 
 }

@@ -259,26 +259,20 @@ namespace KailashEngine
             temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 2.0f);
 
             // Calculate total delta (which is rotation angle for character / camera)
-            temp_delta_total.X += (_game.mouse.delta_total.X + temp_delta_current.X);
-            temp_delta_total.Y += (_game.mouse.delta_total.Y + temp_delta_current.Y);
+            temp_delta_total.X += (_game.player.camera.spatial.rotation_angles.X + temp_delta_current.X);
+            temp_delta_total.Y += (_game.player.camera.spatial.rotation_angles.Y + temp_delta_current.Y);
             float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * _game.config.smooth_mouse_delay;
             temp_delta_total.Z = temp_delta_current.Z * z_mod;
 
             // Prevent looking beyond top and bottom
-            if (temp_delta_total.X < -90.0f)
-            {
-                temp_delta_total.X = -90.0f;
-            }
-            if (temp_delta_total.X > 90.0f)
-            {
-                temp_delta_total.X = 90.0f;
-            }
+            temp_delta_total.X = Math.Max(temp_delta_total.X, -90.0f);
+            temp_delta_total.X = Math.Min(temp_delta_total.X, 90.0f);
 
             _game.mouse.delta_previous = temp_delta_current;
-            _game.mouse.delta_total = temp_delta_total;
+            _game.player.camera.spatial.rotation_angles = temp_delta_total;
 
             // Rotate main character from mouse movement
-            _game.player.character.rotate(_game.mouse.delta_total.X, _game.mouse.delta_total.Y, _game.mouse.delta_total.Z);
+            _game.player.character.rotate(_game.player.camera.spatial.rotation_angles.X, _game.player.camera.spatial.rotation_angles.Y, _game.player.camera.spatial.rotation_angles.Z);
 
             // Recenter
             centerMouse();
@@ -340,10 +334,13 @@ namespace KailashEngine
                 _game.config.near_far_full,
                 _game.config.fps_target);
             _render_driver.updateUBO_Camera(
-                _game.player.camera.view, 
+                _game.player.camera.spatial.model_view, 
                 _game.player.camera.spatial.perspective, 
                 _game.player.camera.spatial.position,
                 _game.player.camera.spatial.look);
+
+
+
 
 
             Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
@@ -363,7 +360,6 @@ namespace KailashEngine
 
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
-            //Console.WriteLine((float)(1.0d / e.Time));
 
             _debug_window.render((float)(1.0d / e.Time));
 

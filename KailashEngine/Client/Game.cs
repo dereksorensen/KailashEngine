@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
+using KailashEngine.Serialization;
 using KailashEngine.Output;
 using KailashEngine.Input;
 
@@ -11,6 +14,12 @@ namespace KailashEngine.Client
 {
     class Game
     {
+
+        private Serializer _serializer;
+        public Serializer serializer
+        {
+            get { return _serializer; }
+        }
 
         private ClientConfig _config;
         public ClientConfig config
@@ -64,13 +73,23 @@ namespace KailashEngine.Client
 
 
 
-        public Game(ClientConfig config, Display default_display, Player main_player)
+        public Game(ClientConfig config)
         {
             _title = config.title;
             _config = config;
-            _display = default_display;
-            _player = main_player;
+            _serializer = new Serializer(_config.path_resources_save_data);
+            _display = new Display(_title, _config.default_resolution, _config.default_fullscreen);      
             _scene = new Scene(_config.path_resources_mesh, _config.path_resources_physics, _config.path_resources_lights);
+
+            _player = new Player(
+                new World.Role.PlayableCharacter(
+                    "Janu Crips",
+                    (World.SpatialData)_serializer.Load("player_spatial.dat") ?? new World.SpatialData(new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f)),
+                    _config.default_movement_speed_walk, 
+                    _config.default_movement_speed_run,
+                    _config.default_look_sensitivity
+                )
+            );
 
             _keyboard = new Keyboard();
             _mouse = new Mouse(_player.character.look_sensitivity, true);
@@ -87,7 +106,7 @@ namespace KailashEngine.Client
 
         public void unload()
         {
-
+            _serializer.Save(_player.character.spatial, "player_spatial.dat");
             _keyboard.turnOffCapLock();
         }
 

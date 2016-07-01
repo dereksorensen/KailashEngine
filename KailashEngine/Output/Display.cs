@@ -61,22 +61,22 @@ namespace KailashEngine.Output
         }
 
 
-        public Display(int width, int height)
-            : this("", width, height, false)
+        public Display(Resolution resolution)
+            : this("", resolution, false)
         { }
 
-        public Display(int width, int height, bool fullscreen)
-            : this("", width, height, fullscreen)
+        public Display(Resolution resolution, bool fullscreen)
+            : this("", resolution, fullscreen)
         { }
 
-        public Display(string title, int width, int height)
-            : this (title, width, height, false)
+        public Display(string title, Resolution resolution)
+            : this (title, resolution, false)
         { }
 
-        public Display(string title, int width, int height, bool fullscreen)
+        public Display(string title, Resolution resolution, bool fullscreen)
         {
             _title = title;
-            _resolution_windowed = new Resolution(width, height);
+            _resolution_windowed = resolution;
             _resolution_fullscreen = new Resolution(DisplayDevice.Default.Width, DisplayDevice.Default.Height);
             _resolution = fullscreen ? _resolution_fullscreen : _resolution_windowed;
             _fullscreen = fullscreen;

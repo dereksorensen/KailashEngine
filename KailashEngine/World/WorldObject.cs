@@ -41,6 +41,7 @@ namespace KailashEngine.World
 
         public virtual void rotate(float x_angle, float y_angle, float z_angle)
         {
+            _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
 
             Quaternion x_rotation = Quaternion.FromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), MathHelper.DegreesToRadians(x_angle));
             x_rotation.Normalize();

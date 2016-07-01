@@ -8,6 +8,7 @@ using OpenTK;
 
 namespace KailashEngine.World
 {
+    [Serializable]
     class SpatialData
     {
 
@@ -41,6 +42,14 @@ namespace KailashEngine.World
 
 
 
+        private Vector3 _rotation_angles;
+        public Vector3 rotation_angles
+        {
+            get { return _rotation_angles; }
+            set { _rotation_angles = value; }
+        }
+
+
 
         public Matrix4 position_matrix
         {
@@ -65,7 +74,7 @@ namespace KailashEngine.World
         {
             get
             {
-                return (rotation_matrix * position_matrix);
+                return (position_matrix * rotation_matrix);
             }
         }
 

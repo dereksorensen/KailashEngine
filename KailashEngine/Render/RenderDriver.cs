@@ -161,8 +161,8 @@ namespace KailashEngine.Render
 
             _gBuffer.pass_LightAccumulation(_quad, _final.fFinalScene);
 
-
             _hdr.scaleScene(_quad, _final.fFinalScene, _final.tFinalScene);
+
 
             //------------------------------------------------------
             // Render to Screen
@@ -170,8 +170,15 @@ namespace KailashEngine.Render
             _final.render(_quad);
 
 
-            _quad.render_Texture2D(_hdr.tTempScene, 0.25f, 2);
-            _quad.render_Texture2D(_hdr.tLuminosity, 0.25f, 1);
+
+
+            //------------------------------------------------------
+            // Debug Views
+            //------------------------------------------------------
+
+
+            //_quad.render_Texture2D(_hdr.tTempScene, 0.25f, 2);
+            //_quad.render_Texture2D(_hdr.tLuminosity, 0.25f, 1);
             _quad.render_Texture2D(_final.tFinalScene, 0.25f, 0);
 
         }

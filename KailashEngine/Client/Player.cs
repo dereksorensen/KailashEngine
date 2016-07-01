@@ -38,21 +38,19 @@ namespace KailashEngine.Client
         {
             _camera = new Camera();
             _character = character;
-   
+        }
+
+
+        public void load(float fov, float aspect, Vector2 near_far)
+        {
+            updatePerspective(fov, aspect, near_far);
+            _camera.followCharacter(_character);
+            
         }
 
         public void updatePerspective(float fov, float aspect, Vector2 near_far)
         {
             _character.spatial.perspective = Matrix4.CreatePerspectiveFieldOfView(fov, aspect, near_far.X, near_far.Y);
         }
-
-        public void load(float fov, float aspect, Vector2 near_far)
-        {
-            updatePerspective(fov, aspect, near_far);
-            _camera.followCharacter(_character);
-
-        }
-
-
     }
 }

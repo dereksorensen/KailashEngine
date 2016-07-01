@@ -462,6 +462,7 @@
     <Compile Include="Render\RenderHelper.cs" />
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
+    <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="World\LightLoader.cs" />
     <Compile Include="World\Lights\Light.cs" />
     <Compile Include="World\Lights\pLight.cs" />
@@ -485,8 +486,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
@@ -513,6 +512,7 @@
     <Folder Include="Resources\Lights\" />
     <Folder Include="Resources\Mesh\" />
     <Folder Include="Resources\Physics\" />
+    <Folder Include="Resources\SaveData\" />
     <Folder Include="Resources\Textures\" />
   </ItemGroup>
   <ItemGroup>
