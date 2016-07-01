@@ -139,12 +139,13 @@ void calcLighting(
 	//------------------------------------------------------
 	// Attenuation
 	//------------------------------------------------------
-	float max_light_brightness = 5.0;
+	float max_light_brightness = 1.0;
 	float light_bright = (light_intensity / max_light_brightness);
 	float light_falloff_2 = light_falloff * light_falloff;
 
 
 	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
+	attenuation *= attenuation;
 	attenuation *= attenuation;
 	attenuation *= light_bright;
 

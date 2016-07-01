@@ -108,7 +108,7 @@ namespace KailashEngine.Render.FX
 
             _pRenderTexture2D.bind();
 
-            texture.bind(_pRenderTexture2D.getUniform("sampler0"), 0);
+            texture.bind(_pRenderTexture2D.getSamplerUniform(0), 0);
 
             render();
         }

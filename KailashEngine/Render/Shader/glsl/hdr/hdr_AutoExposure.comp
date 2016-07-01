@@ -6,8 +6,8 @@ layout (std430, binding=0) buffer ex
 	vec2 exposure[];
 };
 
-uniform sampler2D sampler1;
-uniform int lod;
+uniform sampler2D sampler0;
+uniform int luminosity_lod;
 
 float slerp(float start, float dest, float delay)
 {
@@ -18,11 +18,11 @@ float slerp(float start, float dest, float delay)
 void main() 
 {
 	float oldLuminosity = exposure[0].x;
-	float curLuminosity = textureLod(sampler1, vec2(0.5), lod).r;	
+	float curLuminosity = textureLod(sampler0, vec2(0.5), luminosity_lod).r;	
 
 	curLuminosity = max(curLuminosity, 0.001);
 
-	curLuminosity = slerp(oldLuminosity, curLuminosity, 0.1);
+	curLuminosity = slerp(oldLuminosity, curLuminosity, 0.03);
 	oldLuminosity = curLuminosity;
 	
 	exposure[0] = vec2(oldLuminosity, curLuminosity);

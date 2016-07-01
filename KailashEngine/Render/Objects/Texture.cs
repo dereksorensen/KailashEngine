@@ -173,6 +173,11 @@ namespace KailashEngine.Render.Objects
             return (int)Math.Log(largest_dimension, 2) - 1;
         }
 
+        public int getMaxMipMap()
+        {
+            return getMaxMipMap(_width, _height);
+        }
+
         public void generateMipMap()
         {
             GL.GenerateTextureMipmap(_id);

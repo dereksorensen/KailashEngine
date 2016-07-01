@@ -499,6 +499,7 @@
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
     <None Include="Render\Shader\glsl\hdr\hdr_AutoExposure.comp" />
     <None Include="Render\Shader\glsl\hdr\hdr_Luminosity.comp" />
+    <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
     <None Include="Resources\Blender\Scripts\export_collada.py" />
   </ItemGroup>
   <ItemGroup>

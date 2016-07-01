@@ -96,7 +96,7 @@ namespace KailashEngine.Render.FX
 
             _pFinalScene.bind();
 
-            _tFinalScene.bind(_pFinalScene.getUniform("sampler0"), 0);
+            _tFinalScene.bind(_pFinalScene.getSamplerUniform(0), 0);
 
             quad.render();
         }

@@ -34,7 +34,6 @@ namespace KailashEngine.Render.Objects
             // Create Uniform Buffer
             GL.GenBuffers(1, out _id);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _id);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _id);
             GL.BufferData(BufferTarget.ShaderStorageBuffer, size, (IntPtr)0, BufferUsageHint.DynamicCopy);
 
             //Bind uniform buffer to binding index since the block size is set and ubo is created
@@ -44,7 +43,22 @@ namespace KailashEngine.Render.Objects
 
         public void bind()
         {
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, _id);
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _id);
+        }
+
+        public void bind(int index)
+        {
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, index, _id);
+        }
+
+        public void unbind()
+        {
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
+        }
+
+        public void unbind(int index)
+        {
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, index, 0);
         }
 
     }

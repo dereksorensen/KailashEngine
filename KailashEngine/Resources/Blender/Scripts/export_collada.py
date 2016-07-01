@@ -62,8 +62,7 @@ numL = 0
 
 for item in bpy.data.objects:
     if(item.type == 'LAMP'):
-        lamp = bpy.data.lamps[item.data.name]
-        print(lamp.name + " == " + item.name)
+        lamp = item.data
         if(lamp.type == 'SPOT' or lamp.type == 'POINT'):
             numL = numL + 1
         # border
@@ -96,7 +95,7 @@ for item in bpy.data.objects:
             lights_file.write(falloff)
         #spot_angle
             spot_angle = "ang 0" + '\n'
-            if (bpy.data.lamps[item.name].type == 'SPOT'):
+            if (lamp.type == 'SPOT'):
                 spot_angle = "ang " + str(lamp.spot_size) + '\n'                
             lights_file.write(spot_angle)
         #shadow

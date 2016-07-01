@@ -136,6 +136,11 @@ namespace KailashEngine.Render
             //return _uniforms[uniform_name];
         }
 
+        // Get uniform for texture/image samplers
+        public int getSamplerUniform(int sampler_index)
+        {
+            return getUniform("sampler" + sampler_index);
+        }
 
         //------------------------------------------------------
         // Program Creation

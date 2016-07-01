@@ -262,8 +262,8 @@ namespace KailashEngine.Render.FX
             _pLighting_SPOT.bind();
 
             // Bind gBuffer Textures
-            _tNormal_Depth.bind(_pLighting_SPOT.getUniform("sampler0"), 0);
-            _tSpecular.bind(_pLighting_SPOT.getUniform("sampler1"), 1);
+            _tNormal_Depth.bind(_pLighting_SPOT.getSamplerUniform(0), 0);
+            _tSpecular.bind(_pLighting_SPOT.getSamplerUniform(1), 1);
 
 
             GL.Uniform3(_pLighting_SPOT.getUniform("light_position"), l.spatial.position);
@@ -292,8 +292,8 @@ namespace KailashEngine.Render.FX
             _pLighting_POINT.bind();
 
             // Bind gBuffer Textures
-            _tNormal_Depth.bind(_pLighting_POINT.getUniform("sampler0"), 0);
-            _tSpecular.bind(_pLighting_POINT.getUniform("sampler1"), 1);
+            _tNormal_Depth.bind(_pLighting_POINT.getSamplerUniform(0), 0);
+            _tSpecular.bind(_pLighting_POINT.getSamplerUniform(1), 1);
 
             GL.Uniform3(_pLighting_POINT.getUniform("light_position"), l.spatial.position);
             GL.Uniform3(_pLighting_POINT.getUniform("light_direction"), l.spatial.look);
@@ -362,9 +362,9 @@ namespace KailashEngine.Render.FX
 
             _pAccumulation.bind();
 
-            _tLighting.bind(_pAccumulation.getUniform("sampler0"), 0);
-            _tLighting_Specular.bind(_pAccumulation.getUniform("sampler1"), 1);
-            _tDiffuse_ID.bind(_pAccumulation.getUniform("sampler2"), 2);
+            _tLighting.bind(_pAccumulation.getSamplerUniform(0), 0);
+            _tLighting_Specular.bind(_pAccumulation.getSamplerUniform(1), 1);
+            _tDiffuse_ID.bind(_pAccumulation.getSamplerUniform(2), 2);
 
             quad.render();
         }
