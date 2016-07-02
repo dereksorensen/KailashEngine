@@ -121,8 +121,8 @@ namespace KailashEngine
                     }
                     break;
                 case Key.F:
-                    _game.player.character.enable_flashlight = !_game.player.character.enable_flashlight;
-                    _game.scene.toggleFlashlight(_game.player.character.enable_flashlight);
+                    _game.player.enable_flashlight = !_game.player.enable_flashlight;
+                    _game.scene.toggleFlashlight(_game.player.enable_flashlight);
                     break;
                 case Key.Escape:
                     Exit();
@@ -135,8 +135,7 @@ namespace KailashEngine
             //------------------------------------------------------
             // Smooth Camera Movement
             //------------------------------------------------------
-            _game.camera.smoothMovement(_game.config.smooth_keyboard_delay);
-
+            _game.player.camera.smoothMovement(_game.config.smooth_keyboard_delay);
 
             //------------------------------------------------------
             // Player Movement
@@ -230,11 +229,11 @@ namespace KailashEngine
             if (_game.mouse.getButtonPress(MouseButton.Right))
             {
                 //Console.WriteLine("Right Click");
-                _game.camera.zoom(true, _fps);
+                _game.player.camera.zoom(true, _fps);
             }
             else
             {
-                _game.camera.zoom(false, _fps);
+                _game.player.camera.zoom(false, _fps);
             }
 
             if (_game.mouse.getButtonPress(MouseButton.Middle))
@@ -261,8 +260,8 @@ namespace KailashEngine
             temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 2.0f);
 
             // Calculate total delta (which is rotation angle for character / camera)
-            temp_delta_total.X += (_game.camera.spatial.rotation_angles.X + temp_delta_current.X);
-            temp_delta_total.Y += (_game.camera.spatial.rotation_angles.Y + temp_delta_current.Y);
+            temp_delta_total.X += (_game.player.character.spatial.rotation_angles.X + temp_delta_current.X);
+            temp_delta_total.Y += (_game.player.character.spatial.rotation_angles.Y + temp_delta_current.Y);
             float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * _game.config.smooth_mouse_delay;
             temp_delta_total.Z = temp_delta_current.Z * z_mod;
 
@@ -271,10 +270,10 @@ namespace KailashEngine
             temp_delta_total.X = Math.Min(temp_delta_total.X, 90.0f);
 
             _game.mouse.delta_previous = temp_delta_current;
-            _game.camera.spatial.rotation_angles = temp_delta_total;
+            _game.player.character.spatial.rotation_angles = temp_delta_total;
 
             // Rotate main character from mouse movement
-            _game.player.character.rotate(_game.camera.spatial.rotation_angles.X, _game.camera.spatial.rotation_angles.Y, _game.camera.spatial.rotation_angles.Z);
+            _game.player.character.rotate(_game.player.character.spatial.rotation_angles.X, _game.player.character.spatial.rotation_angles.Y, _game.player.character.spatial.rotation_angles.Z);
 
             // Recenter
             centerMouse();
@@ -338,10 +337,10 @@ namespace KailashEngine
                 _game.config.near_far_full,
                 _game.config.fps_target);
             _render_driver.updateUBO_Camera(
-                _game.camera.spatial.model_view, 
-                _game.camera.spatial.perspective, 
-                _game.camera.spatial.position,
-                _game.camera.spatial.look);
+                _game.player.camera.spatial.transformation, 
+                _game.player.camera.spatial.perspective, 
+                _game.player.camera.spatial.position,
+                _game.player.camera.spatial.look);
 
 
 

@@ -10,8 +10,8 @@ namespace KailashEngine.World.Role
     {
         
 
-        public PlayableCharacter(string name, SpatialData spatial_data, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
-            : base(name, spatial_data, movement_speed_walk, movement_speed_run, look_sensitivity)
+        public PlayableCharacter(string name, SpatialData spatial_data, float movement_speed_walk, float movement_speed_run)
+            : base(name, spatial_data, movement_speed_walk, movement_speed_run)
         { }
 
     }

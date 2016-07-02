@@ -50,11 +50,11 @@ namespace KailashEngine.World
         }
 
 
-
         public Matrix4 position_matrix
         {
             get { return Matrix4.CreateTranslation(_position); }
         }
+
 
         private Matrix4 _rotation_matrix;
         public Matrix4 rotation_matrix
@@ -70,7 +70,7 @@ namespace KailashEngine.World
         }
 
 
-        public Matrix4 model_view
+        public Matrix4 transformation
         {
             get
             {
@@ -83,8 +83,9 @@ namespace KailashEngine.World
         public Matrix4 perspective
         {
             get { return _perspective; }
-            set { _perspective = value; }
         }
+
+
 
         public SpatialData()
             : this(new Vector3(), new Vector3(), new Vector3())
@@ -98,6 +99,13 @@ namespace KailashEngine.World
 
             rotation_matrix = Matrix4.LookAt(_position, _look, _up);
         }
+
+
+        public void updatePerspective(float fov, float aspect, Vector2 near_far)
+        {
+            _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), aspect, near_far.X, near_far.Y);
+        }
+
 
     }
 }

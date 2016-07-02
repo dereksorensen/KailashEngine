@@ -463,6 +463,7 @@
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
     <Compile Include="Serialization\Serializer.cs" />
+    <Compile Include="World\ControllableWorldObject.cs" />
     <Compile Include="World\LightLoader.cs" />
     <Compile Include="World\Lights\Light.cs" />
     <Compile Include="World\Lights\pLight.cs" />

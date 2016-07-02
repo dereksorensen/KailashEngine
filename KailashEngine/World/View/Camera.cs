@@ -10,8 +10,17 @@ using KailashEngine.World.Role;
 
 namespace KailashEngine.World.View
 {
-    class Camera : WorldObject
+    class Camera : ControllableWorldObject
     {
+
+        private bool _following;
+        public bool following
+        {
+            get { return _following; }
+            set { _following = value; }
+        }
+
+
         private float _default_fov;
         private float _fov_current;
         private float _fov_previous;
@@ -24,43 +33,48 @@ namespace KailashEngine.World.View
 
 
 
-        public Camera(float fov, float aspect_ratio, Vector2 near_far)
-            : this(fov, aspect_ratio, near_far, new SpatialData())
+        public Camera(string id, float fov, float aspect_ratio, Vector2 near_far)
+            : this(id, new SpatialData(), fov, aspect_ratio, near_far)
         { }
 
-        public Camera(float fov, float aspect_ratio, Vector2 near_far, SpatialData spatial_data)
-            : base (spatial_data)
+        public Camera(string id, SpatialData spatial_data, float fov, float aspect_ratio, Vector2 near_far)
+            : base (id, spatial_data)
         {
+            _following = false;
+
             _default_fov = _fov_current = _fov_previous = fov;
             _default_aspect_ratio = aspect_ratio;
             _default_near_far = near_far;
 
             _position_current = _spatial.position;
 
-            //updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
+            _spatial.updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
         }
 
 
-        public void updatePerspective(float fov, float aspect, Vector2 near_far)
-        {
-            _spatial.perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), aspect, near_far.X, near_far.Y);
-        }
 
-
-        public void followCharacter(Character character)
+        public void followCharacter(ControllableWorldObject character)
         {
             try
             {
                 _spatial = character.spatial;
                 _position_current = _spatial.position;
-                updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
+                _following = true;
             }
             catch(Exception e)
             {
-                Debug.DebugHelper.logError("Error Following Character (" + character.name + ")", e.Message);
+                Debug.DebugHelper.logError("Error Following Character (" + character.id + ")", e.Message);
             }       
         }
 
+        public void unfollowCharacter()
+        {
+            if(_following)
+            {
+                _spatial = new SpatialData(_spatial.position, _spatial.look, _spatial.up);
+                _following = false;
+            }
+        }
 
 
 
@@ -72,6 +86,7 @@ namespace KailashEngine.World.View
             _spatial.position += _position_current;
             _position_current = _spatial.position;
         }
+
 
 
         public void zoom(bool zoom_in, float current_fps)
@@ -94,7 +109,7 @@ namespace KailashEngine.World.View
             _fov_current = EngineHelper.slerp(_fov_previous, _fov_current, zoom_delay);
             _fov_previous = _fov_current;
 
-            updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
+            _spatial.updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
         }
 
 

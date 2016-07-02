@@ -11,6 +11,13 @@ namespace KailashEngine.World
     class WorldObject
     {
 
+        protected string _id;
+        public string id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
 
         protected SpatialData _spatial;
         public SpatialData spatial
@@ -21,16 +28,13 @@ namespace KailashEngine.World
 
 
 
-        public WorldObject()
-            : this (new SpatialData(new Vector3(), new Vector3(), new Vector3()))
+        public WorldObject(string id)
+            : this (id, new SpatialData(new Vector3(), new Vector3(), new Vector3()))
         { }
 
-        public WorldObject(Vector3 position, Vector3 look, Vector3 up)
-            : this (new SpatialData(position, look, up))
-        { }
-
-        public WorldObject(SpatialData spatial)
+        public WorldObject(string id, SpatialData spatial)
         {
+            _id = id;
             _spatial = spatial;
         }
 

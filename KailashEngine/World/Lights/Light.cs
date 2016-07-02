@@ -17,13 +17,6 @@ namespace KailashEngine.World.Lights
         public const string type_point = "POINT";
 
 
-        private string _id;
-        public string id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
-
         private string _type;
         public string type
         {
@@ -95,9 +88,8 @@ namespace KailashEngine.World.Lights
 
 
         public Light(string id, string type, Vector3 position, Vector3 rotation, float size, Vector3 color, float intensity, float falloff, bool shadow)
-            : base(position, new Vector3(), new Vector3())
+            : base(id, new SpatialData(position, new Vector3(), new Vector3()))
         {
-            _id = id;
             _type = type;
             _size = size;
             _color = color;

@@ -16,6 +16,17 @@ namespace KailashEngine.Client
 {
     class Game
     {
+        private string _title;
+        public string title
+        {
+            get { return _title; }
+        }
+
+        private ClientConfig _config;
+        public ClientConfig config
+        {
+            get { return _config; }
+        }
 
         private Serializer _serializer;
         public Serializer serializer
@@ -23,62 +34,39 @@ namespace KailashEngine.Client
             get { return _serializer; }
         }
 
-        private ClientConfig _config;
-        public ClientConfig config
-        {
-            get { return _config; }
-            set { _config = value; }
-        }
-
-        private string _title;
-        public string title
-        {
-            get { return _title; }
-            set { _title = value; }
-        }
-
         private Display _display;
         public Display display
         {
             get { return _display; }
-            set { _display = value; }
-        }
-
-        private Keyboard _keyboard;
-        public Keyboard keyboard
-        {
-            get { return _keyboard; }
-            set { _keyboard = value; }
-        }
-
-        private Mouse _mouse;
-        public Mouse mouse
-        {
-            get { return _mouse; }
-            set { _mouse = value; }
-        }
-
-        private Camera _camera;
-        public Camera camera
-        {
-            get { return _camera; }
-        }
-
-        private Player _player;
-        public Player player
-        {
-            get { return _player; }
-            set { _player = value; }
         }
 
         private Scene _scene;
         public Scene scene
         {
             get { return _scene; }
-            set { _scene = value; }
+        }
+
+        private Keyboard _keyboard;
+        public Keyboard keyboard
+        {
+            get { return _keyboard; }
+        }
+
+        private Mouse _mouse;
+        public Mouse mouse
+        {
+            get { return _mouse; }
+        }
+
+        private Player _player;
+        public Player player
+        {
+            get { return _player; }
         }
 
 
+        private Camera _camera_1;
+        private PlayableCharacter _character_1;
 
 
         public Game(ClientConfig config)
@@ -89,29 +77,27 @@ namespace KailashEngine.Client
             _display = new Display(_title, _config.default_resolution, _config.default_fullscreen);      
             _scene = new Scene(_config.path_resources_mesh, _config.path_resources_physics, _config.path_resources_lights);
 
-            _player = new Player(
-                new PlayableCharacter(
+            _player = new Player();
+
+
+            _camera_1 = new Camera("camera_1", _config.fov, _display.resolution.aspect, _config.near_far);
+            _character_1 = new PlayableCharacter(
                     "Janu Crips",
                     (World.SpatialData)_serializer.Load("player_spatial.dat") ?? new World.SpatialData(new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f)),
-                    _config.default_movement_speed_walk, 
-                    _config.default_movement_speed_run,
-                    _config.default_look_sensitivity
-                )
+                    _config.default_movement_speed_walk,
+                    _config.default_movement_speed_run
             );
 
-            _camera = new Camera(_config.fov, _display.resolution.aspect, _config.near_far);
-            
-
             _keyboard = new Keyboard();
-            _mouse = new Mouse(_player.character.look_sensitivity, true);
+            _mouse = new Mouse(_config.default_look_sensitivity, true);
         }
 
 
         public void load()
         {
-            _camera.followCharacter(_player.character);
+            _player.controlAndWatch(_character_1, _camera_1);
             _scene.load();
-            _scene.toggleFlashlight(_player.character.enable_flashlight);
+            _scene.toggleFlashlight(_player.enable_flashlight);
         }
 
 
