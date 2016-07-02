@@ -18,12 +18,6 @@ namespace KailashEngine.Client
         // Player Objects
         //------------------------------------------------------
 
-        private Camera _camera;
-        public Camera camera
-        {
-            get { return _camera; }
-            set { _camera = value; }
-        }
 
         private PlayableCharacter _character;
         public PlayableCharacter character
@@ -36,21 +30,8 @@ namespace KailashEngine.Client
 
         public Player(PlayableCharacter character)
         {
-            _camera = new Camera();
             _character = character;
         }
 
-
-        public void load(float fov, float aspect, Vector2 near_far)
-        {
-            updatePerspective(fov, aspect, near_far);
-            _camera.followCharacter(_character);
-            
-        }
-
-        public void updatePerspective(float fov, float aspect, Vector2 near_far)
-        {
-            _character.spatial.perspective = Matrix4.CreatePerspectiveFieldOfView(fov, aspect, near_far.X, near_far.Y);
-        }
     }
 }

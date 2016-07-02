@@ -68,20 +68,6 @@ namespace KailashEngine.World.Role
         }
 
 
-        private Vector3 _position_current;
-        public Vector3 position_current
-        {
-            get { return _position_current; }
-            set { _position_current = value; }
-        }
-
-        private Vector3 _position_previous;
-        public Vector3 position_previous
-        {
-            get { return _position_previous; }
-            set { _position_previous = value; }
-        }
-
 
 
         public Character(string name, SpatialData spatial_data, float movement_speed_walk, float movement_speed_run, float look_sensitivity)
@@ -91,15 +77,12 @@ namespace KailashEngine.World.Role
             _movement_speed_walk = movement_speed_walk;
             _movement_speed_run = movement_speed_run;
             _look_sensitivity = look_sensitivity;
-
-            _position_current = _spatial.position;
         }
 
 
         //------------------------------------------------------
         // Rotation Override
         //------------------------------------------------------
-
         public override void rotate(float x_angle, float y_angle, float z_angle)
         {
             _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
@@ -131,7 +114,6 @@ namespace KailashEngine.World.Role
         //------------------------------------------------------
         // View Based Movement
         //------------------------------------------------------
-
 
         private float getMovementSpeed()
         {

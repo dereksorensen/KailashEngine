@@ -9,6 +9,8 @@ using OpenTK;
 using KailashEngine.Serialization;
 using KailashEngine.Output;
 using KailashEngine.Input;
+using KailashEngine.World.View;
+using KailashEngine.World.Role;
 
 namespace KailashEngine.Client
 {
@@ -56,6 +58,12 @@ namespace KailashEngine.Client
             set { _mouse = value; }
         }
 
+        private Camera _camera;
+        public Camera camera
+        {
+            get { return _camera; }
+        }
+
         private Player _player;
         public Player player
         {
@@ -82,7 +90,7 @@ namespace KailashEngine.Client
             _scene = new Scene(_config.path_resources_mesh, _config.path_resources_physics, _config.path_resources_lights);
 
             _player = new Player(
-                new World.Role.PlayableCharacter(
+                new PlayableCharacter(
                     "Janu Crips",
                     (World.SpatialData)_serializer.Load("player_spatial.dat") ?? new World.SpatialData(new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f)),
                     _config.default_movement_speed_walk, 
@@ -91,6 +99,9 @@ namespace KailashEngine.Client
                 )
             );
 
+            _camera = new Camera(_config.fov, _display.resolution.aspect, _config.near_far);
+            
+
             _keyboard = new Keyboard();
             _mouse = new Mouse(_player.character.look_sensitivity, true);
         }
@@ -98,7 +109,7 @@ namespace KailashEngine.Client
 
         public void load()
         {
-            _player.load(_config.fov_radian, _display.resolution.aspect, _config.near_far);
+            _camera.followCharacter(_player.character);
             _scene.load();
             _scene.toggleFlashlight(_player.character.enable_flashlight);
         }

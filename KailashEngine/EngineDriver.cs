@@ -24,6 +24,7 @@ namespace KailashEngine
 
         // Engine Objects
         private RenderDriver _render_driver;
+        private float _fps;
 
         // Game Objects
         private Game _game;
@@ -132,13 +133,9 @@ namespace KailashEngine
         private void keyboard_Buffer()
         {
             //------------------------------------------------------
-            // Smooth Player Movement
+            // Smooth Camera Movement
             //------------------------------------------------------
-            _game.player.character.position_current = _game.player.character.spatial.position - _game.player.character.position_current;
-            _game.player.character.position_current = EngineHelper.lerp(_game.player.character.position_previous, _game.player.character.position_current, _game.config.smooth_keyboard_delay);
-            _game.player.character.position_previous = _game.player.character.position_current;
-            _game.player.character.spatial.position += _game.player.character.position_current;
-            _game.player.character.position_current = _game.player.character.spatial.position;
+            _game.camera.smoothMovement(_game.config.smooth_keyboard_delay);
 
 
             //------------------------------------------------------
@@ -227,17 +224,22 @@ namespace KailashEngine
         {
             if (_game.mouse.getButtonPress(MouseButton.Left))
             {
-                Console.WriteLine("Left Click");
+                //Console.WriteLine("Left Click");
             }
 
             if (_game.mouse.getButtonPress(MouseButton.Right))
             {
-                Console.WriteLine("Right Click");
+                //Console.WriteLine("Right Click");
+                _game.camera.zoom(true, _fps);
+            }
+            else
+            {
+                _game.camera.zoom(false, _fps);
             }
 
             if (_game.mouse.getButtonPress(MouseButton.Middle))
             {
-                Console.WriteLine("Middle Click");
+                //Console.WriteLine("Middle Click");
             }
         }
 
@@ -259,8 +261,8 @@ namespace KailashEngine
             temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 2.0f);
 
             // Calculate total delta (which is rotation angle for character / camera)
-            temp_delta_total.X += (_game.player.camera.spatial.rotation_angles.X + temp_delta_current.X);
-            temp_delta_total.Y += (_game.player.camera.spatial.rotation_angles.Y + temp_delta_current.Y);
+            temp_delta_total.X += (_game.camera.spatial.rotation_angles.X + temp_delta_current.X);
+            temp_delta_total.Y += (_game.camera.spatial.rotation_angles.Y + temp_delta_current.Y);
             float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * _game.config.smooth_mouse_delay;
             temp_delta_total.Z = temp_delta_current.Z * z_mod;
 
@@ -269,10 +271,10 @@ namespace KailashEngine
             temp_delta_total.X = Math.Min(temp_delta_total.X, 90.0f);
 
             _game.mouse.delta_previous = temp_delta_current;
-            _game.player.camera.spatial.rotation_angles = temp_delta_total;
+            _game.camera.spatial.rotation_angles = temp_delta_total;
 
             // Rotate main character from mouse movement
-            _game.player.character.rotate(_game.player.camera.spatial.rotation_angles.X, _game.player.camera.spatial.rotation_angles.Y, _game.player.camera.spatial.rotation_angles.Z);
+            _game.player.character.rotate(_game.camera.spatial.rotation_angles.X, _game.camera.spatial.rotation_angles.Y, _game.camera.spatial.rotation_angles.Z);
 
             // Recenter
             centerMouse();
@@ -328,16 +330,18 @@ namespace KailashEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            _fps = (float)(1.0d / e.Time);
+
             inputBuffer();
 
             _render_driver.updateUBO_GameConfig(
                 _game.config.near_far_full,
                 _game.config.fps_target);
             _render_driver.updateUBO_Camera(
-                _game.player.camera.spatial.model_view, 
-                _game.player.camera.spatial.perspective, 
-                _game.player.camera.spatial.position,
-                _game.player.camera.spatial.look);
+                _game.camera.spatial.model_view, 
+                _game.camera.spatial.perspective, 
+                _game.camera.spatial.position,
+                _game.camera.spatial.look);
 
 
 
@@ -361,7 +365,7 @@ namespace KailashEngine
             SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
 
-            _debug_window.render((float)(1.0d / e.Time));
+            _debug_window.render(_fps);
 
             Debug.DebugHelper.logGLError();
             SwapBuffers();

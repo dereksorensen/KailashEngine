@@ -86,7 +86,9 @@ namespace KailashEngine.World
             set { _perspective = value; }
         }
 
-
+        public SpatialData()
+            : this(new Vector3(), new Vector3(), new Vector3())
+        { }
 
         public SpatialData(Vector3 position, Vector3 look, Vector3 up)
         {
