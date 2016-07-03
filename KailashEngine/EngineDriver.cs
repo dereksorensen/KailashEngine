@@ -349,7 +349,7 @@ namespace KailashEngine
             Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
             _game.scene.flashlight.bounding_unique_mesh.transformation = _game.scene.flashlight.bounding_unique_mesh.transformation * Matrix4.Invert(_game.player.character.spatial.transformation);
             _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
-            _game.scene.flashlight.spatial.look = new Vector3(-_game.player.character.spatial.look.X, -_game.player.character.spatial.look.Y, -_game.player.character.spatial.look.Z);
+            _game.scene.flashlight.spatial.rotation_matrix = _game.player.character.spatial.rotation_matrix;
 
 
             _render_driver.render(_game.scene);

@@ -446,6 +446,7 @@
     <Compile Include="Output\Audio.cs" />
     <Compile Include="Output\Resolution.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Render\FX\fx_Test.cs" />
     <Compile Include="Render\FX\fx_HDR.cs" />
     <Compile Include="Render\FX\fx_gBuffer.cs" />
     <Compile Include="Render\FX\fx_Final.cs" />

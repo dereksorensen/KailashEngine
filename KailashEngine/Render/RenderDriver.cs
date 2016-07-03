@@ -32,6 +32,7 @@ namespace KailashEngine.Render
 
         // Render FXs
         private fx_Quad _quad;
+        private fx_Test _test;
         private fx_Final _final;
         private fx_gBuffer _gBuffer;
         private fx_HDR _hdr;
@@ -62,6 +63,7 @@ namespace KailashEngine.Render
 
             // Render FXs
             _quad = new fx_Quad(_pLoader, "common/", _resolution);
+            _test = new fx_Test(_pLoader, "test/", _resolution);
             _final = new fx_Final(_pLoader, "final/", _resolution);
             _gBuffer = new fx_gBuffer(_pLoader, "gBuffer/", _resolution);
             _hdr = new fx_HDR(_pLoader, "hdr/", _resolution);
@@ -179,7 +181,7 @@ namespace KailashEngine.Render
 
             //_quad.render_Texture2D(_hdr.tTempScene, 0.25f, 2);
             //_quad.render_Texture2D(_hdr.tLuminosity, 0.25f, 1);
-            _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 0);
+            _quad.render_Texture2D(_gBuffer.tDiffuse_ID, 0.25f, 0);
 
         }
 

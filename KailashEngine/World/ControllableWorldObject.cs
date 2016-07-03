@@ -62,26 +62,24 @@ namespace KailashEngine.World
         {
             _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
 
-            Quaternion x_rotation = Quaternion.FromAxisAngle(new Vector3(1.0f, 0.0f, 0.0f), MathHelper.DegreesToRadians(x_angle));
-            x_rotation.Normalize();
+            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
+            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
+            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
 
-            Quaternion y_rotation = Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), MathHelper.DegreesToRadians(y_angle));
-            y_rotation.Normalize();
-
-            Quaternion z_rotation = Quaternion.FromAxisAngle(new Vector3(0.0f, 0.0f, 1.0f), MathHelper.DegreesToRadians(z_angle));
-            z_rotation.Normalize();
+            Quaternion rotation = Quaternion.FromEulerAngles(MathHelper.DegreesToRadians(-z_angle), MathHelper.DegreesToRadians(-y_angle), MathHelper.DegreesToRadians(-x_angle));
 
             Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
             Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(x_rotation, z_rotation), y_rotation);
 
-            xyz_rotation.Normalize();
-            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(xyz_rotation);
+            rotation.Normalize();
+            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
+            _spatial.rotation_matrix = Matrix4.Invert(_spatial.rotation_matrix);
 
             // Added bit to set look and up based on xy rotation only
             xy_rotation.Normalize();
             Matrix4 temp_xy_rotation = Matrix4.CreateFromQuaternion(xy_rotation);
             Vector3 temp_look = temp_xy_rotation.Column2.Xyz;
-            _spatial.up = temp_xy_rotation.Column1.Xyz;
+            //_spatial.up = temp_xy_rotation.Column1.Xyz;
             //_spatial.strafe = Vector3.Cross(temp_look, _spatial.up);
             //_spatial.look = temp_look;
         }

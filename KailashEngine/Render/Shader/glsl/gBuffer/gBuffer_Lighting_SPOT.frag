@@ -48,7 +48,7 @@ float calcSpotLightCone(vec3 L, float outerAngle, float blurAmount)
 	float spotAngleCutoff_outer = outerAngle * MATH_PI / 180.0;
 	float spotAngleCutoff_inner = spotAngleCutoff_outer+(spotLightBlurCoefficient);
 
-	float spotAngle = dot(normalize(vec3(light_direction.x, light_direction.y, light_direction.z)),-L);
+	float spotAngle = dot(light_direction,-L);
 
 	float spotAngleDifference = spotAngleCutoff_inner-spotAngleCutoff_outer;
 	float spotLightBlur = (spotAngle - spotAngleCutoff_outer)/spotAngleDifference;
