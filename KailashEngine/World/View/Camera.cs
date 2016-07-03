@@ -48,7 +48,7 @@ namespace KailashEngine.World.View
 
             _position_current = _spatial.position;
 
-            _spatial.updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
+            _spatial.setPerspective(_fov_current, _default_aspect_ratio, _default_near_far);
         }
 
 
@@ -109,7 +109,7 @@ namespace KailashEngine.World.View
             _fov_current = EngineHelper.slerp(_fov_previous, _fov_current, zoom_delay);
             _fov_previous = _fov_current;
 
-            _spatial.updatePerspective(_fov_current, _default_aspect_ratio, _default_near_far);
+            _spatial.setPerspective(_fov_current, _default_aspect_ratio, _default_near_far);
         }
 
 

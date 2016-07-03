@@ -179,7 +179,7 @@ namespace KailashEngine.Render
 
             //_quad.render_Texture2D(_hdr.tTempScene, 0.25f, 2);
             //_quad.render_Texture2D(_hdr.tLuminosity, 0.25f, 1);
-            //_quad.render_Texture2D(_final.tFinalScene, 0.25f, 0);
+            _quad.render_Texture2D(_gBuffer.tLighting, 0.25f, 0);
 
         }
 

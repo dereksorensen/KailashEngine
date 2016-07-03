@@ -265,7 +265,8 @@ namespace KailashEngine.Render.FX
             _tNormal_Depth.bind(_pLighting_SPOT.getSamplerUniform(0), 0);
             _tSpecular.bind(_pLighting_SPOT.getSamplerUniform(1), 1);
 
-
+            //Vector3 temp_look = new Vector3(-l.spatial.look.X, -l.spatial.look.Y, -l.spatial.look.Z);
+            //temp_look = Vector3.Transform(new Vector3(0.0f,0.0f,-1.0f), l.spatial.transformation.ExtractRotation());
             GL.Uniform3(_pLighting_SPOT.getUniform("light_position"), l.spatial.position);
             GL.Uniform3(_pLighting_SPOT.getUniform("light_direction"), l.spatial.look);
             GL.Uniform3(_pLighting_SPOT.getUniform("light_color"), l.color);

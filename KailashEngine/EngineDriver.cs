@@ -262,7 +262,7 @@ namespace KailashEngine
             // Calculate total delta (which is rotation angle for character / camera)
             temp_delta_total.X += (_game.player.character.spatial.rotation_angles.X + temp_delta_current.X);
             temp_delta_total.Y += (_game.player.character.spatial.rotation_angles.Y + temp_delta_current.Y);
-            float z_mod = (float)Math.Cos(temp_delta_current.X * Math.PI / 180.0f) * _game.config.smooth_mouse_delay;
+            float z_mod = (float)Math.Cos(MathHelper.DegreesToRadians(temp_delta_current.X)) * _game.config.smooth_mouse_delay;
             temp_delta_total.Z = temp_delta_current.Z * z_mod;
 
             // Prevent looking beyond top and bottom
@@ -347,9 +347,9 @@ namespace KailashEngine
 
 
             Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
-            _game.scene.flashlight.bounding_unique_mesh.transformation = _game.scene.flashlight.bounding_unique_mesh.transformation * Matrix4.Invert(_game.player.character.spatial.rotation_matrix) * Matrix4.Invert(_game.player.character.spatial.position_matrix);
+            _game.scene.flashlight.bounding_unique_mesh.transformation = _game.scene.flashlight.bounding_unique_mesh.transformation * Matrix4.Invert(_game.player.character.spatial.transformation);
             _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
-            _game.scene.flashlight.spatial.look = new Vector3(_game.player.character.spatial.look.X, -_game.player.character.spatial.look.Y, _game.player.character.spatial.look.Z);
+            _game.scene.flashlight.spatial.look = new Vector3(-_game.player.character.spatial.look.X, -_game.player.character.spatial.look.Y, -_game.player.character.spatial.look.Z);
 
 
             _render_driver.render(_game.scene);

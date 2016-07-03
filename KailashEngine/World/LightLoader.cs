@@ -145,10 +145,10 @@ namespace KailashEngine.World
                         // Create New Light
                         temp_light = new sLight(
                             id,
-                            position, rotation,
                             size,
                             color, intensity, falloff, spot_angle,
-                            shadow);
+                            shadow,
+                            temp_matrix);
 
                         // Create Light Object Mesh
                         temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
@@ -175,10 +175,10 @@ namespace KailashEngine.World
                     case "POINT":
                         temp_light = new pLight(
                             id,
-                            position,
                             size,
                             color, intensity, falloff,
-                            shadow);
+                            shadow,
+                            temp_matrix);
 
                         // Create Light Object Mesh
                         temp_light.unique_mesh = new UniqueMesh(id, pLight_mesh, temp_matrix);

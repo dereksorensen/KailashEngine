@@ -87,8 +87,8 @@ namespace KailashEngine.World.Lights
 
 
 
-        public Light(string id, string type, Vector3 position, Vector3 rotation, float size, Vector3 color, float intensity, float falloff, bool shadow)
-            : base(id, new SpatialData(position, new Vector3(), new Vector3()))
+        public Light(string id, string type, float size, Vector3 color, float intensity, float falloff, bool shadow, Matrix4 transformation)
+            : base(id, new SpatialData(transformation))
         {
             _type = type;
             _size = size;
@@ -97,7 +97,6 @@ namespace KailashEngine.World.Lights
             _falloff = falloff;
             _shadow = shadow;
 
-            rotate(rotation.X, rotation.Y, rotation.Z);
         }
 
 

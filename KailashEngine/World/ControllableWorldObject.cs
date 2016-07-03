@@ -80,10 +80,10 @@ namespace KailashEngine.World
             // Added bit to set look and up based on xy rotation only
             xy_rotation.Normalize();
             Matrix4 temp_xy_rotation = Matrix4.CreateFromQuaternion(xy_rotation);
-            _spatial.look = _spatial.rotation_matrix.Column2.Xyz;
+            Vector3 temp_look = temp_xy_rotation.Column2.Xyz;
             _spatial.up = temp_xy_rotation.Column1.Xyz;
-            _spatial.strafe = Vector3.Cross(_spatial.look, _spatial.up);
-
+            //_spatial.strafe = Vector3.Cross(temp_look, _spatial.up);
+            //_spatial.look = temp_look;
         }
 
 

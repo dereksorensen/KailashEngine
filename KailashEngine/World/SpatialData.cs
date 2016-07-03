@@ -23,7 +23,12 @@ namespace KailashEngine.World
         public Vector3 look
         {
             get { return _look; }
-            set { _look = value; }
+            set
+            {
+                _look = value;
+                //_rotation_matrix = Matrix4.LookAt(Vector3.Zero, -_look, _up);               
+                _strafe = Vector3.Cross(_look, _up);
+            }
         }
 
         private Vector3 _up;
@@ -38,6 +43,12 @@ namespace KailashEngine.World
         {
             get { return _strafe; }
             set { _strafe = value; }
+        }
+
+        private Vector3 _scale;
+        public Vector3 scale
+        {
+            get { return _scale; }
         }
 
 
@@ -63,11 +74,24 @@ namespace KailashEngine.World
             set
             {
                 _rotation_matrix = value;
+                Console.WriteLine("=======================");
+                
                 _look = _rotation_matrix.Column2.Xyz;
+                Console.WriteLine(_look);
+                _look = -_rotation_matrix.Row2.Xyz;
+                Console.WriteLine(_look);
+                //_look = Vector3.Normalize(Vector3.Transform(new Vector3(0.0f, 0.0f, -1.0f), _rotation_matrix));
                 _up = _rotation_matrix.Column1.Xyz;
-                _strafe = Vector3.Cross(_look, _up);
+                _strafe = _rotation_matrix.Column0.Xyz;
             }
         }
+
+
+        public Matrix4 scale_matrix
+        {
+            get { return Matrix4.CreateScale(_scale); }
+        }
+
 
 
         public Matrix4 transformation
@@ -75,6 +99,12 @@ namespace KailashEngine.World
             get
             {
                 return (position_matrix * rotation_matrix);
+            }
+            set
+            {
+                _position = value.ExtractTranslation();
+                _scale = value.ExtractScale();
+                rotation_matrix = Matrix4.CreateFromQuaternion(value.ExtractRotation());
             }
         }
 
@@ -96,12 +126,18 @@ namespace KailashEngine.World
             _position = position;
             _look = look;
             _up = up;
+            _scale = new Vector3(1.0f);
 
-            rotation_matrix = Matrix4.LookAt(_position, _look, _up);
+            rotation_matrix = Matrix4.LookAt(Vector3.Zero, _look, _up);
+        }
+
+        public SpatialData(Matrix4 transformation)
+        {
+            this.transformation = transformation;
         }
 
 
-        public void updatePerspective(float fov, float aspect, Vector2 near_far)
+        public void setPerspective(float fov, float aspect, Vector2 near_far)
         {
             _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), aspect, near_far.X, near_far.Y);
         }

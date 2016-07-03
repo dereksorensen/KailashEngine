@@ -60,27 +60,15 @@ namespace KailashEngine.Client
         }
 
 
-        public void load()
+        private void load_Flashlight()
         {
-            _world_loader = new WorldLoader(_path_mesh, _path_physics, _path_lights, "light_objects.dae");
-
-
-            // Load Scenes
-            _world_loader.addWorldToScene(new string[]
-            {
-                "test_scene"
-            }, _meshes, _lights);
-
-
-
-
             // Load Flashlight
             _flashlight = new sLight(
                 "flashlight",
-                Vector3.Zero, Vector3.Zero,
                 1.0f,
                 new Vector3(1.0f), 2.0f, 40.0f, MathHelper.DegreesToRadians(70.0f),
-                false);
+                false,
+                Matrix4.Identity);
 
             // Create Light Object Mesh
             _flashlight.unique_mesh = new UniqueMesh(_flashlight.id, _world_loader.sLight_mesh, Matrix4.Identity);
@@ -102,7 +90,21 @@ namespace KailashEngine.Client
             _flashlight.bounding_unique_mesh = new UniqueMesh(_flashlight.id + "-bounds", _world_loader.sLight_mesh, temp_matrix);
 
             toggleFlashlight(true);
+        }
 
+        public void load()
+        {
+            _world_loader = new WorldLoader(_path_mesh, _path_physics, _path_lights, "light_objects.dae");
+
+
+            // Load Scenes
+            _world_loader.addWorldToScene(new string[]
+            {
+                "test_scene"
+            }, _meshes, _lights);
+
+
+            load_Flashlight();
         }
 
         public void toggleFlashlight(bool enabled)
@@ -123,7 +125,7 @@ namespace KailashEngine.Client
         {
             // Draw Scene
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
-            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
+            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, true);
 
         }
 

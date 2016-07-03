@@ -90,12 +90,12 @@ namespace KailashEngine.World
 
         public void strafeRight(float speed)
         {
-            _spatial.position += _spatial.strafe * speed;
+            _spatial.position -= _spatial.strafe * speed;
         }
 
         public void strafeLeft(float speed)
         {
-            _spatial.position -= _spatial.strafe * speed;
+            _spatial.position += _spatial.strafe * speed;
         }
 
     }
