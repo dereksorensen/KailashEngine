@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.76.0 commit date:2015-11-03, commit time:10:56, hash:f337fea</authoring_tool>
     </contributor>
-    <created>2016-07-02T16:35:19</created>
-    <modified>2016-07-02T16:35:19</modified>
+    <created>2016-07-04T19:21:27</created>
+    <modified>2016-07-04T19:21:27</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -1338,7 +1338,11 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="Cube_000" name="Cube_000" type="NODE">
-        <matrix sid="transform">3.69072e-8 -50 7.54979e-6 0.01205385 0.8443378 2.18557e-6 -4.37114e-6 30.61987 7.38143e-8 7.54979e-6 50 46.61267 0 0 0 1</matrix>
+        <translate sid="location">0.01205385 30.61987 46.61267</translate>
+        <rotate sid="rotationZ">0 0 1 90</rotate>
+        <rotate sid="rotationY">0 1 0 -5.00896e-6</rotate>
+        <rotate sid="rotationX">1 0 0 8.65142e-6</rotate>
+        <scale sid="scale">0.8443378 50 50</scale>
         <instance_geometry url="#Cube-mesh" name="Cube_000">
           <bind_material>
             <technique_common>
@@ -1348,7 +1352,11 @@
         </instance_geometry>
       </node>
       <node id="Cube_001" name="Cube_001" type="NODE">
-        <matrix sid="transform">4.81267e-15 -50 3.7749e-6 0.01205385 6.37457e-8 3.7749e-6 50 -20.12457 -0.8443378 0 3.7749e-6 -3.722165 0 0 0 1</matrix>
+        <translate sid="location">0.01205385 -20.12457 -3.722165</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 90</rotate>
+        <rotate sid="rotationX">1 0 0 -90</rotate>
+        <scale sid="scale">0.8443378 50 50</scale>
         <instance_geometry url="#Cube-mesh" name="Cube_001">
           <bind_material>
             <technique_common>
@@ -1358,7 +1366,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere" name="Icosphere" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.6080698 -1 7.54979e-8 0 14.56874 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.6080698 14.56874 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere-mesh" name="Icosphere">
           <bind_material>
             <technique_common>
@@ -1368,7 +1380,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_001" name="Icosphere_001" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.6080698 -1 7.54979e-8 0 11.72217 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.6080698 11.72217 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_001-mesh" name="Icosphere_001">
           <bind_material>
             <technique_common>
@@ -1378,7 +1394,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_002" name="Icosphere_002" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.6080698 -1 7.54979e-8 0 8.743275 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.6080698 8.743275 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_002-mesh" name="Icosphere_002">
           <bind_material>
             <technique_common>
@@ -1388,7 +1408,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_003" name="Icosphere_003" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.6080698 -1 7.54979e-8 0 5.727844 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.6080698 5.727844 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_003-mesh" name="Icosphere_003">
           <bind_material>
             <technique_common>
@@ -1398,7 +1422,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_004" name="Icosphere_004" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.6080698 -1 7.54979e-8 0 2.678905 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.6080698 2.678905 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_004-mesh" name="Icosphere_004">
           <bind_material>
             <technique_common>
@@ -1408,7 +1436,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_005" name="Icosphere_005" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 4.1053 -1 7.54979e-8 0 5.107591 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">4.1053 5.107591 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_005-mesh" name="Icosphere_005">
           <bind_material>
             <technique_common>
@@ -1418,7 +1450,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_006" name="Icosphere_006" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.7159876 -1 7.54979e-8 0 17.75548 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.7159876 17.75548 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere-mesh" name="Icosphere_006">
           <bind_material>
             <technique_common>
@@ -1428,7 +1464,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_007" name="Icosphere_007" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.7159876 -1 7.54979e-8 0 20.7029 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.7159876 20.7029 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_006-mesh" name="Icosphere_007">
           <bind_material>
             <technique_common>
@@ -1438,7 +1478,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_008" name="Icosphere_008" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.7159876 -1 7.54979e-8 0 23.60633 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.7159876 23.60633 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_007-mesh" name="Icosphere_008">
           <bind_material>
             <technique_common>
@@ -1448,7 +1492,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_009" name="Icosphere_009" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0.7159876 -1 7.54979e-8 0 26.42178 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">0.7159876 26.42178 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_008-mesh" name="Icosphere_009">
           <bind_material>
             <technique_common>
@@ -1458,7 +1506,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_010" name="Icosphere_010" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 -3.064499 -1 7.54979e-8 0 5.107591 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">-3.064499 5.107591 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_005-mesh" name="Icosphere_010">
           <bind_material>
             <technique_common>
@@ -1468,7 +1520,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_011" name="Icosphere_011" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 0 -1 7.54979e-8 0 0 0 0 1 0 0 0 0 1</matrix>
+        <translate sid="location">0 0 0</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere-mesh" name="Icosphere_011">
           <bind_material>
             <technique_common>
@@ -1478,7 +1534,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_013" name="Icosphere_013" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 -2.258759 -1 7.54979e-8 0 7.961422 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">-2.258759 7.961422 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_012-mesh" name="Icosphere_013">
           <bind_material>
             <technique_common>
@@ -1488,7 +1548,11 @@
         </instance_geometry>
       </node>
       <node id="Icosphere_014" name="Icosphere_014" type="NODE">
-        <matrix sid="transform">7.54979e-8 1 0 3.356529 -1 7.54979e-8 0 7.961422 0 0 1 0.4293089 0 0 0 1</matrix>
+        <translate sid="location">3.356529 7.961422 0.4293089</translate>
+        <rotate sid="rotationZ">0 0 1 -90</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Icosphere_013-mesh" name="Icosphere_014">
           <bind_material>
             <technique_common>
@@ -1498,27 +1562,51 @@
         </instance_geometry>
       </node>
       <node id="Spot_000" name="Spot_000" type="NODE">
-        <matrix sid="transform">0.5820583 -0.5081216 0.634839 12.28494 0.4692303 0.8475025 0.2481179 -42.80854 -0.6641017 0.1534666 0.7317219 8.546372 0 0 0 1</matrix>
+        <translate sid="location">12.28494 -42.80854 8.546372</translate>
+        <rotate sid="rotationZ">0 0 1 38.87426</rotate>
+        <rotate sid="rotationY">0 1 0 41.61345</rotate>
+        <rotate sid="rotationX">1 0 0 11.84516</rotate>
+        <scale sid="scale">1 0.9999999 1</scale>
         <instance_light url="#Spot_000-light"/>
       </node>
       <node id="Spot_001" name="Spot_001" type="NODE">
-        <matrix sid="transform">1 0 0 -24.00664 0 0.8813035 -0.4725507 -53.55041 0 0.4725507 0.8813035 8.546372 0 0 0 1</matrix>
+        <translate sid="location">-24.00664 -53.55041 8.546372</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 28.2</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_light url="#Spot_001-light"/>
       </node>
       <node id="Spot_002" name="Spot_002" type="NODE">
-        <matrix sid="transform">1 0 0 -41.17426 0 1 0 -53.55041 0 0 1 8.546372 0 0 0 1</matrix>
+        <translate sid="location">-41.17426 -53.55041 8.546372</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_light url="#Spot_002-light"/>
       </node>
       <node id="Spot_003" name="Spot_003" type="NODE">
-        <matrix sid="transform">1 0 0 -24.00664 0 -4.37114e-8 -1 2.742416 0 1 -4.37114e-8 63.8217 0 0 0 1</matrix>
+        <translate sid="location">-24.00664 2.742416 63.8217</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 90</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_light url="#Spot_003-light"/>
       </node>
       <node id="Spot_004" name="Spot_004" type="NODE">
-        <matrix sid="transform">0.7890842 0.5429069 0.2873989 19.03195 0 0.4678593 -0.883803 2.742416 -0.6142851 0.697395 0.3691804 63.8217 0 0 0 1</matrix>
+        <translate sid="location">19.03195 2.742416 63.8217</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 37.89999</rotate>
+        <rotate sid="rotationX">1 0 0 62.10458</rotate>
+        <scale sid="scale">1 1 1</scale>
         <instance_light url="#Spot_004-light"/>
       </node>
       <node id="Spot_005" name="Spot_005" type="NODE">
-        <matrix sid="transform">-0.5785643 -0.72537 -0.3729633 -12.11727 0.4735317 -0.6710338 0.5705097 25.42122 -0.6641017 0.1534666 0.7317219 8.546372 0 0 0 1</matrix>
+        <translate sid="location">-12.11727 25.42122 8.546372</translate>
+        <rotate sid="rotationZ">0 0 1 140.701</rotate>
+        <rotate sid="rotationY">0 1 0 41.61345</rotate>
+        <rotate sid="rotationX">1 0 0 11.84515</rotate>
+        <scale sid="scale">1 0.9999999 1</scale>
         <instance_light url="#Spot_005-light"/>
       </node>
     </visual_scene>

@@ -44,6 +44,7 @@ use_texture_copies=False,
 
 triangulate=True,
 use_object_instantiation=True,
+export_transformation_type_selection='transrotloc',
 sort_by_name=True,
 )
 
