@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -127,16 +128,34 @@ namespace KailashEngine.World
                 Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
 
 
-                // Temp transformmation matrix
-                float[] m_array = n.Matrix[0].Value();
+                WorldObject temp_object = new WorldObject("test");
+                
 
-                Matrix4 temp_mat = Matrix4.Identity;
-                temp_mat = new Matrix4(
-                    m_array[0], m_array[4], m_array[8], m_array[12],
-                    m_array[1], m_array[5], m_array[9], m_array[13],
-                    m_array[2], m_array[6], m_array[10], m_array[14],
-                    m_array[3], m_array[7], m_array[11], m_array[15]
-                                    );
+                // Scale
+                float[] temp_scale_array = n.Scale[0].Value();
+                Matrix4 temp_scale = Matrix4.CreateScale(
+                    temp_scale_array[0],
+                    temp_scale_array[1],
+                    temp_scale_array[2]
+                );
+
+                // Rotation
+                Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(
+                    MathHelper.DegreesToRadians(n.Rotate[0].Value()[3]),
+                    MathHelper.DegreesToRadians(n.Rotate[1].Value()[3]),
+                    MathHelper.DegreesToRadians(n.Rotate[2].Value()[3])
+                ));
+
+                // Translation
+                Matrix4 temp_translation = Matrix4.CreateTranslation(
+                    n.Translate[0].Value()[0],
+                    n.Translate[0].Value()[1],
+                    n.Translate[0].Value()[2]
+                );
+
+
+                Matrix4 temp_mat = temp_scale * (temp_rotation * temp_translation);
+
                 temp_mat = temp_mat * yup;
 
 

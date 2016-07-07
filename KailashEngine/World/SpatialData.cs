@@ -78,7 +78,7 @@ namespace KailashEngine.World
                 
                 _look = _rotation_matrix.Column2.Xyz;
                 //Console.WriteLine(_look);
-                _look = -_rotation_matrix.Row2.Xyz;
+                //_look = -_rotation_matrix.Row2.Xyz;
                 //_look = Vector3.Normalize(Vector3.Transform(new Vector3(0.0f, 0.0f, -1.0f), _rotation_matrix));
                 //Console.WriteLine(_look);
                 _up = _rotation_matrix.Column1.Xyz;
