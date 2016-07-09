@@ -30,9 +30,6 @@ namespace KailashEngine.World
 
             List<string> ids = new List<string>();
             List<string> types = new List<string>();
-            List<Vector3> positions = new List<Vector3>();
-            List<Vector3> rotations = new List<Vector3>();
-            List<float> sizes = new List<float>();
             List<float> intensities = new List<float>();
             List<Vector3> colors = new List<Vector3>();
             List<float> falloffs = new List<float>();
@@ -60,25 +57,6 @@ namespace KailashEngine.World
                             break;
                         case "typ ":
                             types.Add(single_value);
-                            break;
-                        case "pos ":
-                            Vector3 pos;
-                            pos.X = float.Parse(multi_value[0]);
-                            pos.Y = float.Parse(multi_value[1]);
-                            pos.Z = float.Parse(multi_value[2]);
-                            positions.Add(pos);
-                            break;
-                        case "rot ":
-                            Vector3 rot;
-                            rot.X = MathHelper.RadiansToDegrees(float.Parse(multi_value[0])) - 90.0f;
-                            rot.Y = MathHelper.RadiansToDegrees(float.Parse(multi_value[1])) - 180.0f;
-                            rot.Z = MathHelper.RadiansToDegrees(float.Parse(multi_value[2]));
-                            rotations.Add(rot);
-                            break;
-                        case "siz ":
-                            float siz;
-                            siz = float.Parse(single_value);
-                            sizes.Add(siz);
                             break;
                         case "ity ":
                             float ity;
@@ -119,22 +97,16 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(2, "\tNumber of Lights", num_lights.ToString());
 
 
-
             for (int i = 0; i < num_lights; i++)
             {
                 string id = ids[i].Replace('.', '_');
                 string type = types[i];
-                Vector3 position = positions[i];
-                Vector3 rotation = rotations[i];
-                float size = sizes[i];
                 float intensity = intensities[i];
                 Vector3 color = colors[i];
                 float falloff = falloffs[i];
                 float spot_angle = spot_angles[i];
                 bool shadow = shadows[i];
 
-                Vector3 scaler;
-                Vector3 shifter;
                 Light temp_light;
                 Matrix4 temp_matrix = Matrix4.Identity;
                 light_matrix_collection.TryGetValue(id + "-light", out temp_matrix);
@@ -145,29 +117,9 @@ namespace KailashEngine.World
                         // Create New Light
                         temp_light = new sLight(
                             id,
-                            size,
                             color, intensity, falloff, spot_angle,
                             shadow,
-                            temp_matrix);
-
-                        // Create Light Object Mesh
-                        temp_light.unique_mesh = new UniqueMesh(id, sLight_mesh, temp_matrix);
-
-                        // Create Light Bounds Mesh
-                        float spot_depth = falloff / 2.0f;
-                        float spot_radius = spot_depth * (float)Math.Tan(spot_angle) / 2.0f;
-                        scaler = new Vector3(
-                                spot_radius,
-                                spot_radius,
-                                spot_depth
-                            );
-                        shifter = new Vector3(
-                                0.0f,
-                                0.0f,
-                                -scaler.Z
-                            );
-                        temp_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * temp_matrix.ClearScale();
-                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", sLight_mesh, temp_matrix);
+                            sLight_mesh, temp_matrix);
 
                         // Add Spot Light to List
                         light_list.Add(temp_light);
@@ -175,23 +127,10 @@ namespace KailashEngine.World
                     case "POINT":
                         temp_light = new pLight(
                             id,
-                            size,
                             color, intensity, falloff,
                             shadow,
-                            temp_matrix);
+                            pLight_mesh, temp_matrix);
 
-                        // Create Light Object Mesh
-                        temp_light.unique_mesh = new UniqueMesh(id, pLight_mesh, temp_matrix);
-
-                        // Create Light Bounds Mesh
-                        float point_radius = falloff;
-                        scaler = new Vector3(
-                                point_radius,
-                                point_radius,
-                                point_radius
-                            );
-                        temp_matrix = Matrix4.CreateScale(scaler) * temp_matrix.ClearScale();
-                        temp_light.bounding_unique_mesh = new UniqueMesh(id + "-bounds", pLight_mesh, temp_matrix);
 
                         // Add Point Light to List
                         light_list.Add(temp_light);
@@ -199,18 +138,8 @@ namespace KailashEngine.World
                 }
             }
 
-
-            //foreach (KeyValuePair<string, Matrix4> entry in light_matrix_collection)
-            //{
-            //    Console.WriteLine(entry.Key);
-            //}
-
-
             ids.Clear();
             types.Clear();
-            positions.Clear();
-            rotations.Clear();
-            sizes.Clear();
             intensities.Clear();
             colors.Clear();
             falloffs.Clear();

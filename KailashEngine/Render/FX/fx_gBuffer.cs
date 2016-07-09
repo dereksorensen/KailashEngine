@@ -267,7 +267,7 @@ namespace KailashEngine.Render.FX
 
             Vector3 temp_look = -l.spatial.rotation_matrix.Row2.Xyz;
             GL.Uniform3(_pLighting_SPOT.getUniform("light_position"), l.spatial.position);
-            GL.Uniform3(_pLighting_SPOT.getUniform("light_direction"), temp_look);
+            GL.Uniform3(_pLighting_SPOT.getUniform("light_direction"), l.spatial.look);
             GL.Uniform3(_pLighting_SPOT.getUniform("light_color"), l.color);
             GL.Uniform1(_pLighting_SPOT.getUniform("light_intensity"), l.intensity);
             GL.Uniform1(_pLighting_SPOT.getUniform("light_falloff"), l.falloff);

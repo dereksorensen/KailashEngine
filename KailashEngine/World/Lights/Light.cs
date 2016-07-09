@@ -24,21 +24,12 @@ namespace KailashEngine.World.Lights
             set { _type = value; }
         }
 
-
         private bool _shadow;
         public bool shadow
         {
             get { return _shadow; }
             set { _shadow = value; }
         }
-
-        private float _size;
-        public float size
-        {
-            get { return _size; }
-            set { _size = value; }
-        }
-
 
         private Vector3 _color;
         public Vector3 color
@@ -61,7 +52,6 @@ namespace KailashEngine.World.Lights
             set { _falloff = value; }
         }
 
-
         protected float _spot_angle;
         public float spot_angle
         {
@@ -70,28 +60,25 @@ namespace KailashEngine.World.Lights
         }
 
 
-        private UniqueMesh _unique_mesh;
+        protected UniqueMesh _unique_mesh;
         public UniqueMesh unique_mesh
         {
             get { return _unique_mesh; }
-            set { _unique_mesh = value; }
         }
 
-        private UniqueMesh _bounding_unique_mesh;
+        protected UniqueMesh _bounding_unique_mesh;
         public UniqueMesh bounding_unique_mesh
         {
             get { return _bounding_unique_mesh; }
-            set { _bounding_unique_mesh = value; }
         }
 
 
 
 
-        public Light(string id, string type, float size, Vector3 color, float intensity, float falloff, bool shadow, Matrix4 transformation)
+        public Light(string id, string type, Vector3 color, float intensity, float falloff, bool shadow, Mesh light_mesh, Matrix4 transformation)
             : base(id, new SpatialData(transformation))
         {
             _type = type;
-            _size = size;
             _color = color;
             _intensity = intensity;
             _falloff = falloff;

@@ -128,9 +128,6 @@ namespace KailashEngine.World
                 Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
 
 
-                WorldObject temp_object = new WorldObject("test");
-                
-
                 // Scale
                 float[] temp_scale_array = n.Scale[0].Value();
                 Matrix4 temp_scale = Matrix4.CreateScale(
@@ -140,11 +137,20 @@ namespace KailashEngine.World
                 );
 
                 // Rotation
-                Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(
-                    MathHelper.DegreesToRadians(n.Rotate[0].Value()[3]),
-                    MathHelper.DegreesToRadians(n.Rotate[1].Value()[3]),
-                    MathHelper.DegreesToRadians(n.Rotate[2].Value()[3])
-                ));
+                float x_angle = n.Rotate[2].Value()[3];
+                float y_angle = n.Rotate[1].Value()[3];
+                float z_angle = n.Rotate[0].Value()[3];
+
+                Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
+                Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
+                Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
+
+                //Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
+                Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
+
+                xyz_rotation.Normalize();
+                Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(xyz_rotation);
+
 
                 // Translation
                 Matrix4 temp_translation = Matrix4.CreateTranslation(
@@ -153,9 +159,10 @@ namespace KailashEngine.World
                     n.Translate[0].Value()[2]
                 );
 
-
+                // Build full tranformation matrix
                 Matrix4 temp_mat = temp_scale * (temp_rotation * temp_translation);
 
+                // Blender defaults to Z-up. Need to confirm to Y-up.
                 temp_mat = temp_mat * yup;
 
 
