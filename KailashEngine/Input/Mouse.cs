@@ -53,22 +53,18 @@ namespace KailashEngine.Input
             set { _position_previous = value; }
         }
 
-
-        private Vector3 _delta_current;
-        public Vector3 delta_current
+        public Vector3 position_delta
         {
-            get { return _delta_current; }
-            set { _delta_current = value; }
+            get
+            {
+                return new Vector3(
+                    (-_position_current.Y + _position_previous.Y) * _sensitivity,
+                    (-_position_current.X + _position_previous.X) * _sensitivity,
+                    (-_position_current.X + _position_previous.X) * _sensitivity
+                );
+            }
         }
-
-        private Vector3 _delta_previous;
-        public Vector3 delta_previous
-        {
-            get { return _delta_previous; }
-            set { _delta_previous = value; }
-        }
-
-
+    
 
         public Mouse(float sensitivity, bool locked)
         {
@@ -78,6 +74,11 @@ namespace KailashEngine.Input
             hide();
         }
 
+
+        public bool getButtonPress(MouseButton mouse_button)
+        {
+            return getInput(mouse_button, _buttons);
+        }
 
         public void buttonUp(MouseButtonEventArgs e)
         {
@@ -94,11 +95,6 @@ namespace KailashEngine.Input
 
         }
 
-
-        public bool getButtonPress(MouseButton mouse_button)
-        {
-            return getInput(mouse_button, _buttons);
-        }
 
         public void hide()
         {

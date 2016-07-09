@@ -109,6 +109,15 @@ namespace KailashEngine.World
         }
 
 
+        public Matrix4 model_view
+        {
+            get
+            {
+                return transformation;
+            }
+        }
+
+
         private Matrix4 _perspective;
         public Matrix4 perspective
         {

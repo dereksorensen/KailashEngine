@@ -244,36 +244,16 @@ namespace KailashEngine
 
         private void mouse_MoveBuffer()
         {
+            // Calculate mouse current position
             _game.mouse.position_current = (_game.mouse.locked || _game.mouse.getButtonPress(MouseButton.Left)) ? base.PointToClient(System.Windows.Forms.Cursor.Position) : _game.mouse.position_previous;
 
-            // Get Deltas
-            Vector3 temp_delta_total = new Vector3();
-            Vector3 temp_delta_current = new Vector3(
-                (_game.mouse.position_current.Y - _game.mouse.position_previous.Y) * _game.mouse.sensitivity,
-                (_game.mouse.position_current.X - _game.mouse.position_previous.X) * _game.mouse.sensitivity,
-                (_game.mouse.position_current.X - _game.mouse.position_previous.X) * _game.mouse.sensitivity);
-            Vector3 temp_delta_previous = _game.mouse.delta_previous;
-
-            // Interpolate for smooth mouse       
-            temp_delta_current.Xy = EngineHelper.lerp(temp_delta_previous.Xy, temp_delta_current.Xy, _game.config.smooth_mouse_delay);
-            temp_delta_current.Z = MathHelper.Clamp(temp_delta_current.Z, -7.0f, 7.0f);
-            temp_delta_current.Z = EngineHelper.lerp(temp_delta_previous.Z, temp_delta_current.Z, _game.config.smooth_mouse_delay * 2.0f);
-
-            // Calculate total delta (which is rotation angle for character / camera)
-            temp_delta_total.X += (_game.player.character.spatial.rotation_angles.X + temp_delta_current.X);
-            temp_delta_total.Y += (_game.player.character.spatial.rotation_angles.Y + temp_delta_current.Y);
-            float z_mod = (float)Math.Cos(MathHelper.DegreesToRadians(temp_delta_current.X)) * _game.config.smooth_mouse_delay;
-            temp_delta_total.Z = temp_delta_current.Z * z_mod;
-
-            // Prevent looking beyond top and bottom
-            temp_delta_total.X = Math.Max(temp_delta_total.X, -90.0f);
-            temp_delta_total.X = Math.Min(temp_delta_total.X, 90.0f);
-
-            _game.mouse.delta_previous = temp_delta_current;
-            _game.player.character.spatial.rotation_angles = temp_delta_total;
+            // Set character angles based on mouse position delta 
+            Vector3 temp_angles = _game.player.character.spatial.rotation_angles + _game.mouse.position_delta;
+            temp_angles.X = MathHelper.Clamp(temp_angles.X, -90.0f, 90.0f);
+            _game.player.character.spatial.rotation_angles = temp_angles;
 
             // Rotate main character from mouse movement
-            _game.player.character.rotate(_game.player.character.spatial.rotation_angles.X, _game.player.character.spatial.rotation_angles.Y, _game.player.character.spatial.rotation_angles.Z);
+            _game.player.character.rotate(_game.player.character.spatial.rotation_angles.X, _game.player.character.spatial.rotation_angles.Y, 0.0f, _game.config.smooth_mouse_delay);
 
             // Recenter
             centerMouse();
@@ -337,8 +317,8 @@ namespace KailashEngine
                 _game.config.near_far_full,
                 _game.config.fps_target);
             _render_driver.updateUBO_Camera(
-                _game.player.camera.spatial.transformation, 
-                _game.player.camera.spatial.perspective, 
+                _game.player.camera.spatial.transformation,
+                _game.player.camera.spatial.perspective,
                 _game.player.camera.spatial.position,
                 _game.player.camera.spatial.look);
 
@@ -349,7 +329,7 @@ namespace KailashEngine
             Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
 
             _game.scene.flashlight.unique_mesh.transformation = Matrix4.Invert(_game.player.character.spatial.transformation);
-            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Transpose(_game.player.character.spatial.transformation);
+            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Invert(_game.player.character.spatial.transformation);
             _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
             _game.scene.flashlight.spatial.rotation_matrix =  Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
 

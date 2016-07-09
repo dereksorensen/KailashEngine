@@ -144,8 +144,6 @@ namespace KailashEngine.World
                 Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
                 Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
                 Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
-
-                //Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
                 Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
 
                 xyz_rotation.Normalize();
@@ -162,7 +160,7 @@ namespace KailashEngine.World
                 // Build full tranformation matrix
                 Matrix4 temp_mat = temp_scale * (temp_rotation * temp_translation);
 
-                // Blender defaults to Z-up. Need to confirm to Y-up.
+                // Blender defaults to Z-up. Need to convert to Y-up.
                 temp_mat = temp_mat * yup;
 
 

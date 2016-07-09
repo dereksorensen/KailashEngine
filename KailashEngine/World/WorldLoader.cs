@@ -50,6 +50,7 @@ namespace KailashEngine.World
             _sLight_mesh = light_objects["sLight"].mesh;
             _pLight_mesh = light_objects["pLight"].mesh;
             light_objects.Clear();
+            dirt.Clear();
         }
 
 
@@ -130,19 +131,6 @@ namespace KailashEngine.World
         }
 
 
-        public void loadWorld(string filename, out List<UniqueMesh> mesh_list, out List<Light> light_list)
-        {
-            try
-            {
-                createWorld(filename, out mesh_list, out light_list);
-            }
-            catch (Exception e)
-            {
-                Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
-                mesh_list = null;
-                light_list = null;
-            }
-        }
 
     }
 }

@@ -32,7 +32,7 @@ namespace KailashEngine
                 0.1f, 1000.0f,                                  // Near / Far Planes
 
                 // Gameplay Config
-                4.0f, 9.0f,                                     // Smooth Keyboard / Mouse
+                0.2f, 0.1f,                                     // Smooth Mouse / Keyboard
 
                 // Display Config
                 1440, 900,                                      // Resolution
