@@ -59,6 +59,12 @@ namespace KailashEngine.World.Lights
             set { _spot_angle = value; }
         }
 
+        protected float _spot_blur;
+        public float spot_blur
+        {
+            get { return _spot_blur; }
+            set { _spot_blur = value; }
+        }
 
         protected UniqueMesh _unique_mesh;
         public UniqueMesh unique_mesh

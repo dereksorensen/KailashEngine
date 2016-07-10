@@ -69,13 +69,15 @@ namespace KailashEngine.World
             Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
            
             //Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
-            Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
-            
-            xyz_rotation = Quaternion.Slerp(_temp_quat, xyz_rotation, smooth_factor);
+            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
 
-            xyz_rotation.Normalize();
-            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(xyz_rotation);
+            zyx_rotation = Quaternion.Slerp(_temp_quat, zyx_rotation, smooth_factor);
+
+            zyx_rotation.Normalize();
+            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(zyx_rotation);
             _spatial.rotation_matrix = Matrix4.Transpose(_spatial.rotation_matrix);
+
+            _spatial.look = Matrix4.Transpose(spatial.rotation_matrix).Row2.Xyz;
 
             // Added bit to set look and up based on xy rotation only
             //xy_rotation.Normalize();
@@ -85,7 +87,7 @@ namespace KailashEngine.World
             //_spatial.strafe = Vector3.Cross(temp_look, _spatial.up);
             //_spatial.look = temp_look;
 
-            _temp_quat = xyz_rotation;
+            _temp_quat = zyx_rotation;
         }
 
 

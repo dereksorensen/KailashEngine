@@ -34,6 +34,7 @@ namespace KailashEngine.World
             List<Vector3> colors = new List<Vector3>();
             List<float> falloffs = new List<float>();
             List<float> spot_angles = new List<float>();
+            List<float> spot_blurs = new List<float>();
             List<bool> shadows = new List<bool>();
 
             int num_lights = 0;
@@ -85,6 +86,11 @@ namespace KailashEngine.World
                             ang = float.Parse(single_value);
                             spot_angles.Add(ang);
                             break;
+                        case "blr ":
+                            float blr;
+                            blr = float.Parse(single_value);
+                            spot_blurs.Add(blr);
+                            break;
                         case "num ":
                             num_lights = int.Parse(single_value);
                             break;
@@ -105,6 +111,7 @@ namespace KailashEngine.World
                 Vector3 color = colors[i];
                 float falloff = falloffs[i];
                 float spot_angle = spot_angles[i];
+                float spot_blur = spot_blurs[i];
                 bool shadow = shadows[i];
 
                 Light temp_light;
@@ -117,7 +124,7 @@ namespace KailashEngine.World
                         // Create New Light
                         temp_light = new sLight(
                             id,
-                            color, intensity, falloff, spot_angle,
+                            color, intensity, falloff, spot_angle, spot_blur,
                             shadow,
                             sLight_mesh, temp_matrix);
 
@@ -144,6 +151,7 @@ namespace KailashEngine.World
             colors.Clear();
             falloffs.Clear();
             spot_angles.Clear();
+            spot_blurs.Clear();
             shadows.Clear();
 
             return light_list;

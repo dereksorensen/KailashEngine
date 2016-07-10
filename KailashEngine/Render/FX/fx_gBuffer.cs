@@ -265,12 +265,14 @@ namespace KailashEngine.Render.FX
             _tNormal_Depth.bind(_pLighting_SPOT.getSamplerUniform(0), 0);
             _tSpecular.bind(_pLighting_SPOT.getSamplerUniform(1), 1);
 
-            Vector3 temp_look = -l.spatial.rotation_matrix.Row2.Xyz;
-            GL.Uniform3(_pLighting_SPOT.getUniform("light_position"), l.spatial.position);
-            GL.Uniform3(_pLighting_SPOT.getUniform("light_direction"), l.spatial.look);
-            GL.Uniform3(_pLighting_SPOT.getUniform("light_color"), l.color);
-            GL.Uniform1(_pLighting_SPOT.getUniform("light_intensity"), l.intensity);
-            GL.Uniform1(_pLighting_SPOT.getUniform("light_falloff"), l.falloff);
+            // Load light uniforms
+            GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightPosition), l.spatial.position);
+            GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightDirection), l.spatial.look);
+            GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightColor), l.color);
+            GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightIntensity), l.intensity);
+            GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightFalloff), l.falloff);
+            GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightSpotAngle), l.spot_angle);
+            GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightSpotBlur), l.spot_blur);
 
 
             WorldDrawer.drawLightBounds(l, _pLighting_SPOT);
@@ -295,11 +297,12 @@ namespace KailashEngine.Render.FX
             _tNormal_Depth.bind(_pLighting_POINT.getSamplerUniform(0), 0);
             _tSpecular.bind(_pLighting_POINT.getSamplerUniform(1), 1);
 
-            GL.Uniform3(_pLighting_POINT.getUniform("light_position"), l.spatial.position);
-            GL.Uniform3(_pLighting_POINT.getUniform("light_direction"), l.spatial.look);
-            GL.Uniform3(_pLighting_POINT.getUniform("light_color"), l.color);
-            GL.Uniform1(_pLighting_POINT.getUniform("light_intensity"), l.intensity);
-            GL.Uniform1(_pLighting_POINT.getUniform("light_falloff"), l.falloff);
+            // Load light uniforms
+            GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightPosition), l.spatial.position);
+            GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightDirection), l.spatial.look);
+            GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightColor), l.color);
+            GL.Uniform1(_pLighting_POINT.getUniform(RenderHelper.uLightIntensity), l.intensity);
+            GL.Uniform1(_pLighting_POINT.getUniform(RenderHelper.uLightFalloff), l.falloff);
 
             WorldDrawer.drawLightBounds(l, _pLighting_POINT);
         }

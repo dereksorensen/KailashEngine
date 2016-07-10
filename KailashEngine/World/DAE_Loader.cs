@@ -127,6 +127,7 @@ namespace KailashEngine.World
                 string id = n.ID;
                 Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
 
+                
 
                 // Scale
                 float[] temp_scale_array = n.Scale[0].Value();
@@ -144,10 +145,10 @@ namespace KailashEngine.World
                 Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
                 Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
                 Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
-                Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
+                Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
 
-                xyz_rotation.Normalize();
-                Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(xyz_rotation);
+                zyx_rotation.Normalize();
+                Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(zyx_rotation);
 
 
                 // Translation

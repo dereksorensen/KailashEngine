@@ -51,11 +51,10 @@ namespace KailashEngine.World
             Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
             Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
 
-            //Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
-            Quaternion xyz_rotation = Quaternion.Multiply(Quaternion.Multiply(x_rotation, z_rotation), y_rotation);
+            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
 
-            xyz_rotation.Normalize();
-            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(xyz_rotation);
+            zyx_rotation.Normalize();
+            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(zyx_rotation);
 
         }
 

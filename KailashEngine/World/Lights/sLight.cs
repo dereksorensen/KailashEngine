@@ -15,10 +15,11 @@ namespace KailashEngine.World.Lights
 
 
 
-        public sLight(string id,  Vector3 color, float intensity, float falloff, float spot_angle, bool shadow, Mesh light_mesh, Matrix4 transformation)
+        public sLight(string id,  Vector3 color, float intensity, float falloff, float spot_angle, float spot_blur, bool shadow, Mesh light_mesh, Matrix4 transformation)
             : base(id, type_spot, color, intensity, falloff, shadow, light_mesh, transformation)
         {
-            _spot_angle = spot_angle;
+            _spot_angle = spot_angle / 2.0f;
+            _spot_blur = spot_blur;
 
 
             // Create Light Object Mesh
@@ -26,7 +27,7 @@ namespace KailashEngine.World.Lights
 
             // Create Light Bounds Mesh
             float spot_depth = falloff / 2.0f;
-            float spot_radius = spot_depth * (float)Math.Tan(spot_angle) / 2.0f;
+            float spot_radius = spot_depth * (float)Math.Tan(_spot_angle) * 2.0f;
             Vector3 scaler = new Vector3(
                     spot_radius,
                     spot_radius,

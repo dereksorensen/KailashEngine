@@ -76,7 +76,7 @@ namespace KailashEngine.Render.Shader
 
             string shader_source = loadShaderFile(_filename);
 
-            int added_line_count = 2;
+            int added_line_count = 4;
 
             // Add any depenancies into the shader file
             if (!(_dependancies == null))
@@ -91,7 +91,10 @@ namespace KailashEngine.Render.Shader
 
             // Add glsl version and MATH_PI at top of shader file
             string MATH_PI = "#define MATH_PI 3.1415926535897932384626433832795";
-            shader_source = "#version " + glsl_version + "\n" + MATH_PI + "\n" + shader_source;   
+            string MATH_HALF_PI = "#define MATH_HALF_PI 1.57079632679489661923132169163975";
+            string MATH_2_PI = "#define MATH_2_PI 6.283185307179586476925286766559";
+            
+            shader_source = "#version " + glsl_version + "\n" + MATH_PI + "\n" + MATH_HALF_PI + "\n" + MATH_2_PI + "\n" + shader_source;
 
             try
             {

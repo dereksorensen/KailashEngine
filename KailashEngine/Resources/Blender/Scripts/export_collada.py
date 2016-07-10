@@ -84,11 +84,14 @@ for item in bpy.data.objects:
         #falloff
             falloff = "fal " + str(lamp.distance) + '\n'
             lights_file.write(falloff)
-        #spot_angle
+        #spot_angle and spot_blur
             spot_angle = "ang 0" + '\n'
+            spot_blur = "blr 0" + '\n'
             if (lamp.type == 'SPOT'):
-                spot_angle = "ang " + str(lamp.spot_size) + '\n'                
+                spot_angle = "ang " + str(lamp.spot_size) + '\n'
+                spot_blur = "blr " + str(lamp.spot_blend) + '\n'
             lights_file.write(spot_angle)
+            lights_file.write(spot_blur)
         #shadow
             shadow_method = str(lamp.shadow_method)
             has_shadow = 0

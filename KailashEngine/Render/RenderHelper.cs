@@ -47,6 +47,8 @@ namespace KailashEngine.Render
         public static readonly string uLightColor = "light_color";
         public static readonly string uLightIntensity = "light_intensity";
         public static readonly string uLightFalloff = "light_falloff";
+        public static readonly string uLightSpotAngle = "light_spot_angle";
+        public static readonly string uLightSpotBlur = "light_spot_blur";
 
         // Samplers
         public static readonly string uSamplerBase = "sampler";

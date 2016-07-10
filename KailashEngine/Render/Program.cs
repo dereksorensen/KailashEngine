@@ -91,6 +91,8 @@ namespace KailashEngine.Render
             addUniform(RenderHelper.uLightColor);
             addUniform(RenderHelper.uLightIntensity);
             addUniform(RenderHelper.uLightFalloff);
+            addUniform(RenderHelper.uLightSpotAngle);
+            addUniform(RenderHelper.uLightSpotBlur);
         }
 
         // Setup sampler uniforms for textures
