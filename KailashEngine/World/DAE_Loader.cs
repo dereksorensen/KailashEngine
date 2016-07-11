@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using System.Text.RegularExpressions;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -30,7 +30,7 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(1, "Loading Collada File", Path.GetFileName(filename));
             Grendgine_Collada dae_file = Grendgine_Collada.Grendgine_Load_File(filename);
 
-
+            
 
             // Change Blender mesh's to y axis up
             Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
@@ -113,8 +113,67 @@ namespace KailashEngine.World
             }
             catch
             {
-                Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", "0 meshes found:<");
+                Debug.DebugHelper.logInfo(2, "\tCreating Mesh Dictionary", "0 meshes found :<");
             }
+
+            //------------------------------------------------------
+            // Create Animation Dictionary
+            //------------------------------------------------------
+            try
+            {
+                Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", dae_file.Library_Animations.Animation.Count() + " animations found");
+                foreach (Grendgine_Collada_Animation a in dae_file.Library_Animations.Animation)
+                {
+ 
+                    Match match = Regex.Match(a.ID, "(.+)_(location|rotation_euler|scale)_(X|Y|Z)");
+
+                    if (match.Groups.Count == 4)
+                    {
+                        string id = match.Groups[1].ToString();
+                        string action = match.Groups[2].ToString();
+                        string direction = match.Groups[3].ToString();
+
+                        switch(action)
+                        {
+                            case "location":
+                                action = "TRANSLATE";
+                                break;
+                            case "rotation_euler":
+                                action = "ROTATION";
+                                break;
+                            case "scale":
+                                action = "SCALE";
+                                break;
+                        }
+
+                        
+
+                        // Create source dictionary
+                        Dictionary<string, Grendgine_Collada_Float_Array> source_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
+
+                        // Create sampler dictionary
+                        Dictionary<string, string> sampler_dictionary = a.Sampler[0].Input.ToDictionary(i => i.Semantic.ToString(), i => i.source);
+
+                        // Get Key Frame times
+                        string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
+                        float[] key_frame_times = source_dictionary[source_input_id].Value();
+
+                        // Get Key Frame actions
+                        string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
+                        float[] key_frame_actions = source_dictionary[source_output_id].Value();
+
+
+                        source_dictionary.Clear();
+                        sampler_dictionary.Clear();
+                    }
+
+                }
+            }
+            catch
+            {
+                Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", "0 animations found :<");
+            }
+
 
             //------------------------------------------------------
             // Run Through Visual Scenes

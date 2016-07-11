@@ -65,7 +65,7 @@ namespace KailashEngine.Client
             // Load Flashlight
             _flashlight = new sLight(
                 "flashlight",
-                new Vector3(1.0f), 2.0f, 40.0f, MathHelper.DegreesToRadians(70.0f), 0.05f,
+                new Vector3(1.0f), 2.0f, 40.0f, MathHelper.DegreesToRadians(70.0f), 0.1f,
                 false,
                 _world_loader.sLight_mesh, Matrix4.Identity);
             
@@ -105,7 +105,7 @@ namespace KailashEngine.Client
         {
             // Draw Scene
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
-            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, true);
+            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
 
         }
 

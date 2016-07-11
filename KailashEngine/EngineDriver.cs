@@ -252,8 +252,14 @@ namespace KailashEngine
             temp_angles.X = MathHelper.Clamp(temp_angles.X, -90.0f, 90.0f);
             _game.player.character.spatial.rotation_angles = temp_angles;
 
+
             // Rotate main character from mouse movement
-            _game.player.character.rotate(_game.player.character.spatial.rotation_angles.X, _game.player.character.spatial.rotation_angles.Y, 0.0f, _game.config.smooth_mouse_delay);
+            _game.player.character.rotate(
+                _game.player.character.spatial.rotation_angles.X, 
+                _game.player.character.spatial.rotation_angles.Y, 
+                _game.player.character.spatial.rotation_angles.Z, 
+                _game.config.smooth_mouse_delay
+            );
 
             // Recenter
             centerMouse();

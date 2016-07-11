@@ -40,14 +40,13 @@ uniform float light_spot_blur;
 
 
 
-
 float calcSpotLightCone(vec3 L, float outer_angle, float blur_amount)
 {
 	// Amount to blur the edge of the cone
 	float spot_blur = blur_amount * (outer_angle / MATH_HALF_PI);
 
 	// Add tiny bit to outer angle so it's rounded
-	float spotAngle_outer = outer_angle - 0.02;
+	float spotAngle_outer = outer_angle - 0.01;
 	float spotAngle_inner = spotAngle_outer + spot_blur;
 
 	float spotAngle = acos(dot(light_direction,-L));

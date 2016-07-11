@@ -60,7 +60,7 @@ namespace KailashEngine.Input
                 return new Vector3(
                     (-_position_current.Y + _position_previous.Y) * _sensitivity,
                     (-_position_current.X + _position_previous.X) * _sensitivity,
-                    (-_position_current.X + _position_previous.X) * _sensitivity
+                    0.0f
                 );
             }
         }

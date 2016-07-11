@@ -23,12 +23,7 @@ namespace KailashEngine.World
         public Vector3 look
         {
             get { return _look; }
-            set
-            {
-                _look = value;
-                //_rotation_matrix = Matrix4.LookAt(Vector3.Zero, -_look, _up);               
-                _strafe = Vector3.Cross(_look, _up);
-            }
+            set { _look = value; }
         }
 
         private Vector3 _up;
@@ -74,14 +69,10 @@ namespace KailashEngine.World
             set
             {
                 _rotation_matrix = value;
-
-                
-                _look = _rotation_matrix.Column2.Xyz;
-
+               
                 _look = -_rotation_matrix.Row2.Xyz;
-
-                _up = _rotation_matrix.Column1.Xyz;
-                _strafe = _rotation_matrix.Column0.Xyz;
+                _up = -_rotation_matrix.Row1.Xyz;
+                _strafe = -_rotation_matrix.Row0.Xyz;
             }
         }
 

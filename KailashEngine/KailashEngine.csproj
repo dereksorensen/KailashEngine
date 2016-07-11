@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\Timer.cs" />
     <Compile Include="Client\Scene.cs" />
     <Compile Include="Debug\DebugWindow.cs" />
     <Compile Include="External\Cgen\Audio\Sound.cs" />
@@ -466,6 +467,7 @@
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
     <Compile Include="Serialization\Serializer.cs" />
+    <Compile Include="Animation\Animator.cs" />
     <Compile Include="World\ControllableWorldObject.cs" />
     <Compile Include="World\LightLoader.cs" />
     <Compile Include="World\Lights\Light.cs" />

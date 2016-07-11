@@ -51,43 +51,37 @@ namespace KailashEngine.World
         {
             _movement_speed_walk = movement_speed_walk;
             _movement_speed_run = movement_speed_run;
-            _temp_quat = new Quaternion();
+            _previous_rotation = new Quaternion();
         }
 
 
-        Quaternion _temp_quat;
+        Quaternion _previous_rotation;
 
         //------------------------------------------------------
         // Rotation Override
         //------------------------------------------------------
         public void rotate(float x_angle, float y_angle, float z_angle, float smooth_factor)
         {
-            //_spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
+            _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
 
             Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
             Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
             Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
            
-            //Quaternion xy_rotation = Quaternion.Multiply(x_rotation, y_rotation);
-            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
+            Quaternion current_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
 
-            zyx_rotation = Quaternion.Slerp(_temp_quat, zyx_rotation, smooth_factor);
+            current_rotation = Quaternion.Slerp(_previous_rotation, current_rotation, smooth_factor);
 
-            zyx_rotation.Normalize();
-            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(zyx_rotation);
+            current_rotation.Normalize();
+            _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(current_rotation);
             _spatial.rotation_matrix = Matrix4.Transpose(_spatial.rotation_matrix);
 
-            _spatial.look = Matrix4.Transpose(spatial.rotation_matrix).Row2.Xyz;
 
-            // Added bit to set look and up based on xy rotation only
-            //xy_rotation.Normalize();
-            //Matrix4 temp_xy_rotation = Matrix4.CreateFromQuaternion(xy_rotation);
-            //Vector3 temp_look = temp_xy_rotation.Column2.Xyz;
-            //_spatial.up = temp_xy_rotation.Column1.Xyz;
-            //_spatial.strafe = Vector3.Cross(temp_look, _spatial.up);
-            //_spatial.look = temp_look;
+            _spatial.look = (_spatial.rotation_matrix).Column2.Xyz;
+            _spatial.up = (_spatial.rotation_matrix).Column1.Xyz;
+            _spatial.strafe = (_spatial.rotation_matrix).Column0.Xyz;
 
-            _temp_quat = zyx_rotation;
+            _previous_rotation = current_rotation;
         }
 
 
