@@ -11,6 +11,7 @@ using OpenTK.Graphics.OpenGL;
 using grendgine_collada;
 
 using KailashEngine.World.Model;
+using KailashEngine.Animation;
 
 namespace KailashEngine.World
 {
@@ -119,6 +120,7 @@ namespace KailashEngine.World
             //------------------------------------------------------
             // Create Animation Dictionary
             //------------------------------------------------------
+            Dictionary<string, Animator> animator_collection = new Dictionary<string, Animator>();
             try
             {
                 Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", dae_file.Library_Animations.Animation.Count() + " animations found");
@@ -131,22 +133,31 @@ namespace KailashEngine.World
                     {
                         string id = match.Groups[1].ToString();
                         string action = match.Groups[2].ToString();
-                        string direction = match.Groups[3].ToString();
+                        string channel = match.Groups[3].ToString();
 
                         switch(action)
                         {
                             case "location":
-                                action = "TRANSLATE";
+                                action = AnimationHelper.translate;
                                 break;
                             case "rotation_euler":
-                                action = "ROTATION";
+                                action = AnimationHelper.rotation_euler;
                                 break;
                             case "scale":
-                                action = "SCALE";
+                                action = AnimationHelper.scale;
                                 break;
                         }
 
-                        
+                        // Create new or use existing Animator
+                        Animator temp_animator;
+                        if(animator_collection.TryGetValue(id, out temp_animator))
+                        {
+                            animator_collection.Remove(id);
+                        }
+                        else
+                        {
+                            temp_animator = new Animator(id);
+                        }
 
                         // Create source dictionary
                         Dictionary<string, Grendgine_Collada_Float_Array> source_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
@@ -158,10 +169,21 @@ namespace KailashEngine.World
                         string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
                         float[] key_frame_times = source_dictionary[source_input_id].Value();
 
-                        // Get Key Frame actions
+                        // Get Key Frame data
                         string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
-                        float[] key_frame_actions = source_dictionary[source_output_id].Value();
+                        float[] key_frame_data = source_dictionary[source_output_id].Value();
 
+
+                        // Loop through key frames and add to animator
+                        for(int i = 0; i < key_frame_times.Length; i++)
+                        {
+                            float current_frame_time = key_frame_times[i];
+                            float current_frame_data = key_frame_data[i];
+
+                            temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data);
+                        }
+
+                        animator_collection.Add(id, temp_animator);
 
                         source_dictionary.Clear();
                         sampler_dictionary.Clear();
@@ -173,6 +195,7 @@ namespace KailashEngine.World
             {
                 Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", "0 animations found :<");
             }
+
 
 
             //------------------------------------------------------
@@ -232,8 +255,17 @@ namespace KailashEngine.World
                     DAE_Mesh m;
                     if (mesh_collection.TryGetValue(mesh_id, out m))
                     {
+                        UniqueMesh temp_unique_mesh = new UniqueMesh(id, m, temp_mat);
+
+                        // Add animator to unique mesh if one exists
+                        Animator temp_animator;
+                        if (animator_collection.TryGetValue(id, out temp_animator))
+                        {
+                            temp_unique_mesh.addAdnimator(temp_animator);
+                        }
+
                         // Add to mesh collection
-                        unique_mesh_collection.Add(id, new UniqueMesh(id, m, temp_mat));
+                        unique_mesh_collection.Add(id, temp_unique_mesh);
                     }
                 }
 

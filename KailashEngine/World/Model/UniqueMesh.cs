@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using OpenTK;
 
+using KailashEngine.Animation;
+
 namespace KailashEngine.World.Model
 {
     class UniqueMesh
@@ -34,13 +36,34 @@ namespace KailashEngine.World.Model
             set { _mesh = value; }
         }
 
+        private Animator _animator;
+        public Animator animator
+        {
+            get { return _animator; }
+            set { _animator = value; }
+        }
+
+        private bool _animated;
+        public bool animated
+        {
+            get { return _animated; }
+            set { _animated = value; }
+        }
+
 
         public UniqueMesh(string id, Mesh mesh, Matrix4 transformation)
         {
             _id = id;
             _mesh = mesh;
             _transformation = transformation;
+            _animated = false;
         }
 
+
+        public void addAdnimator(Animator animator)
+        {
+            animated = true;
+            _animator = animator;
+        }
     }
 }

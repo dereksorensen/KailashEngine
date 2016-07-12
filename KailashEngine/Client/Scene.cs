@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,10 @@ namespace KailashEngine.Client
         private MatrixStack _MS;
 
         private WorldLoader _world_loader;
+
+
+        // Timers
+        public Stopwatch animation_timer;
 
 
         // Master Lists
@@ -57,6 +62,8 @@ namespace KailashEngine.Client
 
             _meshes = new List<UniqueMesh>();
             _lights = new List<Light>();
+
+            animation_timer = new Stopwatch();
         }
 
 
@@ -85,6 +92,9 @@ namespace KailashEngine.Client
 
 
             load_Flashlight();
+
+
+            animation_timer.Start();
         }
 
         public void toggleFlashlight(bool enabled)
@@ -104,7 +114,7 @@ namespace KailashEngine.Client
         public void render(Program program)
         {
             // Draw Scene
-            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity);
+            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, animation_timer.ElapsedMilliseconds / 1000.0f);
             WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
 
         }

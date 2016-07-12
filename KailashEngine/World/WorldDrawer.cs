@@ -33,18 +33,27 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
-        public static void drawMeshes(List<UniqueMesh> meshes, Program program, Matrix4 transformation)
+        public static void drawMeshes(List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time)
         {
             foreach (UniqueMesh unique_mesh in meshes)
             {
-                // Load Mesh's pre-transformation Matrix
                 Matrix4 temp_mat = unique_mesh.transformation;
+                if (unique_mesh.animated)
+                {
+                    temp_mat = unique_mesh.animator.getKeyFrame(animation_time);
+
+                }
+                // Load Mesh's pre-transformation Matrix
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
                 // Convert matrix for normals
-                temp_mat = Matrix4.Invert(temp_mat);
-                temp_mat = Matrix4.Transpose(temp_mat);
+                try
+                {
+                    temp_mat = Matrix4.Invert(temp_mat);
+                    temp_mat = Matrix4.Transpose(temp_mat);
+                }
+                catch { }
+                
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
-
 
                 foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {
