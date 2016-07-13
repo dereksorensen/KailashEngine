@@ -40,7 +40,7 @@ namespace KailashEngine.World
                 Matrix4 temp_mat = unique_mesh.transformation;
                 if (unique_mesh.animated)
                 {
-                    temp_mat = unique_mesh.animator.getKeyFrame(animation_time);
+                    temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
 
                 }
                 // Load Mesh's pre-transformation Matrix
@@ -60,7 +60,7 @@ namespace KailashEngine.World
                     //------------------------------------------------------
                     // Set Material Properties
                     //------------------------------------------------------
-
+                    
                     GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
                     GL.Uniform1(program.getUniform(RenderHelper.uEmission), submesh.material.emission);
                     GL.Uniform3(program.getUniform(RenderHelper.uSpecularColor), submesh.material.specular_color);

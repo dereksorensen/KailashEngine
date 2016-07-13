@@ -94,17 +94,30 @@ namespace KailashEngine.Animation
                 _key_frames.Add(time, temp_key_frame);
             }
         }
-
-        public Matrix4 getKeyFrame(float time)
+         
+        public Matrix4 getKeyFrame(float time, int num_repeats)
         {
             Matrix4 temp_matrix = Matrix4.Identity;
 
             List<float> frame_times = key_frames.Keys.ToList();
             frame_times.Sort();
 
+            // Last key frame time
+            float max_frame = frame_times.Last();
 
-            Vector3 PrevNextInterp = getNearestFrame(frame_times.ToArray(), time);
+            float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(time / max_frame) : Math.Min((float)Math.Floor(time / max_frame), num_repeats - 1);
 
+            float repeat_frame = repeat_multiplier * max_frame;
+
+            float loop_time = time - repeat_frame;
+
+
+
+            // Get frame interpolation
+            Vector3 PrevNextInterp = getNearestFrame(frame_times.ToArray(), loop_time);
+
+
+            // Set animation actions
             Vector3 translation;
             Vector3 rotation_euler;
             Vector3 scale;
@@ -126,9 +139,9 @@ namespace KailashEngine.Animation
                 scale = EngineHelper.lerp(prev_frame.scale, next_frame.scale, interpolation);
             }
 
+            
 
-
-
+            // Create Action Matrix
             Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
 
 
