@@ -165,6 +165,7 @@ namespace KailashEngine.World
                         // Create sampler dictionary
                         Dictionary<string, string> sampler_dictionary = a.Sampler[0].Input.ToDictionary(i => i.Semantic.ToString(), i => i.source);
 
+
                         // Get Key Frame times
                         string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
                         float[] key_frame_times = source_dictionary[source_input_id].Value();
@@ -173,14 +174,29 @@ namespace KailashEngine.World
                         string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
                         float[] key_frame_data = source_dictionary[source_output_id].Value();
 
+                        // Get Key Frame in tangent data
+                        string source_t1_id = sampler_dictionary["IN_TANGENT"].Replace("#", "");
+                        float[] key_frame_data_b1 = source_dictionary[source_t1_id].Value();
 
+                        // Get Key Frame out tangent data
+                        string source_t2_id = sampler_dictionary["OUT_TANGENT"].Replace("#", "");
+                        float[] key_frame_data_b2 = source_dictionary[source_t2_id].Value();
+
+                     
                         // Loop through key frames and add to animator
-                        for(int i = 0; i < key_frame_times.Length; i++)
+                        for (int i = 0; i < key_frame_times.Length; i++)
                         {
                             float current_frame_time = key_frame_times[i];
                             float current_frame_data = key_frame_data[i];
+                            int j = i * 2;
+                            Vector4 current_frame_data_bezier = new Vector4(
+                                key_frame_data_b1[j],
+                                key_frame_data_b1[j + 1],
+                                key_frame_data_b2[j],
+                                key_frame_data_b2[j + 1]
+                            );
 
-                            temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data);
+                            temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data, current_frame_data_bezier);
                         }
 
                         animator_collection.Add(id, temp_animator);
