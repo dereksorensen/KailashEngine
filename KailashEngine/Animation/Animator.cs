@@ -13,20 +13,15 @@ namespace KailashEngine.Animation
 
         public struct KeyFrame
         {
+            public float time;
+
             public Vector3 position;
-            public Vector4 position_bezier_x;
-            public Vector4 position_bezier_y;
-            public Vector4 position_bezier_z;
             public Matrix4 position_data;
 
             public Vector3 rotation_euler;
-            public Vector3 rotation_euler_t1;
-            public Vector3 rotation_euler_t2;
             public Matrix4 rotiation_euler_data;
             
             public Vector3 scale;
-            public Vector3 scale_t1;
-            public Vector3 scale_t2;
             public Matrix4 scale_data;
 
             //private Vector3 decideChannel(string channel, Vector3 existing_action, float data)
@@ -123,11 +118,16 @@ namespace KailashEngine.Animation
             else
             {
                 temp_key_frame = new KeyFrame();
+                temp_key_frame.time = time;
                 temp_key_frame.addAction(action, channel, data, data_bezier);
                 _key_frames.Add(time, temp_key_frame);
             }
         }
-         
+        
+
+
+
+
         public Matrix4 getKeyFrame(float time, int num_repeats)
         {
             Matrix4 temp_matrix = Matrix4.Identity;
@@ -137,11 +137,8 @@ namespace KailashEngine.Animation
 
             // Last key frame time
             float max_frame = frame_times.Last();
-
             float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(time / max_frame) : Math.Min((float)Math.Floor(time / max_frame), num_repeats - 1);
-
             float repeat_frame = repeat_multiplier * max_frame;
-
             float loop_time = time - repeat_frame;
 
 
@@ -154,43 +151,39 @@ namespace KailashEngine.Animation
             Vector3 rotation_euler = key_frames[PrevNextInterp.X].rotiation_euler_data.Row0.Xyz;
             Vector3 scale = key_frames[PrevNextInterp.X].scale_data.Row0.Xyz;
 
-            List<Vector2> loc_x = new List<Vector2>();
-            List<Vector2> loc_y = new List<Vector2>();
-            List<Vector2> loc_z = new List<Vector2>();
-            foreach (KeyFrame kf in key_frames.Values)
+
+
+            if (PrevNextInterp.Z != -1)
             {
-                loc_x.Add(new Vector2(kf.position_data.M21, kf.position_data.M22));
-                loc_x.Add(new Vector2(kf.position_data.M23, kf.position_data.M24));
+                KeyFrame prev_frame = key_frames[PrevNextInterp.X];
+                KeyFrame next_frame = key_frames[PrevNextInterp.Y];
+                float interpolation = PrevNextInterp.Z;
 
-                loc_y.Add(new Vector2(kf.position_data.M31, kf.position_data.M32));
-                loc_y.Add(new Vector2(kf.position_data.M33, kf.position_data.M34));
+                BezierCurveCubic trans_x = new BezierCurveCubic();
+                trans_x.StartAnchor = new Vector2(prev_frame.time, prev_frame.position_data.M11);
+                trans_x.FirstControlPoint = prev_frame.position_data.Row1.Zw;
+                trans_x.SecondControlPoint = next_frame.position_data.Row1.Xy;
+                trans_x.EndAnchor = new Vector2(next_frame.time, next_frame.position_data.M11);
 
-                loc_z.Add(new Vector2(kf.position_data.M41, kf.position_data.M42));
-                loc_z.Add(new Vector2(kf.position_data.M43, kf.position_data.M44));
+                BezierCurveCubic trans_y = new BezierCurveCubic();
+                trans_y.StartAnchor = new Vector2(prev_frame.time, prev_frame.position_data.M12);
+                trans_y.FirstControlPoint = prev_frame.position_data.Row2.Zw;
+                trans_y.SecondControlPoint = next_frame.position_data.Row2.Xy;
+                trans_y.EndAnchor = new Vector2(next_frame.time, next_frame.position_data.M12);
+
+                BezierCurveCubic trans_z = new BezierCurveCubic();
+                trans_z.StartAnchor = new Vector2(prev_frame.time, prev_frame.position_data.M13);
+                trans_z.FirstControlPoint = prev_frame.position_data.Row3.Zw;
+                trans_z.SecondControlPoint = next_frame.position_data.Row3.Xy;
+                trans_z.EndAnchor = new Vector2(next_frame.time, next_frame.position_data.M13);
+
+
+                translation.X = trans_x.CalculatePoint(interpolation).Y;
+                translation.Y = trans_y.CalculatePoint(interpolation).Y;
+                translation.Z = trans_z.CalculatePoint(interpolation).Y;
             }
 
-            translation.X = BezierCurve.CalculatePoint(loc_x, loop_time / max_frame).Y;
 
-            translation.Y = BezierCurve.CalculatePoint(loc_y, loop_time / max_frame).Y;
-
-            translation.Z = BezierCurve.CalculatePoint(loc_z, loop_time / max_frame).Y;
-
-            //if (PrevNextInterp.Z != -1)
-            //{
-            //    KeyFrame prev_frame = key_frames[PrevNextInterp.X];
-            //    KeyFrame next_frame = key_frames[PrevNextInterp.Y];
-            //    float interpolation = PrevNextInterp.Z;
-
-
-
-
-
-                //translation = EngineHelper.lerp(prev_frame.position_data.Row0.Xyz, next_frame.position_data.Row0.Xyz, interpolation);
-                //rotation_euler = EngineHelper.lerp(prev_frame.rotiation_euler_data.Row0.Xyz, next_frame.rotiation_euler_data.Row0.Xyz, interpolation);
-                //scale = EngineHelper.lerp(prev_frame.scale_data.Row0.Xyz, next_frame.scale_data.Row0.Xyz, interpolation);
-            //}
-
-            
 
             // Create Action Matrix
             Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
