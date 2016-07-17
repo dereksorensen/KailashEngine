@@ -19,7 +19,7 @@ namespace KailashEngine.Animation
             public Matrix4 position_data;
 
             public Vector3 rotation_euler;
-            public Matrix4 rotiation_euler_data;
+            public Matrix4 rotation_euler_data;
             
             public Vector3 scale;
             public Matrix4 scale_data;
@@ -71,7 +71,7 @@ namespace KailashEngine.Animation
                         position_data = decideChannel(channel, position_data, data, data_bezier);
                         break;
                     case AnimationHelper.rotation_euler:
-                        rotiation_euler_data = decideChannel(channel, rotiation_euler_data, data, data_bezier);
+                        rotation_euler_data = decideChannel(channel, rotation_euler_data, data, data_bezier);
                         break;
                     case AnimationHelper.scale:
                         scale_data = decideChannel(channel, scale_data, data, data_bezier);
@@ -125,7 +125,32 @@ namespace KailashEngine.Animation
         }
         
 
+        private Vector3 getData_Bezier(float previous_frame_time, Matrix4 previous_frame_data, float next_frame_time, Matrix4 next_frame_data, float current_time)
+        {
+            BezierCurveCubic temp_bezier_x = new BezierCurveCubic();
+            temp_bezier_x.StartAnchor = new Vector2(previous_frame_time, previous_frame_data.M11);
+            temp_bezier_x.FirstControlPoint = previous_frame_data.Row1.Zw;
+            temp_bezier_x.SecondControlPoint = next_frame_data.Row1.Xy;
+            temp_bezier_x.EndAnchor = new Vector2(next_frame_time, next_frame_data.M11);
 
+            BezierCurveCubic temp_bezier_y = new BezierCurveCubic();
+            temp_bezier_y.StartAnchor = new Vector2(previous_frame_time, previous_frame_data.M12);
+            temp_bezier_y.FirstControlPoint = previous_frame_data.Row2.Zw;
+            temp_bezier_y.SecondControlPoint = next_frame_data.Row2.Xy;
+            temp_bezier_y.EndAnchor = new Vector2(next_frame_time, next_frame_data.M12);
+
+            BezierCurveCubic temp_bezier_z = new BezierCurveCubic();
+            temp_bezier_z.StartAnchor = new Vector2(previous_frame_time, previous_frame_data.M13);
+            temp_bezier_z.FirstControlPoint = previous_frame_data.Row3.Zw;
+            temp_bezier_z.SecondControlPoint = next_frame_data.Row3.Xy;
+            temp_bezier_z.EndAnchor = new Vector2(next_frame_time, next_frame_data.M13);
+
+            return new Vector3(
+                temp_bezier_x.CalculatePoint(current_time).Y,
+                temp_bezier_y.CalculatePoint(current_time).Y,
+                temp_bezier_z.CalculatePoint(current_time).Y
+            );
+        }
 
 
         public Matrix4 getKeyFrame(float time, int num_repeats)
@@ -148,7 +173,7 @@ namespace KailashEngine.Animation
 
             // Set animation actions
             Vector3 translation = key_frames[PrevNextInterp.X].position_data.Row0.Xyz;
-            Vector3 rotation_euler = key_frames[PrevNextInterp.X].rotiation_euler_data.Row0.Xyz;
+            Vector3 rotation_euler = key_frames[PrevNextInterp.X].rotation_euler_data.Row0.Xyz;
             Vector3 scale = key_frames[PrevNextInterp.X].scale_data.Row0.Xyz;
 
 
@@ -159,28 +184,9 @@ namespace KailashEngine.Animation
                 KeyFrame next_frame = key_frames[PrevNextInterp.Y];
                 float interpolation = PrevNextInterp.Z;
 
-                BezierCurveCubic trans_x = new BezierCurveCubic();
-                trans_x.StartAnchor = new Vector2(prev_frame.time, prev_frame.position_data.M11);
-                trans_x.FirstControlPoint = prev_frame.position_data.Row1.Zw;
-                trans_x.SecondControlPoint = next_frame.position_data.Row1.Xy;
-                trans_x.EndAnchor = new Vector2(next_frame.time, next_frame.position_data.M11);
-
-                BezierCurveCubic trans_y = new BezierCurveCubic();
-                trans_y.StartAnchor = new Vector2(prev_frame.time, prev_frame.position_data.M12);
-                trans_y.FirstControlPoint = prev_frame.position_data.Row2.Zw;
-                trans_y.SecondControlPoint = next_frame.position_data.Row2.Xy;
-                trans_y.EndAnchor = new Vector2(next_frame.time, next_frame.position_data.M12);
-
-                BezierCurveCubic trans_z = new BezierCurveCubic();
-                trans_z.StartAnchor = new Vector2(prev_frame.time, prev_frame.position_data.M13);
-                trans_z.FirstControlPoint = prev_frame.position_data.Row3.Zw;
-                trans_z.SecondControlPoint = next_frame.position_data.Row3.Xy;
-                trans_z.EndAnchor = new Vector2(next_frame.time, next_frame.position_data.M13);
-
-
-                translation.X = trans_x.CalculatePoint(interpolation).Y;
-                translation.Y = trans_y.CalculatePoint(interpolation).Y;
-                translation.Z = trans_z.CalculatePoint(interpolation).Y;
+                translation = getData_Bezier(prev_frame.time, prev_frame.position_data, next_frame.time, next_frame.position_data, interpolation);
+                rotation_euler = getData_Bezier(prev_frame.time, prev_frame.rotation_euler_data, next_frame.time, next_frame.rotation_euler_data, interpolation);
+                scale = getData_Bezier(prev_frame.time, prev_frame.scale_data, next_frame.time, next_frame.scale_data, interpolation);
             }
 
 
