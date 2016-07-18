@@ -30,6 +30,7 @@ namespace KailashEngine.World
             }
         }
 
+
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
@@ -41,7 +42,6 @@ namespace KailashEngine.World
                 if (unique_mesh.animated)
                 {
                     temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
-
                 }
                 // Load Mesh's pre-transformation Matrix
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
@@ -130,20 +130,20 @@ namespace KailashEngine.World
                 GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), 0.0f);
 
 
-                // Diffuse 
-                trySetMatrialImage(program, null, RenderHelper.uDiffuseTexture, RenderHelper.uEnableDiffuseTexture, 31);
+                // Diffuse
+                program.enable_MaterialTexture(RenderHelper.uEnableDiffuseTexture, 0);
 
                 // Specular
-                trySetMatrialImage(program, null, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
+                program.enable_MaterialTexture(RenderHelper.uEnableSpecularTexture, 0);
 
                 // Normal
-                trySetMatrialImage(program, null, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture, 29);
+                program.enable_MaterialTexture(RenderHelper.uEnableNormalTexture, 0);
 
                 // Displacement
-                trySetMatrialImage(program, null, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture, 28);
+                program.enable_MaterialTexture(RenderHelper.uEnableDisplacementTexture, 0);
 
                 // Parallax
-                trySetMatrialImage(program, null, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
+                program.enable_MaterialTexture(RenderHelper.uEnableParallaxTexture, 0);
 
 
                 try
@@ -190,7 +190,7 @@ namespace KailashEngine.World
                     }
                     catch (Exception e)
                     {
-                        throw new Exception("Failed drawing mesh", e);
+                        throw new Exception("Failed drawing lights", e);
                     }
 
 
@@ -199,6 +199,7 @@ namespace KailashEngine.World
                 }
             }
         }
+
 
         //------------------------------------------------------
         // Light Bounds Drawing
@@ -220,7 +221,7 @@ namespace KailashEngine.World
             }
             catch (Exception e)
             {
-                throw new Exception("Failed drawing mesh", e);
+                throw new Exception("Failed drawing light bounds", e);
             }
         }
     }

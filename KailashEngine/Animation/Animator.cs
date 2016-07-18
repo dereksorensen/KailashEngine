@@ -15,14 +15,29 @@ namespace KailashEngine.Animation
         {
             public float time;
 
-            public Vector3 position;
+            //public Vector3 position;
             public Matrix4 position_data;
 
-            public Vector3 rotation_euler;
+            //public Vector3 rotation_euler;
             public Matrix4 rotation_euler_data;
             
-            public Vector3 scale;
+            //public Vector3 scale;
             public Matrix4 scale_data;
+
+            public KeyFrame(float time)
+            {
+                this.time = time;
+
+                position_data = Matrix4.Zero;
+                rotation_euler_data = Matrix4.Zero;
+                scale_data = new Matrix4(
+                    new Vector4(1.0f),
+                    new Vector4(1.0f),
+                    new Vector4(1.0f),
+                    new Vector4(1.0f)
+                );
+
+            }
 
             //private Vector3 decideChannel(string channel, Vector3 existing_action, float data)
             //{
@@ -91,11 +106,18 @@ namespace KailashEngine.Animation
 
 
         private Dictionary<float, KeyFrame> _key_frames;
-        public Dictionary<float, KeyFrame> key_frames
-        {
-            get { return _key_frames; }
-        }
 
+        private Dictionary<float, KeyFrame> _key_frames_location_x;
+        private Dictionary<float, KeyFrame> _key_frames_location_y;
+        private Dictionary<float, KeyFrame> _key_frames_location_z;
+
+        private Dictionary<float, KeyFrame> _key_frames_rotation_x;
+        private Dictionary<float, KeyFrame> _key_frames_rotation_y;
+        private Dictionary<float, KeyFrame> _key_frames_rotation_z;
+
+        private Dictionary<float, KeyFrame> _key_frames_scale_x;
+        private Dictionary<float, KeyFrame> _key_frames_scale_y;
+        private Dictionary<float, KeyFrame> _key_frames_scale_z;
 
 
         public Animator(string id)
@@ -117,8 +139,7 @@ namespace KailashEngine.Animation
             }
             else
             {
-                temp_key_frame = new KeyFrame();
-                temp_key_frame.time = time;
+                temp_key_frame = new KeyFrame(time);
                 temp_key_frame.addAction(action, channel, data, data_bezier);
                 _key_frames.Add(time, temp_key_frame);
             }
@@ -157,7 +178,7 @@ namespace KailashEngine.Animation
         {
             Matrix4 temp_matrix = Matrix4.Identity;
 
-            List<float> frame_times = key_frames.Keys.ToList();
+            List<float> frame_times = _key_frames.Keys.ToList();
             frame_times.Sort();
 
             // Last key frame time
@@ -172,21 +193,22 @@ namespace KailashEngine.Animation
 
 
             // Set animation actions
-            Vector3 translation = key_frames[PrevNextInterp.X].position_data.Row0.Xyz;
-            Vector3 rotation_euler = key_frames[PrevNextInterp.X].rotation_euler_data.Row0.Xyz;
-            Vector3 scale = key_frames[PrevNextInterp.X].scale_data.Row0.Xyz;
+            Vector3 translation = _key_frames[PrevNextInterp.X].position_data.Row0.Xyz;
+            Vector3 rotation_euler = _key_frames[PrevNextInterp.X].rotation_euler_data.Row0.Xyz;
+            Vector3 scale = _key_frames[PrevNextInterp.X].scale_data.Row0.Xyz;
 
 
 
             if (PrevNextInterp.Z != -1)
             {
-                KeyFrame prev_frame = key_frames[PrevNextInterp.X];
-                KeyFrame next_frame = key_frames[PrevNextInterp.Y];
+                KeyFrame prev_frame = _key_frames[PrevNextInterp.X];
+                KeyFrame next_frame = _key_frames[PrevNextInterp.Y];
                 float interpolation = PrevNextInterp.Z;
 
                 translation = getData_Bezier(prev_frame.time, prev_frame.position_data, next_frame.time, next_frame.position_data, interpolation);
                 rotation_euler = getData_Bezier(prev_frame.time, prev_frame.rotation_euler_data, next_frame.time, next_frame.rotation_euler_data, interpolation);
                 scale = getData_Bezier(prev_frame.time, prev_frame.scale_data, next_frame.time, next_frame.scale_data, interpolation);
+                //scale = new Vector3(1.0f);
             }
 
 

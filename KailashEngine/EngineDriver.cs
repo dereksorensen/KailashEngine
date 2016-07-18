@@ -124,9 +124,11 @@ namespace KailashEngine
                     _game.player.enable_flashlight = !_game.player.enable_flashlight;
                     _game.scene.toggleFlashlight(_game.player.enable_flashlight);
                     break;
+                case Key.P:
+                    _game.scene.animation_timer.pause();
+                    break;
                 case Key.R:
-                    _game.scene.animation_timer.Restart();
-                    _game.scene.animation_timer.Start();
+                    _game.scene.animation_timer.restart();
                     break;
                 case Key.Escape:
                     Exit();

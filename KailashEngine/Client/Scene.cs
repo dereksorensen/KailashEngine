@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using OpenTK;
 
 using KailashEngine.Render;
+using KailashEngine.Animation;
 using KailashEngine.World;
 using KailashEngine.World.Model;
 using KailashEngine.World.Lights;
+
 
 namespace KailashEngine.Client
 {
@@ -27,7 +29,12 @@ namespace KailashEngine.Client
 
 
         // Timers
-        public Stopwatch animation_timer;
+        private Timer _animation_timer;
+        public Timer animation_timer
+        {
+            get { return _animation_timer; }
+        }
+
 
 
         // Master Lists
@@ -63,7 +70,7 @@ namespace KailashEngine.Client
             _meshes = new List<UniqueMesh>();
             _lights = new List<Light>();
 
-            animation_timer = new Stopwatch();
+            _animation_timer = new Timer();
         }
 
 
@@ -94,7 +101,7 @@ namespace KailashEngine.Client
             load_Flashlight();
 
 
-            animation_timer.Start();
+            animation_timer.start();
         }
 
         public void toggleFlashlight(bool enabled)
@@ -114,7 +121,7 @@ namespace KailashEngine.Client
         public void render(Program program)
         {
             // Draw Scene
-            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, animation_timer.ElapsedMilliseconds / 1000.0f);
+            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, animation_timer.seconds);
             WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
 
         }

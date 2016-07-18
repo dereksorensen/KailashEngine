@@ -40,7 +40,11 @@ namespace KailashEngine.World.Model
         public Animator animator
         {
             get { return _animator; }
-            set { _animator = value; }
+            set
+            {
+                animated = true;
+                _animator = value;
+            }
         }
 
         private bool _animated;
@@ -57,13 +61,6 @@ namespace KailashEngine.World.Model
             _mesh = mesh;
             _transformation = transformation;
             _animated = false;
-        }
-
-
-        public void addAdnimator(Animator animator)
-        {
-            animated = true;
-            _animator = animator;
         }
     }
 }

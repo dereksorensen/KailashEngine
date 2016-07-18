@@ -277,7 +277,7 @@ namespace KailashEngine.World
                         Animator temp_animator;
                         if (animator_collection.TryGetValue(id, out temp_animator))
                         {
-                            temp_unique_mesh.addAdnimator(temp_animator);
+                            temp_unique_mesh.animator = temp_animator;
                         }
 
                         // Add to mesh collection
