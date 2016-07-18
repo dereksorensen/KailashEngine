@@ -13,85 +13,22 @@ namespace KailashEngine.Animation
 
         public struct KeyFrame
         {
+            // The time this key frame triggers
             public float time;
 
-            //public Vector3 position;
-            public Matrix4 position_data;
+            // Frame data
+            public float data;
 
-            //public Vector3 rotation_euler;
-            public Matrix4 rotation_euler_data;
-            
-            //public Vector3 scale;
-            public Matrix4 scale_data;
+            // Bezier interpolation values
+            public Vector4 bezier_values;
 
-            public KeyFrame(float time)
+
+            public KeyFrame(float time, float data, Vector4 bezier_values)
             {
                 this.time = time;
 
-                position_data = Matrix4.Zero;
-                rotation_euler_data = Matrix4.Zero;
-                scale_data = new Matrix4(
-                    new Vector4(1.0f),
-                    new Vector4(1.0f),
-                    new Vector4(1.0f),
-                    new Vector4(1.0f)
-                );
-
-            }
-
-            //private Vector3 decideChannel(string channel, Vector3 existing_action, float data)
-            //{
-            //    switch (channel)
-            //    {
-            //        case "X":
-            //            existing_action.X = data;
-            //            return existing_action;
-            //        case "Y":
-            //            existing_action.Y = data;
-            //            return existing_action;
-            //        case "Z":
-            //            existing_action.Z = data;
-            //            return existing_action;
-            //        default:
-            //            return Vector3.Zero;
-            //    }
-            //}
-
-            private Matrix4 decideChannel(string channel, Matrix4 existing_action, float data, Vector4 data_bezier)
-            {
-                switch (channel)
-                {
-                    case "X":
-                        existing_action.M11 = data;
-                        existing_action.Row1 = data_bezier;
-                        return existing_action;
-                    case "Y":
-                        existing_action.M12 = data;
-                        existing_action.Row2 = data_bezier;
-                        return existing_action;
-                    case "Z":
-                        existing_action.M13 = data;
-                        existing_action.Row3 = data_bezier;
-                        return existing_action;
-                    default:
-                        return Matrix4.Identity;
-                }
-            }
-
-            public void addAction(string action, string channel, float data, Vector4 data_bezier)
-            {
-                switch (action)
-                {
-                    case AnimationHelper.translate:
-                        position_data = decideChannel(channel, position_data, data, data_bezier);
-                        break;
-                    case AnimationHelper.rotation_euler:
-                        rotation_euler_data = decideChannel(channel, rotation_euler_data, data, data_bezier);
-                        break;
-                    case AnimationHelper.scale:
-                        scale_data = decideChannel(channel, scale_data, data, data_bezier);
-                        break;
-                }
+                this.data = data;
+                this.bezier_values = bezier_values;
             }
         };
 
@@ -104,9 +41,7 @@ namespace KailashEngine.Animation
             set { _id = value; }
         }
 
-
-        private Dictionary<float, KeyFrame> _key_frames;
-
+        
         private Dictionary<float, KeyFrame> _key_frames_location_x;
         private Dictionary<float, KeyFrame> _key_frames_location_y;
         private Dictionary<float, KeyFrame> _key_frames_location_z;
@@ -123,54 +58,145 @@ namespace KailashEngine.Animation
         public Animator(string id)
         {
             _id = id;
+           
+            _key_frames_location_x = new Dictionary<float, KeyFrame>();
+            _key_frames_location_y = new Dictionary<float, KeyFrame>();
+            _key_frames_location_z = new Dictionary<float, KeyFrame>();
 
-            _key_frames = new Dictionary<float, KeyFrame>();
+            _key_frames_rotation_x = new Dictionary<float, KeyFrame>();
+            _key_frames_rotation_y = new Dictionary<float, KeyFrame>();
+            _key_frames_rotation_z = new Dictionary<float, KeyFrame>();
+
+            _key_frames_scale_x = new Dictionary<float, KeyFrame>();
+            _key_frames_scale_y = new Dictionary<float, KeyFrame>();
+            _key_frames_scale_z = new Dictionary<float, KeyFrame>();
         }
 
+
+        //------------------------------------------------------
+        // Build Key Frame Dictionaries
+        //------------------------------------------------------
 
         public void addKeyFrame(float time, string action, string channel, float data, Vector4 data_bezier)
         {
-
-            KeyFrame temp_key_frame;
-            if (_key_frames.TryGetValue(time, out temp_key_frame))
+            // Decide which Key Frame dictionary to add action to
+            Dictionary<float, KeyFrame> temp_dictionary = null;
+            switch (action)
             {
-                temp_key_frame.addAction(action, channel, data, data_bezier);
-                _key_frames[time] = temp_key_frame;
+                case AnimationHelper.translate:
+                    switch (channel)
+                    {
+                        case "X":
+                            temp_dictionary = _key_frames_location_x;
+                            break;
+                        case "Y":
+                            temp_dictionary = _key_frames_location_y;
+                            break;
+                        case "Z":
+                            temp_dictionary = _key_frames_location_z;
+                            break;
+                    }
+                    break;
+                case AnimationHelper.rotation_euler:
+                    switch (channel)
+                    {
+                        case "X":
+                            temp_dictionary = _key_frames_rotation_x;
+                            break;
+                        case "Y":
+                            temp_dictionary = _key_frames_rotation_y;
+                            break;
+                        case "Z":
+                            temp_dictionary = _key_frames_rotation_z;
+                            break;
+                    }
+                    break;
+                case AnimationHelper.scale:
+                    switch (channel)
+                    {
+                        case "X":
+                            temp_dictionary = _key_frames_scale_x;
+                            break;
+                        case "Y":
+                            temp_dictionary = _key_frames_scale_y;
+                            break;
+                        case "Z":
+                            temp_dictionary = _key_frames_scale_z;
+                            break;
+                    }
+                    break;
+            }
+
+            // Finally, add key frame to dictionary
+            KeyFrame temp_key_frame = new KeyFrame(time, data, data_bezier);
+            temp_dictionary.Add(time, temp_key_frame);
+        }
+
+
+        //------------------------------------------------------
+        // Get Animation Data
+        //------------------------------------------------------
+
+        private float bezierInterpolation(KeyFrame previous_frame, KeyFrame next_frame, float current_time)
+        {
+            BezierCurveCubic temp_bezier = new BezierCurveCubic();
+            temp_bezier.StartAnchor = new Vector2(previous_frame.time, previous_frame.data);
+            temp_bezier.FirstControlPoint = previous_frame.bezier_values.Zw;
+            temp_bezier.SecondControlPoint = next_frame.bezier_values.Xy;
+            temp_bezier.EndAnchor = new Vector2(next_frame.time, next_frame.data);
+
+            return temp_bezier.CalculatePoint(current_time).Y;
+        }
+
+
+        private float getData(Dictionary<float, KeyFrame> key_frame_dictionary, float current_time, float last_animation_frame_time)
+        {
+            List<float> key_frame_times = key_frame_dictionary.Keys.ToList();
+            //key_frame_times.Sort();
+
+            float num_repeats = 1;
+
+            float last_frame_time = key_frame_times.Last();
+            float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(current_time / last_frame_time) : Math.Min((float)Math.Floor(current_time / last_frame_time), num_repeats - 1);
+            float repeat_frame = repeat_multiplier * last_frame_time;
+            float loop_time = current_time - repeat_frame;
+
+            // Get prevous and next frame with interpolation between them
+            Vector3 PrevNextInterp = getNearestFrame(key_frame_times.ToArray(), loop_time);
+
+            float output = 0;
+
+            if (last_animation_frame_time > last_frame_time && current_time > last_frame_time)
+            {
+                output = key_frame_dictionary[last_frame_time].data;
             }
             else
             {
-                temp_key_frame = new KeyFrame(time);
-                temp_key_frame.addAction(action, channel, data, data_bezier);
-                _key_frames.Add(time, temp_key_frame);
+                output = key_frame_dictionary[PrevNextInterp.X].data;
+
+                if (PrevNextInterp.Z != -1)
+                {
+                    KeyFrame previous_frame = key_frame_dictionary[PrevNextInterp.X];
+                    KeyFrame next_frame = key_frame_dictionary[PrevNextInterp.Y];
+                    float interpolation = PrevNextInterp.Z;
+
+                    output = bezierInterpolation(previous_frame, next_frame, interpolation);
+                }
             }
+
+            return output;
         }
-        
 
-        private Vector3 getData_Bezier(float previous_frame_time, Matrix4 previous_frame_data, float next_frame_time, Matrix4 next_frame_data, float current_time)
+        public float getLastAnimationFrameTime(List<List<float>> key_frame_dictionaries)
         {
-            BezierCurveCubic temp_bezier_x = new BezierCurveCubic();
-            temp_bezier_x.StartAnchor = new Vector2(previous_frame_time, previous_frame_data.M11);
-            temp_bezier_x.FirstControlPoint = previous_frame_data.Row1.Zw;
-            temp_bezier_x.SecondControlPoint = next_frame_data.Row1.Xy;
-            temp_bezier_x.EndAnchor = new Vector2(next_frame_time, next_frame_data.M11);
+            float last_frame_time = 0;
 
-            BezierCurveCubic temp_bezier_y = new BezierCurveCubic();
-            temp_bezier_y.StartAnchor = new Vector2(previous_frame_time, previous_frame_data.M12);
-            temp_bezier_y.FirstControlPoint = previous_frame_data.Row2.Zw;
-            temp_bezier_y.SecondControlPoint = next_frame_data.Row2.Xy;
-            temp_bezier_y.EndAnchor = new Vector2(next_frame_time, next_frame_data.M12);
+            foreach (List<float> frames in key_frame_dictionaries)
+            {
+                last_frame_time = Math.Max(frames.Last(), last_frame_time);
+            }
 
-            BezierCurveCubic temp_bezier_z = new BezierCurveCubic();
-            temp_bezier_z.StartAnchor = new Vector2(previous_frame_time, previous_frame_data.M13);
-            temp_bezier_z.FirstControlPoint = previous_frame_data.Row3.Zw;
-            temp_bezier_z.SecondControlPoint = next_frame_data.Row3.Xy;
-            temp_bezier_z.EndAnchor = new Vector2(next_frame_time, next_frame_data.M13);
-
-            return new Vector3(
-                temp_bezier_x.CalculatePoint(current_time).Y,
-                temp_bezier_y.CalculatePoint(current_time).Y,
-                temp_bezier_z.CalculatePoint(current_time).Y
-            );
+            return last_frame_time;
         }
 
 
@@ -178,38 +204,48 @@ namespace KailashEngine.Animation
         {
             Matrix4 temp_matrix = Matrix4.Identity;
 
-            List<float> frame_times = _key_frames.Keys.ToList();
-            frame_times.Sort();
+            //List<float> frame_times = _key_frames.Keys.ToList();
+            //frame_times.Sort();
 
             // Last key frame time
-            float max_frame = frame_times.Last();
-            float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(time / max_frame) : Math.Min((float)Math.Floor(time / max_frame), num_repeats - 1);
-            float repeat_frame = repeat_multiplier * max_frame;
-            float loop_time = time - repeat_frame;
+            //float max_frame = frame_times.Last();
+            //float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(time / max_frame) : Math.Min((float)Math.Floor(time / max_frame), num_repeats - 1);
+            //float repeat_frame = repeat_multiplier * max_frame;
+            //float loop_time = time - repeat_frame;
+            float loop_time = time;
 
 
-            // Get frame interpolation
-            Vector3 PrevNextInterp = getNearestFrame(frame_times.ToArray(), loop_time);
-
+            float last_animation_frame_time = getLastAnimationFrameTime(new List<List<float>>
+            {
+                _key_frames_location_x.Keys.ToList(),
+                _key_frames_location_y.Keys.ToList(),
+                _key_frames_location_z.Keys.ToList(),
+                _key_frames_rotation_x.Keys.ToList(),
+                _key_frames_rotation_y.Keys.ToList(),
+                _key_frames_rotation_z.Keys.ToList(),
+                _key_frames_scale_x.Keys.ToList(),
+                _key_frames_scale_y.Keys.ToList(),
+                _key_frames_scale_z.Keys.ToList(),
+            });
 
             // Set animation actions
-            Vector3 translation = _key_frames[PrevNextInterp.X].position_data.Row0.Xyz;
-            Vector3 rotation_euler = _key_frames[PrevNextInterp.X].rotation_euler_data.Row0.Xyz;
-            Vector3 scale = _key_frames[PrevNextInterp.X].scale_data.Row0.Xyz;
+            Vector3 translation = new Vector3(
+                getData(_key_frames_location_x, time, last_animation_frame_time),
+                getData(_key_frames_location_y, time, last_animation_frame_time),
+                getData(_key_frames_location_z, time, last_animation_frame_time)
+            );
 
+            Vector3 rotation_euler = new Vector3(
+                getData(_key_frames_rotation_x, time, last_animation_frame_time),
+                getData(_key_frames_rotation_y, time, last_animation_frame_time),
+                getData(_key_frames_rotation_z, time, last_animation_frame_time)
+            );
 
-
-            if (PrevNextInterp.Z != -1)
-            {
-                KeyFrame prev_frame = _key_frames[PrevNextInterp.X];
-                KeyFrame next_frame = _key_frames[PrevNextInterp.Y];
-                float interpolation = PrevNextInterp.Z;
-
-                translation = getData_Bezier(prev_frame.time, prev_frame.position_data, next_frame.time, next_frame.position_data, interpolation);
-                rotation_euler = getData_Bezier(prev_frame.time, prev_frame.rotation_euler_data, next_frame.time, next_frame.rotation_euler_data, interpolation);
-                scale = getData_Bezier(prev_frame.time, prev_frame.scale_data, next_frame.time, next_frame.scale_data, interpolation);
-                //scale = new Vector3(1.0f);
-            }
+            Vector3 scale = new Vector3(
+                getData(_key_frames_scale_x, time, last_animation_frame_time),
+                getData(_key_frames_scale_y, time, last_animation_frame_time),
+                getData(_key_frames_scale_z, time, last_animation_frame_time)
+            );
 
 
 
@@ -244,10 +280,6 @@ namespace KailashEngine.Animation
             temp_matrix = temp_matrix * yup;
 
 
-
-
-
-
             return temp_matrix;
         }
 
@@ -277,7 +309,7 @@ namespace KailashEngine.Animation
                 }
             }
 
-            return Vector3.Zero;
+            return new Vector3(previous_frame, previous_frame, 0);
         }
 
     }
