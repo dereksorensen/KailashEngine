@@ -154,7 +154,7 @@ namespace KailashEngine.Animation
             List<float> key_frame_times = key_frame_dictionary.Keys.ToList();
             //key_frame_times.Sort();
 
-            float num_repeats = 1;
+            float num_repeats = 2;
 
             float last_frame_time = key_frame_times.Last();
             float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(current_time / last_frame_time) : Math.Min((float)Math.Floor(current_time / last_frame_time), num_repeats - 1);
@@ -166,12 +166,12 @@ namespace KailashEngine.Animation
 
             float output = 0;
 
-            if (last_animation_frame_time > last_frame_time && current_time > last_frame_time)
-            {
-                output = key_frame_dictionary[last_frame_time].data;
-            }
-            else
-            {
+            //if (last_animation_frame_time > last_frame_time && current_time > last_frame_time)
+            //{
+            //    output = key_frame_dictionary[last_frame_time].data;
+            //}
+            //else
+            //{
                 output = key_frame_dictionary[PrevNextInterp.X].data;
 
                 if (PrevNextInterp.Z != -1)
@@ -182,7 +182,7 @@ namespace KailashEngine.Animation
 
                     output = bezierInterpolation(previous_frame, next_frame, interpolation);
                 }
-            }
+            //}
 
             return output;
         }
@@ -204,16 +204,6 @@ namespace KailashEngine.Animation
         {
             Matrix4 temp_matrix = Matrix4.Identity;
 
-            //List<float> frame_times = _key_frames.Keys.ToList();
-            //frame_times.Sort();
-
-            // Last key frame time
-            //float max_frame = frame_times.Last();
-            //float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(time / max_frame) : Math.Min((float)Math.Floor(time / max_frame), num_repeats - 1);
-            //float repeat_frame = repeat_multiplier * max_frame;
-            //float loop_time = time - repeat_frame;
-            float loop_time = time;
-
 
             float last_animation_frame_time = getLastAnimationFrameTime(new List<List<float>>
             {
@@ -227,6 +217,8 @@ namespace KailashEngine.Animation
                 _key_frames_scale_y.Keys.ToList(),
                 _key_frames_scale_z.Keys.ToList(),
             });
+
+
 
             // Set animation actions
             Vector3 translation = new Vector3(
@@ -248,47 +240,21 @@ namespace KailashEngine.Animation
             );
 
 
-
-            // Create Action Matrix
-            Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
-
-
-            // Scale
-            Matrix4 temp_scale = Matrix4.CreateScale(scale);
-
-            // Rotation
-            float x_angle = rotation_euler.X;
-            float y_angle = rotation_euler.Y;
-            float z_angle = rotation_euler.Z;
-
-            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
-            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
-            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
-            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
-
-            zyx_rotation.Normalize();
-            Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(zyx_rotation);
-
-            // Translation
-            Matrix4 temp_translation = Matrix4.CreateTranslation(translation);
-
-
-            // Build full tranformation matrix
-            temp_matrix = temp_scale * (temp_rotation * temp_translation);
-
-            // Blender defaults to Z-up. Need to convert to Y-up.
-            temp_matrix = temp_matrix * yup;
-
-
-            return temp_matrix;
+            return EngineHelper.blender2Kailash(translation, rotation_euler, scale);
         }
 
 
         // Get frame before and after the submitted time
         private Vector3 getNearestFrame(float[] frame_times, float time)
         {
-            float previous_frame = frame_times[0];
-            float next_frame;
+            float start_frame = frame_times[0];
+            float end_frame;
+
+            // If animation hasn't started yet, just hold
+            if (time < start_frame)
+            {
+                return new Vector3(start_frame, start_frame, -1);
+            }
             for(int i = 0; i < frame_times.Length; i++)
             {
                 if(time == frame_times[i])
@@ -297,19 +263,19 @@ namespace KailashEngine.Animation
                 }
                 else if (time > frame_times[i])
                 {
-                    previous_frame = frame_times[i];
+                    start_frame = frame_times[i];
                 }
                 else if (time < frame_times[i])
                 {
-                    next_frame = frame_times[i];
+                    end_frame = frame_times[i];
 
-                    float interpolation = (time - previous_frame) / (next_frame - previous_frame);
+                    float interpolation = (time - start_frame) / (end_frame - start_frame);
 
-                    return new Vector3(previous_frame, next_frame, interpolation);
+                    return new Vector3(start_frame, end_frame, interpolation);
                 }
             }
 
-            return new Vector3(previous_frame, previous_frame, 0);
+            return new Vector3(start_frame, start_frame, -1);
         }
 
     }

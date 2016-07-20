@@ -49,6 +49,38 @@ namespace KailashEngine
         }
 
 
+        //------------------------------------------------------
+        // World Object Helpers
+        //------------------------------------------------------
+        // Rotation Matrix to convert Z-up to Y-up
+        public static Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
+
+        public static Matrix4 blender2Kailash(Vector3 translation, Vector3 rotation_euler, Vector3 scale)
+        {
+            // Scale
+            Matrix4 temp_scale = Matrix4.CreateScale(scale);
+
+            // Rotation
+            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(rotation_euler.X));
+            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(rotation_euler.Y));
+            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(rotation_euler.Z));
+            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
+
+            zyx_rotation.Normalize();
+            Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(zyx_rotation);
+
+            // Translation
+            Matrix4 temp_translation = Matrix4.CreateTranslation(translation);
+
+
+            // Build full tranformation matrix
+            Matrix4 temp_matrix = temp_scale * (temp_rotation * temp_translation);
+
+            // Blender defaults to Z-up. Need to convert to Y-up.
+            return temp_matrix * yup;
+        }
+
+
 
     }
 }

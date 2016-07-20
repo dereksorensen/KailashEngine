@@ -31,10 +31,6 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(1, "Loading Collada File", Path.GetFileName(filename));
             Grendgine_Collada dae_file = Grendgine_Collada.Grendgine_Load_File(filename);
 
-            
-
-            // Change Blender mesh's to y axis up
-            Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
 
             //------------------------------------------------------
             // Create Image Dictionary
@@ -225,42 +221,13 @@ namespace KailashEngine.World
                 string id = n.ID;
                 Debug.DebugHelper.logInfo(3, "\tLoading Visual Scene", id);
 
-                
 
-                // Scale
-                float[] temp_scale_array = n.Scale[0].Value();
-                Matrix4 temp_scale = Matrix4.CreateScale(
-                    temp_scale_array[0],
-                    temp_scale_array[1],
-                    temp_scale_array[2]
+                // Convert Blender transformation to Kailash
+                Matrix4 temp_matrix = EngineHelper.blender2Kailash(
+                    new Vector3(n.Translate[0].Value()[0], n.Translate[0].Value()[1], n.Translate[0].Value()[2]),
+                    new Vector3(n.Rotate[2].Value()[3], n.Rotate[1].Value()[3], n.Rotate[0].Value()[3]),
+                    new Vector3(n.Scale[0].Value()[0], n.Scale[0].Value()[1], n.Scale[0].Value()[2])
                 );
-
-                // Rotation
-                float x_angle = n.Rotate[2].Value()[3];
-                float y_angle = n.Rotate[1].Value()[3];
-                float z_angle = n.Rotate[0].Value()[3];
-
-                Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
-                Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
-                Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
-                Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
-
-                zyx_rotation.Normalize();
-                Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(zyx_rotation);
-
-
-                // Translation
-                Matrix4 temp_translation = Matrix4.CreateTranslation(
-                    n.Translate[0].Value()[0],
-                    n.Translate[0].Value()[1],
-                    n.Translate[0].Value()[2]
-                );
-
-                // Build full tranformation matrix
-                Matrix4 temp_mat = temp_scale * (temp_rotation * temp_translation);
-
-                // Blender defaults to Z-up. Need to convert to Y-up.
-                temp_mat = temp_mat * yup;
 
 
                 // Meshes
@@ -271,7 +238,7 @@ namespace KailashEngine.World
                     DAE_Mesh m;
                     if (mesh_collection.TryGetValue(mesh_id, out m))
                     {
-                        UniqueMesh temp_unique_mesh = new UniqueMesh(id, m, temp_mat);
+                        UniqueMesh temp_unique_mesh = new UniqueMesh(id, m, temp_matrix);
 
                         // Add animator to unique mesh if one exists
                         Animator temp_animator;
@@ -290,7 +257,7 @@ namespace KailashEngine.World
                 {
                     string light_id = n.Instance_Light[0].URL.Replace("#", "");
                     // Add to light matrix collection
-                    light_matrix_collection.Add(light_id, temp_mat);
+                    light_matrix_collection.Add(light_id, temp_matrix);
                 }
 
             }
@@ -300,6 +267,7 @@ namespace KailashEngine.World
             image_collection.Clear();
             material_collection.Clear();
             mesh_collection.Clear();
+            animator_collection.Clear();
 
         }
 
