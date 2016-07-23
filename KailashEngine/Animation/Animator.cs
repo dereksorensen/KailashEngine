@@ -16,6 +16,9 @@ namespace KailashEngine.Animation
             // The time this key frame triggers
             public float time;
 
+            // Offset for when a keyframe animates longer than the rest
+            public float time_offset;
+
             // Frame data
             public float data;
 
@@ -26,13 +29,16 @@ namespace KailashEngine.Animation
             public KeyFrame(float time, float data, Vector4 bezier_values)
             {
                 this.time = time;
+                this.time_offset = 0.0f;
 
                 this.data = data;
-                this.bezier_values = bezier_values;
+                this.bezier_values = bezier_values;               
             }
         };
 
-
+        //------------------------------------------------------
+        // Data
+        //------------------------------------------------------
 
         private string _id;
         public string id
@@ -41,7 +47,13 @@ namespace KailashEngine.Animation
             set { _id = value; }
         }
 
-        
+        private float _global_last_frame_time;
+
+
+        //------------------------------------------------------
+        // Key Frame dictionaries
+        //------------------------------------------------------
+
         private Dictionary<float, KeyFrame> _key_frames_location_x;
         private Dictionary<float, KeyFrame> _key_frames_location_y;
         private Dictionary<float, KeyFrame> _key_frames_location_z;
@@ -54,10 +66,17 @@ namespace KailashEngine.Animation
         private Dictionary<float, KeyFrame> _key_frames_scale_y;
         private Dictionary<float, KeyFrame> _key_frames_scale_z;
 
+        private List<List<float>> _key_frame_times;
+
+
+        //------------------------------------------------------
+        // Constructor
+        //------------------------------------------------------
 
         public Animator(string id)
         {
             _id = id;
+            _global_last_frame_time = 0.0f;
            
             _key_frames_location_x = new Dictionary<float, KeyFrame>();
             _key_frames_location_y = new Dictionary<float, KeyFrame>();
@@ -77,6 +96,7 @@ namespace KailashEngine.Animation
         // Build Key Frame Dictionaries
         //------------------------------------------------------
 
+        // Add key frames into dictionaries
         public void addKeyFrame(float time, string action, string channel, float data, Vector4 data_bezier)
         {
             // Decide which Key Frame dictionary to add action to
@@ -133,6 +153,33 @@ namespace KailashEngine.Animation
         }
 
 
+        // Calculate the last frame for this animator
+        public void calcLastFrame()
+        {
+            _key_frame_times = new List<List<float>>
+            {
+                _key_frames_location_x.Keys.ToList(),
+                _key_frames_location_y.Keys.ToList(),
+                _key_frames_location_z.Keys.ToList(),
+                _key_frames_rotation_x.Keys.ToList(),
+                _key_frames_rotation_y.Keys.ToList(),
+                _key_frames_rotation_z.Keys.ToList(),
+                _key_frames_scale_x.Keys.ToList(),
+                _key_frames_scale_y.Keys.ToList(),
+                _key_frames_scale_z.Keys.ToList()
+            };
+
+            float last_frame_time = 0;
+
+            foreach (List<float> frames in _key_frame_times)
+            {
+                last_frame_time = Math.Max(frames.Last(), last_frame_time);
+            }
+
+            _global_last_frame_time = last_frame_time;
+        }
+
+
         //------------------------------------------------------
         // Get Animation Data
         //------------------------------------------------------
@@ -149,54 +196,39 @@ namespace KailashEngine.Animation
         }
 
 
-        private float getData(Dictionary<float, KeyFrame> key_frame_dictionary, float current_time, float last_animation_frame_time)
+        private float getData(Dictionary<float, KeyFrame> key_frame_dictionary, float current_time)
         {
             List<float> key_frame_times = key_frame_dictionary.Keys.ToList();
             //key_frame_times.Sort();
 
-            float num_repeats = 2;
+            float num_repeats = 1;
 
             float last_frame_time = key_frame_times.Last();
+            last_frame_time = _global_last_frame_time;
             float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(current_time / last_frame_time) : Math.Min((float)Math.Floor(current_time / last_frame_time), num_repeats - 1);
             float repeat_frame = repeat_multiplier * last_frame_time;
             float loop_time = current_time - repeat_frame;
+
 
             // Get prevous and next frame with interpolation between them
             Vector3 PrevNextInterp = getNearestFrame(key_frame_times.ToArray(), loop_time);
 
             float output = 0;
 
-            //if (last_animation_frame_time > last_frame_time && current_time > last_frame_time)
-            //{
-            //    output = key_frame_dictionary[last_frame_time].data;
-            //}
-            //else
-            //{
-                output = key_frame_dictionary[PrevNextInterp.X].data;
 
-                if (PrevNextInterp.Z != -1)
-                {
-                    KeyFrame previous_frame = key_frame_dictionary[PrevNextInterp.X];
-                    KeyFrame next_frame = key_frame_dictionary[PrevNextInterp.Y];
-                    float interpolation = PrevNextInterp.Z;
+            output = key_frame_dictionary[PrevNextInterp.X].data;
 
-                    output = bezierInterpolation(previous_frame, next_frame, interpolation);
-                }
-            //}
-
-            return output;
-        }
-
-        public float getLastAnimationFrameTime(List<List<float>> key_frame_dictionaries)
-        {
-            float last_frame_time = 0;
-
-            foreach (List<float> frames in key_frame_dictionaries)
+            if (PrevNextInterp.Z != -1)
             {
-                last_frame_time = Math.Max(frames.Last(), last_frame_time);
+                KeyFrame previous_frame = key_frame_dictionary[PrevNextInterp.X];
+                KeyFrame next_frame = key_frame_dictionary[PrevNextInterp.Y];
+                float interpolation = PrevNextInterp.Z;
+
+                output = bezierInterpolation(previous_frame, next_frame, interpolation);
             }
 
-            return last_frame_time;
+
+            return output;
         }
 
 
@@ -205,38 +237,23 @@ namespace KailashEngine.Animation
             Matrix4 temp_matrix = Matrix4.Identity;
 
 
-            float last_animation_frame_time = getLastAnimationFrameTime(new List<List<float>>
-            {
-                _key_frames_location_x.Keys.ToList(),
-                _key_frames_location_y.Keys.ToList(),
-                _key_frames_location_z.Keys.ToList(),
-                _key_frames_rotation_x.Keys.ToList(),
-                _key_frames_rotation_y.Keys.ToList(),
-                _key_frames_rotation_z.Keys.ToList(),
-                _key_frames_scale_x.Keys.ToList(),
-                _key_frames_scale_y.Keys.ToList(),
-                _key_frames_scale_z.Keys.ToList(),
-            });
-
-
-
             // Set animation actions
             Vector3 translation = new Vector3(
-                getData(_key_frames_location_x, time, last_animation_frame_time),
-                getData(_key_frames_location_y, time, last_animation_frame_time),
-                getData(_key_frames_location_z, time, last_animation_frame_time)
+                getData(_key_frames_location_x, time),
+                getData(_key_frames_location_y, time),
+                getData(_key_frames_location_z, time)
             );
 
             Vector3 rotation_euler = new Vector3(
-                getData(_key_frames_rotation_x, time, last_animation_frame_time),
-                getData(_key_frames_rotation_y, time, last_animation_frame_time),
-                getData(_key_frames_rotation_z, time, last_animation_frame_time)
+                getData(_key_frames_rotation_x, time),
+                getData(_key_frames_rotation_y, time),
+                getData(_key_frames_rotation_z, time)
             );
 
             Vector3 scale = new Vector3(
-                getData(_key_frames_scale_x, time, last_animation_frame_time),
-                getData(_key_frames_scale_y, time, last_animation_frame_time),
-                getData(_key_frames_scale_z, time, last_animation_frame_time)
+                getData(_key_frames_scale_x, time),
+                getData(_key_frames_scale_y, time),
+                getData(_key_frames_scale_z, time)
             );
 
 

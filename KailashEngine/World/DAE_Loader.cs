@@ -202,6 +202,11 @@ namespace KailashEngine.World
                     }
 
                 }
+
+                foreach (Animator a in animator_collection.Values)
+                {
+                    a.calcLastFrame();
+                }
             }
             catch
             {

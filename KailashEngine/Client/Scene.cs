@@ -74,6 +74,22 @@ namespace KailashEngine.Client
         }
 
 
+        //------------------------------------------------------
+        // Flashlight
+        //------------------------------------------------------
+
+        public void toggleFlashlight(bool enabled)
+        {
+            if (enabled)
+            {
+                _lights.Insert(0, _flashlight);
+            }
+            else
+            {
+                _lights.RemoveAt(0);
+            }
+        }
+
         private void load_Flashlight()
         {
             // Load Flashlight
@@ -85,6 +101,11 @@ namespace KailashEngine.Client
             
             toggleFlashlight(true);
         }
+
+
+        //------------------------------------------------------
+        // Load Scene
+        //------------------------------------------------------
 
         public void load()
         {
@@ -104,19 +125,10 @@ namespace KailashEngine.Client
             animation_timer.start();
         }
 
-        public void toggleFlashlight(bool enabled)
-        {
-            if(enabled)
-            {
-                _lights.Insert(0, _flashlight);
-            }
-            else
-            {
-                _lights.RemoveAt(0);
-            }
-            
-        }
 
+        //------------------------------------------------------
+        // Render Scene
+        //------------------------------------------------------
 
         public void render(Program program)
         {

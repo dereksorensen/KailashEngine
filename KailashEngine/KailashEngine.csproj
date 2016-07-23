@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\AnimationDriver.cs" />
     <Compile Include="Animation\AnimationHelper.cs" />
     <Compile Include="Animation\Timer.cs" />
     <Compile Include="Client\Scene.cs" />
