@@ -102,7 +102,16 @@ float orenNayarDiffuse(vec3 lightDirection, vec3 viewDirection, vec3 surfaceNorm
 	return albedo * max(0.0, NdotL) * (A + B * s / t) / MATH_PI;
 }
 
+vec3 calcRimLighting(vec3 N, vec3 E, float light_intensity)
+{
+	float f = 1.0 - dot(E, N);
 
+	f = smoothstep(0.0, 1.0, f);
+
+	f = pow(f, 40.0);
+
+	return f * vec3(light_intensity);
+}
 
 //------------------------------------------------------
 // Lighting Calculation
@@ -159,6 +168,8 @@ void calcLighting(
 	//------------------------------------------------------
 	vec4 diffuse = vec4(light_color * max_inc, 1.0);
 	//diffuse *= orenNayarDiffuse(L, E, N, 0.1, 1.0);
+
+	//diffuse.xyz += calcRimLighting(N, E, light_intensity) * max(dot(L, N)+0.3, 0.0);
 
 	//------------------------------------------------------
 	// Specular

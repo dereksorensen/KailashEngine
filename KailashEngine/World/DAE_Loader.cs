@@ -156,29 +156,34 @@ namespace KailashEngine.World
                         }
 
                         // Create source dictionary
-                        Dictionary<string, Grendgine_Collada_Float_Array> source_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
+                        Dictionary<string, Grendgine_Collada_Float_Array> source_float_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
+                        Dictionary<string, Grendgine_Collada_Name_Array> source_string_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Name_Array);
 
                         // Create sampler dictionary
                         Dictionary<string, string> sampler_dictionary = a.Sampler[0].Input.ToDictionary(i => i.Semantic.ToString(), i => i.source);
 
 
+                        // Get Key interpolation method
+                        string source_interpolation_id = sampler_dictionary["INTERPOLATION"].Replace("#", "");
+                        string[] key_frame_interpolations = source_string_dictionary[source_interpolation_id].Value();
+
                         // Get Key Frame times
                         string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
-                        float[] key_frame_times = source_dictionary[source_input_id].Value();
+                        float[] key_frame_times = source_float_dictionary[source_input_id].Value();
 
                         // Get Key Frame data
                         string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
-                        float[] key_frame_data = source_dictionary[source_output_id].Value();
+                        float[] key_frame_data = source_float_dictionary[source_output_id].Value();
 
                         // Get Key Frame in tangent data
                         string source_t1_id = sampler_dictionary["IN_TANGENT"].Replace("#", "");
-                        float[] key_frame_data_b1 = source_dictionary[source_t1_id].Value();
+                        float[] key_frame_data_b1 = source_float_dictionary[source_t1_id].Value();
 
                         // Get Key Frame out tangent data
                         string source_t2_id = sampler_dictionary["OUT_TANGENT"].Replace("#", "");
-                        float[] key_frame_data_b2 = source_dictionary[source_t2_id].Value();
+                        float[] key_frame_data_b2 = source_float_dictionary[source_t2_id].Value();
 
-                     
+
                         // Loop through key frames and add to animator
                         for (int i = 0; i < key_frame_times.Length; i++)
                         {
@@ -197,7 +202,8 @@ namespace KailashEngine.World
 
                         animator_collection.Add(id, temp_animator);
 
-                        source_dictionary.Clear();
+                        source_float_dictionary.Clear();
+                        source_string_dictionary.Clear();
                         sampler_dictionary.Clear();
                     }
 
