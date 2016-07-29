@@ -51,6 +51,7 @@ namespace KailashEngine.World.Model
             int lastIndex = 0;
             uint temp_index;
 
+            
             //------------------------------------------------------
             // Load Faces
             //------------------------------------------------------

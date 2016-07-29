@@ -80,7 +80,11 @@ namespace KailashEngine
             return temp_matrix * yup;
         }
 
-
+        public static Matrix4 blender2Kailash(Matrix4 transformation)
+        {
+            // Blender defaults to Z-up. Need to convert to Y-up.
+            return transformation * yup;
+        }
 
     }
 }
