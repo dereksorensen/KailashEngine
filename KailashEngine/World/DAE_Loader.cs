@@ -95,6 +95,7 @@ namespace KailashEngine.World
             //------------------------------------------------------
             Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", dae_file.Library_Visual_Scene.Visual_Scene[0].Node.Count() + " visuals found");
             Dictionary<string[], Matrix4> visual_scene_dictionary = new Dictionary<string[], Matrix4>();
+            Dictionary<string, DAE_Skeleton> skeleton_dictionary = new Dictionary<string, DAE_Skeleton>();
             light_matrix_collection = new Dictionary<string, Matrix4>();
             foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
             {
@@ -102,26 +103,27 @@ namespace KailashEngine.World
 
 
                 // Convert Blender transformation to Kailash
-                Matrix4 temp_matrix = EngineHelper.blender2Kailash(
+                Matrix4 temp_matrix = EngineHelper.createMatrix(
                     new Vector3(n.Translate[0].Value()[0], n.Translate[0].Value()[1], n.Translate[0].Value()[2]),
                     new Vector3(n.Rotate[2].Value()[3], n.Rotate[1].Value()[3], n.Rotate[0].Value()[3]),
                     new Vector3(n.Scale[0].Value()[0], n.Scale[0].Value()[1], n.Scale[0].Value()[2])
                 );
 
+                Matrix4 temp_corrected_matrix = EngineHelper.blender2Kailash(temp_matrix);
+
 
                 // Skeletons
                 if (n.node != null)
                 {
-
+                    skeleton_dictionary.Add(id, new DAE_Skeleton(id, temp_matrix, n.node));
                 }
-
 
                 // Meshes
                 if (n.Instance_Geometry != null)
                 {
                     string mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
-
-                    visual_scene_dictionary.Add(new string[]{ id, mesh_id }, temp_matrix);
+                    // Add to scene collection
+                    visual_scene_dictionary.Add(new string[]{ id, mesh_id }, temp_corrected_matrix);
                 }
 
                 // Lights
@@ -129,10 +131,80 @@ namespace KailashEngine.World
                 {
                     string light_id = n.Instance_Light[0].URL.Replace("#", "");
                     // Add to light matrix collection
-                    light_matrix_collection.Add(light_id, temp_matrix);
+                    light_matrix_collection.Add(light_id, temp_corrected_matrix);
                 }
 
             }
+
+
+            //------------------------------------------------------
+            // Load Skinning Data
+            //------------------------------------------------------
+            try
+            {
+                if (dae_file.Library_Controllers.Controller != null)
+                {
+                    Debug.DebugHelper.logInfo(2, "\tLoading Skinning Data", dae_file.Library_Controllers.Controller.Count() + " skins found");
+                    foreach (Grendgine_Collada_Controller c in dae_file.Library_Controllers.Controller)
+                    {
+                        string skin_id = c.ID;
+                        string skeleton_id = c.Name;
+
+                        DAE_Skeleton temp_skeleton;
+                        if(skeleton_dictionary.TryGetValue(skeleton_id, out temp_skeleton))
+                        {
+                            Grendgine_Collada_Skin temp_skin = c.Skin;
+
+                            Matrix4 BSM = EngineHelper.createMatrix(temp_skin.Bind_Shape_Matrix.Value());
+                            temp_skeleton.BSM = BSM;
+
+                            Dictionary<string, Grendgine_Collada_Source> source_dictionary = temp_skin.Source.ToDictionary(s => s.ID, s => s);
+
+                            string joint_source_id = "";
+                            string IBM_source_id = "";
+                            string weights_source_id = "";
+
+                            foreach(Grendgine_Collada_Input_Unshared i in temp_skin.Joints.Input)
+                            {
+                                switch(i.Semantic.ToString())
+                                {
+                                    case "JOINT":
+                                        joint_source_id = i.source.Replace("#", "");
+                                        break;
+                                    case "INV_BIND_MATRIX":
+                                        IBM_source_id = i.source.Replace("#", "");
+                                        break;
+                                }
+                            }
+                            foreach (Grendgine_Collada_Input_Shared i in temp_skin.Vertex_Weights.Input)
+                            {
+                                switch (i.Semantic.ToString())
+                                {
+                                    case "WEIGHT":
+                                        weights_source_id = i.source.Replace("#", "");
+                                        break;
+                                }
+                            }
+
+                            string[] bone_names = source_dictionary[joint_source_id].Name_Array.Value();
+                            Grendgine_Collada_Source IBM_source = source_dictionary[IBM_source_id];
+                            Grendgine_Collada_Source weights_source = source_dictionary[weights_source_id];
+
+
+
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.DebugHelper.logInfo(2, "\tLoading Skinning Data", "0 skins found :<");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.DebugHelper.logError("\tLoading Skinning Data", e.Message);
+            }
+
 
 
             //------------------------------------------------------

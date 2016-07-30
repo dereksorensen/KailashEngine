@@ -55,7 +55,24 @@ namespace KailashEngine
         // Rotation Matrix to convert Z-up to Y-up
         public static Matrix4 yup = Matrix4.CreateRotationX((float)(-90.0f * Math.PI / 180.0f));
 
-        public static Matrix4 blender2Kailash(Vector3 translation, Vector3 rotation_euler, Vector3 scale)
+        public static Matrix4 createMatrix(float[] matrix_values)
+        {
+            if(matrix_values.Length != 16)
+            {
+                throw new Exception("matrix_values must have length of 16");
+            }
+
+            Matrix4 temp_matrix = new Matrix4(
+                matrix_values[0], matrix_values[4], matrix_values[8], matrix_values[12],
+                matrix_values[1], matrix_values[5], matrix_values[9], matrix_values[13],
+                matrix_values[2], matrix_values[6], matrix_values[10], matrix_values[14],
+                matrix_values[3], matrix_values[7], matrix_values[11], matrix_values[15]
+            );
+
+            return temp_matrix;
+        }
+
+        public static Matrix4 createMatrix(Vector3 translation, Vector3 rotation_euler, Vector3 scale)
         {
             // Scale
             Matrix4 temp_scale = Matrix4.CreateScale(scale);
@@ -74,7 +91,13 @@ namespace KailashEngine
 
 
             // Build full tranformation matrix
-            Matrix4 temp_matrix = temp_scale * (temp_rotation * temp_translation);
+            return temp_scale * (temp_rotation * temp_translation);
+        }
+
+        public static Matrix4 blender2Kailash(Vector3 translation, Vector3 rotation_euler, Vector3 scale)
+        {
+            // Build full tranformation matrix
+            Matrix4 temp_matrix = createMatrix(translation, rotation_euler, scale);
 
             // Blender defaults to Z-up. Need to convert to Y-up.
             return temp_matrix * yup;
