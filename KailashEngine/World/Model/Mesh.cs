@@ -58,7 +58,6 @@ namespace KailashEngine.World.Model
         }
 
 
-
         // Vertex Buffer Object
         protected int _vbo;
         public int vbo

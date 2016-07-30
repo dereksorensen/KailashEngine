@@ -36,10 +36,39 @@ namespace KailashEngine.World.Model
         }
 
 
+        private string[] _bone_index;
+        public string[] bone_index
+        {
+            get { return _bone_index; }
+            set { _bone_index = value; }
+        }
+
+
         private Dictionary<string, DAE_Bone> _bones;
         public Dictionary<string, DAE_Bone> bones
         {
             get { return _bones; }
+        }
+
+
+        public struct VertexWeight
+        {
+            public string bone_id;
+            public int vertex_id;
+            public float vertex_weight;
+
+            public VertexWeight(string bone_id, int vertex_id, float vertex_weight)
+            {
+                this.bone_id = bone_id;
+                this.vertex_id = vertex_id;
+                this.vertex_weight = vertex_weight;
+            }
+        }
+
+        private Dictionary<int, VertexWeight[]> _vertex_weights;
+        public Dictionary<int, VertexWeight[]> vertex_weights
+        {
+            get { return _vertex_weights; }
         }
 
 
@@ -48,9 +77,9 @@ namespace KailashEngine.World.Model
         {
             _id = id;
             _bones = new Dictionary<string, DAE_Bone>();
+            _vertex_weights = new Dictionary<int, VertexWeight[]>();
 
-
-            _root = new DAE_Bone("root", null, root_matrix);
+            _root = new DAE_Bone("root", null, Matrix4.Identity);
             _root.children = load(_root, bone_nodes);
 
             _bones.Add(_root.id, _root);

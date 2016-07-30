@@ -72,6 +72,23 @@ namespace KailashEngine
             return temp_matrix;
         }
 
+        public static Matrix4 createMatrix3(float[] matrix_values)
+        {
+            if (matrix_values.Length != 16)
+            {
+                throw new Exception("matrix_values must have length of 16");
+            }
+
+            Matrix4 temp_matrix = new Matrix4(
+                matrix_values[0], matrix_values[1], matrix_values[2], matrix_values[3],
+                matrix_values[4], matrix_values[5], matrix_values[6], matrix_values[7],
+                matrix_values[8], matrix_values[9], matrix_values[10], matrix_values[11],
+                matrix_values[12], matrix_values[13], matrix_values[14], matrix_values[15]
+            );
+
+            return temp_matrix;
+        }
+
         public static Matrix4 createMatrix(Vector3 translation, Vector3 rotation_euler, Vector3 scale)
         {
             // Scale

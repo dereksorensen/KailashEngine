@@ -49,7 +49,13 @@ namespace KailashEngine.World.Model
             set { _JM = value; }
         }
 
-
+        public Matrix4 matrix
+        {
+            get
+            {
+                return _IBM * _JM;
+            }
+        }
 
         public DAE_Bone(string id, DAE_Bone parent, Matrix4 joint_matrix)
         {
