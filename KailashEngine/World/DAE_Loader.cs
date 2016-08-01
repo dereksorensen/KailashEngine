@@ -440,7 +440,6 @@ namespace KailashEngine.World
 
                 Debug.DebugHelper.logInfo(3, "\t\tLoading Visual Scene", id);
 
-                Console.WriteLine(object_id);
 
                 Matrix4 temp_matrix = keypair.Value;
 
@@ -464,7 +463,7 @@ namespace KailashEngine.World
             }
 
             DAE_Mesh m2;
-            if (mesh_collection.TryGetValue("Cube_001-mesh", out m2))
+            if (mesh_collection.TryGetValue("Cube_002-mesh", out m2))
             {
                 UniqueMesh temp_unique_mesh_test = new UniqueMesh("Cube", m2, EngineHelper.yup);
                 unique_mesh_collection.Add("Cube", temp_unique_mesh_test);

@@ -127,21 +127,19 @@ namespace KailashEngine.World.Model
                     if (s.ID.Contains("position"))
                     {
                         int v_index = (int)i / 3;
-                        Vector3 current_position = new Vector3(temp_array[i], temp_array[i + 1], temp_array[i + 2]);
+                        Vector3 vertex_position = new Vector3(temp_array[i], temp_array[i + 1], temp_array[i + 2]);
 
-
-
-                        Vector3 temp_p = current_position;
+                        Vector3 temp_vertex_position = vertex_position;
                         foreach (DAE_Skeleton.VertexWeight weight in skeleton.vertex_weights[v_index])
                         {
-                            
-                            Vector3 temp_v = Vector3.Transform(temp_p, skeleton.BSM);
-                            temp_v = Vector3.Transform(temp_v, skeleton.bones[weight.bone_id].matrix);
-                            //temp_v = Vector3.Transform(temp_v, skeleton.bones[weight.bone_id].JM);
+                            // COLLADA Skinning Formula
+                            vertex_position += Vector3.Transform(temp_vertex_position * weight.vertex_weight, skeleton.BSM * skeleton.bones[weight.bone_id].matrix);
+                        }
 
-                            current_position += temp_v * weight.vertex_weight;
-                        }                   
-                        temp_position.Add(current_position);
+                        vertex_position /= skeleton.vertex_weights[v_index].Length;
+
+                       
+                        temp_position.Add(vertex_position);
                     }
                     else if (s.ID.Contains("normal"))
                     {

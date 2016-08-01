@@ -36,7 +36,7 @@ filepath=dae_path,
 selected=export_selected,
 include_shapekeys=True,
 
-apply_modifiers=True,
+apply_modifiers=False,
 export_mesh_type_selection='view',
 
 include_material_textures=True,

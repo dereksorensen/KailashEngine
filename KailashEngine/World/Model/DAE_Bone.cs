@@ -62,6 +62,7 @@ namespace KailashEngine.World.Model
             _id = id;
             _parent = parent;
             _JM = joint_matrix;
+            _IBM = Matrix4.Identity;
         }
     }
 }

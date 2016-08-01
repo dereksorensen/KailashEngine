@@ -71,7 +71,7 @@ namespace KailashEngine.World.Model
             get { return _vertex_weights; }
         }
 
-
+        public Matrix4 root_matrix;
 
         public DAE_Skeleton(string id, Matrix4 root_matrix, Grendgine_Collada_Node[] bone_nodes)
         {
@@ -79,8 +79,9 @@ namespace KailashEngine.World.Model
             _bones = new Dictionary<string, DAE_Bone>();
             _vertex_weights = new Dictionary<int, VertexWeight[]>();
 
-            _root = new DAE_Bone("root", null, Matrix4.Identity);
+            _root = new DAE_Bone("root", null, root_matrix);
             _root.children = load(_root, bone_nodes);
+            this.root_matrix = root_matrix;
 
             _bones.Add(_root.id, _root);
 
@@ -127,7 +128,7 @@ namespace KailashEngine.World.Model
                     Matrix4 joint_matrix = EngineHelper.createMatrix(child.Matrix[0].Value());
 
                     // Add parent's joint matrix
-                    joint_matrix = parent_bone.JM * joint_matrix;
+                    joint_matrix = joint_matrix * parent_bone.JM;
 
                     DAE_Bone temp_bone = new DAE_Bone(child.ID, parent_bone, joint_matrix);
                     _bones.Add(temp_bone.id, temp_bone);
