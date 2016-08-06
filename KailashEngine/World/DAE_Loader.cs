@@ -102,6 +102,8 @@ namespace KailashEngine.World
                 string id = n.ID;
 
 
+                
+
                 // Convert Blender transformation to Kailash
                 Matrix4 temp_matrix = EngineHelper.createMatrix(
                     new Vector3(n.Translate[0].Value()[0], n.Translate[0].Value()[1], n.Translate[0].Value()[2]),
@@ -149,7 +151,8 @@ namespace KailashEngine.World
                     foreach (Grendgine_Collada_Controller c in dae_file.Library_Controllers.Controller)
                     {
                         string skin_id = c.ID;
-                        string skeleton_id = c.Name;
+                        string skeleton_id = c.Name.Replace(".", "_");
+;
 
                         DAE_Skeleton temp_skeleton;
                         if(skeleton_dictionary.TryGetValue(skeleton_id, out temp_skeleton))
@@ -440,6 +443,7 @@ namespace KailashEngine.World
 
                 Debug.DebugHelper.logInfo(3, "\t\tLoading Visual Scene", id);
 
+                Console.WriteLine(object_id);
 
                 Matrix4 temp_matrix = keypair.Value;
 
@@ -467,6 +471,12 @@ namespace KailashEngine.World
             {
                 UniqueMesh temp_unique_mesh_test = new UniqueMesh("Cube", m2, EngineHelper.yup);
                 unique_mesh_collection.Add("Cube", temp_unique_mesh_test);
+            }
+            DAE_Mesh m3;
+            if (mesh_collection.TryGetValue("Icosphere-mesh", out m3))
+            {
+                UniqueMesh temp_unique_mesh_test = new UniqueMesh("Icosphere", m3, EngineHelper.yup);
+                unique_mesh_collection.Add("Icosphere", temp_unique_mesh_test);
             }
 
 

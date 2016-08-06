@@ -85,7 +85,8 @@ namespace KailashEngine.World.Model
 
             _bones.Add(_root.id, _root);
 
-            Console.WriteLine(getBoneStructure(_root, 0));
+            // Print Bone Structure
+            //Console.WriteLine(getBoneStructure(_root, 0));
         }
 
 
@@ -94,21 +95,21 @@ namespace KailashEngine.World.Model
         {
             string output = "";
             string indent = "|";
-            for(int i = 0; i < level; i++)
+            for (int i = 0; i < level; i++)
             {
                 indent += '_';
             }
             output += indent + " " + bone.id;
 
-            if(bone.children == null)
+            if (bone.children == null)
             {
                 return output;
             }
             else
             {
-                foreach(DAE_Bone child in bone.children)
+                foreach (DAE_Bone child in bone.children)
                 {
-                    output += "\n" + getBoneStructure(child, level+1);
+                    output += "\n" + getBoneStructure(child, level + 1);
                 }
                 return output;
             }
@@ -119,7 +120,7 @@ namespace KailashEngine.World.Model
         // Create linked list of all bones in skeleton
         private List<DAE_Bone> load(DAE_Bone parent_bone, Grendgine_Collada_Node[] bone_children)
         {
-            if(bone_children != null)
+            if (bone_children != null)
             {
                 List<DAE_Bone> children = new List<DAE_Bone>();
 
@@ -133,7 +134,7 @@ namespace KailashEngine.World.Model
                     DAE_Bone temp_bone = new DAE_Bone(child.ID, parent_bone, joint_matrix);
                     _bones.Add(temp_bone.id, temp_bone);
 
-                    if(child.node != null)
+                    if (child.node != null)
                     {
                         temp_bone.children = load(temp_bone, child.node);
                     }
