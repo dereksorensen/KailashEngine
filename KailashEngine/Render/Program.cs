@@ -81,6 +81,10 @@ namespace KailashEngine.Render
 
             addUniform(RenderHelper.uEnableParallaxTexture);
             addUniform(RenderHelper.uParallaxTexture);
+
+            addUniform(RenderHelper.uEnableSkinning);
+            addUniform(RenderHelper.uBoneMatrices);
+
         }
 
         // Setup program to calculate lighting

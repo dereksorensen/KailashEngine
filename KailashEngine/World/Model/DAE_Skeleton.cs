@@ -20,7 +20,6 @@ namespace KailashEngine.World.Model
         }
 
 
-
         private Matrix4 _BSM;
         public Matrix4 BSM
         {
@@ -28,6 +27,12 @@ namespace KailashEngine.World.Model
             set { _BSM = value; }
         }
 
+
+        //------------------------------------------------------
+        // Bone Properties
+        //------------------------------------------------------
+
+        private int _bone_id_incrementer;
 
         private DAE_Bone _root;
         public DAE_Bone root
@@ -43,21 +48,30 @@ namespace KailashEngine.World.Model
             set { _bone_index = value; }
         }
 
+        private Dictionary<string, int> _bone_ids;
+        public Dictionary<string, int> bone_ids
+        {
+            get { return _bone_ids; }
+        }
 
-        private Dictionary<string, DAE_Bone> _bones;
-        public Dictionary<string, DAE_Bone> bones
+        private Dictionary<int, DAE_Bone> _bones;
+        public Dictionary<int, DAE_Bone> bones
         {
             get { return _bones; }
         }
 
 
+        //------------------------------------------------------
+        // Vertex Properties
+        //------------------------------------------------------
+
         public struct VertexWeight
         {
-            public string bone_id;
+            public int bone_id;
             public int vertex_id;
             public float vertex_weight;
 
-            public VertexWeight(string bone_id, int vertex_id, float vertex_weight)
+            public VertexWeight(int bone_id, int vertex_id, float vertex_weight)
             {
                 this.bone_id = bone_id;
                 this.vertex_id = vertex_id;
@@ -71,50 +85,36 @@ namespace KailashEngine.World.Model
             get { return _vertex_weights; }
         }
 
-        public Matrix4 root_matrix;
+
 
         public DAE_Skeleton(string id, Matrix4 root_matrix, Grendgine_Collada_Node[] bone_nodes)
         {
             _id = id;
-            _bones = new Dictionary<string, DAE_Bone>();
+            _bone_id_incrementer = 0;
+            _bones = new Dictionary<int, DAE_Bone>();
+            _bone_ids = new Dictionary<string, int>();
             _vertex_weights = new Dictionary<int, VertexWeight[]>();
 
-            _root = new DAE_Bone("root", null, root_matrix);
+            // Setup root bone and load the rest
+            _root = createBone("root", null, root_matrix);
             _root.children = load(_root, bone_nodes);
-            this.root_matrix = root_matrix;
-
-            _bones.Add(_root.id, _root);
 
             // Print Bone Structure
             //Console.WriteLine(getBoneStructure(_root, 0));
         }
 
 
-        // Traverse Skeleton and print bone hierarchy
-        private string getBoneStructure(DAE_Bone bone, int level)
+        // Create new bone and add it to dictionaries
+        private DAE_Bone createBone(string name, DAE_Bone parent, Matrix4 joint_matrix)
         {
-            string output = "";
-            string indent = "|";
-            for (int i = 0; i < level; i++)
-            {
-                indent += '_';
-            }
-            output += indent + " " + bone.id;
+            DAE_Bone temp_bone = new DAE_Bone(_bone_id_incrementer, name, parent, joint_matrix);
 
-            if (bone.children == null)
-            {
-                return output;
-            }
-            else
-            {
-                foreach (DAE_Bone child in bone.children)
-                {
-                    output += "\n" + getBoneStructure(child, level + 1);
-                }
-                return output;
-            }
+            _bones.Add(temp_bone.id, temp_bone);
+            _bone_ids.Add(temp_bone.name, temp_bone.id);
+
+            _bone_id_incrementer++;
+            return temp_bone;
         }
-
 
 
         // Create linked list of all bones in skeleton
@@ -131,8 +131,7 @@ namespace KailashEngine.World.Model
                     // Add parent's joint matrix
                     joint_matrix = joint_matrix * parent_bone.JM;
 
-                    DAE_Bone temp_bone = new DAE_Bone(child.ID, parent_bone, joint_matrix);
-                    _bones.Add(temp_bone.id, temp_bone);
+                    DAE_Bone temp_bone = createBone(child.ID, parent_bone, joint_matrix);
 
                     if (child.node != null)
                     {
@@ -150,5 +149,42 @@ namespace KailashEngine.World.Model
         }
 
 
+        // Traverse Skeleton and print bone hierarchy
+        private string getBoneStructure(DAE_Bone bone, int level)
+        {
+            string output = "";
+            string indent = "|";
+            for (int i = 0; i < level; i++)
+            {
+                indent += '_';
+            }
+            output += indent + " [" + bone.id + "] " + bone.name;
+
+            if (bone.children == null)
+            {
+                return output;
+            }
+            else
+            {
+                foreach (DAE_Bone child in bone.children)
+                {
+                    output += "\n" + getBoneStructure(child, level + 1);
+                }
+                return output;
+            }
+        }
+
+
+        // Return an array of bone matrices
+        public Matrix4[] getBoneMatrices()
+        {
+            DAE_Bone[] bones = _bones.Values.ToArray();
+            Matrix4[] matrices = new Matrix4[bones.Length];
+            for(int i = 0; i < matrices.Length; i++)
+            {
+                matrices[i] = bones[i].matrix;
+            }
+            return matrices;
+        }
     }
 }

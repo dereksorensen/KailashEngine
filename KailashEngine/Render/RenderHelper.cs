@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Render.Objects;
@@ -41,6 +42,9 @@ namespace KailashEngine.Render
         public static readonly string uEnableParallaxTexture = "enable_parallax_texture";
         public static readonly string uParallaxTexture = "parallax_texture";
 
+        public static readonly string uEnableSkinning = "enable_skinning";
+        public static readonly string uBoneMatrices = "bone_matrices";
+
         // Light Calculation
         public static readonly string uLightPosition = "light_position";
         public static readonly string uLightDirection = "light_direction";
@@ -52,7 +56,6 @@ namespace KailashEngine.Render
 
         // Samplers
         public static readonly string uSamplerBase = "sampler";
-
 
 
 

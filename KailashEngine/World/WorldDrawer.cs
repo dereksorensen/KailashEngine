@@ -38,6 +38,9 @@ namespace KailashEngine.World
         {
             foreach (UniqueMesh unique_mesh in meshes)
             {
+                //------------------------------------------------------
+                // World Matrix
+                //------------------------------------------------------
                 Matrix4 temp_mat = unique_mesh.transformation;
                 if (unique_mesh.animated)
                 {
@@ -51,9 +54,21 @@ namespace KailashEngine.World
                     temp_mat = Matrix4.Invert(temp_mat);
                     temp_mat = Matrix4.Transpose(temp_mat);
                 }
-                catch { }
-                
+                catch { }              
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
+
+                //------------------------------------------------------
+                // Skinning
+                //------------------------------------------------------
+                if(unique_mesh.mesh.skinned)
+                {
+                    GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 1);
+                    GL.UniformMatrix4(program.getUniform(RenderHelper.uBoneMatrices), 32, true, EngineHelper.createArray(unique_mesh.mesh.skeleton.getBoneMatrices()));
+                }
+                else
+                {
+                    GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
+                }
 
                 foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {

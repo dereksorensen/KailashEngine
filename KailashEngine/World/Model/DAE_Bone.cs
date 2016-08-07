@@ -12,11 +12,18 @@ namespace KailashEngine.World.Model
     class DAE_Bone
     {
 
-        private string _id;
-        public string id
+        private int _id;
+        public int id
         {
             get { return _id; }
         }
+
+        private string _name;
+        public string name
+        {
+            get { return _name; }
+        }
+
 
 
         private DAE_Bone _parent;
@@ -57,9 +64,10 @@ namespace KailashEngine.World.Model
             }
         }
 
-        public DAE_Bone(string id, DAE_Bone parent, Matrix4 joint_matrix)
+        public DAE_Bone(int id, string name, DAE_Bone parent, Matrix4 joint_matrix)
         {
             _id = id;
+            _name = name;
             _parent = parent;
             _JM = joint_matrix;
             _IBM = Matrix4.Identity;

@@ -102,12 +102,16 @@ namespace KailashEngine.World.Model
             List<Vector3> temp_position = new List<Vector3>();
             List<Vector3> temp_normal = new List<Vector3>();
             List<Vector2> temp_uv = new List<Vector2>();
+            List<Vector4> temp_bone_ids = new List<Vector4>();
+            List<Vector4> temp_bone_weights = new List<Vector4>();
 
             // Exit if mesh doesn't have all required data sources
             if (_geometry.Mesh.Source.Count() < 3)
             {
                 throw new Exception(Debug.DebugHelper.format("\t[ FAILED ] Mesh: " + _id, "Mesh must include position/normal/texcoord)"));
             }
+
+            this.skeleton = skeleton;
 
             //------------------------------------------------------
             // Load Position / Normal / UV from Mesh
@@ -126,36 +130,28 @@ namespace KailashEngine.World.Model
                 {
                     int v_index = (int)i / 3;
                     if (s.ID.Contains("position"))
-                    {                        
-                        Vector3 vertex_position = new Vector3(temp_array[i], temp_array[i + 1], temp_array[i + 2]);
-
-                        Matrix4 total_m = Matrix4.Zero;
-                        
-                        // Accumulate Bone matrices
-                        foreach (DAE_Skeleton.VertexWeight weight in skeleton.vertex_weights[v_index])
+                    {
+                        // Add bone ids and weights to list
+                        Vector4 ids = new Vector4();
+                        Vector4 weights = new Vector4();
+                        for (int w = 0; w < Math.Min(skeleton.vertex_weights[v_index].Length, 4); w++)
                         {
-                            total_m += skeleton.bones[weight.bone_id].matrix * weight.vertex_weight;
+                            ids[w] = skeleton.vertex_weights[v_index][w].bone_id;
+                            weights[w] = skeleton.vertex_weights[v_index][w].vertex_weight;
                         }
+                        temp_bone_ids.Add(ids);
+                        temp_bone_weights.Add(weights);
 
-                        vertex_position = Vector4.Transform(new Vector4(vertex_position, 1.0f), skeleton.BSM * total_m).Xyz;
-
+                        // Premultiply position with BSM and add to list
+                        Vector3 vertex_position = new Vector3(temp_array[i], temp_array[i + 1], temp_array[i + 2]);
+                        vertex_position = Vector4.Transform(new Vector4(vertex_position, 1.0f), skeleton.BSM).Xyz;
                         temp_position.Add(vertex_position);
                     }
                     else if (s.ID.Contains("normal"))
                     {
                         Vector3 vertex_normal = new Vector3(temp_array[i], temp_array[i + 1], temp_array[i + 2]);
-
-                        Matrix4 total_m = Matrix4.Zero;
-
-                        // Accumulate Bone matrices
-                        foreach (DAE_Skeleton.VertexWeight weight in skeleton.vertex_weights[v_index])
-                        {
-                            total_m += skeleton.bones[weight.bone_id].matrix * weight.vertex_weight;
-                        }
-
-                        vertex_normal = Vector3.TransformNormalInverse(vertex_normal, Matrix4.Invert(skeleton.BSM * total_m));
-
-                        temp_normal.Add(Vector3.Normalize(vertex_normal));
+                        //vertex_normal = Vector4.Transform(new Vector4(vertex_normal, 0.0f), skeleton.BSM).Xyz;
+                        temp_normal.Add(vertex_normal);
                     }
                     else if (s.ID.Contains("map"))
                     {
@@ -175,7 +171,7 @@ namespace KailashEngine.World.Model
 
                 try
                 {
-                    temp_polylist.load(p, material_collection, temp_position, temp_uv, temp_normal);
+                    temp_polylist.load(p, material_collection, temp_position, temp_uv, temp_normal, temp_bone_ids, temp_bone_weights);
                 }
                 catch (Exception e)
                 {
@@ -185,6 +181,12 @@ namespace KailashEngine.World.Model
                 _submeshes.Add(temp_polylist);
                 polylist_counter++;
             }
+
+            temp_position.Clear();
+            temp_normal.Clear();
+            temp_uv.Clear();
+            temp_bone_ids.Clear();
+            temp_bone_weights.Clear();
         }
 
     }

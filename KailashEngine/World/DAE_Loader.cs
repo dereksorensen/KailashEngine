@@ -197,9 +197,18 @@ namespace KailashEngine.World
                                 }
                             }
 
-                            string[] bone_names = source_dictionary[joint_source_id].Name_Array.Value();
                             Grendgine_Collada_Source IBM_source = source_dictionary[IBM_source_id];
                             Grendgine_Collada_Source weights_source = source_dictionary[weights_source_id];
+
+                            //------------------------------------------------------
+                            // Load Bone IDs
+                            //------------------------------------------------------
+                            string[] bone_names = source_dictionary[joint_source_id].Name_Array.Value();
+                            int[] bone_ids = new int[bone_names.Length];
+                            for (int i = 0; i < bone_names.Length; i++)
+                            {
+                                bone_ids[i] = temp_skeleton.bone_ids[bone_names[i]];
+                            }
 
                             //------------------------------------------------------
                             // Load IBMs
@@ -210,9 +219,10 @@ namespace KailashEngine.World
                                 float[] temp_IBM = new float[IBM_stride];
                                 Array.Copy(IBM_source.Float_Array.Value(), i * IBM_stride, temp_IBM, 0, IBM_stride);
 
-                                string current_bone = bone_names[i];
+                                string current_bone_name = bone_names[i];
+                                int current_bone_id = temp_skeleton.bone_ids[current_bone_name];
 
-                                temp_skeleton.bones[current_bone].IBM = EngineHelper.createMatrix(temp_IBM);
+                                temp_skeleton.bones[current_bone_id].IBM = EngineHelper.createMatrix(temp_IBM);
                             }
 
                             //------------------------------------------------------
@@ -222,8 +232,6 @@ namespace KailashEngine.World
                             int[] bones_and_weights = temp_skin.Vertex_Weights.V.Value();
                             string vcount_string = temp_skin.Vertex_Weights.VCount.Value_As_String;
                             int[] vcount = Grendgine_Collada_Parse_Utils.String_To_Int(vcount_string.Remove(vcount_string.Length-1, 1));
-
-
 
                             int current_weight_index = 0;
                             for (int i = 0; i < vcount.Length; i ++)
@@ -236,7 +244,7 @@ namespace KailashEngine.World
                                     int bone_index = bones_and_weights[current_weight_index + j];
                                     int weight_index = bones_and_weights[current_weight_index + j + 1];
 
-                                    temp_weights.Add(new DAE_Skeleton.VertexWeight(bone_names[bone_index], i, vertex_weights[weight_index]));
+                                    temp_weights.Add(new DAE_Skeleton.VertexWeight(bone_ids[bone_index], i, vertex_weights[weight_index]));
                                 }
                                 current_weight_index += num_bones*2;
 
@@ -519,7 +527,7 @@ namespace KailashEngine.World
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, temp_vbo);
 
-            // Get vertex data into attrib 0
+            // Get position data into attrib 0
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "position"));
 
@@ -534,6 +542,14 @@ namespace KailashEngine.World
             // Get uv data into attrib 3
             GL.EnableVertexAttribArray(3);
             GL.VertexAttribPointer(3, 2, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "uv"));
+
+            // Get bone ids data into attrib 4
+            GL.EnableVertexAttribArray(4);
+            GL.VertexAttribPointer(4, 4, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "bone_ids"));
+
+            // Get bone weights data into attrib 5
+            GL.EnableVertexAttribArray(5);
+            GL.VertexAttribPointer(5, 4, VertexAttribPointerType.Float, false, stride, Marshal.OffsetOf(typeof(Mesh.Vertex), "bone_weights"));
 
 
             // Unbind all buffers

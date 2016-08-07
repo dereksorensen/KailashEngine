@@ -20,9 +20,11 @@ namespace KailashEngine.World.Model
         public struct Vertex
         {
             public Vector3 position;
-            public Vector2 uv;
             public Vector3 normal;
             public Vector3 tangent;
+            public Vector2 uv;
+            public Vector4 bone_ids;
+            public Vector4 bone_weights; 
         }
 
 
@@ -56,6 +58,26 @@ namespace KailashEngine.World.Model
             get { return _material; }
             set { _material = value; }
         }
+
+        // Skinning
+        protected bool _skinned;
+        public bool skinned
+        {
+            get { return _skinned; }
+            set { _skinned = value; }
+        }
+
+        protected DAE_Skeleton _skeleton;
+        public DAE_Skeleton skeleton
+        {
+            get { return _skeleton; }
+            set
+            {
+                _skeleton = value;
+                _skinned = true;
+            }
+        }
+
 
 
         // Vertex Buffer Object
@@ -127,6 +149,7 @@ namespace KailashEngine.World.Model
         public Mesh(string id)
         {
             _id = id;
+            _skinned = false;
         }
 
         public void setBufferIDs(int[] buffers)
