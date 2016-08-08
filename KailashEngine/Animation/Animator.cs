@@ -201,7 +201,7 @@ namespace KailashEngine.Animation
             List<float> key_frame_times = key_frame_dictionary.Keys.ToList();
             //key_frame_times.Sort();
 
-            float num_repeats = 1;
+            float num_repeats = -1;
 
             float last_frame_time = key_frame_times.Last();
             last_frame_time = _global_last_frame_time;
@@ -234,8 +234,6 @@ namespace KailashEngine.Animation
 
         public Matrix4 getKeyFrame(float time, int num_repeats)
         {
-            Matrix4 temp_matrix = Matrix4.Identity;
-
 
             // Set animation actions
             Vector3 translation = new Vector3(

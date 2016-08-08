@@ -150,7 +150,7 @@ namespace KailashEngine.World.Model
                     else if (s.ID.Contains("normal"))
                     {
                         Vector3 vertex_normal = new Vector3(temp_array[i], temp_array[i + 1], temp_array[i + 2]);
-                        //vertex_normal = Vector4.Transform(new Vector4(vertex_normal, 0.0f), skeleton.BSM).Xyz;
+                        vertex_normal = Vector3.Transform(vertex_normal, skeleton.BSM.ExtractRotation());
                         temp_normal.Add(vertex_normal);
                     }
                     else if (s.ID.Contains("map"))

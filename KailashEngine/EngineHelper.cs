@@ -82,7 +82,7 @@ namespace KailashEngine
         {
             if (matrix_values.Length != 16)
             {
-                throw new Exception("matrix_values must have length of 16");
+                throw new Exception("createMatrix(float[] matrix_values) - matrix_values must have length of 16");
             }
 
             Matrix4 temp_matrix = new Matrix4(

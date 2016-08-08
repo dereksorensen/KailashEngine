@@ -336,14 +336,25 @@ namespace KailashEngine.World
                     Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", dae_file.Library_Animations.Animation.Count() + " animations found");
                     foreach (Grendgine_Collada_Animation a in dae_file.Library_Animations.Animation)
                     {
+                        
+                        // Get the ID of the object or bone we are animating
+                        Match object_match = Regex.Match(a.Channel[0].Target, "(.+)/.+");
+                        string object_id = object_match.Groups[1].ToString();
 
-                        Match match = Regex.Match(a.ID, "(.+)_(location|rotation_euler|scale)_(X|Y|Z)");
+                        // Match if this is an object animation
+                        Match object_animation_match = Regex.Match(a.ID, object_id + "_(location|rotation_euler|scale)_(X|Y|Z)");
 
-                        if (match.Groups.Count == 4)
+                        // Match if this is a skeletal animation
+                        Match skeleton_animation_match = Regex.Match(a.ID, "(.+)_" + object_id + "_pose_matrix");
+
+                        //------------------------------------------------------
+                        // Object Animation
+                        //------------------------------------------------------
+                        if (object_animation_match.Success && !skeleton_animation_match.Success)
                         {
-                            string id = match.Groups[1].ToString();
-                            string action = match.Groups[2].ToString();
-                            string channel = match.Groups[3].ToString();
+                            string id = object_id;
+                            string action = object_animation_match.Groups[1].ToString();
+                            string channel = object_animation_match.Groups[2].ToString();
 
                             switch (action)
                             {
@@ -420,6 +431,17 @@ namespace KailashEngine.World
                             source_string_dictionary.Clear();
                             sampler_dictionary.Clear();
                         }
+                        //------------------------------------------------------
+                        // Object Animation
+                        //------------------------------------------------------
+                        if (skeleton_animation_match.Success && !object_animation_match.Success)
+                        {
+                            string id = skeleton_animation_match.Groups[1].ToString();
+                            string bone_name = object_id;
+
+                            Console.WriteLine(bone_name);
+
+                        }
                     }
 
                     foreach (Animator a in animator_collection.Values)
@@ -450,8 +472,7 @@ namespace KailashEngine.World
                 string object_id = keypair.Key[1];
 
                 Debug.DebugHelper.logInfo(3, "\t\tLoading Visual Scene", id);
-
-                Console.WriteLine(object_id);
+                
 
                 Matrix4 temp_matrix = keypair.Value;
 

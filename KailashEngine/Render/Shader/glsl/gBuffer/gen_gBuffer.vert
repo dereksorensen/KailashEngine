@@ -35,7 +35,7 @@ void main()
 {
 
 	vec4 v_position = vec4(position, 1.0);
-	vec4 v_normal = vec4(normal, 0.0);
+	vec3 v_normal = vec3(normal);
 	vec4 v_tangent = vec4(tangent, 0.0);
 
 	// Skinning
@@ -47,7 +47,7 @@ void main()
 		bone_matrix += bone_matrices[int(bone_ids[3])] * bone_weights[3];
 
 		v_position = bone_matrix * v_position;
-		v_normal = bone_matrix * v_normal;
+		v_normal = mat3(transpose(inverse(bone_matrix))) * v_normal;
 		v_tangent = bone_matrix * v_tangent;
 	}
 
@@ -64,7 +64,7 @@ void main()
 	v_TexCoords = texCoord;
 
 	// Put vertex normal in world space
-	v_Normal = normalize((model_normal * v_normal).xyz);
+	v_Normal = normalize((model_normal * vec4(v_normal, 0.0)).xyz);
 	v_Tangent = (model_normal * v_tangent).xyz;
 
 }
