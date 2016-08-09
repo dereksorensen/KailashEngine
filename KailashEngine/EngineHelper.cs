@@ -41,6 +41,18 @@ namespace KailashEngine
         {
             return src0 + (src1 - src0) * t;
         }
+        public static Vector4 lerp(Vector4 src0, Vector4 src1, float t)
+        {
+            return src0 + (src1 - src0) * t;
+        }
+        public static Matrix4 lerp(Matrix4 src0, Matrix4 src1, float t)
+        {
+            Vector3 temp_translation = lerp(src0.ExtractTranslation(), src1.ExtractTranslation(), t);
+            Vector3 temp_scale = lerp(src0.ExtractScale(), src1.ExtractScale(), t);
+            Quaternion temp_rotation = Quaternion.Slerp(src0.ExtractRotation(), src1.ExtractRotation(), t);
+
+            return createMatrix(temp_translation, temp_rotation, temp_scale);
+        }
 
         public static float slerp(float src0, float src1, float t)
         {
@@ -63,16 +75,25 @@ namespace KailashEngine
             };
         }
 
+        public static float[] createArray(Matrix4 matrix)
+        {
+            List<float> temp_floats = new List<float>();
+
+            temp_floats.AddRange(createArray(matrix.Column0));
+            temp_floats.AddRange(createArray(matrix.Column1));
+            temp_floats.AddRange(createArray(matrix.Column2));
+            temp_floats.AddRange(createArray(matrix.Column3));
+
+            return temp_floats.ToArray();
+        }
+
         public static float[] createArray(Matrix4[] matrices)
         {
             List<float> temp_floats = new List<float>();
 
             foreach (Matrix4 m in matrices)
             {
-                temp_floats.AddRange(createArray(m.Column0));
-                temp_floats.AddRange(createArray(m.Column1));
-                temp_floats.AddRange(createArray(m.Column2));
-                temp_floats.AddRange(createArray(m.Column3));
+                temp_floats.AddRange(createArray(m));
             }
 
             return temp_floats.ToArray();
@@ -109,6 +130,22 @@ namespace KailashEngine
 
             zyx_rotation.Normalize();
             Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(zyx_rotation);
+
+            // Translation
+            Matrix4 temp_translation = Matrix4.CreateTranslation(translation);
+
+
+            // Build full tranformation matrix
+            return temp_scale * (temp_rotation * temp_translation);
+        }
+
+        public static Matrix4 createMatrix(Vector3 translation, Quaternion rotation, Vector3 scale)
+        {
+            // Scale
+            Matrix4 temp_scale = Matrix4.CreateScale(scale);
+
+            // Rotation
+            Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(rotation);
 
             // Translation
             Matrix4 temp_translation = Matrix4.CreateTranslation(translation);

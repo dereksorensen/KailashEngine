@@ -20,6 +20,14 @@ namespace KailashEngine.World.Model
         }
 
 
+        private bool _animated;
+        public bool animated
+        {
+            get { return _animated; }
+            set { _animated = value; }
+        }
+
+
         private Matrix4 _BSM;
         public Matrix4 BSM
         {
@@ -90,6 +98,7 @@ namespace KailashEngine.World.Model
         public DAE_Skeleton(string id, Matrix4 root_matrix, Grendgine_Collada_Node[] bone_nodes)
         {
             _id = id;
+            _animated = false;
             _bone_id_incrementer = 0;
             _bones = new Dictionary<int, DAE_Bone>();
             _bone_ids = new Dictionary<string, int>();

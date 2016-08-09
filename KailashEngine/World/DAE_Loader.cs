@@ -91,6 +91,157 @@ namespace KailashEngine.World
 
 
             //------------------------------------------------------
+            // Create Animation Dictionary
+            //------------------------------------------------------
+            Dictionary<string, Animator> animator_collection = new Dictionary<string, Animator>();
+            try
+            {
+                if (dae_file.Library_Animations != null)
+                {
+                    Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", dae_file.Library_Animations.Animation.Count() + " animations found");
+                    foreach (Grendgine_Collada_Animation a in dae_file.Library_Animations.Animation)
+                    {
+
+                        //------------------------------------------------------
+                        // Get match strings to decide what kind of Animation this is
+                        //------------------------------------------------------
+                        // Get the ID of the object or bone we are animating
+                        Match object_match = Regex.Match(a.Channel[0].Target, "(.+)/.+");
+                        string object_id = object_match.Groups[1].ToString();
+
+                        // Match if this is an object animation
+                        Match object_animation_match = Regex.Match(a.ID, object_id + "_(location|rotation_euler|scale)_(X|Y|Z)");
+
+                        // Match if this is a skeletal animation
+                        Match skeleton_animation_match = Regex.Match(a.ID, "(.+)_" + object_id + "_pose_matrix");
+
+
+                        //------------------------------------------------------
+                        // Create Source and Sampler Dictionaries
+                        //------------------------------------------------------
+                        // Create source dictionary
+                        Dictionary<string, Grendgine_Collada_Float_Array> source_float_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
+                        Dictionary<string, Grendgine_Collada_Name_Array> source_string_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Name_Array);
+
+                        // Create sampler dictionary
+                        Dictionary<string, string> sampler_dictionary = a.Sampler[0].Input.ToDictionary(i => i.Semantic.ToString(), i => i.source);
+
+
+                        //------------------------------------------------------
+                        // Get Common Animation Data
+                        //------------------------------------------------------
+                        // Get Key interpolation method
+                        string source_interpolation_id = sampler_dictionary["INTERPOLATION"].Replace("#", "");
+                        string[] key_frame_interpolations = source_string_dictionary[source_interpolation_id].Value();
+
+                        // Get Key Frame times
+                        string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
+                        float[] key_frame_times = source_float_dictionary[source_input_id].Value();
+
+                        // Get Key Frame data
+                        string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
+                        float[] key_frame_data = source_float_dictionary[source_output_id].Value();
+
+
+
+                        //------------------------------------------------------
+                        // Object Animation
+                        //------------------------------------------------------
+                        if (object_animation_match.Success && !skeleton_animation_match.Success)
+                        {
+                            string id = object_id;
+                            string action = object_animation_match.Groups[1].ToString();
+                            string channel = object_animation_match.Groups[2].ToString();
+
+                            switch (action)
+                            {
+                                case "location":
+                                    action = AnimationHelper.translate;
+                                    break;
+                                case "rotation_euler":
+                                    action = AnimationHelper.rotation_euler;
+                                    break;
+                                case "scale":
+                                    action = AnimationHelper.scale;
+                                    break;
+                            }
+
+                            // Create new or use existing Animator
+                            Animator temp_animator;
+                            if (animator_collection.TryGetValue(id, out temp_animator))
+                            {
+                                animator_collection.Remove(id);
+                            }
+                            else
+                            {
+                                temp_animator = new Animator(id);
+                            }
+
+
+                            // Get Key Frame in tangent data
+                            string source_t1_id = sampler_dictionary["IN_TANGENT"].Replace("#", "");
+                            float[] key_frame_data_b1 = source_float_dictionary[source_t1_id].Value();
+
+                            // Get Key Frame out tangent data
+                            string source_t2_id = sampler_dictionary["OUT_TANGENT"].Replace("#", "");
+                            float[] key_frame_data_b2 = source_float_dictionary[source_t2_id].Value();
+
+
+                            // Loop through key frames and add to animator
+                            for (int i = 0; i < key_frame_times.Length; i++)
+                            {
+                                float current_frame_time = key_frame_times[i];
+                                float current_frame_data = key_frame_data[i];
+                                int j = i * 2;
+                                Vector4 current_frame_data_bezier = new Vector4(
+                                    key_frame_data_b1[j],
+                                    key_frame_data_b1[j + 1],
+                                    key_frame_data_b2[j],
+                                    key_frame_data_b2[j + 1]
+                                );
+
+                                temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data, current_frame_data_bezier);
+                            }
+
+                            animator_collection.Add(id, temp_animator);
+
+                        }
+
+                        //------------------------------------------------------
+                        // Skeletal Animation
+                        //------------------------------------------------------
+                        if (skeleton_animation_match.Success && !object_animation_match.Success)
+                        {
+                            string id = skeleton_animation_match.Groups[1].ToString();
+                            string bone_name = object_id;
+
+                            Console.WriteLine(bone_name);
+
+                        }
+
+                        source_float_dictionary.Clear();
+                        source_string_dictionary.Clear();
+                        sampler_dictionary.Clear();
+                    }
+
+                    foreach (Animator a in animator_collection.Values)
+                    {
+                        a.calcLastFrame();
+                    }
+                }
+                else
+                {
+                    Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", "0 animations found :<");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.DebugHelper.logError("\tCreating Animation Dictionary", e.Message);
+            }
+
+
+
+            //------------------------------------------------------
             // Create Visual Scene + Skeleton Dictionary
             //------------------------------------------------------
             Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", dae_file.Library_Visual_Scene.Visual_Scene[0].Node.Count() + " visuals found");
@@ -324,140 +475,6 @@ namespace KailashEngine.World
                 Debug.DebugHelper.logError("\tCreating Mesh Dictionary", e.Message);
             }
 
-
-            //------------------------------------------------------
-            // Create Animation Dictionary
-            //------------------------------------------------------
-            Dictionary<string, Animator> animator_collection = new Dictionary<string, Animator>();
-            try
-            {
-                if (dae_file.Library_Animations != null)
-                {
-                    Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", dae_file.Library_Animations.Animation.Count() + " animations found");
-                    foreach (Grendgine_Collada_Animation a in dae_file.Library_Animations.Animation)
-                    {
-                        
-                        // Get the ID of the object or bone we are animating
-                        Match object_match = Regex.Match(a.Channel[0].Target, "(.+)/.+");
-                        string object_id = object_match.Groups[1].ToString();
-
-                        // Match if this is an object animation
-                        Match object_animation_match = Regex.Match(a.ID, object_id + "_(location|rotation_euler|scale)_(X|Y|Z)");
-
-                        // Match if this is a skeletal animation
-                        Match skeleton_animation_match = Regex.Match(a.ID, "(.+)_" + object_id + "_pose_matrix");
-
-                        //------------------------------------------------------
-                        // Object Animation
-                        //------------------------------------------------------
-                        if (object_animation_match.Success && !skeleton_animation_match.Success)
-                        {
-                            string id = object_id;
-                            string action = object_animation_match.Groups[1].ToString();
-                            string channel = object_animation_match.Groups[2].ToString();
-
-                            switch (action)
-                            {
-                                case "location":
-                                    action = AnimationHelper.translate;
-                                    break;
-                                case "rotation_euler":
-                                    action = AnimationHelper.rotation_euler;
-                                    break;
-                                case "scale":
-                                    action = AnimationHelper.scale;
-                                    break;
-                            }
-
-                            // Create new or use existing Animator
-                            Animator temp_animator;
-                            if (animator_collection.TryGetValue(id, out temp_animator))
-                            {
-                                animator_collection.Remove(id);
-                            }
-                            else
-                            {
-                                temp_animator = new Animator(id);
-                            }
-
-                            // Create source dictionary
-                            Dictionary<string, Grendgine_Collada_Float_Array> source_float_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
-                            Dictionary<string, Grendgine_Collada_Name_Array> source_string_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Name_Array);
-
-                            // Create sampler dictionary
-                            Dictionary<string, string> sampler_dictionary = a.Sampler[0].Input.ToDictionary(i => i.Semantic.ToString(), i => i.source);
-
-
-                            // Get Key interpolation method
-                            string source_interpolation_id = sampler_dictionary["INTERPOLATION"].Replace("#", "");
-                            string[] key_frame_interpolations = source_string_dictionary[source_interpolation_id].Value();
-
-                            // Get Key Frame times
-                            string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
-                            float[] key_frame_times = source_float_dictionary[source_input_id].Value();
-
-                            // Get Key Frame data
-                            string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
-                            float[] key_frame_data = source_float_dictionary[source_output_id].Value();
-
-                            // Get Key Frame in tangent data
-                            string source_t1_id = sampler_dictionary["IN_TANGENT"].Replace("#", "");
-                            float[] key_frame_data_b1 = source_float_dictionary[source_t1_id].Value();
-
-                            // Get Key Frame out tangent data
-                            string source_t2_id = sampler_dictionary["OUT_TANGENT"].Replace("#", "");
-                            float[] key_frame_data_b2 = source_float_dictionary[source_t2_id].Value();
-
-
-                            // Loop through key frames and add to animator
-                            for (int i = 0; i < key_frame_times.Length; i++)
-                            {
-                                float current_frame_time = key_frame_times[i];
-                                float current_frame_data = key_frame_data[i];
-                                int j = i * 2;
-                                Vector4 current_frame_data_bezier = new Vector4(
-                                    key_frame_data_b1[j],
-                                    key_frame_data_b1[j + 1],
-                                    key_frame_data_b2[j],
-                                    key_frame_data_b2[j + 1]
-                                );
-
-                                temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data, current_frame_data_bezier);
-                            }
-
-                            animator_collection.Add(id, temp_animator);
-
-                            source_float_dictionary.Clear();
-                            source_string_dictionary.Clear();
-                            sampler_dictionary.Clear();
-                        }
-                        //------------------------------------------------------
-                        // Object Animation
-                        //------------------------------------------------------
-                        if (skeleton_animation_match.Success && !object_animation_match.Success)
-                        {
-                            string id = skeleton_animation_match.Groups[1].ToString();
-                            string bone_name = object_id;
-
-                            Console.WriteLine(bone_name);
-
-                        }
-                    }
-
-                    foreach (Animator a in animator_collection.Values)
-                    {
-                        a.calcLastFrame();
-                    }
-                }
-                else
-                {
-                    Debug.DebugHelper.logInfo(2, "\tCreating Animation Dictionary", "0 animations found :<");
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.DebugHelper.logError("\tCreating Animation Dictionary", e.Message);
-            }
 
 
 

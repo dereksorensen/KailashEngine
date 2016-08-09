@@ -62,8 +62,13 @@ namespace KailashEngine.World
                 //------------------------------------------------------
                 if(unique_mesh.mesh.skinned)
                 {
+                    DAE_Skeleton temp_skeleton = unique_mesh.mesh.skeleton;
+                    if(temp_skeleton.animated)
+                    {
+
+                    }
                     GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 1);
-                    GL.UniformMatrix4(program.getUniform(RenderHelper.uBoneMatrices), 32, true, EngineHelper.createArray(unique_mesh.mesh.skeleton.getBoneMatrices()));
+                    GL.UniformMatrix4(program.getUniform(RenderHelper.uBoneMatrices), 32, true, EngineHelper.createArray(temp_skeleton.getBoneMatrices()));
                 }
                 else
                 {
