@@ -120,8 +120,7 @@ namespace KailashEngine.World
                         // Create Source and Sampler Dictionaries
                         //------------------------------------------------------
                         // Create source dictionary
-                        Dictionary<string, Grendgine_Collada_Float_Array> source_float_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Float_Array);
-                        Dictionary<string, Grendgine_Collada_Name_Array> source_string_dictionary = a.Source.ToDictionary(s => s.ID, s => s.Name_Array);
+                        Dictionary<string, Grendgine_Collada_Source> source_dictionary = a.Source.ToDictionary(s => s.ID, s => s);
 
                         // Create sampler dictionary
                         Dictionary<string, string> sampler_dictionary = a.Sampler[0].Input.ToDictionary(i => i.Semantic.ToString(), i => i.source);
@@ -132,16 +131,16 @@ namespace KailashEngine.World
                         //------------------------------------------------------
                         // Get Key interpolation method
                         string source_interpolation_id = sampler_dictionary["INTERPOLATION"].Replace("#", "");
-                        string[] key_frame_interpolations = source_string_dictionary[source_interpolation_id].Value();
+                        string[] key_frame_interpolations = source_dictionary[source_interpolation_id].Name_Array.Value();
 
                         // Get Key Frame times
                         string source_input_id = sampler_dictionary["INPUT"].Replace("#", "");
-                        float[] key_frame_times = source_float_dictionary[source_input_id].Value();
+                        float[] key_frame_times = source_dictionary[source_input_id].Float_Array.Value();
 
                         // Get Key Frame data
                         string source_output_id = sampler_dictionary["OUTPUT"].Replace("#", "");
-                        float[] key_frame_data = source_float_dictionary[source_output_id].Value();
-
+                        float[] key_frame_data = source_dictionary[source_output_id].Float_Array.Value();
+                        int key_frame_data_stride = (int)source_dictionary[source_output_id].Technique_Common.Accessor.Stride;
 
 
                         //------------------------------------------------------
@@ -180,11 +179,11 @@ namespace KailashEngine.World
 
                             // Get Key Frame in tangent data
                             string source_t1_id = sampler_dictionary["IN_TANGENT"].Replace("#", "");
-                            float[] key_frame_data_b1 = source_float_dictionary[source_t1_id].Value();
+                            float[] key_frame_data_b1 = source_dictionary[source_t1_id].Float_Array.Value();
 
                             // Get Key Frame out tangent data
                             string source_t2_id = sampler_dictionary["OUT_TANGENT"].Replace("#", "");
-                            float[] key_frame_data_b2 = source_float_dictionary[source_t2_id].Value();
+                            float[] key_frame_data_b2 = source_dictionary[source_t2_id].Float_Array.Value();
 
 
                             // Loop through key frames and add to animator
@@ -215,12 +214,26 @@ namespace KailashEngine.World
                             string id = skeleton_animation_match.Groups[1].ToString();
                             string bone_name = object_id;
 
-                            Console.WriteLine(bone_name);
+                            // Loop through key frames and add to animator
+                            for (int i = 0; i < key_frame_times.Length; i++)
+                            {
+                                int current_frame_data_index = i * key_frame_data_stride;
+
+                                float current_frame_time = key_frame_times[i];
+                                float[] current_frame_data = new float[16];
+
+                                // Create Matrix from each 16 strided float
+                                Array.Copy(key_frame_data, current_frame_data_index, current_frame_data, 0, key_frame_data_stride);
+                                Matrix4 current_frame_data_matrix = EngineHelper.createMatrix(current_frame_data);
+
+
+
+                                //temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data, current_frame_data_bezier);
+                            }
 
                         }
 
-                        source_float_dictionary.Clear();
-                        source_string_dictionary.Clear();
+                        source_dictionary.Clear();
                         sampler_dictionary.Clear();
                     }
 
