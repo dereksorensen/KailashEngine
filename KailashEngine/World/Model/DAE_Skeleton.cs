@@ -8,6 +8,8 @@ using OpenTK;
 
 using grendgine_collada;
 
+using KailashEngine.Animation;
+
 namespace KailashEngine.World.Model
 {
     class DAE_Skeleton
@@ -25,6 +27,17 @@ namespace KailashEngine.World.Model
         {
             get { return _animated; }
             set { _animated = value; }
+        }
+
+        private Animator _animator;
+        public Animator animator
+        {
+            get { return _animator; }
+            set
+            {
+                _animated = true;
+                _animator = value;
+            }
         }
 
 
@@ -136,7 +149,7 @@ namespace KailashEngine.World.Model
                 foreach (Grendgine_Collada_Node child in bone_children)
                 {
                     Matrix4 joint_matrix = EngineHelper.createMatrix(child.Matrix[0].Value());
-
+                    
                     // Add parent's joint matrix
                     joint_matrix = joint_matrix * parent_bone.JM;
 
@@ -194,6 +207,28 @@ namespace KailashEngine.World.Model
                 matrices[i] = bones[i].matrix;
             }
             return matrices;
+        }
+
+
+
+        public void updateBones(DAE_Bone parent, Dictionary<string, Matrix4> boneMatrices)
+        {
+            if (parent.children == null)
+            {
+                return;
+            }
+            else
+            {
+                foreach (DAE_Bone child in parent.children)
+                {
+                    Matrix4 temp_mat = child.JM;
+                    boneMatrices.TryGetValue(child.name, out temp_mat);
+                    child.JM = temp_mat * parent.JM;
+
+                    updateBones(child, boneMatrices);
+                }
+                return;
+            }
         }
     }
 }

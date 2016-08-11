@@ -65,10 +65,11 @@ namespace KailashEngine.World
                     DAE_Skeleton temp_skeleton = unique_mesh.mesh.skeleton;
                     if(temp_skeleton.animated)
                     {
-
+                        temp_skeleton.updateBones(temp_skeleton.root, temp_skeleton.animator.getKeyFrame(animation_time));
                     }
+                    Matrix4[] skinning_matrices = temp_skeleton.getBoneMatrices();
                     GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 1);
-                    GL.UniformMatrix4(program.getUniform(RenderHelper.uBoneMatrices), 32, true, EngineHelper.createArray(temp_skeleton.getBoneMatrices()));
+                    GL.UniformMatrix4(program.getUniform(RenderHelper.uBoneMatrices), skinning_matrices.Length, true, EngineHelper.createArray(skinning_matrices));
                 }
                 else
                 {
@@ -128,6 +129,8 @@ namespace KailashEngine.World
         //------------------------------------------------------
         public static void drawLights(List<Light> lights, Program program, Matrix4 transformation, bool display_light_bounds)
         {
+            GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
+
             //------------------------------------------------------
             // Light Objects
             //------------------------------------------------------

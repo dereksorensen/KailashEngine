@@ -174,6 +174,7 @@ namespace KailashEngine.World
                             else
                             {
                                 temp_animator = new Animator(id);
+                                temp_animator.load_ObjectAnimation();
                             }
 
 
@@ -214,6 +215,19 @@ namespace KailashEngine.World
                             string id = skeleton_animation_match.Groups[1].ToString();
                             string bone_name = object_id;
 
+                            // Create new or use existing Animator
+                            Animator temp_animator;
+                            if (animator_collection.TryGetValue(id, out temp_animator))
+                            {
+                                animator_collection.Remove(id);
+                            }
+                            else
+                            {
+                                temp_animator = new Animator(id);
+                                temp_animator.load_SkeletalAnimation();
+                            }
+
+
                             // Loop through key frames and add to animator
                             for (int i = 0; i < key_frame_times.Length; i++)
                             {
@@ -226,10 +240,10 @@ namespace KailashEngine.World
                                 Array.Copy(key_frame_data, current_frame_data_index, current_frame_data, 0, key_frame_data_stride);
                                 Matrix4 current_frame_data_matrix = EngineHelper.createMatrix(current_frame_data);
 
-
-
-                                //temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data, current_frame_data_bezier);
+                                temp_animator.addKeyFrame(bone_name, current_frame_time, current_frame_data_matrix);
                             }
+
+                            animator_collection.Add(id, temp_animator);
 
                         }
 
@@ -281,7 +295,13 @@ namespace KailashEngine.World
                 // Skeletons
                 if (n.node != null)
                 {
-                    skeleton_dictionary.Add(id, new DAE_Skeleton(id, temp_matrix, n.node));
+                    DAE_Skeleton temp_skeleton = new DAE_Skeleton(id, temp_matrix, n.node);
+                    Animator temp_animator;
+                    if(animator_collection.TryGetValue(temp_skeleton.id, out temp_animator))
+                    {
+                        temp_skeleton.animator = temp_animator;
+                    }
+                    skeleton_dictionary.Add(id, temp_skeleton);
                 }
 
                 // Meshes
@@ -538,6 +558,7 @@ namespace KailashEngine.World
                 unique_mesh_collection.Add("Icosphere", temp_unique_mesh_test);
             }
 
+            
 
             // Clear dictionaries. dat mesh is loooaded
             image_collection.Clear();
