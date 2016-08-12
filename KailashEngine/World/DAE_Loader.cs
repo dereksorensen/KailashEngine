@@ -278,9 +278,7 @@ namespace KailashEngine.World
             foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
             {
                 string id = n.ID;
-
-
-                
+          
 
                 // Convert Blender transformation to Kailash
                 Matrix4 temp_matrix = EngineHelper.createMatrix(
@@ -293,7 +291,7 @@ namespace KailashEngine.World
 
 
                 // Skeletons
-                if (n.node != null)
+                if (n.node != null && n.node[0].Instance_Geometry == null)
                 {
                     DAE_Skeleton temp_skeleton = new DAE_Skeleton(id, temp_matrix, n.node);
                     Animator temp_animator;
@@ -302,14 +300,7 @@ namespace KailashEngine.World
                         temp_skeleton.animator = temp_animator;
                     }
                     skeleton_dictionary.Add(id, temp_skeleton);
-                }
-
-                // Meshes
-                if (n.Instance_Geometry != null)
-                {
-                    string mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
-                    // Add to scene collection
-                    visual_scene_collection.Add(new string[]{ id, mesh_id }, temp_corrected_matrix);
+                    continue;
                 }
 
                 // Lights
@@ -318,6 +309,16 @@ namespace KailashEngine.World
                     string light_id = n.Instance_Light[0].URL.Replace("#", "");
                     // Add to light matrix collection
                     light_matrix_collection.Add(light_id, temp_corrected_matrix);
+                    continue;
+                }
+
+                // Meshes
+                if (n.Instance_Geometry != null)
+                {
+                    string mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
+                    // Add to scene collection
+                    visual_scene_collection.Add(new string[] { id, mesh_id }, temp_corrected_matrix);
+                    continue;
                 }
 
             }
@@ -546,17 +547,12 @@ namespace KailashEngine.World
             }
 
             DAE_Mesh m2;
-            if (mesh_collection.TryGetValue("Cube_002-mesh", out m2))
+            if (mesh_collection.TryGetValue("Cylinder-mesh", out m2))
             {
-                UniqueMesh temp_unique_mesh_test = new UniqueMesh("Cube", m2, EngineHelper.yup);
-                unique_mesh_collection.Add("Cube", temp_unique_mesh_test);
+                UniqueMesh temp_unique_mesh_test = new UniqueMesh("Cylinder", m2, EngineHelper.yup);
+                unique_mesh_collection.Add("Cylinder", temp_unique_mesh_test);
             }
-            DAE_Mesh m3;
-            if (mesh_collection.TryGetValue("Icosphere-mesh", out m3))
-            {
-                UniqueMesh temp_unique_mesh_test = new UniqueMesh("Icosphere", m3, EngineHelper.yup);
-                unique_mesh_collection.Add("Icosphere", temp_unique_mesh_test);
-            }
+
 
             
 
