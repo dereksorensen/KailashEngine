@@ -271,29 +271,28 @@ namespace KailashEngine.World
             //------------------------------------------------------
             // Create Visual Scene + Skeleton Dictionary
             //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tCreating Visual Scene Dictionary", dae_file.Library_Visual_Scene.Visual_Scene[0].Node.Count() + " visuals found");
-            Dictionary<string[], Matrix4> visual_scene_collection = new Dictionary<string[], Matrix4>();
+            Debug.DebugHelper.logInfo(2, "\tCreating Visuals Dictionary", dae_file.Library_Visual_Scene.Visual_Scene[0].Node.Count() + " visuals found");
+            List<Grendgine_Collada_Node> mesh_visual_collection = new List<Grendgine_Collada_Node>();
+            List<Grendgine_Collada_Node> controlled_visual_collection = new List<Grendgine_Collada_Node>();
+            List<Grendgine_Collada_Node> light_visual_collection = new List<Grendgine_Collada_Node>();
             Dictionary<string, DAE_Skeleton> skeleton_dictionary = new Dictionary<string, DAE_Skeleton>();
             light_matrix_collection = new Dictionary<string, Matrix4>();
-            foreach (Grendgine_Collada_Node n in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
+            foreach (Grendgine_Collada_Node node in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
             {
-                string id = n.ID;
+                string id = node.ID;
           
-
                 // Convert Blender transformation to Kailash
                 Matrix4 temp_matrix = EngineHelper.createMatrix(
-                    new Vector3(n.Translate[0].Value()[0], n.Translate[0].Value()[1], n.Translate[0].Value()[2]),
-                    new Vector3(n.Rotate[2].Value()[3], n.Rotate[1].Value()[3], n.Rotate[0].Value()[3]),
-                    new Vector3(n.Scale[0].Value()[0], n.Scale[0].Value()[1], n.Scale[0].Value()[2])
+                    new Vector3(node.Translate[0].Value()[0], node.Translate[0].Value()[1], node.Translate[0].Value()[2]),
+                    new Vector3(node.Rotate[2].Value()[3], node.Rotate[1].Value()[3], node.Rotate[0].Value()[3]),
+                    new Vector3(node.Scale[0].Value()[0], node.Scale[0].Value()[1], node.Scale[0].Value()[2])
                 );
-
                 Matrix4 temp_corrected_matrix = EngineHelper.blender2Kailash(temp_matrix);
 
-
                 // Skeletons
-                if (n.node != null && n.node[0].Instance_Geometry == null)
+                if (node.node != null && node.node[0].Instance_Geometry == null && node.node[0].Instance_Geometry == null)
                 {
-                    DAE_Skeleton temp_skeleton = new DAE_Skeleton(id, temp_matrix, n.node);
+                    DAE_Skeleton temp_skeleton = new DAE_Skeleton(id, temp_matrix, node.node);
                     Animator temp_animator;
                     if(animator_collection.TryGetValue(temp_skeleton.id, out temp_animator))
                     {
@@ -304,20 +303,29 @@ namespace KailashEngine.World
                 }
 
                 // Lights
-                if (n.Instance_Light != null)
+                if (node.Instance_Light != null)
                 {
-                    string light_id = n.Instance_Light[0].URL.Replace("#", "");
+                    string light_id = node.Instance_Light[0].URL.Replace("#", "");
                     // Add to light matrix collection
                     light_matrix_collection.Add(light_id, temp_corrected_matrix);
                     continue;
                 }
 
                 // Meshes
-                if (n.Instance_Geometry != null)
+                if (node.Instance_Geometry != null)
                 {
-                    string mesh_id = n.Instance_Geometry[0].URL.Replace("#", "");
+                    string mesh_id = node.Instance_Geometry[0].URL.Replace("#", "");
                     // Add to scene collection
-                    visual_scene_collection.Add(new string[] { id, mesh_id }, temp_corrected_matrix);
+                    mesh_visual_collection.Add(node);
+                    continue;
+                }
+
+                // Controlled Objects
+                if (node.Instance_Controller != null)
+                {
+                    string controller_id = node.Instance_Controller[0].URL.Replace("#", "");
+                    // Add to scene collection
+                    controlled_visual_collection.Add(node);
                     continue;
                 }
 
@@ -327,7 +335,8 @@ namespace KailashEngine.World
             //------------------------------------------------------
             // Load Skinning Data
             //------------------------------------------------------
-            Dictionary<string, DAE_Skeleton> skin_collection = new Dictionary<string, DAE_Skeleton>();
+            Dictionary<string, string> mesh_2_skeleton = new Dictionary<string, string>();
+            Dictionary<string, string> skin_2_mesh = new Dictionary<string, string>();
             try
             {
                 if (dae_file.Library_Controllers.Controller != null)
@@ -438,9 +447,10 @@ namespace KailashEngine.World
 
 
                             //------------------------------------------------------
-                            // Map mesh_id to the mesh's skeleton
+                            // Map mesh_id to the Mesh's skeleton_id
                             //------------------------------------------------------
-                            skin_collection.Add(mesh_id, temp_skeleton);
+                            mesh_2_skeleton.Add(mesh_id, skeleton_id);
+                            skin_2_mesh.Add(skin_id, mesh_id);
                         }
                     }
                 }
@@ -473,10 +483,10 @@ namespace KailashEngine.World
                         DAE_Mesh temp_mesh = new DAE_Mesh(mesh_id, g);
                         try
                         {
-                            DAE_Skeleton temp_skeleton;
-                            if(skin_collection.TryGetValue(mesh_id, out temp_skeleton))
+                            string skeleton_id;
+                            if(mesh_2_skeleton.TryGetValue(mesh_id, out skeleton_id))
                             {
-                                temp_mesh.load(material_collection, temp_skeleton);
+                                temp_mesh.load(material_collection, skeleton_dictionary[skeleton_id]);
                             }
                             else
                             {
@@ -485,16 +495,16 @@ namespace KailashEngine.World
                         }
                         catch (Exception e)
                         {
-                            Debug.DebugHelper.logError(e.Message, "");
+                            Debug.DebugHelper.logError("[ FAILED ] Loading Mesh: " + mesh_id, e.Message);
                             continue;
                         }
-
+                        
                         // Load mesh's VAO
                         foreach (Mesh mesh in temp_mesh.submeshes)
                         {
                             mesh.setBufferIDs(initVAO(mesh));
                         }
-
+                        
                         // Add to Mesh Collection
                         mesh_collection.Add(temp_mesh.id, temp_mesh);
                     }
@@ -513,57 +523,86 @@ namespace KailashEngine.World
 
 
             //------------------------------------------------------
-            // Run Through Visual Scenes
+            // Create Mesh Visuals
             //------------------------------------------------------
-            Debug.DebugHelper.logInfo(2, "\tLoading Visual Scenes", "");
+            Debug.DebugHelper.logInfo(2, "\tLoading Mesh Visuals", "");
             unique_mesh_collection = new Dictionary<string, UniqueMesh>();
-            foreach (KeyValuePair<string[], Matrix4> keypair in visual_scene_collection)
+            foreach (Grendgine_Collada_Node node in mesh_visual_collection)
             {
-                string id = keypair.Key[0];
-                string object_id = keypair.Key[1];
+                string visual_id = node.ID;
+                string mesh_id = node.Instance_Geometry[0].URL.Replace("#", "");
 
-                Debug.DebugHelper.logInfo(3, "\t\tLoading Visual Scene", id);
-                
+                Debug.DebugHelper.logInfo(3, "\t\tLoading Visual Scene", visual_id);
 
-                Matrix4 temp_matrix = keypair.Value;
+                // Convert Blender transformation to Kailash
+                Matrix4 temp_matrix = EngineHelper.blender2Kailash(EngineHelper.createMatrix(
+                    new Vector3(node.Translate[0].Value()[0], node.Translate[0].Value()[1], node.Translate[0].Value()[2]),
+                    new Vector3(node.Rotate[2].Value()[3], node.Rotate[1].Value()[3], node.Rotate[0].Value()[3]),
+                    new Vector3(node.Scale[0].Value()[0], node.Scale[0].Value()[1], node.Scale[0].Value()[2])
+                ));
 
                 // Load unique Mesh and its transformation
                 DAE_Mesh m;
-                if (mesh_collection.TryGetValue(object_id, out m))
+                if (mesh_collection.TryGetValue(mesh_id, out m))
                 {
-                    UniqueMesh temp_unique_mesh = new UniqueMesh(id, m, temp_matrix);
+                    UniqueMesh temp_unique_mesh = new UniqueMesh(visual_id, m, temp_matrix);
 
                     // Add animator to unique mesh if one exists
                     Animator temp_animator;
-                    if (animator_collection.TryGetValue(id, out temp_animator))
+                    if (animator_collection.TryGetValue(visual_id, out temp_animator))
                     {
                         temp_unique_mesh.animator = temp_animator;
                     }
 
                     // Add to mesh collection
-                    unique_mesh_collection.Add(id, temp_unique_mesh);
+                    unique_mesh_collection.Add(visual_id, temp_unique_mesh);
                 }
 
             }
 
-            DAE_Mesh m2;
-            if (mesh_collection.TryGetValue("Cylinder-mesh", out m2))
+            //------------------------------------------------------
+            // Create Skin Visuals
+            //------------------------------------------------------
+            Debug.DebugHelper.logInfo(2, "\tLoading Controlled Visuals", "");
+            foreach (Grendgine_Collada_Node node in controlled_visual_collection)
             {
-                UniqueMesh temp_unique_mesh_test = new UniqueMesh("Cylinder", m2, EngineHelper.yup);
-                unique_mesh_collection.Add("Cylinder", temp_unique_mesh_test);
+                string visual_id = node.ID;
+                string controller_id = node.Instance_Controller[0].URL.Replace("#", "");
+                string mesh_id;
+
+                if (skin_2_mesh.TryGetValue(controller_id, out mesh_id))
+                {
+                    Debug.DebugHelper.logInfo(3, "\t\tLoading Visual Scene", visual_id + " (" + controller_id + " )");
+
+                    // Convert Blender transformation to Kailash
+                    Matrix4 temp_matrix = EngineHelper.blender2Kailash(EngineHelper.createMatrix(
+                        new Vector3(node.Translate[0].Value()[0], node.Translate[0].Value()[1], node.Translate[0].Value()[2]),
+                        new Vector3(node.Rotate[2].Value()[3], node.Rotate[1].Value()[3], node.Rotate[0].Value()[3]),
+                        new Vector3(node.Scale[0].Value()[0], node.Scale[0].Value()[1], node.Scale[0].Value()[2])
+                    ));
+
+                    // Load unique Mesh and its transformation
+                    DAE_Mesh m;
+                    if (mesh_collection.TryGetValue(mesh_id, out m))
+                    {
+                        UniqueMesh temp_unique_mesh_test = new UniqueMesh(visual_id, m, temp_matrix);
+                        unique_mesh_collection.Add(visual_id, temp_unique_mesh_test);
+                    }
+                }
             }
 
 
-            
 
             // Clear dictionaries. dat mesh is loooaded
             image_collection.Clear();
             material_collection.Clear();
             mesh_collection.Clear();
             animator_collection.Clear();
-            visual_scene_collection.Clear();
+            mesh_visual_collection.Clear();
+            controlled_visual_collection.Clear();
+            light_visual_collection.Clear();
             skeleton_dictionary.Clear();
-            skin_collection.Clear();
+            mesh_2_skeleton.Clear();
         }
 
 

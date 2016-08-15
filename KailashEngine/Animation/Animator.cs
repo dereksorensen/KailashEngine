@@ -280,13 +280,6 @@ namespace KailashEngine.Animation
             return output;
         }
 
-        private Dictionary<string, Matrix4> getData()
-        {
-
-
-            return null;
-        }
-
 
         public Matrix4 getKeyFrame(float time, int num_repeats)
         {

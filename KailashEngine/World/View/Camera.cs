@@ -81,7 +81,7 @@ namespace KailashEngine.World.View
         public void smoothMovement(float smooth_movement_delay)
         {
             _position_current = _spatial.position - _position_current;
-            _position_current = EngineHelper.lerp(_position_previous, _position_current, smooth_movement_delay);
+            _position_current = Vector3.Lerp(_position_previous, _position_current, smooth_movement_delay);
             _position_previous = _position_current;
             _spatial.position += _position_current;
             _position_current = _spatial.position;

@@ -33,24 +33,13 @@ namespace KailashEngine
         {
             return src0 + (src1 - src0) * t;
         }
-        public static Vector2 lerp(Vector2 src0, Vector2 src1, float t)
-        {
-            return src0 + (src1 - src0) * t;
-        }
-        public static Vector3 lerp(Vector3 src0, Vector3 src1, float t)
-        {
-            return src0 + (src1 - src0) * t;
-        }
-        public static Vector4 lerp(Vector4 src0, Vector4 src1, float t)
-        {
-            return src0 + (src1 - src0) * t;
-        }
+
         public static Matrix4 lerp(Matrix4 src0, Matrix4 src1, float t)
         {
-            Vector3 temp_translation = lerp(src0.ExtractTranslation(), src1.ExtractTranslation(), t);
-            Vector3 temp_scale = lerp(src0.ExtractScale(), src1.ExtractScale(), t);
+            Vector3 temp_translation = Vector3.Lerp(src0.ExtractTranslation(), src1.ExtractTranslation(), t);
+            Vector3 temp_scale = Vector3.Lerp(src0.ExtractScale(), src1.ExtractScale(), t);
             Quaternion temp_rotation = Quaternion.Slerp(src0.ExtractRotation(), src1.ExtractRotation(), t);
-
+            
             return createMatrix(temp_translation, temp_rotation, temp_scale);
         }
 
