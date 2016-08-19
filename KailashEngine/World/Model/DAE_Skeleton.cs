@@ -29,8 +29,8 @@ namespace KailashEngine.World.Model
             set { _animated = value; }
         }
 
-        private Animator _animator;
-        public Animator animator
+        private SkeletonAnimator _animator;
+        public SkeletonAnimator animator
         {
             get { return _animator; }
             set

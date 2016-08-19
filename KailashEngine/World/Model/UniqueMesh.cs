@@ -36,8 +36,8 @@ namespace KailashEngine.World.Model
             set { _mesh = value; }
         }
 
-        private Animator _animator;
-        public Animator animator
+        private ObjectAnimator _animator;
+        public ObjectAnimator animator
         {
             get { return _animator; }
             set

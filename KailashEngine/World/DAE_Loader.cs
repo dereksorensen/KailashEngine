@@ -93,7 +93,8 @@ namespace KailashEngine.World
             //------------------------------------------------------
             // Create Animation Dictionary
             //------------------------------------------------------
-            Dictionary<string, Animator> animator_collection = new Dictionary<string, Animator>();
+            Dictionary<string, ObjectAnimator> object_animator_collection = new Dictionary<string, ObjectAnimator>();
+            Dictionary<string, SkeletonAnimator> skeleton_animator_collection = new Dictionary<string, SkeletonAnimator>();
             try
             {
                 if (dae_file.Library_Animations != null)
@@ -166,15 +167,14 @@ namespace KailashEngine.World
                             }
 
                             // Create new or use existing Animator
-                            Animator temp_animator;
-                            if (animator_collection.TryGetValue(id, out temp_animator))
+                            ObjectAnimator temp_animator;
+                            if (object_animator_collection.TryGetValue(id, out temp_animator))
                             {
-                                animator_collection.Remove(id);
+                                object_animator_collection.Remove(id);
                             }
                             else
                             {
-                                temp_animator = new Animator(id);
-                                temp_animator.load_ObjectAnimation();
+                                temp_animator = new ObjectAnimator(id);
                             }
 
 
@@ -203,7 +203,7 @@ namespace KailashEngine.World
                                 temp_animator.addKeyFrame(current_frame_time, action, channel, current_frame_data, current_frame_data_bezier);
                             }
 
-                            animator_collection.Add(id, temp_animator);
+                            object_animator_collection.Add(id, temp_animator);
 
                         }
 
@@ -215,18 +215,18 @@ namespace KailashEngine.World
                             string id = skeleton_animation_match.Groups[1].ToString();
                             string bone_name = object_id;
 
+                            
+
                             // Create new or use existing Animator
-                            Animator temp_animator;
-                            if (animator_collection.TryGetValue(id, out temp_animator))
+                            SkeletonAnimator temp_animator;
+                            if (skeleton_animator_collection.TryGetValue(id, out temp_animator))
                             {
-                                animator_collection.Remove(id);
+                                skeleton_animator_collection.Remove(id);
                             }
                             else
                             {
-                                temp_animator = new Animator(id);
-                                temp_animator.load_SkeletalAnimation();
+                                temp_animator = new SkeletonAnimator(id);
                             }
-
 
                             // Loop through key frames and add to animator
                             for (int i = 0; i < key_frame_times.Length; i++)
@@ -243,7 +243,7 @@ namespace KailashEngine.World
                                 temp_animator.addKeyFrame(bone_name, current_frame_time, current_frame_data_matrix);
                             }
 
-                            animator_collection.Add(id, temp_animator);
+                            skeleton_animator_collection.Add(id, temp_animator);
 
                         }
 
@@ -251,7 +251,7 @@ namespace KailashEngine.World
                         sampler_dictionary.Clear();
                     }
 
-                    foreach (Animator a in animator_collection.Values)
+                    foreach (ObjectAnimator a in object_animator_collection.Values)
                     {
                         a.calcLastFrame();
                     }
@@ -293,8 +293,8 @@ namespace KailashEngine.World
                 if (node.node != null && node.node[0].Instance_Geometry == null && node.node[0].Instance_Geometry == null)
                 {
                     DAE_Skeleton temp_skeleton = new DAE_Skeleton(id, temp_matrix, node.node);
-                    Animator temp_animator;
-                    if(animator_collection.TryGetValue(temp_skeleton.id, out temp_animator))
+                    SkeletonAnimator temp_animator;
+                    if(skeleton_animator_collection.TryGetValue(temp_skeleton.id, out temp_animator))
                     {
                         temp_skeleton.animator = temp_animator;
                     }
@@ -548,8 +548,8 @@ namespace KailashEngine.World
                     UniqueMesh temp_unique_mesh = new UniqueMesh(visual_id, m, temp_matrix);
 
                     // Add animator to unique mesh if one exists
-                    Animator temp_animator;
-                    if (animator_collection.TryGetValue(visual_id, out temp_animator))
+                    ObjectAnimator temp_animator;
+                    if (object_animator_collection.TryGetValue(visual_id, out temp_animator))
                     {
                         temp_unique_mesh.animator = temp_animator;
                     }
@@ -597,7 +597,8 @@ namespace KailashEngine.World
             image_collection.Clear();
             material_collection.Clear();
             mesh_collection.Clear();
-            animator_collection.Clear();
+            object_animator_collection.Clear();
+            skeleton_animator_collection.Clear();
             mesh_visual_collection.Clear();
             controlled_visual_collection.Clear();
             light_visual_collection.Clear();

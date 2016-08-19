@@ -185,7 +185,7 @@ namespace KailashEngine.World
 
 
                 //------------------------------------------------------
-                // Light Bounds
+                // Display Light Bounds
                 //------------------------------------------------------
                 if (display_light_bounds)
                 {

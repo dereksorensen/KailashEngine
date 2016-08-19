@@ -85,6 +85,8 @@
   <ItemGroup>
     <Compile Include="Animation\AnimationDriver.cs" />
     <Compile Include="Animation\AnimationHelper.cs" />
+    <Compile Include="Animation\ObjectAnimator.cs" />
+    <Compile Include="Animation\SkeletonAnimator.cs" />
     <Compile Include="Animation\Timer.cs" />
     <Compile Include="Client\Scene.cs" />
     <Compile Include="Debug\DebugWindow.cs" />
@@ -469,7 +471,6 @@
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
     <Compile Include="Serialization\Serializer.cs" />
-    <Compile Include="Animation\Animator.cs" />
     <Compile Include="World\ControllableWorldObject.cs" />
     <Compile Include="World\LightLoader.cs" />
     <Compile Include="World\Lights\Light.cs" />
