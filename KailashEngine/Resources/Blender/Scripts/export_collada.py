@@ -15,13 +15,26 @@ export_selected = False
 base_filename = bpy.path.basename(bpy.context.blend_data.filepath).replace(".blend","").replace(".blend","")
 
 dae_filename = base_filename + '.dae'
-dae_path = '..\\Mesh\\' + dae_filename
+dae_path = '..\\Mesh\\' + base_filename + '\\' + dae_filename
 
 physics_filename = base_filename + '.physics'
 physics_path = '..\\Physics\\' + physics_filename 
 
 lights_filename = base_filename + '.lights'
 lights_path = '..\\Lights\\' + lights_filename 
+
+
+#base_path = dae_path = '..\\Mesh\\' + base_filename + '\\'
+
+#dae_filename = base_filename + '.dae'
+#dae_path = base_path + dae_filename
+
+#physics_filename = base_filename + '.physics'
+#physics_path = base_path + physics_filename 
+
+#lights_filename = base_filename + '.lights'
+#lights_path = base_path + lights_filename 
+
 
 
 #######################################

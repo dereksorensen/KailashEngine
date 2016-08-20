@@ -207,6 +207,7 @@ namespace KailashEngine.World
 
                         }
 
+
                         //------------------------------------------------------
                         // Skeletal Animation
                         //------------------------------------------------------
@@ -251,10 +252,17 @@ namespace KailashEngine.World
                         sampler_dictionary.Clear();
                     }
 
+
+                    // Get last key frame for each animator
                     foreach (ObjectAnimator a in object_animator_collection.Values)
                     {
                         a.calcLastFrame();
                     }
+                    foreach (SkeletonAnimator a in skeleton_animator_collection.Values)
+                    {
+                        a.calcLastFrame();
+                    }
+
                 }
                 else
                 {

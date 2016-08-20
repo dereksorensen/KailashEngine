@@ -90,13 +90,33 @@ namespace KailashEngine.Animation
         }
 
 
+        // Calculate the last frame for this animator
+        public void calcLastFrame()
+        {
+
+            List<List<float>> key_frame_times = new List<List<float>>();
+            foreach (KeyValuePair<string, Dictionary<float, KeyFrame>> keypair in _key_frames_skeleton)
+            {
+                key_frame_times.Add(keypair.Value.Keys.ToList());
+            }
+
+            float last_frame_time = 0;
+
+            foreach (List<float> frames in key_frame_times)
+            {
+                last_frame_time = Math.Max(frames.Last(), last_frame_time);
+            }
+
+            _global_last_frame_time = last_frame_time;
+        }
+
 
         //------------------------------------------------------
         // Get Animation Data
         //------------------------------------------------------
 
         // Get the skelton's bone matrices at the specified time
-        public Dictionary<string, Matrix4> getKeyFrame(float time)
+        public Dictionary<string, Matrix4> getKeyFrame(float time, int num_repeats)
         {
             Dictionary<string, Matrix4> temp_bone_matrices = new Dictionary<string, Matrix4>();
 
@@ -105,10 +125,15 @@ namespace KailashEngine.Animation
                 string temp_bone_name = keypair.Key;
 
                 List<float> key_frame_times = keypair.Value.Keys.ToList();
+                
 
+                float last_frame_time = _global_last_frame_time;
+                float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(time / last_frame_time) : Math.Min((float)Math.Floor(time / last_frame_time), num_repeats - 1);
+                float repeat_frame = repeat_multiplier * last_frame_time;
+                float loop_time = time - repeat_frame;
 
                 // Get prevous and next frame with interpolation between them
-                Vector3 PrevNextInterp = AnimationHelper.getNearestFrame(key_frame_times.ToArray(), time);
+                Vector3 PrevNextInterp = AnimationHelper.getNearestFrame(key_frame_times.ToArray(), loop_time);
 
                 // Default to the most recent frame's data
                 Matrix4 output = keypair.Value[PrevNextInterp.X].data;

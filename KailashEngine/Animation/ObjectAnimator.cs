@@ -63,8 +63,6 @@ namespace KailashEngine.Animation
         private Dictionary<float, KeyFrame> _key_frames_scale_y;
         private Dictionary<float, KeyFrame> _key_frames_scale_z;
 
-        private List<List<float>> _key_frame_times;
-
 
         //------------------------------------------------------
         // Constructor
@@ -154,30 +152,28 @@ namespace KailashEngine.Animation
         // Calculate the last frame for this animator
         public void calcLastFrame()
         {
-            if (_key_frames_location_x != null)
+
+            List<List<float>> key_frame_times = new List<List<float>>
             {
-                _key_frame_times = new List<List<float>>
-                {
-                    _key_frames_location_x.Keys.ToList(),
-                    _key_frames_location_y.Keys.ToList(),
-                    _key_frames_location_z.Keys.ToList(),
-                    _key_frames_rotation_x.Keys.ToList(),
-                    _key_frames_rotation_y.Keys.ToList(),
-                    _key_frames_rotation_z.Keys.ToList(),
-                    _key_frames_scale_x.Keys.ToList(),
-                    _key_frames_scale_y.Keys.ToList(),
-                    _key_frames_scale_z.Keys.ToList()
-                };
+                _key_frames_location_x.Keys.ToList(),
+                _key_frames_location_y.Keys.ToList(),
+                _key_frames_location_z.Keys.ToList(),
+                _key_frames_rotation_x.Keys.ToList(),
+                _key_frames_rotation_y.Keys.ToList(),
+                _key_frames_rotation_z.Keys.ToList(),
+                _key_frames_scale_x.Keys.ToList(),
+                _key_frames_scale_y.Keys.ToList(),
+                _key_frames_scale_z.Keys.ToList()
+            };
 
-                float last_frame_time = 0;
+            float last_frame_time = 0;
 
-                foreach (List<float> frames in _key_frame_times)
-                {
-                    last_frame_time = Math.Max(frames.Last(), last_frame_time);
-                }
-
-                _global_last_frame_time = last_frame_time;
+            foreach (List<float> frames in key_frame_times)
+            {
+                last_frame_time = Math.Max(frames.Last(), last_frame_time);
             }
+
+            _global_last_frame_time = last_frame_time;
         }
 
 
@@ -199,15 +195,12 @@ namespace KailashEngine.Animation
         }
 
         // Gets a certain channel's data at the specified time
-        private float getData(Dictionary<float, KeyFrame> key_frame_dictionary, float current_time)
+        private float getData(Dictionary<float, KeyFrame> key_frame_dictionary, float current_time, int num_repeats)
         {
             List<float> key_frame_times = key_frame_dictionary.Keys.ToList();
-            //key_frame_times.Sort();
 
-            float num_repeats = -1;
 
-            float last_frame_time = key_frame_times.Last();
-            last_frame_time = _global_last_frame_time;
+            float last_frame_time = _global_last_frame_time;
             float repeat_multiplier = (num_repeats == -1) ? (float)Math.Floor(current_time / last_frame_time) : Math.Min((float)Math.Floor(current_time / last_frame_time), num_repeats - 1);
             float repeat_frame = repeat_multiplier * last_frame_time;
             float loop_time = current_time - repeat_frame;
@@ -238,21 +231,21 @@ namespace KailashEngine.Animation
 
             // Set animation actions
             Vector3 translation = new Vector3(
-                getData(_key_frames_location_x, time),
-                getData(_key_frames_location_y, time),
-                getData(_key_frames_location_z, time)
+                getData(_key_frames_location_x, time, num_repeats),
+                getData(_key_frames_location_y, time, num_repeats),
+                getData(_key_frames_location_z, time, num_repeats)
             );
 
             Vector3 rotation_euler = new Vector3(
-                getData(_key_frames_rotation_x, time),
-                getData(_key_frames_rotation_y, time),
-                getData(_key_frames_rotation_z, time)
+                getData(_key_frames_rotation_x, time, num_repeats),
+                getData(_key_frames_rotation_y, time, num_repeats),
+                getData(_key_frames_rotation_z, time, num_repeats)
             );
 
             Vector3 scale = new Vector3(
-                getData(_key_frames_scale_x, time),
-                getData(_key_frames_scale_y, time),
-                getData(_key_frames_scale_z, time)
+                getData(_key_frames_scale_x, time, num_repeats),
+                getData(_key_frames_scale_y, time, num_repeats),
+                getData(_key_frames_scale_z, time, num_repeats)
             );
 
 
