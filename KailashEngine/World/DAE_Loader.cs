@@ -28,6 +28,7 @@ namespace KailashEngine.World
                 throw new Exception("World File Not Found\n" + filename);
             }
 
+
             Debug.DebugHelper.logInfo(1, "Loading Collada File", Path.GetFileName(filename));
             Grendgine_Collada dae_file = Grendgine_Collada.Grendgine_Load_File(filename);
 

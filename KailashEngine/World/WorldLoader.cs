@@ -17,10 +17,8 @@ namespace KailashEngine.World
     class WorldLoader
     {
 
-        
-        private string _path_mesh;
-        private string _path_physics;
-        private string _path_lights;
+
+        private string _path_scene;
 
         private Mesh _sLight_mesh;
         public Mesh sLight_mesh
@@ -35,35 +33,53 @@ namespace KailashEngine.World
         }
 
 
-        public WorldLoader(string path_mesh, string path_physics, string path_lights, string light_objects_filename)
+        public WorldLoader(string path_scene, string light_objects_filename)
         {
             // Fill Base Paths
-            _path_mesh = path_mesh;
-            _path_physics = path_physics;
-            _path_lights = path_lights;
-
+            _path_scene = path_scene;
 
             // Load standard light object meshes
-            Dictionary<string, Matrix4> dirt;
-            Dictionary<string, UniqueMesh> light_objects;
-            DAE_Loader.load(_path_mesh + light_objects_filename, out light_objects, out dirt);
-            _sLight_mesh = light_objects["sLight"].mesh;
-            _pLight_mesh = light_objects["pLight"].mesh;
-            light_objects.Clear();
-            dirt.Clear();
+            Dictionary<string, Matrix4> dirt = new Dictionary<string, Matrix4>();
+            Dictionary<string, UniqueMesh> light_objects = new Dictionary<string, UniqueMesh>();
+            try
+            {
+                DAE_Loader.load(_path_scene + light_objects_filename + "/" + light_objects_filename + ".dae", out light_objects, out dirt);
+                _sLight_mesh = light_objects["sLight"].mesh;
+                _pLight_mesh = light_objects["pLight"].mesh;
+                light_objects.Clear();
+                dirt.Clear();
+            }
+            catch (Exception e)
+            {
+                Debug.DebugHelper.logError("[ ERROR ] World File: " + light_objects_filename, e.Message);
+            }
         }
 
+        private string[] createFilePaths(string filename)
+        {
+            string mesh_filename = _path_scene + filename + "/" + filename + ".dae";
+            string physics_filename = _path_scene + filename + "/" + filename + ".physics";
+            string lights_filename = _path_scene + filename + "/" + filename + ".lights";
+
+            return new string[]
+            {
+                mesh_filename,
+                physics_filename,
+                lights_filename
+            };
+        }
 
         public void createWorld(string filename, out List<UniqueMesh> meshes, out List<Light> lights)
         {
             Debug.DebugHelper.logInfo(1, "Loading World", filename);
 
             // Build filenames
-            string mesh_filename = _path_mesh + filename + ".dae";
-            string physics_filename = _path_physics + filename + ".physics";
-            string lights_filename = _path_lights + filename + ".lights";
+            string[] filepaths = createFilePaths(filename);
+            string mesh_filename = filepaths[0];
+            string physics_filename = filepaths[1];
+            string lights_filename = filepaths[2];
 
-            
+
             Dictionary<string, UniqueMesh> temp_meshes;
             Dictionary<string, Matrix4> light_matrix_collection;
 
@@ -82,9 +98,10 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(1, "Loading World", filename);
 
             // Build filenames
-            string mesh_filename = _path_mesh + filename + ".dae";
-            string physics_filename = _path_physics + filename + ".physics";
-            string lights_filename = _path_lights + filename + ".lights";
+            string[] filepaths = createFilePaths(filename);
+            string mesh_filename = filepaths[0];
+            string physics_filename = filepaths[1];
+            string lights_filename = filepaths[2];
 
 
             Dictionary<string, UniqueMesh> temp_meshes;

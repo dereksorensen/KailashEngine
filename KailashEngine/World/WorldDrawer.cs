@@ -31,6 +31,24 @@ namespace KailashEngine.World
         }
 
 
+        private static void drawCalls(Mesh mesh, string exception_string)
+        {
+            try
+            {
+                GL.BindVertexArray(mesh.vao);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, mesh.ibo);
+                GL.DrawElements(BeginMode.Triangles, mesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
+                GL.BindVertexArray(0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(exception_string, e);
+            }
+        }
+
+
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
@@ -104,20 +122,7 @@ namespace KailashEngine.World
                     trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
 
 
-
-                    try
-                    {
-                        GL.BindVertexArray(submesh.vao);
-                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, submesh.ibo);
-                        GL.DrawElements(BeginMode.Triangles, submesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
-                        GL.BindVertexArray(0);
-                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed drawing mesh", e);
-                    }
+                    drawCalls(submesh, "Failed drawing mesh");
 
                 }
             }
@@ -169,20 +174,8 @@ namespace KailashEngine.World
                 program.enable_MaterialTexture(RenderHelper.uEnableParallaxTexture, 0);
 
 
-                try
-                {
-                    GL.BindVertexArray(light.unique_mesh.mesh.submeshes.ElementAt(0).vao);
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, light.unique_mesh.mesh.submeshes.ElementAt(0).ibo);
-                    GL.DrawElements(BeginMode.Triangles, light.unique_mesh.mesh.submeshes.ElementAt(0).index_data.Length, DrawElementsType.UnsignedInt, 0);
-                    GL.BindVertexArray(0);
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Failed drawing mesh:\n" + e.Message);
-                }
 
+                drawCalls(light.unique_mesh.mesh.submeshes.ElementAt(0), "Failed drawing mesh:\n");
 
                 //------------------------------------------------------
                 // Display Light Bounds
@@ -202,20 +195,8 @@ namespace KailashEngine.World
                     GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
 
-                    try
-                    {
-                        GL.BindVertexArray(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).vao);
-                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).ibo);
-                        GL.DrawElements(BeginMode.Triangles, light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).index_data.Length, DrawElementsType.UnsignedInt, 0);
-                        GL.BindVertexArray(0);
-                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed drawing lights", e);
-                    }
 
+                    drawCalls(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "Failed drawing lights");
 
                     GL.Enable(EnableCap.CullFace);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
@@ -233,19 +214,7 @@ namespace KailashEngine.World
             Matrix4 temp_mat = light.bounding_unique_mesh.transformation;
             GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
 
-            try
-            {
-                GL.BindVertexArray(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).vao);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).ibo);
-                GL.DrawElements(BeginMode.Triangles, light.bounding_unique_mesh.mesh.submeshes.ElementAt(0).index_data.Length, DrawElementsType.UnsignedInt, 0);
-                GL.BindVertexArray(0);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Failed drawing light bounds", e);
-            }
+            drawCalls(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "Failed drawing light bounds");
         }
     }
 }

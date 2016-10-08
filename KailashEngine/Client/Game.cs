@@ -75,7 +75,7 @@ namespace KailashEngine.Client
             _config = config;
             _serializer = new Serializer(_config.path_resources_save_data);
             _display = new Display(_title, _config.default_resolution, _config.default_fullscreen);      
-            _scene = new Scene(_config.path_resources_mesh, _config.path_resources_physics, _config.path_resources_lights);
+            _scene = new Scene(_config.path_resources_scene);
 
             _player = new Player();
 

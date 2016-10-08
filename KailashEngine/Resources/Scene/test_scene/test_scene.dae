@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.76.0 commit date:2015-11-03, commit time:10:56, hash:f337fea</authoring_tool>
     </contributor>
-    <created>2016-08-20T10:42:09</created>
-    <modified>2016-08-20T10:42:09</modified>
+    <created>2016-10-08T16:01:06</created>
+    <modified>2016-10-08T16:01:06</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -80,8 +80,97 @@
       </extra>
     </light>
   </library_lights>
-  <library_images/>
+  <library_images>
+    <image id="brick1-d_jpg" name="brick1-d_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-d.jpg</init_from>
+    </image>
+    <image id="brick1-n_jpg" name="brick1-n_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-n.jpg</init_from>
+    </image>
+    <image id="brick1-s_jpg" name="brick1-s_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-s.jpg</init_from>
+    </image>
+    <image id="brick1-h_jpg" name="brick1-h_jpg">
+      <init_from>/C:/Users/dersor/Google%20Drive/KailashEngine2/KailashEngine/Resources/Textures/brick1-h.jpg</init_from>
+    </image>
+  </library_images>
   <library_effects>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <newparam sid="brick1-d_jpg-surface">
+          <surface type="2D">
+            <init_from>brick1-d_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="brick1-d_jpg-sampler">
+          <sampler2D>
+            <source>brick1-d_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="brick1-s_jpg-surface">
+          <surface type="2D">
+            <init_from>brick1-s_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="brick1-s_jpg-sampler">
+          <sampler2D>
+            <source>brick1-s_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="brick1-h_jpg-surface">
+          <surface type="2D">
+            <init_from>brick1-h_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="brick1-h_jpg-sampler">
+          <sampler2D>
+            <source>brick1-h_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="brick1-n_jpg-surface">
+          <surface type="2D">
+            <init_from>brick1-n_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="brick1-n_jpg-sampler">
+          <sampler2D>
+            <source>brick1-n_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="brick1-d_jpg-sampler"/>
+            </diffuse>
+            <specular>
+              <texture texture="brick1-s_jpg-sampler"/>
+            </specular>
+            <shininess>
+              <float sid="shininess">126</float>
+            </shininess>
+            <reflective>
+              <texture texture="brick1-h_jpg-sampler"/>
+            </reflective>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump>
+                <texture texture="brick1-n_jpg-sampler"/>
+              </bump>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
     <effect id="Material_002-effect">
       <profile_COMMON>
         <technique sid="common">
@@ -110,11 +199,57 @@
     </effect>
   </library_effects>
   <library_materials>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
+    </material>
     <material id="Material_002-material" name="Material_002">
       <instance_effect url="#Material_002-effect"/>
     </material>
   </library_materials>
   <library_geometries>
+    <geometry id="Cube_001-mesh" name="Cube.001">
+      <mesh>
+        <source id="Cube_001-mesh-positions">
+          <float_array id="Cube_001-mesh-positions-array" count="24">-1 -1 0.06342887 -1 -1 2.063429 -1 1 0.06342887 -1 1 2.063429 1 -1 0.06342887 1 -1 2.063429 1 1 0.06342887 1 1 2.063429</float_array>
+          <technique_common>
+            <accessor source="#Cube_001-mesh-positions-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube_001-mesh-normals">
+          <float_array id="Cube_001-mesh-normals-array" count="18">-1 0 0 0 1 0 1 0 0 0 -1 0 0 0 -1 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#Cube_001-mesh-normals-array" count="6" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube_001-mesh-map-0">
+          <float_array id="Cube_001-mesh-map-0-array" count="72">11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 11.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113 -10.59113 -10.59113 11.59113</float_array>
+          <technique_common>
+            <accessor source="#Cube_001-mesh-map-0-array" count="36" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Cube_001-mesh-vertices">
+          <input semantic="POSITION" source="#Cube_001-mesh-positions"/>
+        </vertices>
+        <polylist material="Material-material" count="12">
+          <input semantic="VERTEX" source="#Cube_001-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube_001-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Cube_001-mesh-map-0" offset="2" set="0"/>
+          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
+          <p>3 0 0 2 0 1 0 0 2 7 1 3 6 1 4 2 1 5 5 2 6 4 2 7 6 2 8 1 3 9 0 3 10 4 3 11 2 4 12 6 4 13 4 4 14 7 5 15 3 5 16 1 5 17 1 0 18 3 0 19 0 0 20 3 1 21 7 1 22 2 1 23 7 2 24 5 2 25 6 2 26 5 3 27 1 3 28 4 3 29 0 4 30 2 4 31 4 4 32 5 5 33 7 5 34 1 5 35</p>
+        </polylist>
+      </mesh>
+    </geometry>
     <geometry id="Cube-mesh" name="Cube">
       <mesh>
         <source id="Cube-mesh-positions">
@@ -638,6 +773,20 @@
         <rotate sid="rotationY">0 1 0 0</rotate>
         <rotate sid="rotationX">1 0 0 0</rotate>
         <scale sid="scale">3.818344 3.818344 3.818344</scale>
+      </node>
+      <node id="Cube" name="Cube" type="NODE">
+        <translate sid="location">0.9143367 3.424305 -4.660606</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">28.32018 28.32018 1.416009</scale>
+        <instance_geometry url="#Cube_001-mesh" name="Cube">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Material-material" target="#Material-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
       </node>
       <node id="Cube_001" name="Cube_001" type="NODE">
         <translate sid="location">0 2.080604 0</translate>

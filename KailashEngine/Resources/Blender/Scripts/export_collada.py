@@ -1,6 +1,6 @@
 import bpy
 import math
-
+import os
 
 #######################################
 ## Export Settings
@@ -13,15 +13,19 @@ export_selected = False
 #######################################
 
 base_filename = bpy.path.basename(bpy.context.blend_data.filepath).replace(".blend","").replace(".blend","")
+base_directory = '..\\Scene\\' + base_filename + '\\'
+
+if not os.path.exists(base_directory):
+    os.makedirs(base_directory)
 
 dae_filename = base_filename + '.dae'
-dae_path = '..\\Mesh\\' + dae_filename
+dae_path = base_directory + dae_filename
 
 physics_filename = base_filename + '.physics'
-physics_path = '..\\Physics\\' + physics_filename 
+physics_path = base_directory + physics_filename 
 
 lights_filename = base_filename + '.lights'
-lights_path = '..\\Lights\\' + lights_filename 
+lights_path = base_directory + lights_filename 
 
 
 #base_path = dae_path = '..\\Mesh\\' + base_filename + '\\'

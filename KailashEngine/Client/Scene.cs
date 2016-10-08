@@ -19,9 +19,7 @@ namespace KailashEngine.Client
     class Scene
     {
 
-        private string _path_mesh;
-        private string _path_physics;
-        private string _path_lights;
+        private string _path_scene;
 
         private MatrixStack _MS;
 
@@ -59,11 +57,9 @@ namespace KailashEngine.Client
         }
 
 
-        public Scene(string path_mesh, string path_physics, string path_lights)
+        public Scene(string path_scene)
         {
-            _path_mesh = path_mesh;
-            _path_physics = path_physics;
-            _path_lights = path_lights;
+            _path_scene = path_scene;
             _MS = new MatrixStack();
         
 
@@ -109,7 +105,7 @@ namespace KailashEngine.Client
 
         public void load()
         {
-            _world_loader = new WorldLoader(_path_mesh, _path_physics, _path_lights, "light_objects.dae");
+            _world_loader = new WorldLoader(_path_scene, "light_objects");
 
 
             // Load Scenes
