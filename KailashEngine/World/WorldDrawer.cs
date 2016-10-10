@@ -31,7 +31,8 @@ namespace KailashEngine.World
         }
 
 
-        private static void drawCalls(Mesh mesh, string exception_string)
+        // Standard OGL calls to draw meshes / lights
+        private static void draw(Mesh mesh, string mesh_category)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace KailashEngine.World
             }
             catch (Exception e)
             {
-                throw new Exception(exception_string, e);
+                throw new Exception("Failed Drawing: " + mesh.id + " [ " + mesh_category + " ] ", e);
             }
         }
 
@@ -57,14 +58,17 @@ namespace KailashEngine.World
             foreach (UniqueMesh unique_mesh in meshes)
             {
                 //------------------------------------------------------
-                // World Matrix
+                // Object Animation Matrix
                 //------------------------------------------------------
                 Matrix4 temp_mat = unique_mesh.transformation;
                 if (unique_mesh.animated)
                 {
                     temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
                 }
-                // Load Mesh's pre-transformation Matrix
+
+                //------------------------------------------------------
+                // World Matrix
+                //------------------------------------------------------
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
                 // Convert matrix for normals
                 try
@@ -121,8 +125,8 @@ namespace KailashEngine.World
                     // Parallax
                     trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
 
-
-                    drawCalls(submesh, "Failed drawing mesh");
+                    
+                    draw(submesh, "mesh");
 
                 }
             }
@@ -134,6 +138,7 @@ namespace KailashEngine.World
         //------------------------------------------------------
         public static void drawLights(List<Light> lights, Program program, Matrix4 transformation, bool display_light_bounds)
         {
+            // Disable skinning
             GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
 
             //------------------------------------------------------
@@ -175,7 +180,7 @@ namespace KailashEngine.World
 
 
 
-                drawCalls(light.unique_mesh.mesh.submeshes.ElementAt(0), "Failed drawing mesh:\n");
+                draw(light.unique_mesh.mesh.submeshes.ElementAt(0), "light");
 
                 //------------------------------------------------------
                 // Display Light Bounds
@@ -195,8 +200,7 @@ namespace KailashEngine.World
                     GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
 
-
-                    drawCalls(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "Failed drawing lights");
+                    draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "light bounds");
 
                     GL.Enable(EnableCap.CullFace);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
@@ -210,11 +214,11 @@ namespace KailashEngine.World
         //------------------------------------------------------
         public static void drawLightBounds(Light light, Program program)
         {
-            
+            // Load light bounds transformation
             Matrix4 temp_mat = light.bounding_unique_mesh.transformation;
             GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
 
-            drawCalls(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "Failed drawing light bounds");
+            draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "light bounds for lighting");
         }
     }
 }

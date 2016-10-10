@@ -16,6 +16,7 @@ using KailashEngine.Output;
 using KailashEngine.Client;
 using KailashEngine.Render;
 using KailashEngine.Render.Shader;
+using KailashEngine.Physics;
 
 namespace KailashEngine
 {
@@ -25,6 +26,9 @@ namespace KailashEngine
         // Engine Objects
         private RenderDriver _render_driver;
         private float _fps;
+
+        // Physics Objects
+        private PhysicsDriver _physics_driver;
 
         // Game Objects
         private Game _game;
@@ -295,7 +299,7 @@ namespace KailashEngine
                 _game.display.resolution
             );
             _debug_window = new DebugWindow();
-
+            _physics_driver = new PhysicsDriver();
 
 
             // Load Objects
@@ -316,7 +320,7 @@ namespace KailashEngine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // this is called every frame, put game logic here
-            
+            _physics_driver.update((float)e.Time, _game.config.fps_target, _fps);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -336,7 +340,7 @@ namespace KailashEngine
 
 
 
-
+            // Flashlight stuff
 
             Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
 
@@ -348,11 +352,7 @@ namespace KailashEngine
 
             _render_driver.render(_game.scene);
 
-
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;
-
-
-
 
 
 
@@ -361,7 +361,7 @@ namespace KailashEngine
 
             _debug_window.render(_fps);
 
-            Debug.DebugHelper.logGLError();
+            DebugHelper.logGLError();
             SwapBuffers();
             
         }
@@ -372,6 +372,7 @@ namespace KailashEngine
 
             _game.unload();
             _debug_window.unload();
+            _physics_driver.unload();
 
             Console.WriteLine("\nBaaiiii...");
             Thread.Sleep(500);

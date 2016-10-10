@@ -144,6 +144,42 @@ namespace KailashEngine
             return temp_scale * (temp_rotation * temp_translation);
         }
 
+
+        //------------------------------------------------------
+        // Data Type Converters
+        //------------------------------------------------------
+        public static BulletSharp.Math.Matrix otk2bullet(OpenTK.Matrix4 matrix)
+        {
+            return new BulletSharp.Math.Matrix(
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44
+            );
+        }
+
+        public static OpenTK.Matrix4 bullet2otk(BulletSharp.Math.Matrix matrix)
+        {
+            return new OpenTK.Matrix4(
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44
+            );
+        }
+
+        public static BulletSharp.Math.Vector3 otk2bullet(OpenTK.Vector3 vector)
+        {
+            return new BulletSharp.Math.Vector3(vector.X, vector.Y, vector.Z);
+        }
+
+        public static OpenTK.Vector3 bullet2otk(BulletSharp.Math.Vector3 vector)
+        {
+            return new OpenTK.Vector3(vector.X, vector.Y, vector.Z);
+        }
+
+
+
         //------------------------------------------------------
         // World Object Helpers
         //------------------------------------------------------

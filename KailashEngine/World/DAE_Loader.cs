@@ -511,7 +511,7 @@ namespace KailashEngine.World
                         // Load mesh's VAO
                         foreach (Mesh mesh in temp_mesh.submeshes)
                         {
-                            mesh.setBufferIDs(initVAO(mesh));
+                            mesh.setBufferIDs(loadVAO(mesh));
                         }
                         
                         // Add to Mesh Collection
@@ -617,7 +617,7 @@ namespace KailashEngine.World
 
 
 
-        private static int[] initVAO(Mesh mesh)
+        private static int[] loadVAO(Mesh mesh)
         {
 
             int temp_vbo, temp_ibo, temp_vao = 0;
