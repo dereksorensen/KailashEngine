@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BulletSharp;
 using OpenTK;
 
 using KailashEngine.Render;
@@ -103,9 +104,9 @@ namespace KailashEngine.Client
         // Load Scene
         //------------------------------------------------------
 
-        public void load()
+        public void load(DiscreteDynamicsWorld physics_world)
         {
-            _world_loader = new WorldLoader(_path_scene, "light_objects");
+            _world_loader = new WorldLoader(_path_scene, "light_objects", physics_world);
 
 
             // Load Scenes

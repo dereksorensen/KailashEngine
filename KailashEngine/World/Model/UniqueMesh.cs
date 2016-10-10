@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OpenTK;
 
 using KailashEngine.Animation;
+using KailashEngine.Physics;
 
 namespace KailashEngine.World.Model
 {
@@ -36,6 +37,8 @@ namespace KailashEngine.World.Model
             set { _mesh = value; }
         }
 
+
+
         private ObjectAnimator _animator;
         public ObjectAnimator animator
         {
@@ -55,12 +58,34 @@ namespace KailashEngine.World.Model
         }
 
 
+
+        private PhysicsObject _physics_object;
+        public PhysicsObject physics_object
+        {
+            get { return _physics_object; }
+            set
+            {
+                _physical = true;
+                _physics_object = value;
+            }
+        }
+
+        private bool _physical;
+        public bool physical
+        {
+            get { return _physical; }
+            set { _physical = value; }
+        }
+
+
+
         public UniqueMesh(string id, Mesh mesh, Matrix4 transformation)
         {
             _id = id;
             _mesh = mesh;
             _transformation = transformation;
             _animated = false;
+            _physical = false;
         }
     }
 }

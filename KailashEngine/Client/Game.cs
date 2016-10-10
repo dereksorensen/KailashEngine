@@ -93,10 +93,10 @@ namespace KailashEngine.Client
         }
 
 
-        public void load()
+        public void load(BulletSharp.DiscreteDynamicsWorld physics_world)
         {
             _player.controlAndWatch(_character_1, _camera_1);
-            _scene.load();
+            _scene.load(physics_world);
             _scene.toggleFlashlight(_player.enable_flashlight);
         }
 

@@ -36,7 +36,7 @@ namespace KailashEngine.Physics
             SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
             _world = new DiscreteDynamicsWorld(_dispatcher, _broadphase, solver, _collision_config);
-            _world.DispatchInfo.AllowedCcdPenetration = 0.0000f;
+            //_world.DispatchInfo.AllowedCcdPenetration = 0.0000f;
 
             _world.Gravity = EngineHelper.otk2bullet(new Vector3(0, -9.8f, 0));
 

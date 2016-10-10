@@ -152,16 +152,16 @@ for item in bpy.data.objects:
 			shape = "shp " + str(item.rigid_body.collision_shape) + '\n'
 			physics_file.write(shape)
         # position
-			position = "pos " + str(item.location.x) + " " + str(item.location.z) + " " + str(-item.location.y) + '\n'
+			position = "pos " + str(item.location.x) + " " + str(item.location.y) + " " + str(item.location.z) + '\n'
 			physics_file.write(position)
         #rotations
-			rotation = "rot " + str(-item.rotation_euler.x) + " " + str(-item.rotation_euler.z) + " " + str(item.rotation_euler.y) + '\n'
+			rotation = "rot " + str(item.rotation_euler.x) + " " + str(item.rotation_euler.y) + " " + str(item.rotation_euler.z) + '\n'
 			physics_file.write(rotation)
         # dimensions
-			dimensions = "dim " + str(item.dimensions.x) + " " + str(item.dimensions.z) + " " + str(item.dimensions.y) + '\n'
+			dimensions = "dim " + str(item.dimensions.x) + " " + str(item.dimensions.y) + " " + str(item.dimensions.z) + '\n'
 			physics_file.write(dimensions)
         # scale
-			scale = "scl " + str(item.scale.x) + " " + str(item.scale.z) + " " + str(item.scale.y) + '\n'
+			scale = "scl " + str(item.scale.x) + " " + str(item.scale.y) + " " + str(item.scale.z) + '\n'
 			physics_file.write(scale)
         # attributes
 			attributes = "atr " + str(item.rigid_body.mass) + " " + str(item.rigid_body.friction) + " " + str(item.rigid_body.restitution) + '\n' 

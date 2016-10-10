@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BulletSharp;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
-using KailashEngine.Render;
+using KailashEngine.Physics;
 using KailashEngine.World.Model;
 using KailashEngine.World.Lights;
 
@@ -32,11 +32,16 @@ namespace KailashEngine.World
             get { return _pLight_mesh; }
         }
 
+        private DiscreteDynamicsWorld _physics_world;
 
-        public WorldLoader(string path_scene, string light_objects_filename)
+
+        public WorldLoader(string path_scene, string light_objects_filename, DiscreteDynamicsWorld physics_world)
         {
             // Fill Base Paths
             _path_scene = path_scene;
+
+            // Assign physics world
+            _physics_world = physics_world;
 
             // Load standard light object meshes
             Dictionary<string, UniqueMesh> light_objects = new Dictionary<string, UniqueMesh>();
@@ -91,6 +96,7 @@ namespace KailashEngine.World
                 out temp_meshes, 
                 out light_matrix_collection);
             lights = LightLoader.load(lights_filename, light_matrix_collection, _sLight_mesh, _pLight_mesh);
+            PhysicsLoader.load(physics_filename, _physics_world, temp_meshes);
             meshes = temp_meshes.Values.ToList();
 
             temp_meshes.Clear();

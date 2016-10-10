@@ -48,8 +48,8 @@ namespace KailashEngine.Physics
 
             RigidBody body = new RigidBody(rbInfo);
 
-            body.CcdMotionThreshold = dimensions.Length;
-            body.CcdSweptSphereRadius = dimensions.Length;
+            //body.CcdMotionThreshold = dimensions.Length;
+            //body.CcdSweptSphereRadius = dimensions.Length;
             //body.Flags = RigidBodyFlags.DisableWorldGravity;
             //body.Gravity = new Vector3(0.0f, -dimensions.Length * GV.gravity * 5.0f, 0.0f);
 

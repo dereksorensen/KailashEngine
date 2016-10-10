@@ -57,13 +57,23 @@ namespace KailashEngine.World
         {
             foreach (UniqueMesh unique_mesh in meshes)
             {
+
+                Matrix4 temp_mat = unique_mesh.transformation;
+
                 //------------------------------------------------------
                 // Object Animation Matrix
                 //------------------------------------------------------
-                Matrix4 temp_mat = unique_mesh.transformation;
                 if (unique_mesh.animated)
                 {
                     temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
+                }
+
+                //------------------------------------------------------
+                // Physics Matrix
+                //------------------------------------------------------
+                if (unique_mesh.physical)
+                {
+                    temp_mat = Matrix4.CreateScale(temp_mat.ExtractScale()) * EngineHelper.bullet2otk(unique_mesh.physics_object.body.MotionState.WorldTransform);
                 }
 
                 //------------------------------------------------------

@@ -20,7 +20,7 @@ namespace KailashEngine.World
         {
             if (!File.Exists(filename))
             {
-                throw new Exception("World File Not Found\n" + filename);
+                throw new Exception("Lights File Not Found\n" + filename);
             }
 
             Debug.DebugHelper.logInfo(1, "Loading Lights File", Path.GetFileName(filename));

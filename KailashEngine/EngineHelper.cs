@@ -26,7 +26,7 @@ namespace KailashEngine
         }
 
         //------------------------------------------------------
-        // Interpolation functions
+        // Data functions
         //------------------------------------------------------
 
         public static float lerp(float src0, float src1, float t)
@@ -48,6 +48,19 @@ namespace KailashEngine
             src0 = Math.Max(src0, 0.000001f);
             return (float)(Math.Pow(src1 / src0, t) * src0);
         }
+
+        public static Matrix4 rotate(float x_angle, float y_angle, float z_angle)
+        {
+            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
+            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
+            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
+
+            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
+
+            zyx_rotation.Normalize();
+            return Matrix4.CreateFromQuaternion(zyx_rotation);
+        }
+
 
 
         //------------------------------------------------------
@@ -112,13 +125,7 @@ namespace KailashEngine
             Matrix4 temp_scale = Matrix4.CreateScale(scale);
 
             // Rotation
-            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(rotation_euler.X));
-            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(rotation_euler.Y));
-            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(rotation_euler.Z));
-            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
-
-            zyx_rotation.Normalize();
-            Matrix4 temp_rotation = Matrix4.CreateFromQuaternion(zyx_rotation);
+            Matrix4 temp_rotation = rotate(rotation_euler.X, rotation_euler.Y, rotation_euler.Z);
 
             // Translation
             Matrix4 temp_translation = Matrix4.CreateTranslation(translation);
