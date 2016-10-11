@@ -70,7 +70,26 @@ namespace KailashEngine
         //------------------------------------------------------
         // Helpers
         //------------------------------------------------------
+        private Vector3[] getPickingVectors()
+        {
+            float x = (2.0f * _game.mouse.position_current.X) / _game.display.resolution.W - 1.0f;
+            float y = 1.0f - (2.0f * _game.mouse.position_current.Y) / _game.display.resolution.H;
+            float z = 1.0f;
+            Vector3 mouse_ray = new Vector3(x, y, z);
+            Vector4 ray_clip = new Vector4(mouse_ray.X, mouse_ray.Y, -1.0f, 1.0f);
+            Vector4 ray_eye = Vector4.Transform(ray_clip, Matrix4.Invert(_game.player.camera.spatial.perspective));
+            ray_eye = new Vector4(ray_eye.X, ray_eye.Y, -1.0f, 0.0f);
+            Vector3 ray_world = Vector4.Transform(ray_eye, Matrix4.Invert(_game.player.camera.spatial.model_view)).Xyz;
 
+            Vector3 start = -_game.player.camera.spatial.position;
+
+            ray_world = Vector3.TransformPosition(Vector3.Normalize(ray_world) * _game.config.near_far.Y, Matrix4.CreateTranslation(start));
+
+            return new Vector3[]{
+                start,
+                ray_world
+            };
+        }
 
 
         //------------------------------------------------------
@@ -202,7 +221,9 @@ namespace KailashEngine
             _game.mouse.buttonUp(e);
             switch (e.Button)
             {
-
+                case MouseButton.Left:
+                    _physics_driver.releaseObject();
+                    break;
             }
         }
 
@@ -213,10 +234,12 @@ namespace KailashEngine
             {
                 case MouseButton.Left:
 
-                    _sound_cow.Play();
+                    Vector3[] picking_vectors = getPickingVectors();
+                    _physics_driver.pickObject(EngineHelper.otk2bullet(picking_vectors[0]), EngineHelper.otk2bullet(picking_vectors[1]), !_game.keyboard.getKeyPress(Key.AltLeft));
+
                     break;
                 case MouseButton.Right:
-
+                    //_sound_cow.Play();
                     _sound_goat.Play();
                     break;
             }
@@ -270,6 +293,13 @@ namespace KailashEngine
                 _game.player.character.spatial.rotation_angles.Z, 
                 _game.config.smooth_mouse_delay
             );
+
+
+            // Move 
+            Vector3[] picking_vectors = getPickingVectors();
+            _physics_driver.moveObject(EngineHelper.otk2bullet(picking_vectors[0]), EngineHelper.otk2bullet(picking_vectors[1]));
+
+
 
             // Recenter
             centerMouse();

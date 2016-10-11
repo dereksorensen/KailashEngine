@@ -8,4 +8,44 @@ ang 0
 blr 0
 sha 0
 
-num 1
+== == ==
+nam Point.001
+typ POINT
+ity 9.889999389648438
+col 1.0 1.0 1.0
+fal 25.0
+ang 0
+blr 0
+sha 0
+
+== == ==
+nam Point.002
+typ POINT
+ity 10.0
+col 1.0 1.0 1.0
+fal 35.900001525878906
+ang 0
+blr 0
+sha 0
+
+== == ==
+nam Point.003
+typ POINT
+ity 9.889999389648438
+col 1.0 1.0 1.0
+fal 25.0
+ang 0
+blr 0
+sha 0
+
+== == ==
+nam Point.004
+typ POINT
+ity 9.889999389648438
+col 1.0 1.0 1.0
+fal 25.0
+ang 0
+blr 0
+sha 0
+
+num 5

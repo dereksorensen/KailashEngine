@@ -153,7 +153,6 @@ void calcLighting(
 	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
 	attenuation *= attenuation;
 	attenuation *= attenuation;
-	attenuation *= attenuation;
 	attenuation *= light_intensity;
 
 
