@@ -73,6 +73,14 @@ namespace KailashEngine.World
                 //------------------------------------------------------
                 if (unique_mesh.physical)
                 {
+                    //temp_mat = Matrix4.CreateScale(temp_mat.ExtractScale()) * EngineHelper.bullet2otk(unique_mesh.physics_object.body.MotionState.WorldTransform);
+                    if (unique_mesh.animated)
+                    {
+                        temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
+                        BulletSharp.Math.Matrix temp_transform = EngineHelper.otk2bullet(temp_mat.ClearScale());
+                        unique_mesh.physics_object.body.MotionState.WorldTransform = temp_transform;
+                        unique_mesh.physics_object.body.ProceedToTransform(temp_transform);
+                    }
                     temp_mat = Matrix4.CreateScale(temp_mat.ExtractScale()) * EngineHelper.bullet2otk(unique_mesh.physics_object.body.MotionState.WorldTransform);
                 }
 
