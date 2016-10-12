@@ -16,7 +16,7 @@ namespace KailashEngine.Physics
     static class PhysicsLoader
     {
 
-        public static void load(string filename, DiscreteDynamicsWorld world, Dictionary<string, UniqueMesh> meshes)
+        public static void load(string filename, PhysicsWorld physics_world, Dictionary<string, UniqueMesh> meshes)
         {
             if (!File.Exists(filename))
             {
@@ -32,6 +32,7 @@ namespace KailashEngine.Physics
             List<Vector3> rotations = new List<Vector3>();
             List<Vector3> dimensions = new List<Vector3>();
             List<Vector3> scales = new List<Vector3>();
+            List<bool> dynamics = new List<bool>();
             List<Vector3> attributes = new List<Vector3>();
 
             int num_bodies = 0;
@@ -68,9 +69,9 @@ namespace KailashEngine.Physics
                             break;
                         case "rot ":
                             Vector3 rot;
-                            rot.X = float.Parse(multi_value[0]);
-                            rot.Y = float.Parse(multi_value[1]);
-                            rot.Z = float.Parse(multi_value[2]);
+                            rot.X = MathHelper.RadiansToDegrees(float.Parse(multi_value[0]));
+                            rot.Y = MathHelper.RadiansToDegrees(float.Parse(multi_value[1]));
+                            rot.Z = MathHelper.RadiansToDegrees(float.Parse(multi_value[2]));
                             rotations.Add(rot);
                             break;
                         case "dim ":
@@ -86,6 +87,9 @@ namespace KailashEngine.Physics
                             scl.Y = float.Parse(multi_value[1]);
                             scl.Z = float.Parse(multi_value[2]);
                             scales.Add(scl);
+                            break;
+                        case "dyn ":
+                            dynamics.Add(bool.Parse(single_value));
                             break;
                         case "atr ":
                             Vector3 atr;
@@ -116,22 +120,16 @@ namespace KailashEngine.Physics
                 Vector3 rotation = rotations[i];
                 Vector3 scale = scales[i];
                 Vector3 dimension = dimensions[i] / 2.0f;
+                bool dynamic = dynamics[i];
                 Vector3 attribute = attributes[i];
                 float mass = attribute.X;
                 float friction = attribute.Y;
                 float restitution = attribute.Z;
 
-                // Because Blender can't export 0 mass
-                if (mass == 0.0010000000474974513)
-                {
-                    mass = 0.0f;
-                }
 
 
                 // Build transformation matrix
                 Matrix4 temp_matrix = EngineHelper.blender2Kailash(EngineHelper.createMatrix(position, rotation, new Vector3(1.0f)));
-
-
 
 
                 CollisionShape shape;
@@ -181,7 +179,8 @@ namespace KailashEngine.Physics
                         continue;
                 }
 
-                RigidBody collision_object = PhysicsHelper.CreateLocalRigidBody(world, mass, restitution, temp_matrix, shape, dimension);
+
+                RigidBody collision_object = PhysicsHelper.CreateLocalRigidBody(physics_world, dynamic, mass, restitution, temp_matrix, shape, dimension);
                 collision_object.UserObject = physics_id;
 
 
@@ -202,6 +201,7 @@ namespace KailashEngine.Physics
             rotations.Clear();
             dimensions.Clear();
             scales.Clear();
+            dynamics.Clear();
             attributes.Clear();
 
         }

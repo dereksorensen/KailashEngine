@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using BulletSharp;
 using OpenTK;
 
 using KailashEngine.Render;
 using KailashEngine.Animation;
+using KailashEngine.Physics;
 using KailashEngine.World;
 using KailashEngine.World.Model;
 using KailashEngine.World.Lights;
@@ -104,7 +104,7 @@ namespace KailashEngine.Client
         // Load Scene
         //------------------------------------------------------
 
-        public void load(DiscreteDynamicsWorld physics_world)
+        public void load(Physics.PhysicsWorld physics_world)
         {
             _world_loader = new WorldLoader(_path_scene, "light_objects", physics_world);
 

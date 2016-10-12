@@ -333,7 +333,7 @@ namespace KailashEngine
 
 
             // Load Objects
-            _game.load(_physics_driver.world);
+            _game.load(_physics_driver.physics_world);
             _render_driver.load();        
             _debug_window.load();
             

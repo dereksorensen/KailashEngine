@@ -12,22 +12,28 @@ namespace KailashEngine.Physics
     static class PhysicsHelper
     {
 
-        public static RigidBody CreateLocalRigidBody(DiscreteDynamicsWorld world, float mass, float restitution, Matrix4 startTransform, CollisionShape shape)
+        public static RigidBody CreateLocalRigidBody(PhysicsWorld physics_world, bool dynamic, float mass, float restitution, Matrix4 startTransform, CollisionShape shape)
         {
-            return CreateLocalRigidBody(world, mass, restitution, startTransform, shape, new Vector3(1.0f));
+            return CreateLocalRigidBody(physics_world, dynamic, mass, restitution, startTransform, shape, new Vector3(1.0f));
         }
 
 
-        public static RigidBody CreateLocalRigidBody(DiscreteDynamicsWorld world, float mass, float restitution, Matrix4 startTransform, CollisionShape shape, Vector3 dimensions)
+        public static RigidBody CreateLocalRigidBody(PhysicsWorld physics_world, bool dynamic, float mass, float restitution, Matrix4 startTransform, CollisionShape shape, Vector3 dimensions)
         {
-            bool isDynamic = (mass != 0.0f);
+
 
             //float scaler = dimensions.Length * 100.0f;
             //Console.WriteLine(scaler * mass);
 
             BulletSharp.Math.Vector3 localInertia = EngineHelper.otk2bullet(Vector3.Zero);
-            if (isDynamic)
+            if (dynamic)
+            {
                 shape.CalculateLocalInertia(mass, out localInertia);
+            }
+            else
+            {
+                mass = 0.0f;
+            }
 
             DefaultMotionState myMotionState = new DefaultMotionState(EngineHelper.otk2bullet(startTransform));
 
@@ -57,8 +63,9 @@ namespace KailashEngine.Physics
             //body.Friction = 1.0f;
             //body.RollingFriction = 1.0f;
 
+            physics_world.collision_shapes.Add(shape);
+            physics_world.world.AddRigidBody(body);
 
-            world.AddRigidBody(body);
 
             return body;
 

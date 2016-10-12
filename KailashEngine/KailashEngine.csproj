@@ -460,6 +460,7 @@
     <Compile Include="Physics\PhysicsHelper.cs" />
     <Compile Include="Physics\PhysicsLoader.cs" />
     <Compile Include="Physics\PhysicsObject.cs" />
+    <Compile Include="Physics\PhysicsWorld.cs" />
     <Compile Include="Physics\RigidBodyObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\FX\fx_Test.cs" />

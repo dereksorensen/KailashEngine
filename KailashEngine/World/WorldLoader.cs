@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using BulletSharp;
 using OpenTK;
 
 using KailashEngine.Physics;
@@ -32,10 +31,10 @@ namespace KailashEngine.World
             get { return _pLight_mesh; }
         }
 
-        private DiscreteDynamicsWorld _physics_world;
+        private PhysicsWorld _physics_world;
 
 
-        public WorldLoader(string path_scene, string light_objects_filename, DiscreteDynamicsWorld physics_world)
+        public WorldLoader(string path_scene, string light_objects_filename, PhysicsWorld physics_world)
         {
             // Fill Base Paths
             _path_scene = path_scene;

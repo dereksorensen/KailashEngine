@@ -163,6 +163,9 @@ for item in bpy.data.objects:
         # scale
 			scale = "scl " + str(item.scale.x) + " " + str(item.scale.y) + " " + str(item.scale.z) + '\n'
 			physics_file.write(scale)
+        # dynamic
+			dynamic = "dyn " + str(item.rigid_body.enabled) + '\n'
+			physics_file.write(dynamic)
         # attributes
 			attributes = "atr " + str(item.rigid_body.mass) + " " + str(item.rigid_body.friction) + " " + str(item.rigid_body.restitution) + '\n' 
 			physics_file.write(attributes)

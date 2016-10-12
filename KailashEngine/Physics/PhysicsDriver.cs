@@ -11,20 +11,20 @@ namespace KailashEngine.Physics
 {
     class PhysicsDriver
     {
-        // The physics world
-        private DiscreteDynamicsWorld _world;
-        public DiscreteDynamicsWorld world
+        private PhysicsWorld _physics_world;
+        public PhysicsWorld physics_world
         {
-            get { return _world; }
-            set { _world = value; }
+            get { return _physics_world; }
+            set { _physics_world = value; }
         }
+
 
         //------------------------------------------------------
         // World Objects
         //------------------------------------------------------
         private CollisionDispatcher _dispatcher;
         private DbvtBroadphase _broadphase;
-        private List<CollisionShape> _collision_shapes = new List<CollisionShape>();
+        
         private CollisionConfiguration _collision_config;
 
         //------------------------------------------------------
@@ -49,10 +49,7 @@ namespace KailashEngine.Physics
 
             SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
-            _world = new DiscreteDynamicsWorld(_dispatcher, _broadphase, solver, _collision_config);
-            //_world.DispatchInfo.AllowedCcdPenetration = 0.0000f;
-
-            _world.Gravity = new Vector3(0, -25.81f, 0);
+            _physics_world = new PhysicsWorld(-28.91f, _dispatcher, _broadphase, solver, _collision_config);
 
             //createCharacter(-cam.position);
 
@@ -70,30 +67,30 @@ namespace KailashEngine.Physics
             int i;
 
             // Remove constraints
-            for (i = _world.NumConstraints - 1; i >= 0; i--)
+            for (i = _physics_world.world.NumConstraints - 1; i >= 0; i--)
             {
-                TypedConstraint constraint = _world.GetConstraint(i);
-                _world.RemoveConstraint(constraint);
+                TypedConstraint constraint = _physics_world.world.GetConstraint(i);
+                _physics_world.world.RemoveConstraint(constraint);
                 constraint.Dispose();
             }
 
             // Remove rigidbodies from the dynamics world and delete them
-            for (i = _world.NumCollisionObjects - 1; i >= 0; i--)
+            for (i = _physics_world.world.NumCollisionObjects - 1; i >= 0; i--)
             {
-                CollisionObject obj = _world.CollisionObjectArray[i];
+                CollisionObject obj = _physics_world.world.CollisionObjectArray[i];
                 RigidBody body = obj as RigidBody;
                 if (body != null && body.MotionState != null)
                 {
                     body.MotionState.Dispose();
                 }
-                _world.RemoveCollisionObject(obj);
+                _physics_world.world.RemoveCollisionObject(obj);
                 obj.Dispose();
             }
 
             // Delete collision shapes
-            foreach (CollisionShape shape in _collision_shapes)
+            foreach (CollisionShape shape in _physics_world.collision_shapes)
                 shape.Dispose();
-            _collision_shapes.Clear();
+            _physics_world.collision_shapes.Clear();
 
             // Delete loaded physics shapes
             //foreach (PhysicsLoader loader in loadedPhysics)
@@ -104,7 +101,7 @@ namespace KailashEngine.Physics
             //}
 
             // Delete the world
-            _world.Dispose();
+            _physics_world.world.Dispose();
             _broadphase.Dispose();
             if (_dispatcher != null)
             {
@@ -116,7 +113,7 @@ namespace KailashEngine.Physics
 
         public void update(float frame_time, float target_fps, float current_fps)
         {
-            _world.StepSimulation(frame_time, (int)(Math.Max(target_fps / current_fps, 1)));
+            _physics_world.world.StepSimulation(frame_time, (int)(Math.Max(target_fps / current_fps, 1)));
         }
 
 
@@ -126,7 +123,7 @@ namespace KailashEngine.Physics
         public void pickObject(Vector3 rayFrom, Vector3 rayTo, bool use6Dof)
         {
             ClosestRayResultCallback rayCallback = new ClosestRayResultCallback(ref rayFrom, ref rayTo);
-            _world.RayTest(rayFrom, rayTo, rayCallback);
+            _physics_world.world.RayTest(rayFrom, rayTo, rayCallback);
 
             if (rayCallback.HasHit)
             {
@@ -152,7 +149,7 @@ namespace KailashEngine.Physics
                             dof6.AngularLowerLimit = Vector3.Zero;
                             dof6.AngularUpperLimit = Vector3.Zero;
 
-                            _world.AddConstraint(dof6);
+                            _physics_world.world.AddConstraint(dof6);
                             _pick_constraint = dof6;
 
                             dof6.SetParam(ConstraintParam.StopCfm, 0.8f, 0);
@@ -172,7 +169,7 @@ namespace KailashEngine.Physics
                         else
                         {
                             Point2PointConstraint p2p = new Point2PointConstraint(body, localPivot);
-                            _world.AddConstraint(p2p);
+                            _physics_world.world.AddConstraint(p2p);
                             _pick_constraint = p2p;
                             p2p.Setting.ImpulseClamp = 30;
                             //very weak constraint for picking
@@ -233,9 +230,9 @@ namespace KailashEngine.Physics
 
         public void releaseObject()
         {
-            if (_pick_constraint != null && _world != null)
+            if (_pick_constraint != null && _physics_world.world != null)
             {
-                _world.RemoveConstraint(_pick_constraint);
+                _physics_world.world.RemoveConstraint(_pick_constraint);
                 _pick_constraint.Dispose();
                 _pick_constraint = null;
                 _picked_body.ForceActivationState(ActivationState.ActiveTag);
@@ -247,7 +244,7 @@ namespace KailashEngine.Physics
 
         public void shootObject(Vector3 direction)
         {
-            if (_pick_constraint != null && _world != null)
+            if (_pick_constraint != null && _physics_world.world != null)
             {
                 _picked_body.ApplyCentralImpulse(direction * 7.0f);
             }
