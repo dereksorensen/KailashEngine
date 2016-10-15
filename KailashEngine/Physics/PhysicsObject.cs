@@ -19,13 +19,6 @@ namespace KailashEngine.Physics
             set { _id = value; }
         }
 
-        private Vector3 _scale;
-        public Vector3 scale
-        {
-            get { return _scale; }
-            set { _scale = value; }
-        }
-
         private RigidBody _body;
         public RigidBody body
         {
@@ -33,11 +26,27 @@ namespace KailashEngine.Physics
             set { _body = value; }
         }
 
-        public PhysicsObject(string id, RigidBody body, Vector3 scale)
+        private Vector3 _scale;
+        public Vector3 scale
+        {
+            get { return _scale; }
+            set { _scale = value; }
+        }
+
+        private bool _kinematic;
+        public bool kinematic
+        {
+            get { return _kinematic; }
+            set { _kinematic = value; }
+        }
+
+
+        public PhysicsObject(string id, RigidBody body, Vector3 scale, bool kinematic)
         {
             _id = id;
             _body = body;
             _scale = scale;
+            _kinematic = kinematic;
         }
 
     }

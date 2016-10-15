@@ -58,7 +58,7 @@ namespace KailashEngine.World
             }
             catch (Exception e)
             {
-                Debug.DebugHelper.logError("[ ERROR ] World File: " + light_objects_filename, e.Message);
+                Debug.DebugHelper.logError("[ ERROR ] Loading World File: " + light_objects_filename, e.Message);
             }
         }
 
@@ -153,7 +153,7 @@ namespace KailashEngine.World
                 }
                 catch (Exception e)
                 {
-                    Debug.DebugHelper.logError("[ ERROR ] World File: " + filename, e.Message);
+                    Debug.DebugHelper.logError("[ ERROR ] Loading World File: " + filename, e.Message);
                 }
             }
         }

@@ -12,20 +12,20 @@ namespace KailashEngine.Physics
     static class PhysicsHelper
     {
 
-        public static RigidBody CreateLocalRigidBody(PhysicsWorld physics_world, bool dynamic, float mass, float restitution, Matrix startTransform, CollisionShape shape)
-        {
-            return CreateLocalRigidBody(physics_world, dynamic, mass, restitution, startTransform, shape, new Vector3(1.0f));
-        }
 
-
-        public static RigidBody CreateLocalRigidBody(PhysicsWorld physics_world, bool dynamic, float mass, float restitution, Matrix startTransform, CollisionShape shape, Vector3 dimensions)
+        public static RigidBody CreateLocalRigidBody(
+            PhysicsWorld physics_world, 
+            bool dynamic, bool kinematic, 
+            float mass, float restitution, float friction,
+            Matrix startTransform, 
+            CollisionShape shape, Vector3 dimensions)
         {
 
 
             //float scaler = dimensions.Length * 100.0f;
             //Console.WriteLine(scaler * mass);
 
-            BulletSharp.Math.Vector3 localInertia = Vector3.Zero;
+            Vector3 localInertia = Vector3.Zero;
             if (dynamic)
             {
                 shape.CalculateLocalInertia(mass, out localInertia);
@@ -36,6 +36,7 @@ namespace KailashEngine.Physics
             }
 
             DefaultMotionState myMotionState = new DefaultMotionState(startTransform);
+            
 
             RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, shape, localInertia);
             rbInfo.Restitution = restitution;
@@ -47,12 +48,19 @@ namespace KailashEngine.Physics
             //rbInfo.LinearSleepingThreshold = rbInfo.LinearSleepingThreshold * 1000.0f;
             //rbInfo.AngularSleepingThreshold = rbInfo.AngularSleepingThreshold * 1000.0f;
 
-            rbInfo.Friction = 0.5f;
+            rbInfo.Friction = friction;
             rbInfo.RollingFriction = 0.01f;
 
 
 
             RigidBody body = new RigidBody(rbInfo);
+
+            if(kinematic)
+            {
+                body.ActivationState = ActivationState.DisableDeactivation;
+                body.CollisionFlags = CollisionFlags.KinematicObject;
+            }
+
 
             //body.CcdMotionThreshold = dimensions.Length;
             //body.CcdSweptSphereRadius = dimensions.Length;

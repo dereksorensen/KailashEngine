@@ -92,13 +92,6 @@ namespace KailashEngine.Physics
                 shape.Dispose();
             _physics_world.collision_shapes.Clear();
 
-            // Delete loaded physics shapes
-            //foreach (PhysicsLoader loader in loadedPhysics)
-            //{
-            //    foreach (CollisionShape shape in loader.collisionShapes)
-            //        shape.Dispose();
-            //    loader.collisionShapes.Clear();
-            //}
 
             // Delete the world
             _physics_world.world.Dispose();

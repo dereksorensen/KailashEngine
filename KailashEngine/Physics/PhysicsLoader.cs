@@ -102,8 +102,8 @@ namespace KailashEngine.Physics
             List<Vector3> rotations = new List<Vector3>();
             List<Vector3> dimensions = new List<Vector3>();
             List<Vector3> scales = new List<Vector3>();
-            List<bool> dynamics = new List<bool>();
-            List<Vector3> attributes = new List<Vector3>();
+            List<bool[]> flags = new List<bool[]>();
+            List<float[]> attributes = new List<float[]>();
 
             int num_bodies = 0;
 
@@ -158,15 +158,21 @@ namespace KailashEngine.Physics
                             scl.Z = float.Parse(multi_value[2]);
                             scales.Add(scl);
                             break;
-                        case "dyn ":
-                            dynamics.Add(bool.Parse(single_value));
+                        case "flg ":
+                            bool[] temp_flags = new bool[multi_value.Length];
+                            for(int i = 0; i < multi_value.Length; i++)
+                            {
+                                temp_flags[i] = bool.Parse(multi_value[i]);
+                            }
+                            flags.Add(temp_flags);
                             break;
                         case "atr ":
-                            Vector3 atr;
-                            atr.X = float.Parse(multi_value[0]);
-                            atr.Y = float.Parse(multi_value[1]);
-                            atr.Z = float.Parse(multi_value[2]);
-                            attributes.Add(atr);
+                            float[] temp_attributes = new float[multi_value.Length];
+                            for (int i = 0; i < multi_value.Length; i++)
+                            {
+                                temp_attributes[i] = float.Parse(multi_value[i]);
+                            }
+                            attributes.Add(temp_attributes);
                             break;
                         case "num ":
                             num_bodies = int.Parse(single_value);
@@ -193,11 +199,15 @@ namespace KailashEngine.Physics
                     Vector3 rotation = rotations[i];
                     Vector3 scale = scales[i];
                     Vector3 dimension = dimensions[i] / 2.0f;
-                    bool dynamic = dynamics[i];
-                    Vector3 attribute = attributes[i];
-                    float mass = attribute.X;
-                    float friction = attribute.Y;
-                    float restitution = attribute.Z;
+
+                    bool[] flags_list = flags[i];
+                    bool dynamic = flags_list[0];
+                    bool kinematic = flags_list[1];
+
+                    float[] attributes_list = attributes[i];
+                    float mass = attributes_list[0];
+                    float friction = attributes_list[1];
+                    float restitution = attributes_list[2];
 
 
                     // Build transformation matrix
@@ -242,12 +252,16 @@ namespace KailashEngine.Physics
                     }
 
 
-                    RigidBody collision_object = PhysicsHelper.CreateLocalRigidBody(physics_world, dynamic, mass, restitution, temp_matrix, shape, dimension);
+                    RigidBody collision_object = PhysicsHelper.CreateLocalRigidBody(
+                        physics_world, 
+                        dynamic, kinematic, 
+                        mass, restitution, friction,
+                        temp_matrix, 
+                        shape, dimension);
                     collision_object.UserObject = physics_id;
 
 
-
-                    RigidBodyObject rigid_body_object = new RigidBodyObject(physics_id, collision_object, scale);
+                    RigidBodyObject rigid_body_object = new RigidBodyObject(physics_id, collision_object, scale, kinematic);
                     temp_unique_mesh.physics_object = rigid_body_object;
                 }
             }
@@ -260,7 +274,7 @@ namespace KailashEngine.Physics
             rotations.Clear();
             dimensions.Clear();
             scales.Clear();
-            dynamics.Clear();
+            flags.Clear();
             attributes.Clear();
 
         }

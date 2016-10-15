@@ -16,8 +16,8 @@ namespace KailashEngine.Physics
 
 
 
-        public RigidBodyObject(string id, RigidBody body, Vector3 scale)
-            : base(id, body, scale)
+        public RigidBodyObject(string id, RigidBody body, Vector3 scale, bool kinematic)
+            : base(id, body, scale, kinematic)
         {
 
         }
