@@ -18,13 +18,8 @@ namespace KailashEngine.Render
 {
     class RenderDriver
     {
-
-        private ProgramLoader _pLoader;
         private Resolution _resolution;
         
-
-        // Local Programs
-
 
         // Render UBOs
         private UniformBuffer _ubo_camera;
@@ -33,6 +28,7 @@ namespace KailashEngine.Render
         // Render FXs
         private fx_Quad _quad;
         private fx_Test _test;
+        private fx_Crosshair _crosshair;
         private fx_Final _final;
         private fx_gBuffer _gBuffer;
         private fx_HDR _hdr;
@@ -40,9 +36,9 @@ namespace KailashEngine.Render
 
         public RenderDriver(
             ProgramLoader pLoader,
+            StaticImageLoader tLoader,
             Resolution resolution)
         {
-            _pLoader = pLoader;
             _resolution = resolution;
 
 
@@ -62,11 +58,12 @@ namespace KailashEngine.Render
 
 
             // Render FXs
-            _quad = new fx_Quad(_pLoader, "common/", _resolution);
-            _test = new fx_Test(_pLoader, "test/", _resolution);
-            _final = new fx_Final(_pLoader, "final/", _resolution);
-            _gBuffer = new fx_gBuffer(_pLoader, "gBuffer/", _resolution);
-            _hdr = new fx_HDR(_pLoader, "hdr/", _resolution);
+            _quad = new fx_Quad(pLoader, "common/", _resolution);
+            _test = new fx_Test(pLoader, "test/", _resolution);
+            _crosshair = new fx_Crosshair(pLoader, tLoader, "crosshair/", _resolution);
+            _final = new fx_Final(pLoader, "final/", _resolution);
+            _gBuffer = new fx_gBuffer(pLoader, "gBuffer/", _resolution);
+            _hdr = new fx_HDR(pLoader, "hdr/", _resolution);
 
 
         }
@@ -94,6 +91,7 @@ namespace KailashEngine.Render
         private void load_FX()
         {
             _quad.load();
+            _crosshair.load();
             _final.load();
             _gBuffer.load();
             _hdr.load();
@@ -136,6 +134,11 @@ namespace KailashEngine.Render
             _ubo_camera.update(3, look);
         }
 
+        public void handle_MouseState(bool locked)
+        {
+            _crosshair.enabled = locked;
+        }
+
 
         //------------------------------------------------------
         // Rendering
@@ -172,15 +175,18 @@ namespace KailashEngine.Render
             _final.render(_quad);
 
 
+            //------------------------------------------------------
+            // Overlays
+            //------------------------------------------------------
+            _crosshair.render(scene.animation_timer.seconds);
+
+
+
 
 
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
-
-
-            //_quad.render_Texture2D(_hdr.tTempScene, 0.25f, 2);
-            //_quad.render_Texture2D(_hdr.tLuminosity, 0.25f, 1);
             _quad.render_Texture2D(_gBuffer.tDiffuse_ID, 0.25f, 0);
 
         }

@@ -32,7 +32,7 @@ namespace KailashEngine.Render.Objects
         // Constructor
         //------------------------------------------------------
 
-        public Image(string filename, bool use_srgb)
+        public Image(string filename, bool use_srgb, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
         {
 
             _filename = filename.Replace("%20", " ");
@@ -98,7 +98,7 @@ namespace KailashEngine.Render.Objects
                     texture_width, texture_height, 0,
                     true, true,
                     pif, pf, pt,
-                    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Repeat);
+                    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, wrap_mode);
             }
             else
             {

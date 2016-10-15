@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using KailashEngine.Client;
+
 using KailashEngine.Output;
 
 namespace KailashEngine.Render.FX
@@ -12,18 +12,37 @@ namespace KailashEngine.Render.FX
     abstract class RenderEffect
     {
 
+        protected bool _enabled;
+        public bool enabled
+        {
+            get { return _enabled; }
+            set { _enabled = value; }
+        }
+
+
         protected ProgramLoader _pLoader;
         protected string _path_glsl_effect;
+
+        protected StaticImageLoader _tLoader;
+        protected string _path_static_textures;
 
         protected Resolution _resolution;
 
 
-        public RenderEffect(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
+        public RenderEffect(ProgramLoader pLoader, string resource_folder_name, Resolution full_resolution)
+            : this (pLoader, null, resource_folder_name, full_resolution)
+        { }
+
+        public RenderEffect(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name,  Resolution full_resolution)
         {
             _pLoader = pLoader;
-            _path_glsl_effect = glsl_effect_path;
+            _path_glsl_effect = resource_folder_name;
+            _tLoader = tLoader;
+            _path_static_textures = resource_folder_name;
             _resolution = full_resolution;
         }
+
+
 
         protected abstract void load_Programs();
 

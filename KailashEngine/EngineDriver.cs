@@ -295,7 +295,7 @@ namespace KailashEngine
             );
 
 
-            // Move 
+            // Move Picked Object
             Vector3[] picking_vectors = getPickingVectors();
             _physics_driver.moveObject(EngineHelper.otk2bullet(picking_vectors[0]), EngineHelper.otk2bullet(picking_vectors[1]));
 
@@ -326,6 +326,7 @@ namespace KailashEngine
             // Create Engine Objects
             _render_driver = new RenderDriver(
                 new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common, _game.config.path_glsl_common_helpers),
+                new StaticImageLoader(_game.config.path_resources_textures_static),
                 _game.display.resolution
             );
             _debug_window = new DebugWindow();
@@ -367,7 +368,7 @@ namespace KailashEngine
                 _game.player.camera.spatial.perspective,
                 _game.player.camera.spatial.position,
                 _game.player.camera.spatial.look);
-
+            _render_driver.handle_MouseState(_game.mouse.locked);
 
 
             // Flashlight stuff
