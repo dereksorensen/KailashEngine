@@ -26,12 +26,21 @@ namespace KailashEngine.Physics
             set { _body = value; }
         }
 
+        private Matrix _original_transformation;
+        public Matrix original_transformation
+        {
+            get { return _original_transformation; }
+            set { _original_transformation = value; }
+        }
+
+
         private Vector3 _scale;
         public Vector3 scale
         {
             get { return _scale; }
             set { _scale = value; }
         }
+
 
         private bool _kinematic;
         public bool kinematic
@@ -45,6 +54,7 @@ namespace KailashEngine.Physics
         {
             _id = id;
             _body = body;
+            _original_transformation = body.MotionState.WorldTransform;
             _scale = scale;
             _kinematic = kinematic;
         }

@@ -13,17 +13,14 @@ namespace KailashEngine.Physics
     {
 
 
-        public static RigidBody CreateLocalRigidBody(
+        public static RigidBodyObject createLocalRigidBody(
+            string id,
             PhysicsWorld physics_world, 
             bool dynamic, bool kinematic, 
             float mass, float restitution, float friction,
             Matrix startTransform, 
-            CollisionShape shape, Vector3 dimensions)
+            CollisionShape shape, Vector3 dimensions, Vector3 scale)
         {
-
-
-            //float scaler = dimensions.Length * 100.0f;
-            //Console.WriteLine(scaler * mass);
 
             Vector3 localInertia = Vector3.Zero;
             if (dynamic)
@@ -52,7 +49,6 @@ namespace KailashEngine.Physics
             rbInfo.RollingFriction = 0.01f;
 
 
-
             RigidBody body = new RigidBody(rbInfo);
 
             if(kinematic)
@@ -71,11 +67,20 @@ namespace KailashEngine.Physics
             //body.Friction = 1.0f;
             //body.RollingFriction = 1.0f;
 
+
+            //------------------------------------------------------
+            // Create a rigid body object and all to world
+            //------------------------------------------------------
+
+            body.UserObject = id;
+            RigidBodyObject rigid_body_object = new RigidBodyObject(id, body, scale, kinematic);
+
+            physics_world.rigid_body_objects.Add(rigid_body_object);
             physics_world.collision_shapes.Add(shape);
             physics_world.world.AddRigidBody(body);
 
 
-            return body;
+            return rigid_body_object;
 
         }
 

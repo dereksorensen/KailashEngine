@@ -252,16 +252,14 @@ namespace KailashEngine.Physics
                     }
 
 
-                    RigidBody collision_object = PhysicsHelper.CreateLocalRigidBody(
+                    RigidBodyObject rigid_body_object = PhysicsHelper.createLocalRigidBody(
+                        physics_id,
                         physics_world, 
                         dynamic, kinematic, 
                         mass, restitution, friction,
                         temp_matrix, 
-                        shape, dimension);
-                    collision_object.UserObject = physics_id;
+                        shape, dimension, scale);
 
-
-                    RigidBodyObject rigid_body_object = new RigidBodyObject(physics_id, collision_object, scale, kinematic);
                     temp_unique_mesh.physics_object = rigid_body_object;
                 }
             }

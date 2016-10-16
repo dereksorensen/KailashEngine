@@ -26,6 +26,23 @@ namespace KailashEngine.Physics
             set { _collision_shapes = value; }
         }
 
+        private List<RigidBodyObject> _rigid_body_objects;
+        public List<RigidBodyObject> rigid_body_objects
+        {
+            get { return _rigid_body_objects; }
+            set { _rigid_body_objects = value; }
+        }
+
+
+        private bool _paused;
+        public bool paused
+        {
+            get { return _paused; }
+            set { _paused = value; }
+        }
+
+
+
         public PhysicsWorld(float gravity, Dispatcher dispatcher, DbvtBroadphase broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collision_config)
         {
             _world = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collision_config);
@@ -34,6 +51,9 @@ namespace KailashEngine.Physics
             _world.Gravity = new Vector3(0, gravity, 0);
 
             _collision_shapes = new List<CollisionShape>();
+            _rigid_body_objects = new List<RigidBodyObject>();
+
+            _paused = false;
         }
 
     }

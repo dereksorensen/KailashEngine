@@ -11,6 +11,11 @@ namespace KailashEngine.Physics
 {
     class PhysicsDriver
     {
+
+
+        //------------------------------------------------------
+        // World Objects
+        //------------------------------------------------------
         private PhysicsWorld _physics_world;
         public PhysicsWorld physics_world
         {
@@ -19,24 +24,43 @@ namespace KailashEngine.Physics
         }
 
 
-        //------------------------------------------------------
-        // World Objects
-        //------------------------------------------------------
         private CollisionDispatcher _dispatcher;
         private DbvtBroadphase _broadphase;
         
         private CollisionConfiguration _collision_config;
 
+
         //------------------------------------------------------
-        // Picking Objects
+        // Picking Objects / Properties
         //------------------------------------------------------
         private RigidBody _picked_body;
         private TypedConstraint _pick_constraint;
 
-        public float curPickingDist;
-        public float origPickingDist;
-        public float minPickingDist;
-        private float pickingDistScale = 30.0f;
+
+        private bool _zoom_picked_distance;
+        public bool zoom_picked_distance
+        {
+            get { return _zoom_picked_distance; }
+        }
+
+        private float _picking_distance_current;
+        public float picking_distance_current
+        {
+            get { return _picking_distance_current; }
+        }
+
+        private float _picking_distance_original;
+        public float picking_distance_original
+        {
+            get { return _picking_distance_original; }
+        }
+
+        private float _picking_distance_minimum;
+        public float picking_distance_minimum
+        {
+            get { return _picking_distance_minimum; }
+        }
+
 
 
         public PhysicsDriver()
@@ -52,7 +76,7 @@ namespace KailashEngine.Physics
             _physics_world = new PhysicsWorld(-28.91f, _dispatcher, _broadphase, solver, _collision_config);
 
             //createCharacter(-cam.position);
-
+            _picking_distance_minimum = 10.0f;
         }
 
 
@@ -104,14 +128,41 @@ namespace KailashEngine.Physics
         }
 
 
+        public void reset()
+        {
+            foreach (RigidBodyObject rbo in _physics_world.rigid_body_objects)
+            {
+
+                rbo.body.ClearForces();
+                rbo.body.AngularVelocity = Vector3.Zero;
+                rbo.body.LinearVelocity = Vector3.Zero;
+
+                rbo.body.WorldTransform = rbo.original_transformation;
+                rbo.body.MotionState.WorldTransform = rbo.original_transformation;
+            }
+            _physics_world.paused = false;
+        }
+
+
         public void update(float frame_time, float target_fps, float current_fps)
         {
-            _physics_world.world.StepSimulation(frame_time, (int)(Math.Max(target_fps / current_fps, 1)));
+            if (!_physics_world.paused)
+            {
+                _physics_world.world.StepSimulation(frame_time, (int)(Math.Max(target_fps / current_fps, 1)));
+            }
+        }
+
+
+        public void pause()
+        {
+            _physics_world.paused = !_physics_world.paused;
         }
 
 
 
-
+        //------------------------------------------------------
+        // Picking
+        //------------------------------------------------------
 
         public void pickObject(Vector3 rayFrom, Vector3 rayTo, bool use6Dof)
         {
@@ -178,13 +229,12 @@ namespace KailashEngine.Physics
                         }
                         //use6Dof = !use6Dof;
 
-                        origPickingDist = (pickPos - rayFrom).Length;
-                        curPickingDist = origPickingDist;
+                        _picking_distance_original = (pickPos - rayFrom).Length;
+                        _picking_distance_current = _picking_distance_original;
                     }
                 }
             }
         }
-
 
         public void moveObject(Vector3 rayFrom, Vector3 rayTo)
         {
@@ -199,7 +249,7 @@ namespace KailashEngine.Physics
                     //keep it at the same picking distance
                     Vector3 dir = newRayTo - rayFrom;
                     dir.Normalize();
-                    dir *= curPickingDist;
+                    dir *= _picking_distance_current;
                     Vector3 newPivotB = rayFrom + dir;
 
                     Matrix tempFrameOffsetA = pickCon.FrameOffsetA;
@@ -215,7 +265,7 @@ namespace KailashEngine.Physics
                     //keep it at the same picking distance
                     Vector3 dir = newRayTo - rayFrom;
                     dir.Normalize();
-                    dir *= curPickingDist;
+                    dir *= _picking_distance_current;
                     pickCon.PivotInB = rayFrom + dir;
                 }
             }
@@ -231,7 +281,7 @@ namespace KailashEngine.Physics
                 _picked_body.ForceActivationState(ActivationState.ActiveTag);
                 _picked_body.DeactivationTime = 0;
                 _picked_body = null;
-                //GV.physics_zoomPickingDistance = false;
+                _zoom_picked_distance = false;
             }
         }
 
@@ -239,10 +289,26 @@ namespace KailashEngine.Physics
         {
             if (_pick_constraint != null && _physics_world.world != null)
             {
-                _picked_body.ApplyCentralImpulse(direction * 7.0f);
+                _picked_body.ApplyCentralImpulse(direction * 57.0f);
             }
+            releaseObject();
         }
 
+        public void zoomPickedObject()
+        {
+            if (_pick_constraint != null && _physics_world.world != null)
+            {
+                if (_zoom_picked_distance)
+                {
+                    _picking_distance_current = _picking_distance_original;
+                }
+                else
+                {
+                    _picking_distance_current = (_picking_distance_original < _picking_distance_minimum) ? _picking_distance_original : _picking_distance_minimum;
+                }
+                _zoom_picked_distance = !_zoom_picked_distance;
+            }
+        }
 
     }
 }

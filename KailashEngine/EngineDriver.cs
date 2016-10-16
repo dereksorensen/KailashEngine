@@ -70,7 +70,7 @@ namespace KailashEngine
         //------------------------------------------------------
         // Helpers
         //------------------------------------------------------
-        private Vector3[] getPickingVectors()
+        private Vector3 getWorldSpaceRay()
         {
             float x = (2.0f * _game.mouse.position_current.X) / _game.display.resolution.W - 1.0f;
             float y = 1.0f - (2.0f * _game.mouse.position_current.Y) / _game.display.resolution.H;
@@ -79,11 +79,16 @@ namespace KailashEngine
             Vector4 ray_clip = new Vector4(mouse_ray.X, mouse_ray.Y, -1.0f, 1.0f);
             Vector4 ray_eye = Vector4.Transform(ray_clip, Matrix4.Invert(_game.player.camera.spatial.perspective));
             ray_eye = new Vector4(ray_eye.X, ray_eye.Y, -1.0f, 0.0f);
-            Vector3 ray_world = Vector4.Transform(ray_eye, Matrix4.Invert(_game.player.camera.spatial.model_view)).Xyz;
 
+            return Vector3.Normalize(Vector4.Transform(ray_eye, Matrix4.Invert(_game.player.camera.spatial.model_view)).Xyz);
+        }
+
+        private Vector3[] getPickingVectors()
+        {
+            Vector3 ray_world = getWorldSpaceRay();
             Vector3 start = -_game.player.camera.spatial.position;
 
-            ray_world = Vector3.TransformPosition(Vector3.Normalize(ray_world) * _game.config.near_far.Y, Matrix4.CreateTranslation(start));
+            ray_world = Vector3.TransformPosition(ray_world * _game.config.near_far.Y, Matrix4.CreateTranslation(start));
 
             return new Vector3[]{
                 start,
@@ -136,22 +141,30 @@ namespace KailashEngine
             switch (e.Key)
             {
 
+                case Key.F:
+                    _game.player.enable_flashlight = !_game.player.enable_flashlight;
+                    _game.scene.toggleFlashlight(_game.player.enable_flashlight);
+                    break;
+                case Key.P:
+                    _physics_driver.pause();
+                    _game.scene.animation_timer.pause();
+                    break;
+                case Key.R:
+                    _physics_driver.reset();
+                    _game.scene.animation_timer.restart();
+                    break;
+                case Key.X:
+                    _physics_driver.shootObject(EngineHelper.otk2bullet(getWorldSpaceRay()));
+                    break;
+                case Key.Z:
+                    _physics_driver.zoomPickedObject();
+                    break;
                 case Key.CapsLock:
                     _game.mouse.toggleLock();
                     if (_game.mouse.locked)
                     {
                         centerMouse();
                     }
-                    break;
-                case Key.F:
-                    _game.player.enable_flashlight = !_game.player.enable_flashlight;
-                    _game.scene.toggleFlashlight(_game.player.enable_flashlight);
-                    break;
-                case Key.P:
-                    _game.scene.animation_timer.pause();
-                    break;
-                case Key.R:
-                    _game.scene.animation_timer.restart();
                     break;
                 case Key.Escape:
                     Exit();
@@ -387,7 +400,7 @@ namespace KailashEngine
 
 
 
-            SoundSystem.Instance.Update(e.Time, -_game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
+            SoundSystem.Instance.Update(e.Time, _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
 
             _debug_window.render(_fps);
