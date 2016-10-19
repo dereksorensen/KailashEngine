@@ -64,6 +64,7 @@ namespace KailashEngine.Physics
         }
 
 
+        private float _gravity = -28.91f;
 
         public PhysicsDriver()
         {
@@ -73,7 +74,7 @@ namespace KailashEngine.Physics
             _broadphase = new DbvtBroadphase();
             _solver = new SequentialImpulseConstraintSolver();
 
-            _physics_world = new PhysicsWorld(-28.91f, _dispatcher, _broadphase, _solver, _collision_config);
+            _physics_world = new PhysicsWorld(_gravity, _dispatcher, _broadphase, _solver, _collision_config);
 ;
             _picking_distance_minimum = 10.0f;
         }
@@ -170,6 +171,57 @@ namespace KailashEngine.Physics
             _physics_world.paused = !_physics_world.paused;
         }
 
+
+
+        //------------------------------------------------------
+        // Character Creation
+        //------------------------------------------------------
+
+        // First Person Character
+        public PairCachingGhostObject ghostObject;
+        public KinematicCharacterController character;
+
+        public void addCharacter(Vector3 start_position)
+        {
+
+            //AxisSweep3 Broadphase = new AxisSweep3(new Vector3(-1000, -1000, -1000), new Vector3(1000, 1000, 1000));
+            //Solver = new SequentialImpulseConstraintSolver();
+
+            Matrix start_transformation = Matrix.Translation(start_position);
+            ghostObject = new PairCachingGhostObject();
+            ghostObject.WorldTransform = start_transformation;
+            _broadphase.OverlappingPairCache.SetInternalGhostPairCallback(new GhostPairCallback());
+            //ghostObject.DeactivationTime = 0.001f;
+
+            const float characterSize = 0.5f;
+            const float characterHeight = characterSize * 10.0f;
+            const float characterWidth = characterSize;
+            //_picking_distance_minimum = characterWidth * pickingDistScale;
+            ConvexShape capsule = new CapsuleShape(characterWidth, characterHeight);
+            capsule.CalculateLocalInertia(10.0f);
+            
+            
+            //capsule.Margin = 0.0003f;
+
+
+            //capsule.Margin = characterHeight;
+            ghostObject.CollisionShape = capsule;
+            ghostObject.CollisionFlags = CollisionFlags.CharacterObject;
+            ghostObject.UserObject = "me";
+
+            
+            const float stepHeight = characterHeight / 5.0f;
+            character = new KinematicCharacterController(ghostObject, capsule, stepHeight);
+            character.SetJumpSpeed(characterHeight * 3.0f);
+            character.SetMaxJumpHeight(characterHeight * 1.0f);
+            character.SetFallSpeed(-_gravity * 1.0f);
+            character.Gravity = -_gravity * 1.0f;
+            character.MaxSlope = OpenTK.MathHelper.DegreesToRadians(50.0f);
+            character.SetUseGhostSweepTest(true);
+
+            _physics_world.world.AddCollisionObject(ghostObject, CollisionFilterGroups.CharacterFilter, CollisionFilterGroups.StaticFilter | CollisionFilterGroups.DefaultFilter);
+            _physics_world.world.AddAction(character);
+        }
 
 
         //------------------------------------------------------

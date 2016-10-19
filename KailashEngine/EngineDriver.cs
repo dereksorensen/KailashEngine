@@ -183,41 +183,83 @@ namespace KailashEngine
             // Player Movement
             //------------------------------------------------------
 
+            //if (_game.keyboard.getKeyPress(Key.W))
+            //{
+            //    //Console.WriteLine("Forward");
+            //    _game.player.character.moveForeward();
+            //}
+
+            //if (_game.keyboard.getKeyPress(Key.S))
+            //{
+            //    //Console.WriteLine("Backward");
+            //    _game.player.character.moveBackward();
+            //}
+
+            //if (_game.keyboard.getKeyPress(Key.A))
+            //{
+            //    //Console.WriteLine("Left");
+            //    _game.player.character.strafeLeft();
+            //}
+
+            //if (_game.keyboard.getKeyPress(Key.D))
+            //{
+            //    //Console.WriteLine("Right");
+            //    _game.player.character.strafeRight();
+            //}
+
+            //if (_game.keyboard.getKeyPress(Key.Space))
+            //{
+            //    //Console.WriteLine("Jump");
+            //    _game.player.character.moveUp();
+            //}
+
+            //if (_game.keyboard.getKeyPress(Key.ControlLeft))
+            //{
+            //    //Console.WriteLine("Crouch");
+            //    _game.player.character.moveDown();
+            //}
+
+            Vector3 walk_direction = Vector3.Zero;
             if (_game.keyboard.getKeyPress(Key.W))
             {
                 //Console.WriteLine("Forward");
-                _game.player.character.moveForeward();
+                walk_direction += -_game.player.camera.spatial.look * _game.player.character.movement_speed_run;
             }
 
             if (_game.keyboard.getKeyPress(Key.S))
             {
                 //Console.WriteLine("Backward");
-                _game.player.character.moveBackward();
+                walk_direction -= -_game.player.camera.spatial.look * _game.player.character.movement_speed_run;
             }
 
             if (_game.keyboard.getKeyPress(Key.A))
             {
                 //Console.WriteLine("Left");
-                _game.player.character.strafeLeft();
+                walk_direction += -_game.player.camera.spatial.strafe * _game.player.character.movement_speed_run;
             }
 
             if (_game.keyboard.getKeyPress(Key.D))
             {
                 //Console.WriteLine("Right");
-                _game.player.character.strafeRight();
+                walk_direction -= -_game.player.camera.spatial.strafe * _game.player.character.movement_speed_run;
             }
 
             if (_game.keyboard.getKeyPress(Key.Space))
             {
                 //Console.WriteLine("Jump");
-                _game.player.character.moveUp();
+                _physics_driver.character.Jump();
             }
 
-            if (_game.keyboard.getKeyPress(Key.ControlLeft))
-            {
-                //Console.WriteLine("Crouch");
-                _game.player.character.moveDown();
-            }
+            Vector3 temp1 = -_game.player.camera.spatial.position;
+            Vector3 temp = Vector3.TransformPosition(temp1, EngineHelper.bullet2otk(_physics_driver.character.GhostObject.WorldTransform));
+
+            Vector3 camP = -temp / 2.0f;
+
+            _game.player.camera.spatial.position = camP;
+            BulletSharp.Math.Vector3 campB = EngineHelper.otk2bullet(walk_direction);
+            _physics_driver.character.SetWalkDirection(ref campB);
+
+
 
             // Running
             _game.player.character.running = _game.keyboard.getKeyPress(Key.ShiftLeft);
@@ -350,9 +392,11 @@ namespace KailashEngine
             _game.load(_physics_driver.physics_world);
             _render_driver.load();        
             _debug_window.load();
-            
-            
- 
+
+            // Load physics character
+            _physics_driver.addCharacter(EngineHelper.otk2bullet(-_game.player.camera.spatial.position));
+
+
             SoundSystem.Instance.Initialize();
             _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
             _sound_cow.IsRelativeToListener = false;
