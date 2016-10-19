@@ -26,7 +26,9 @@ namespace KailashEngine.Physics
 
         private CollisionDispatcher _dispatcher;
         private DbvtBroadphase _broadphase;
-        
+        private SequentialImpulseConstraintSolver _solver;
+
+
         private CollisionConfiguration _collision_config;
 
 
@@ -68,14 +70,11 @@ namespace KailashEngine.Physics
             // Collision configuration contains default setup for memory, collision setup
             _collision_config = new DefaultCollisionConfiguration();
             _dispatcher = new CollisionDispatcher(_collision_config);
-
             _broadphase = new DbvtBroadphase();
+            _solver = new SequentialImpulseConstraintSolver();
 
-            SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
-
-            _physics_world = new PhysicsWorld(-28.91f, _dispatcher, _broadphase, solver, _collision_config);
-
-            //createCharacter(-cam.position);
+            _physics_world = new PhysicsWorld(-28.91f, _dispatcher, _broadphase, _solver, _collision_config);
+;
             _picking_distance_minimum = 10.0f;
         }
 
@@ -132,14 +131,27 @@ namespace KailashEngine.Physics
         {
             foreach (RigidBodyObject rbo in _physics_world.rigid_body_objects)
             {
-
                 rbo.body.ClearForces();
                 rbo.body.AngularVelocity = Vector3.Zero;
                 rbo.body.LinearVelocity = Vector3.Zero;
 
                 rbo.body.WorldTransform = rbo.original_transformation;
                 rbo.body.MotionState.WorldTransform = rbo.original_transformation;
+                rbo.body.Activate();
             }
+
+
+            OverlappingPairCache pair_cache = _physics_world.world.Broadphase.OverlappingPairCache;
+            AlignedBroadphasePairArray pair_array = pair_cache.OverlappingPairArray;
+            for(int i = 0; i < pair_array.Count; i++)
+            {
+                pair_cache.CleanOverlappingPair(pair_array[i], _physics_world.world.Dispatcher);
+            }
+
+            _solver.Reset();
+            _physics_world.world.ClearForces();
+            _broadphase.ResetPool(_dispatcher);
+
             _physics_world.paused = false;
         }
 
@@ -171,19 +183,20 @@ namespace KailashEngine.Physics
 
             if (rayCallback.HasHit)
             {
+
+                Vector3 pickPos = rayCallback.HitPointWorld;
                 RigidBody body = rayCallback.CollisionObject as RigidBody;
 
                 if (body != null)
                 {
-
+                    
                     if (!(body.IsStaticObject || body.IsKinematicObject))
                     {
                         _picked_body = body;
                         _picked_body.ActivationState = ActivationState.DisableDeactivation;
 
-                        Vector3 pickPos = rayCallback.HitPointWorld;
-                        Vector4 localPivot4 = Vector3.Transform(pickPos, Matrix.Invert(body.CenterOfMassTransform));
-                        Vector3 localPivot = new Vector3(localPivot4.X, localPivot4.Y, localPivot4.Z);
+                        Vector3 localPivot = Vector3.TransformCoordinate(pickPos, Matrix.Invert(body.CenterOfMassTransform));
+
 
                         if (use6Dof)
                         {
@@ -227,7 +240,6 @@ namespace KailashEngine.Physics
                             p2p.SetParam(ConstraintParams.Erp, 0.1f, 2);
                             */
                         }
-                        //use6Dof = !use6Dof;
 
                         _picking_distance_original = (pickPos - rayFrom).Length;
                         _picking_distance_current = _picking_distance_original;
@@ -240,32 +252,25 @@ namespace KailashEngine.Physics
         {
             if (_pick_constraint != null)
             {
-                Vector3 newRayTo = rayTo;
+               
+                Vector3 dir = rayTo - rayFrom;
+                dir.Normalize();
+                dir *= _picking_distance_current;
 
                 if (_pick_constraint.ConstraintType == TypedConstraintType.D6)
                 {
                     Generic6DofConstraint pickCon = _pick_constraint as Generic6DofConstraint;
 
                     //keep it at the same picking distance
-                    Vector3 dir = newRayTo - rayFrom;
-                    dir.Normalize();
-                    dir *= _picking_distance_current;
-                    Vector3 newPivotB = rayFrom + dir;
-
                     Matrix tempFrameOffsetA = pickCon.FrameOffsetA;
-                    tempFrameOffsetA.M41 = newPivotB.X;
-                    tempFrameOffsetA.M42 = newPivotB.Y;
-                    tempFrameOffsetA.M43 = newPivotB.Z;
-                    pickCon.SetFrames(tempFrameOffsetA, Matrix.Identity);
+                    tempFrameOffsetA.Origin = rayFrom + dir;
+                    pickCon.SetFrames(tempFrameOffsetA, pickCon.FrameOffsetB);
                 }
                 else
                 {
                     Point2PointConstraint pickCon = _pick_constraint as Point2PointConstraint;
 
                     //keep it at the same picking distance
-                    Vector3 dir = newRayTo - rayFrom;
-                    dir.Normalize();
-                    dir *= _picking_distance_current;
                     pickCon.PivotInB = rayFrom + dir;
                 }
             }
@@ -285,11 +290,11 @@ namespace KailashEngine.Physics
             }
         }
 
-        public void shootObject(Vector3 direction)
+        public void throwObject(Vector3 direction)
         {
             if (_pick_constraint != null && _physics_world.world != null)
             {
-                _picked_body.ApplyCentralImpulse(direction * 57.0f);
+                _picked_body.ApplyCentralImpulse(direction * 100.0f);
             }
             releaseObject();
         }

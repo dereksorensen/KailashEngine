@@ -171,7 +171,7 @@ for item in bpy.data.objects:
 			physics_file.write(attributes)
 			
 			physics_file.write('\n')
-			
+
 numRB_string = "num " + str(numRB)
 physics_file.write(numRB_string)
 

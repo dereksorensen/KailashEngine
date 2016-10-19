@@ -50,6 +50,7 @@ namespace KailashEngine.Physics
 
 
             RigidBody body = new RigidBody(rbInfo);
+            rbInfo.Dispose();
 
             if(kinematic)
             {

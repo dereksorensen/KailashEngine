@@ -154,7 +154,7 @@ namespace KailashEngine
                     _game.scene.animation_timer.restart();
                     break;
                 case Key.X:
-                    _physics_driver.shootObject(EngineHelper.otk2bullet(getWorldSpaceRay()));
+                    _physics_driver.throwObject(EngineHelper.otk2bullet(getWorldSpaceRay()));
                     break;
                 case Key.Z:
                     _physics_driver.zoomPickedObject();
