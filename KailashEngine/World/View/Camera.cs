@@ -77,6 +77,11 @@ namespace KailashEngine.World.View
         }
 
 
+        public void resetSmoothMovement()
+        {
+            _position_current = _spatial.position;
+            _position_previous = Vector3.Zero;
+        }
 
         public void smoothMovement(float smooth_movement_delay)
         {

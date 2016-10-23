@@ -32,6 +32,8 @@ namespace KailashEngine.Physics
         private CollisionConfiguration _collision_config;
 
 
+        private float _gravity = -28.91f;
+
         //------------------------------------------------------
         // Picking Objects / Properties
         //------------------------------------------------------
@@ -64,7 +66,13 @@ namespace KailashEngine.Physics
         }
 
 
-        private float _gravity = -28.91f;
+        //------------------------------------------------------
+        // Character Objects / Properties
+        //------------------------------------------------------
+        public PairCachingGhostObject ghostObject;
+        public KinematicCharacterController character;
+
+
 
         public PhysicsDriver()
         {
@@ -162,6 +170,7 @@ namespace KailashEngine.Physics
             if (!_physics_world.paused)
             {
                 _physics_world.world.StepSimulation(frame_time, (int)(Math.Max(target_fps / current_fps, 1)));
+                //character.UpdateAction(_physics_world.world, frame_time);
             }
         }
 
@@ -177,20 +186,15 @@ namespace KailashEngine.Physics
         // Character Creation
         //------------------------------------------------------
 
-        // First Person Character
-        public PairCachingGhostObject ghostObject;
-        public KinematicCharacterController character;
-
-        public void addCharacter(Vector3 start_position)
+        public void createCharacter(Vector3 start_position)
         {
 
             //AxisSweep3 Broadphase = new AxisSweep3(new Vector3(-1000, -1000, -1000), new Vector3(1000, 1000, 1000));
-            //Solver = new SequentialImpulseConstraintSolver();
-
+            
             Matrix start_transformation = Matrix.Translation(start_position);
             ghostObject = new PairCachingGhostObject();
             ghostObject.WorldTransform = start_transformation;
-            _broadphase.OverlappingPairCache.SetInternalGhostPairCallback(new GhostPairCallback());
+            //_broadphase.OverlappingPairCache.SetInternalGhostPairCallback(new GhostPairCallback());
             //ghostObject.DeactivationTime = 0.001f;
 
             const float characterSize = 0.5f;
@@ -198,11 +202,11 @@ namespace KailashEngine.Physics
             const float characterWidth = characterSize;
             //_picking_distance_minimum = characterWidth * pickingDistScale;
             ConvexShape capsule = new CapsuleShape(characterWidth, characterHeight);
-            capsule.CalculateLocalInertia(10.0f);
+            capsule.CalculateLocalInertia(1.0f);
             
             
             //capsule.Margin = 0.0003f;
-
+            
 
             //capsule.Margin = characterHeight;
             ghostObject.CollisionShape = capsule;
@@ -219,8 +223,11 @@ namespace KailashEngine.Physics
             character.MaxSlope = OpenTK.MathHelper.DegreesToRadians(50.0f);
             character.SetUseGhostSweepTest(true);
 
+ 
             _physics_world.world.AddCollisionObject(ghostObject, CollisionFilterGroups.CharacterFilter, CollisionFilterGroups.StaticFilter | CollisionFilterGroups.DefaultFilter);
+            _physics_world.collision_shapes.Add(capsule);
             _physics_world.world.AddAction(character);
+
         }
 
 

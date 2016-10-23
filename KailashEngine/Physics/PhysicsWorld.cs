@@ -50,6 +50,9 @@ namespace KailashEngine.Physics
 
             _world.Gravity = new Vector3(0, gravity, 0);
 
+            // For character collisions
+            _world.Broadphase.OverlappingPairCache.SetInternalGhostPairCallback(new GhostPairCallback());
+
             _collision_shapes = new List<CollisionShape>();
             _rigid_body_objects = new List<RigidBodyObject>();
 

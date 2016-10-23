@@ -55,11 +55,13 @@ namespace KailashEngine.World
         }
 
 
-        Quaternion _previous_rotation;
+
 
         //------------------------------------------------------
         // Rotation Override
         //------------------------------------------------------
+        private Quaternion _previous_rotation;
+
         public void rotate(float x_angle, float y_angle, float z_angle, float smooth_factor)
         {
             _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);

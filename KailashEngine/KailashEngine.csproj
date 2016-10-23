@@ -456,6 +456,7 @@
     <Compile Include="Launcher.cs" />
     <Compile Include="Output\Audio.cs" />
     <Compile Include="Output\Resolution.cs" />
+    <Compile Include="Physics\PhysicsCharacter.cs" />
     <Compile Include="Physics\PhysicsDriver.cs" />
     <Compile Include="Physics\PhysicsHelper.cs" />
     <Compile Include="Physics\PhysicsLoader.cs" />

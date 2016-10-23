@@ -140,10 +140,8 @@ namespace KailashEngine
             _game.keyboard.keyDown(e);
             switch (e.Key)
             {
-
                 case Key.F:
-                    _game.player.enable_flashlight = !_game.player.enable_flashlight;
-                    _game.scene.toggleFlashlight(_game.player.enable_flashlight);
+                    _game.scene.toggleFlashlight(_game.player.toggleFlashlight());
                     break;
                 case Key.P:
                     _physics_driver.pause();
@@ -166,6 +164,9 @@ namespace KailashEngine
                         centerMouse();
                     }
                     break;
+                case Key.F9:
+                    _game.player.togglePhysical();
+                    break;
                 case Key.Escape:
                     Exit();
                     break;
@@ -177,95 +178,56 @@ namespace KailashEngine
             //------------------------------------------------------
             // Smooth Camera Movement
             //------------------------------------------------------
-            _game.player.camera.smoothMovement(_game.config.smooth_keyboard_delay);
+            _game.player.smoothMovement(_game.config.smooth_keyboard_delay);
 
             //------------------------------------------------------
             // Player Movement
             //------------------------------------------------------
 
-            //if (_game.keyboard.getKeyPress(Key.W))
-            //{
-            //    //Console.WriteLine("Forward");
-            //    _game.player.character.moveForeward();
-            //}
-
-            //if (_game.keyboard.getKeyPress(Key.S))
-            //{
-            //    //Console.WriteLine("Backward");
-            //    _game.player.character.moveBackward();
-            //}
-
-            //if (_game.keyboard.getKeyPress(Key.A))
-            //{
-            //    //Console.WriteLine("Left");
-            //    _game.player.character.strafeLeft();
-            //}
-
-            //if (_game.keyboard.getKeyPress(Key.D))
-            //{
-            //    //Console.WriteLine("Right");
-            //    _game.player.character.strafeRight();
-            //}
-
-            //if (_game.keyboard.getKeyPress(Key.Space))
-            //{
-            //    //Console.WriteLine("Jump");
-            //    _game.player.character.moveUp();
-            //}
-
-            //if (_game.keyboard.getKeyPress(Key.ControlLeft))
-            //{
-            //    //Console.WriteLine("Crouch");
-            //    _game.player.character.moveDown();
-            //}
-
-            Vector3 walk_direction = Vector3.Zero;
             if (_game.keyboard.getKeyPress(Key.W))
             {
                 //Console.WriteLine("Forward");
-                walk_direction += -_game.player.camera.spatial.look * _game.player.character.movement_speed_run;
+                _game.player.moveForeward();
             }
 
             if (_game.keyboard.getKeyPress(Key.S))
             {
                 //Console.WriteLine("Backward");
-                walk_direction -= -_game.player.camera.spatial.look * _game.player.character.movement_speed_run;
+                _game.player.moveBackward();
             }
 
             if (_game.keyboard.getKeyPress(Key.A))
             {
                 //Console.WriteLine("Left");
-                walk_direction += -_game.player.camera.spatial.strafe * _game.player.character.movement_speed_run;
+                _game.player.strafeLeft();
             }
 
             if (_game.keyboard.getKeyPress(Key.D))
             {
                 //Console.WriteLine("Right");
-                walk_direction -= -_game.player.camera.spatial.strafe * _game.player.character.movement_speed_run;
+                _game.player.strafeRight();
             }
 
             if (_game.keyboard.getKeyPress(Key.Space))
             {
                 //Console.WriteLine("Jump");
-                _physics_driver.character.Jump();
+                _game.player.moveUp();
             }
 
-            Vector3 temp1 = -_game.player.camera.spatial.position;
-            Vector3 temp = Vector3.TransformPosition(temp1, EngineHelper.bullet2otk(_physics_driver.character.GhostObject.WorldTransform));
+            if (_game.keyboard.getKeyPress(Key.ControlLeft))
+            {
+                //Console.WriteLine("Crouch");
+                _game.player.moveDown();
+            }
 
-            Vector3 camP = -temp / 2.0f;
-
-            _game.player.camera.spatial.position = camP;
-            BulletSharp.Math.Vector3 campB = EngineHelper.otk2bullet(walk_direction);
-            _physics_driver.character.SetWalkDirection(ref campB);
-
+            _game.player.updatePhysicalPosition();
 
 
             // Running
-            _game.player.character.running = _game.keyboard.getKeyPress(Key.ShiftLeft);
+            _game.player.run(_game.keyboard.getKeyPress(Key.ShiftLeft));
 
             // Sprinting
-            _game.player.character.sprinting = _game.keyboard.getKeyPress(Key.AltLeft);
+            _game.player.sprint(_game.keyboard.getKeyPress(Key.AltLeft));
 
         }
 
@@ -309,6 +271,9 @@ namespace KailashEngine
 
         private void mouse_ButtonBuffer()
         {
+            // Zoom camera
+            _game.player.camera.zoom(_game.mouse.getButtonPress(MouseButton.Right), _fps);
+
             if (_game.mouse.getButtonPress(MouseButton.Left))
             {
                 //Console.WriteLine("Left Click");
@@ -316,12 +281,7 @@ namespace KailashEngine
 
             if (_game.mouse.getButtonPress(MouseButton.Right))
             {
-                //Console.WriteLine("Right Click");
-                _game.player.camera.zoom(true, _fps);
-            }
-            else
-            {
-                _game.player.camera.zoom(false, _fps);
+                //Console.WriteLine("Right Click");   
             }
 
             if (_game.mouse.getButtonPress(MouseButton.Middle))
@@ -335,17 +295,10 @@ namespace KailashEngine
             // Calculate mouse current position
             _game.mouse.position_current = (_game.mouse.locked || _game.mouse.getButtonPress(MouseButton.Left)) ? base.PointToClient(System.Windows.Forms.Cursor.Position) : _game.mouse.position_previous;
 
-            // Set character angles based on mouse position delta 
-            Vector3 temp_angles = _game.player.character.spatial.rotation_angles + _game.mouse.position_delta;
-            temp_angles.X = MathHelper.Clamp(temp_angles.X, -90.0f, 90.0f);
-            _game.player.character.spatial.rotation_angles = temp_angles;
-
 
             // Rotate main character from mouse movement
-            _game.player.character.rotate(
-                _game.player.character.spatial.rotation_angles.X, 
-                _game.player.character.spatial.rotation_angles.Y, 
-                _game.player.character.spatial.rotation_angles.Z, 
+            _game.player.rotate(
+                _game.mouse.position_delta, 
                 _game.config.smooth_mouse_delay
             );
 
@@ -393,8 +346,9 @@ namespace KailashEngine
             _render_driver.load();        
             _debug_window.load();
 
+
             // Load physics character
-            _physics_driver.addCharacter(EngineHelper.otk2bullet(-_game.player.camera.spatial.position));
+            //_physics_driver.createCharacter(EngineHelper.otk2bullet(-_game.player.character.spatial.position));
 
 
             SoundSystem.Instance.Initialize();
