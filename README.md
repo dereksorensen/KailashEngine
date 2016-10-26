@@ -7,6 +7,7 @@ Movement = WASD CTRL Space
 Toggle Fly Mode = F9
 
 Reel in picked object = Z
+
 Throw picked object = X
 
 Mouse Lock = CAPS Lock
