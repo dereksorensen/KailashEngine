@@ -3,10 +3,13 @@ KailashEngine 2.0
 # **Keyboard:** #
 
 * Movement = WASD CTRL Space
-* Toggle Fly Mode = F9
+* Flashlight = F
 * Reel in picked object = Z
 * Throw picked object = X
 * Mouse Lock = CAPS Lock
+
+### Toggles ###
+* Toggle Fly Mode = F9
 
 # **Mouse** #
 
