@@ -16,37 +16,51 @@ namespace KailashEngine.Physics
         public KinematicCharacterController character;
 
 
-        public PhysicsCharacter(PhysicsWorld physics_world, Vector3 start_position)
+        private float _size;
+
+        public float size
+        {
+            get { return _size; }
+            set { _size = value; }
+        }
+
+
+
+        public PhysicsCharacter(PhysicsWorld physics_world, Vector3 start_position, float size)
         {
             //AxisSweep3 Broadphase = new AxisSweep3(new Vector3(-1000, -1000, -1000), new Vector3(1000, 1000, 1000));
+
+            _size = size;
 
             Matrix start_transformation = Matrix.Translation(start_position);
             ghostObject = new PairCachingGhostObject();
             ghostObject.WorldTransform = start_transformation;
             //ghostObject.DeactivationTime = 0.001f;
 
-            const float characterSize = 0.5f;
-            const float characterHeight = characterSize * 10.0f;
-            const float characterWidth = characterSize;
+            // For character collisions
+            physics_world.world.Broadphase.OverlappingPairCache.SetInternalGhostPairCallback(new GhostPairCallback());
+
+            float characterSize = _size;
+            float characterHeight = characterSize;
+            float characterWidth = characterSize;
             //_picking_distance_minimum = characterWidth * pickingDistScale;
             ConvexShape capsule = new CapsuleShape(characterWidth, characterHeight);
-            capsule.CalculateLocalInertia(1.0f);
+            //capsule.CalculateLocalInertia(1.0f);
 
 
-            //capsule.Margin = 0.0003f;
-
+            capsule.Margin = 0.1f;
 
             //capsule.Margin = characterHeight;
             ghostObject.CollisionShape = capsule;
             ghostObject.CollisionFlags = CollisionFlags.CharacterObject;
             ghostObject.UserObject = "me";
+            
 
-
-            const float stepHeight = characterHeight / 5.0f;
+            float stepHeight = characterHeight / 2.0f;
             character = new KinematicCharacterController(ghostObject, capsule, stepHeight);
-            character.SetJumpSpeed(characterHeight * 3.0f);
-            character.SetMaxJumpHeight(characterHeight * 1.0f);
-            character.SetFallSpeed(-physics_world.world.Gravity.Y * 1.0f);
+            character.SetJumpSpeed(characterHeight * 7.0f);
+            //character.SetMaxJumpHeight(characterHeight * 1.0f);
+            //character.SetFallSpeed(-physics_world.world.Gravity.Y * 1.0f);
             character.Gravity = -physics_world.world.Gravity.Y * 1.0f;
             character.MaxSlope = OpenTK.MathHelper.DegreesToRadians(50.0f);
             character.SetUseGhostSweepTest(true);
@@ -55,6 +69,12 @@ namespace KailashEngine.Physics
             physics_world.world.AddCollisionObject(ghostObject, CollisionFilterGroups.CharacterFilter, CollisionFilterGroups.StaticFilter | CollisionFilterGroups.DefaultFilter);
             physics_world.collision_shapes.Add(capsule);
             physics_world.world.AddAction(character);
+        }
+
+
+        public OpenTK.Vector3 getPosition()
+        {
+            return EngineHelper.bullet2otk(character.GhostObject.WorldTransform).ExtractTranslation() + new OpenTK.Vector3(0.0f, _size/1.2f, 0.0f);
         }
 
     }

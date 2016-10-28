@@ -180,9 +180,17 @@ namespace KailashEngine
             //------------------------------------------------------
             _game.player.smoothMovement(_game.config.smooth_keyboard_delay);
 
+
             //------------------------------------------------------
             // Player Movement
             //------------------------------------------------------
+
+            // Running
+            _game.player.run(_game.keyboard.getKeyPress(Key.ShiftLeft));
+
+            // Sprinting
+            _game.player.sprint(_game.keyboard.getKeyPress(Key.AltLeft));
+
 
             if (_game.keyboard.getKeyPress(Key.W))
             {
@@ -220,14 +228,9 @@ namespace KailashEngine
                 _game.player.moveDown();
             }
 
+            // Update Physics Character Position
             _game.player.updatePhysicalPosition();
 
-
-            // Running
-            _game.player.run(_game.keyboard.getKeyPress(Key.ShiftLeft));
-
-            // Sprinting
-            _game.player.sprint(_game.keyboard.getKeyPress(Key.AltLeft));
 
         }
 
@@ -363,13 +366,15 @@ namespace KailashEngine
         {
             // this is called every frame, put game logic here
             _physics_driver.update((float)e.Time, _game.config.fps_target, _fps);
+
+            inputBuffer();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _fps = (float)(1.0d / e.Time);
 
-            inputBuffer();
+
 
             _render_driver.updateUBO_GameConfig(
                 _game.config.near_far_full,

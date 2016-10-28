@@ -71,7 +71,7 @@ namespace KailashEngine.Client
 
         public void getPhysical(PhysicsWorld physics_world)
         {
-            _physics_character = new PhysicsCharacter(physics_world, EngineHelper.otk2bullet(-_character.spatial.position));
+            _physics_character = new PhysicsCharacter(physics_world, EngineHelper.otk2bullet(-_character.spatial.position), 2.0f);
             _previous_position = _character.spatial.position;
             _physical = true;
         }
@@ -92,7 +92,7 @@ namespace KailashEngine.Client
             }
             else
             {
-                _character.spatial.position = -EngineHelper.bullet2otk(_physics_character.character.GhostObject.WorldTransform).ExtractTranslation();
+                _character.spatial.position = -_physics_character.getPosition();
                 _camera.resetSmoothMovement();
             }
         }
@@ -175,15 +175,12 @@ namespace KailashEngine.Client
         {
             if (_physical)
             {
-                Vector3 walk_direction = -(character.spatial.position - _previous_position);
+                BulletSharp.Math.Vector3 walk_direction = -EngineHelper.otk2bullet((character.spatial.position - _previous_position));
+
+                _physics_character.character.SetWalkDirection(ref walk_direction);
 
 
-                BulletSharp.Math.Vector3 campB = EngineHelper.otk2bullet(walk_direction);
-                _physics_character.character.SetWalkDirection(ref campB);
-
-
-                _character.spatial.position = -EngineHelper.bullet2otk(_physics_character.character.GhostObject.WorldTransform).ExtractTranslation();
-
+                _character.spatial.position = -_physics_character.getPosition();
                 _previous_position = character.spatial.position;
             }
             else

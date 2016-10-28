@@ -83,7 +83,7 @@ namespace KailashEngine.Client
             _camera_1 = new Camera("camera_1", _config.fov, _display.resolution.aspect, _config.near_far);
             _character_1 = new PlayableCharacter(
                     "Janu Crips",
-                    (World.SpatialData)_serializer.Load("player_spatial.dat") ?? new World.SpatialData(new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 1.0f, 0.0f)),
+                    (World.SpatialData)_serializer.Load("player_spatial.dat") ?? new World.SpatialData(new Vector3(), new Vector3(0.0f, 0.0f, -1.0f), new Vector3(0.0f, 10.0f, 0.0f)),
                     _config.default_movement_speed_walk,
                     _config.default_movement_speed_run
             );
@@ -97,6 +97,7 @@ namespace KailashEngine.Client
         {
             _player.controlAndWatch(_character_1, _camera_1);
             _player.getPhysical(physics_world);
+
             _scene.load(physics_world);
             _scene.toggleFlashlight(_player.enable_flashlight);
         }

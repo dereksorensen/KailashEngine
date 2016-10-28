@@ -36,10 +36,10 @@ namespace KailashEngine
 
                 // Display Config
                 1440, 900,                                      // Resolution
-                false,                                          // Default to fullscreen
+                true,                                          // Default to fullscreen
 
                 // Main Player Config
-                0.02f, 0.2f,                                    // Character Movement Speeds
+                0.1f, 0.5f,                                    // Character Movement Speeds
                 0.1f                                            // Character Look Sensitivity
             );
 

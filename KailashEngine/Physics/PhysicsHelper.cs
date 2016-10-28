@@ -59,12 +59,7 @@ namespace KailashEngine.Physics
             }
 
 
-            //body.CcdMotionThreshold = dimensions.Length;
-            //body.CcdSweptSphereRadius = dimensions.Length;
-            //body.Flags = RigidBodyFlags.DisableWorldGravity;
-            //body.Gravity = new Vector3(0.0f, -dimensions.Length * GV.gravity * 5.0f, 0.0f);
-
-            //body.SetSleepingThresholds(0.2f, 0.9f);
+            body.SetSleepingThresholds(0.2f, 0.9f);
             //body.Friction = 1.0f;
             //body.RollingFriction = 1.0f;
 
