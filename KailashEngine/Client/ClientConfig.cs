@@ -226,8 +226,7 @@ namespace KailashEngine.Client
 
 
         public ClientConfig(
-            string title, 
-            string engine_base_dir, 
+            string title,
             int gl_major_version, int gl_minor_version, 
             float target_fps, 
             float fov, float near_plane, float far_plane,
@@ -238,7 +237,7 @@ namespace KailashEngine.Client
             _title = title;
 
             // Get base engine path for defaults
-            _path_base = getBasePath(engine_base_dir);         
+            _path_base = EngineHelper.getProjectBasePath();
 
             _gl_major_version = gl_major_version;
             _gl_minor_version = gl_minor_version;

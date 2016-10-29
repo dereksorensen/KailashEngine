@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,32 @@ namespace KailashEngine
             mat3 = sizeof(float) * 9,
             mat4 = sizeof(float) * 16,
         }
+
+        //------------------------------------------------------
+        // Project Helpers
+        //------------------------------------------------------
+        public static string getProjectName()
+        {
+            return System.Reflection.Assembly.GetCallingAssembly().FullName.Split(',')[0];
+        }
+
+        public static string getProjectBasePath()
+        {
+            bool path_found = false;
+            string cur_search = "../";
+            string base_path = "";
+
+            while (!path_found)
+            {
+                base_path = Path.GetFullPath(cur_search);
+                string[] dirs = base_path.Split('\\');
+                path_found = dirs[dirs.Length - 2] == getProjectName();
+                cur_search += "../";
+            }
+
+            return base_path;
+        }
+
 
         //------------------------------------------------------
         // Data functions

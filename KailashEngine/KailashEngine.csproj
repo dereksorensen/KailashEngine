@@ -544,6 +544,7 @@
     <None Include="Resources\Textures\_static\crosshair\crosshair_2.xcf" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
     <Folder Include="Resources\SaveData\" />
   </ItemGroup>

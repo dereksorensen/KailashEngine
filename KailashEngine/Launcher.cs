@@ -21,7 +21,6 @@ namespace KailashEngine
 
             ClientConfig game_config = new ClientConfig(
                 "Das Undt Gamen",                               // Game Name
-                "KailashEngine",                                // Base Engine Path
 
                 // OpenGL Config
                 4, 5,                                           // OpenGL Versions

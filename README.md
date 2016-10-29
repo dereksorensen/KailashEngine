@@ -6,10 +6,11 @@ KailashEngine 2.0
 * Flashlight = F
 * Reel in picked object = Z
 * Throw picked object = X
-* Mouse Lock = CAPS Lock
+* Reset Scene = R
 
 ### Toggles ###
-* Toggle Fly Mode = F9
+* Toggle Fly Mode = Tab
+* Mouse Lock = CAPS Lock
 
 # **Mouse** #
 

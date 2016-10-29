@@ -126,8 +126,14 @@ namespace KailashEngine
 
         // Keyboard
 
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            _debug_window.handle_Keyboard(e);
+        }
+
         protected void keyboard_KeyUp(object sender, KeyboardKeyEventArgs e)
         {
+
             _game.keyboard.keyUp(e);
             switch (e.Key)
             {
@@ -137,6 +143,7 @@ namespace KailashEngine
 
         protected void keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
+
             _game.keyboard.keyDown(e);
             switch (e.Key)
             {
@@ -157,15 +164,15 @@ namespace KailashEngine
                 case Key.Z:
                     _physics_driver.zoomPickedObject();
                     break;
+                case Key.Tab:
+                    _game.player.togglePhysical();
+                    break;
                 case Key.CapsLock:
                     _game.mouse.toggleLock();
                     if (_game.mouse.locked)
                     {
                         centerMouse();
                     }
-                    break;
-                case Key.F9:
-                    _game.player.togglePhysical();
                     break;
                 case Key.Escape:
                     Exit();
@@ -238,6 +245,11 @@ namespace KailashEngine
 
         protected void mouse_ButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if(_debug_window.handle_MouseClick(e))
+            {
+                return;
+            }
+
             _game.mouse.buttonUp(e);
             switch (e.Button)
             {
@@ -249,6 +261,11 @@ namespace KailashEngine
 
         protected void mouse_ButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (_debug_window.handle_MouseClick(e))
+            {
+                return;
+            }
+
             _game.mouse.buttonDown(e);
             switch (e.Button)
             {
@@ -267,9 +284,12 @@ namespace KailashEngine
 
         protected void mouse_Wheel(object sender, MouseWheelEventArgs e)
         {
+            if (_debug_window.handle_MouseWheel(e))
+            {
+                return;
+            }
+
             _game.mouse.wheel(e);
-
-
         }
 
         private void mouse_ButtonBuffer()
@@ -298,18 +318,19 @@ namespace KailashEngine
             // Calculate mouse current position
             _game.mouse.position_current = (_game.mouse.locked || _game.mouse.getButtonPress(MouseButton.Left)) ? base.PointToClient(System.Windows.Forms.Cursor.Position) : _game.mouse.position_previous;
 
+            // Don't move game if we are using the tweak bar
+            if (!_debug_window.handle_MouseMove(_game.mouse.position_current))
+            {
+                // Rotate main character from mouse movement
+                _game.player.rotate(
+                    _game.mouse.position_delta, 
+                    _game.config.smooth_mouse_delay
+                );
 
-            // Rotate main character from mouse movement
-            _game.player.rotate(
-                _game.mouse.position_delta, 
-                _game.config.smooth_mouse_delay
-            );
-
-
-            // Move Picked Object
-            Vector3[] picking_vectors = getPickingVectors();
-            _physics_driver.moveObject(EngineHelper.otk2bullet(picking_vectors[0]), EngineHelper.otk2bullet(picking_vectors[1]));
-
+                // Move Picked Object
+                Vector3[] picking_vectors = getPickingVectors();
+                _physics_driver.moveObject(EngineHelper.otk2bullet(picking_vectors[0]), EngineHelper.otk2bullet(picking_vectors[1]));
+            }
 
 
             // Recenter
@@ -350,10 +371,6 @@ namespace KailashEngine
             _debug_window.load();
 
 
-            // Load physics character
-            //_physics_driver.createCharacter(EngineHelper.otk2bullet(-_game.player.character.spatial.position));
-
-
             SoundSystem.Instance.Initialize();
             _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
             _sound_cow.IsRelativeToListener = false;
@@ -373,7 +390,6 @@ namespace KailashEngine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _fps = (float)(1.0d / e.Time);
-
 
 
             _render_driver.updateUBO_GameConfig(
@@ -399,6 +415,7 @@ namespace KailashEngine
 
             _render_driver.render(_game.scene);
 
+
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;
 
 
@@ -420,8 +437,8 @@ namespace KailashEngine
             _game.unload();
             _debug_window.unload();
             _physics_driver.unload();
-
-            Console.WriteLine("\nBaaiiii...");
+            
+            DebugHelper.logInfo(0, "\n\nExiting...", "BAYEEE");
             Thread.Sleep(500);
         }
 
