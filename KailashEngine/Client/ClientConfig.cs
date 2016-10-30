@@ -61,7 +61,7 @@ namespace KailashEngine.Client
         public string path_glsl_base { get { return Path.GetFullPath(_path_base + "Render/Shader/glsl/"); } }
         public string path_glsl_common { get { return "common/"; } }
         public string path_glsl_common_helpers { get { return "common/helpers/"; } }
-
+        public string path_glsl_common_generic_vs { get { return "render_Texture2D.vert"; } }
 
 
         //------------------------------------------------------

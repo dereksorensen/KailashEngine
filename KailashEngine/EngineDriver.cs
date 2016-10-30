@@ -357,7 +357,7 @@ namespace KailashEngine
 
             // Create Engine Objects
             _render_driver = new RenderDriver(
-                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common, _game.config.path_glsl_common_helpers),
+                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common, _game.config.path_glsl_common_helpers, _game.config.path_glsl_common_generic_vs),
                 new StaticImageLoader(_game.config.path_resources_textures_static),
                 _game.display.resolution
             );
@@ -438,7 +438,7 @@ namespace KailashEngine
             _debug_window.unload();
             _physics_driver.unload();
             
-            DebugHelper.logInfo(0, "\n\nExiting...", "BAYEEE");
+            DebugHelper.logInfo(0, "\n\nExiting...", "BAYEEE\n\n");
             Thread.Sleep(500);
         }
 

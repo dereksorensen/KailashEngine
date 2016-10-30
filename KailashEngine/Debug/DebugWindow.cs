@@ -116,7 +116,6 @@ namespace KailashEngine.Debug
             _fps.Label = "FPS";
 
             new Separator(_bar_fps);
-
         }
 
         //------------------------------------------------------
@@ -125,7 +124,8 @@ namespace KailashEngine.Debug
         private void createWindow_Logs(Context context)
         {
             _bar_logs = new Bar(context);
-            _bar_logs.Iconified = true;        
+            _bar_logs.Iconified = true;
+            _bar_logs.RefreshRate = 1;    
         }
 
         //------------------------------------------------------

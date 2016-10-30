@@ -465,6 +465,7 @@
     <Compile Include="Physics\RigidBodyObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\FX\fx_Crosshair.cs" />
+    <Compile Include="Render\FX\fx_Special.cs" />
     <Compile Include="Render\FX\fx_Test.cs" />
     <Compile Include="Render\FX\fx_HDR.cs" />
     <Compile Include="Render\FX\fx_gBuffer.cs" />
@@ -531,6 +532,7 @@
     <None Include="Render\Shader\glsl\hdr\hdr_AutoExposure.comp" />
     <None Include="Render\Shader\glsl\hdr\hdr_Luminosity.comp" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
+    <None Include="Render\Shader\glsl\special\special_BlurGuass.frag" />
     <None Include="Resources\Blender\Scripts\export_collada.py" />
     <None Include="Resources\Scene\light_objects\light_objects.dae" />
     <None Include="Resources\Scene\light_objects\light_objects.lights" />
@@ -546,6 +548,7 @@
   <ItemGroup>
     <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
+    <Folder Include="Render\Shader\glsl\special\helpers\" />
     <Folder Include="Resources\SaveData\" />
   </ItemGroup>
   <ItemGroup>

@@ -36,8 +36,14 @@ namespace KailashEngine.Debug
             if (_current_log_file == "")
             {
                 string logs_path = Path.GetFullPath(EngineHelper.getProjectBasePath() + "Debug/Logs");
-                _current_log_file = logs_path + "/engine_log-" + DateTime.Now.ToString("yyyy-MM-dd-HHmmss") + ".log";
-
+                _current_log_file = logs_path + "/engine_log-" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                using (StreamWriter w = File.AppendText(getLogFilePath()))
+                {
+                    w.WriteLine(Environment.NewLine + 
+                        "==================================================================================" + Environment.NewLine +
+                        DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + Environment.NewLine +
+                        "==================================================================================" + Environment.NewLine);
+                }
             }
             return _current_log_file;
         }
@@ -47,8 +53,9 @@ namespace KailashEngine.Debug
             _current_log = _current_log + "\n" + message;
             using (StreamWriter w = File.AppendText(getLogFilePath()))
             {
-                w.WriteLine(message);
+                w.WriteLine(message.Replace("\n", Environment.NewLine));
             }
+            Console.WriteLine(message);
         }
 
 

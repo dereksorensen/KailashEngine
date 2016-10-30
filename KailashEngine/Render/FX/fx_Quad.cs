@@ -25,9 +25,8 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
-            _pRenderTexture2D = _pLoader.createProgram(new ShaderFile[]
+            _pRenderTexture2D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_Texture2D.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture2D.frag", null)
             });
             _pRenderTexture2D.enable_Samplers(1);

@@ -58,7 +58,7 @@ namespace KailashEngine.Physics
 
             float stepHeight = characterHeight / 2.0f;
             character = new KinematicCharacterController(ghostObject, capsule, stepHeight);
-            character.SetJumpSpeed(characterHeight * 7.0f);
+            character.SetJumpSpeed(characterHeight * 8.0f);
             //character.SetMaxJumpHeight(characterHeight * 1.0f);
             //character.SetFallSpeed(-physics_world.world.Gravity.Y * 1.0f);
             character.Gravity = -physics_world.world.Gravity.Y * 1.0f;

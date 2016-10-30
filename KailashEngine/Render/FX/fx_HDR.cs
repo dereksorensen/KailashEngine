@@ -58,9 +58,8 @@ namespace KailashEngine.Render.FX
             _pAutoExposure.enable_Samplers(1);
             _pAutoExposure.addUniform("luminosity_lod");
 
-            _pScaleScene = _pLoader.createProgram(new ShaderFile[]
+            _pScaleScene = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "hdr_ScaleScene.frag", null)
             });
             _pScaleScene.enable_Samplers(1);
@@ -154,8 +153,6 @@ namespace KailashEngine.Render.FX
 
             Debug.DebugHelper.logInfo(1, "Scene Luminosity", lumRead.ToString());
         }
-
-
 
 
 

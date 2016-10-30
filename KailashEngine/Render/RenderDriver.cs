@@ -26,12 +26,13 @@ namespace KailashEngine.Render
         private UniformBuffer _ubo_game_config;
 
         // Render FXs
-        private fx_Quad _quad;
-        private fx_Test _test;
-        private fx_Crosshair _crosshair;
-        private fx_Final _final;
-        private fx_gBuffer _gBuffer;
-        private fx_HDR _hdr;
+        private fx_Quad _fxQuad;
+        private fx_Test _fxTest;
+        private fx_Crosshair _fxCrosshair;
+        private fx_Special _fxSpecial;
+        private fx_Final _fxFinal;
+        private fx_gBuffer _fxGBuffer;
+        private fx_HDR _fxHDR;
 
 
         public RenderDriver(
@@ -58,13 +59,13 @@ namespace KailashEngine.Render
 
 
             // Render FXs
-            _quad = new fx_Quad(pLoader, "common/", _resolution);
-            _test = new fx_Test(pLoader, "test/", _resolution);
-            _crosshair = new fx_Crosshair(pLoader, tLoader, "crosshair/", _resolution);
-            _final = new fx_Final(pLoader, "final/", _resolution);
-            _gBuffer = new fx_gBuffer(pLoader, "gBuffer/", _resolution);
-            _hdr = new fx_HDR(pLoader, "hdr/", _resolution);
-
+            _fxQuad = new fx_Quad(pLoader, "common/", _resolution);
+            _fxTest = new fx_Test(pLoader, "test/", _resolution);
+            _fxCrosshair = new fx_Crosshair(pLoader, tLoader, "crosshair/", _resolution);
+            _fxSpecial = new fx_Special(pLoader, "special/", _resolution);
+            _fxFinal = new fx_Final(pLoader, "final/", _resolution);
+            _fxGBuffer = new fx_gBuffer(pLoader, "gBuffer/", _resolution);
+            _fxHDR = new fx_HDR(pLoader, "hdr/", _resolution);
 
         }
 
@@ -90,11 +91,12 @@ namespace KailashEngine.Render
 
         private void load_FX()
         {
-            _quad.load();
-            _crosshair.load();
-            _final.load();
-            _gBuffer.load();
-            _hdr.load();
+            _fxQuad.load();
+            _fxCrosshair.load();
+            _fxSpecial.load();
+            _fxFinal.load();
+            _fxGBuffer.load();
+            _fxHDR.load();
         }
 
         public void load()
@@ -117,6 +119,7 @@ namespace KailashEngine.Render
 
         }
 
+
         //------------------------------------------------------
         // Updating
         //------------------------------------------------------
@@ -136,7 +139,7 @@ namespace KailashEngine.Render
 
         public void handle_MouseState(bool locked)
         {
-            _crosshair.enabled = locked;
+            _fxCrosshair.enabled = locked;
         }
 
 
@@ -149,13 +152,13 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Pre-Processing
             //------------------------------------------------------
-            _hdr.calcExposure(_final.tFinalScene);
+            _fxHDR.calcExposure(_fxFinal.tFinalScene);
 
 
             //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
-            _gBuffer.pass_DeferredShading(scene);
+            _fxGBuffer.pass_DeferredShading(scene);
 
 
             //------------------------------------------------------
@@ -164,30 +167,34 @@ namespace KailashEngine.Render
             GL.Disable(EnableCap.DepthTest);
 
 
-            _gBuffer.pass_LightAccumulation(_quad, _final.fFinalScene);
+            _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
-            _hdr.scaleScene(_quad, _final.fFinalScene, _final.tFinalScene);
+            _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             //------------------------------------------------------
             // Render to Screen
             //------------------------------------------------------
-            _final.render(_quad);
+            _fxFinal.render(_fxQuad);
+
 
 
             //------------------------------------------------------
             // Overlays
             //------------------------------------------------------
-            _crosshair.render(scene.animation_timer.seconds);
+            _fxCrosshair.render(scene.animation_timer.seconds);
 
 
+
+            _fxSpecial.blur_Guass(_fxQuad, 1.0f, _fxGBuffer.tDiffuse_ID);
 
 
 
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
-            _quad.render_Texture2D(_gBuffer.tDiffuse_ID, 0.25f, 0);
+            _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
+            _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 
         }
 

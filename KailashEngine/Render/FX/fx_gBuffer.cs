@@ -124,9 +124,8 @@ namespace KailashEngine.Render.FX
             _pLighting_POINT.enable_Samplers(3);
 
             // Accumulate Lighting
-            _pAccumulation = _pLoader.createProgram(new ShaderFile[]
+            _pAccumulation = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Accumulation.frag", null)
             });
             _pAccumulation.enable_Samplers(3);

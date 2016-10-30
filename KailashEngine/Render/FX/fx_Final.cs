@@ -47,10 +47,9 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
-            // Accumulate Lighting
-            _pFinalScene = _pLoader.createProgram(new ShaderFile[]
+            // Render to screen and apply tone mapping and gamma correction
+            _pFinalScene = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_Texture2D.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "final_Scene.frag", null)
             });
             _pFinalScene.enable_Samplers(1);
