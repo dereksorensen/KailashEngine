@@ -18,7 +18,10 @@ float slerp(float start, float dest, float delay)
 void main() 
 {
 	float oldLuminosity = exposure[0].x;
-	float curLuminosity = textureLod(sampler0, vec2(0.5), luminosity_lod).r;	
+	float curLuminosity = textureLod(sampler0, vec2(0.5), luminosity_lod).r;
+	curLuminosity += textureLod(sampler0, vec2(0.0, 0.5), luminosity_lod).r;
+	curLuminosity += textureLod(sampler0, vec2(1.0, 0.5), luminosity_lod).r;
+	curLuminosity /= 3.0;
 
 	curLuminosity = max(curLuminosity, 0.001);
 

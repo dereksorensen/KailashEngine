@@ -192,6 +192,7 @@ namespace KailashEngine.Render
             // Debug Views
             //------------------------------------------------------
             //_fxQuad.render_Texture2D(_fxHDR.tBloom);
+            _fxQuad.render_Texture2D(_fxHDR.tLuminosity, 0.25f, 3);
             _fxQuad.render_Texture2D(_fxHDR.tBloom, 0.25f, 2);
             _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
             _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
