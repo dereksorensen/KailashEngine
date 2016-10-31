@@ -1,0 +1,89 @@
+﻿
+layout (local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+
+
+uniform sampler2D sampler0;				// Source Texture
+writeonly uniform image2D sampler1;		// Destination Texture
+
+
+
+uniform int flip;
+uniform float kernel;
+
+
+void h_blur()
+{
+	int cKernelSize = int(kernel);
+	int cKernelHalfDist = cKernelSize/2;
+	float recKernelSize = 1.0 / float(cKernelSize);
+
+	vec2 screenSize = vec2(imageSize(sampler1));
+	vec2 rec_screenSize = vec2(1.0) / screenSize;
+
+	int y = int(gl_GlobalInvocationID.x);
+	if(y >= screenSize.y) return;
+
+	vec3 colourSum = texelFetch(sampler0, ivec2(0, y), 0).xyz * float(cKernelHalfDist);
+	for( int x = 0; x <= cKernelHalfDist; x++ )
+	{
+		colourSum += texelFetch(sampler0, ivec2(x, y), 0).xyz;
+	}
+
+	for( int x = 0; x < screenSize.x; x++ )
+    {
+		imageStore(sampler1, ivec2(x, y), vec4(colourSum * recKernelSize, 1.0));
+
+		// move window to the next 
+		vec3 leftBorder = texelFetch(sampler0, ivec2(max(x-cKernelHalfDist, 0), y), 0).xyz;
+		vec3 rightBorder = texelFetch(sampler0, ivec2(min(x+cKernelHalfDist+1, screenSize.x-1), y), 0).xyz;
+
+		colourSum -= leftBorder;
+		colourSum += rightBorder;
+	}
+}
+
+
+
+void v_blur()
+{
+	int cKernelSize = int(kernel);
+	int cKernelHalfDist = cKernelSize/2;
+	float recKernelSize = 1.0 / float(cKernelSize);
+
+	vec2 screenSize = vec2(imageSize(sampler1));
+	vec2 rec_screenSize = vec2(1.0) / screenSize;
+
+	int y = int(gl_GlobalInvocationID.x);
+	if( y >= screenSize.x ) return;
+
+	vec3 colourSum = texelFetch(sampler0, ivec2(y, 0), 0).xyz * float(cKernelHalfDist);
+	for( int x = 0; x <= cKernelHalfDist; x++ )
+	{
+		colourSum += texelFetch(sampler0, ivec2(y, x), 0).xyz;
+	}
+
+	for( int x = 0; x < screenSize.y; x++ )
+    {
+		imageStore(sampler1, ivec2(y, x), vec4(colourSum * recKernelSize, 1.0));
+
+		// move window to the next 
+		vec3 leftBorder = texelFetch(sampler0, ivec2(y, max(x-cKernelHalfDist, 0)), 0).xyz;
+		vec3 rightBorder = texelFetch(sampler0, ivec2(y, min(x+cKernelHalfDist+1, screenSize.y-1)), 0).xyz;
+
+		colourSum -= leftBorder;
+		colourSum += rightBorder;
+	}
+}
+
+
+void main() 
+{
+	if ( flip == 0 )
+	{
+		h_blur();
+	}
+	else
+	{
+		v_blur();
+	}
+}

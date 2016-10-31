@@ -18,6 +18,7 @@ namespace KailashEngine.Render.FX
 
         // Programs
         private Program _pBlur_Guass;
+        private Program _pBlur_MovingAverage;
 
         // Frame Buffers
         private FrameBuffer _fSpecial;
@@ -44,6 +45,14 @@ namespace KailashEngine.Render.FX
             _pBlur_Guass.enable_Samplers(2);
             _pBlur_Guass.addUniform("blur_amount");
             _pBlur_Guass.addUniform("texture_size");
+
+            _pBlur_MovingAverage = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurMovingAverage.comp", null)
+            });
+            _pBlur_MovingAverage.enable_Samplers(2);
+            _pBlur_MovingAverage.addUniform("flip");
+            _pBlur_MovingAverage.addUniform("kernel");
         }
 
         protected override void load_Buffers()
@@ -84,6 +93,13 @@ namespace KailashEngine.Render.FX
         public void render(fx_Quad quad)
         {
             
+        }
+
+
+        private void clearSpecialTexture()
+        {
+            _fSpecial.bind(DrawBuffersEnum.ColorAttachment0);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 
         //------------------------------------------------------
@@ -177,8 +193,7 @@ namespace KailashEngine.Render.FX
             // Horizontal
             //------------------------------------------------------
             // Bind special texture and clear it
-            _fSpecial.bind(DrawBuffersEnum.ColorAttachment0);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            clearSpecialTexture();
             GL.Viewport(0, 0, (int)texture_to_blur_size.X, (int)texture_to_blur_size.Y);
 
             GL.Uniform2(_pBlur_Guass.getUniform("texture_size"), horizontal_mod * horizontal_texture_size);
@@ -214,6 +229,88 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
+        }
+
+
+        //------------------------------------------------------
+        // Moving Average Blur Functions
+        //------------------------------------------------------
+
+        public void blur_MovingAverage(float blur_amount, Texture texture_to_blur)
+        {
+            int thread_group_size = 32;
+
+            _pBlur_MovingAverage.bind();
+            clearSpecialTexture();
+
+
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("kernel"), blur_amount);
+
+            //------------------------------------------------------
+            // Horizontal - 1
+            //------------------------------------------------------
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("flip"), 0);
+            texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
+            _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((texture_to_blur.height + thread_group_size - 1) / thread_group_size, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
+            //------------------------------------------------------
+            // Horizontal - 2
+            //------------------------------------------------------
+            _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
+            texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((texture_to_blur.height + thread_group_size - 1) / thread_group_size, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
+            //------------------------------------------------------
+            // Horizontal - 3
+            //------------------------------------------------------
+            texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
+            _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((texture_to_blur.height + thread_group_size - 1) / thread_group_size, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
+            //------------------------------------------------------
+            // Virtical - 1
+            //------------------------------------------------------
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("flip"), 1);
+            _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
+            texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((texture_to_blur.width + thread_group_size - 1) / thread_group_size, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+            //------------------------------------------------------
+            // Virtical - 2
+            //------------------------------------------------------
+            texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
+            _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((texture_to_blur.width + thread_group_size - 1) / thread_group_size, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
+            //------------------------------------------------------
+            // Virtical - 3
+            //------------------------------------------------------
+            _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
+            texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((texture_to_blur.width + thread_group_size - 1) / thread_group_size, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
         }
 
     }
