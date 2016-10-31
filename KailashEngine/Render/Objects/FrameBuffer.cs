@@ -119,5 +119,17 @@ namespace KailashEngine.Render.Objects
 
             bindAttachements(read_attachement);
         }
+
+
+        public void bindTexture(FramebufferAttachment attachement, int texture_id)
+        {
+            GL.FramebufferTexture(FramebufferTarget.Framebuffer, attachement, texture_id, 0);
+
+            // Check for FBO errors
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            {
+                Debug.DebugHelper.logError("[ ERROR ] FrameBuffer (" + _name + ")", GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
+            }
+        }
     }
 }

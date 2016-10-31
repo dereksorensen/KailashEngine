@@ -169,6 +169,8 @@ namespace KailashEngine.Render
 
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
+
+            _fxHDR.genBloom(_fxQuad, _fxSpecial, _fxFinal.tFinalScene);
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
@@ -186,13 +188,11 @@ namespace KailashEngine.Render
 
 
 
-            _fxSpecial.blur_Guass(_fxQuad, 1.0f, _fxGBuffer.tDiffuse_ID);
-
-
-
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
+            //_fxQuad.render_Texture2D(_fxHDR.tBloom);
+            _fxQuad.render_Texture2D(_fxHDR.tBloom, 0.25f, 2);
             _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
             _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 
