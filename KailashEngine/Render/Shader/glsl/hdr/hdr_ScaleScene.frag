@@ -13,13 +13,14 @@ layout (std430, binding=0) buffer ex
 };
 
 
+
 void main()
 {
 
 	vec4 scene = texture(sampler0, v_TexCoord);
 	vec4 bloom = texture(sampler1, v_TexCoord);
 
-	float lum_avg = 0.05 / exposure[0].y;
+	float lum_avg = 0.04 / exposure[0].y;
 
 	vec3 final = scene.rgb + bloom.rgb;
 	final *= lum_avg;

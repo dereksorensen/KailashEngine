@@ -9,7 +9,7 @@ writeonly uniform image2D sampler1;		// Destination Texture
 
 uniform int flip;
 uniform float kernel;
-
+uniform float destination_scale;
 
 void h_blur()
 {

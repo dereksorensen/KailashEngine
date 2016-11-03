@@ -7,6 +7,8 @@ in vec2 v_TexCoord;
 
 uniform sampler2D sampler0;
 
+
+
 void main()
 {
 	

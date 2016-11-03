@@ -53,6 +53,7 @@ namespace KailashEngine.Render.FX
             _pBlur_MovingAverage.enable_Samplers(2);
             _pBlur_MovingAverage.addUniform("flip");
             _pBlur_MovingAverage.addUniform("kernel");
+            _pBlur_MovingAverage.addUniform("destination_scale");
         }
 
         protected override void load_Buffers()
@@ -236,15 +237,18 @@ namespace KailashEngine.Render.FX
         // Moving Average Blur Functions
         //------------------------------------------------------
 
-        public void blur_MovingAverage(float blur_amount, Texture texture_to_blur)
+        public void blur_MovingAverage(float blur_amount, Texture texture_to_blur, float destination_scale = 1)
         {
             int thread_group_size = 32;
 
             _pBlur_MovingAverage.bind();
             clearSpecialTexture();
 
+            Vector2 texture_to_blur_size = new Vector2(texture_to_blur.width * destination_scale, texture_to_blur.height * destination_scale);
 
             GL.Uniform1(_pBlur_MovingAverage.getUniform("kernel"), blur_amount);
+
+            
 
             //------------------------------------------------------
             // Horizontal - 1
@@ -253,7 +257,8 @@ namespace KailashEngine.Render.FX
             texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute((texture_to_blur.height + thread_group_size - 1) / thread_group_size, 1, 1);
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), destination_scale);
+            GL.DispatchCompute(((int)(texture_to_blur.height * destination_scale) + thread_group_size - 1) / thread_group_size, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -264,7 +269,8 @@ namespace KailashEngine.Render.FX
             _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute((texture_to_blur.height + thread_group_size - 1) / thread_group_size, 1, 1);
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), 1.0f);
+            GL.DispatchCompute((_tSpecial.height + thread_group_size - 1) / thread_group_size, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -275,7 +281,8 @@ namespace KailashEngine.Render.FX
             texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute((texture_to_blur.height + thread_group_size - 1) / thread_group_size, 1, 1);
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), destination_scale);
+            GL.DispatchCompute(((int)(texture_to_blur.height * destination_scale) + thread_group_size - 1) / thread_group_size, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -287,7 +294,8 @@ namespace KailashEngine.Render.FX
             _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute((texture_to_blur.width + thread_group_size - 1) / thread_group_size, 1, 1);
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), 1.0f);
+            GL.DispatchCompute((_tSpecial.width + thread_group_size - 1) / thread_group_size, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -297,7 +305,8 @@ namespace KailashEngine.Render.FX
             texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute((texture_to_blur.width + thread_group_size - 1) / thread_group_size, 1, 1);
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), destination_scale);
+            GL.DispatchCompute(((int)(texture_to_blur.width * destination_scale) + thread_group_size - 1) / thread_group_size, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -308,7 +317,8 @@ namespace KailashEngine.Render.FX
             _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute((texture_to_blur.width + thread_group_size - 1) / thread_group_size, 1, 1);
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), 1.0f);
+            GL.DispatchCompute((_tSpecial.width + thread_group_size - 1) / thread_group_size, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
         }

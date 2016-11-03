@@ -9,6 +9,8 @@ uniform sampler2D sampler0;				// Source Texture
 uniform float blur_amount;
 uniform vec2 texture_size;
 
+
+
 vec4 guassian_blur()
 {	
 	vec4 source_texture = texture(sampler0, v_TexCoord);

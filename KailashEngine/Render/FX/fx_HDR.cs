@@ -216,10 +216,11 @@ namespace KailashEngine.Render.FX
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-            special.blur_Guass(quad, 30.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 1);
+            special.blur_Guass(quad, 40.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 1);
             special.blur_Guass(quad, 40.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.5f);
-            special.blur_Guass(quad, 40.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.25f);
+            special.blur_Guass(quad, 50.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.25f);
             special.blur_Guass(quad, 60.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.125f);
+
 
             GL.Disable(EnableCap.Blend);
         }
