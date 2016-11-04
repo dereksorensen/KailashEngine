@@ -33,6 +33,7 @@ namespace KailashEngine.Render
         private fx_Final _fxFinal;
         private fx_gBuffer _fxGBuffer;
         private fx_HDR _fxHDR;
+        private fx_Lens _fxLens;
 
 
         public RenderDriver(
@@ -66,7 +67,7 @@ namespace KailashEngine.Render
             _fxFinal = new fx_Final(pLoader, "final/", _resolution);
             _fxGBuffer = new fx_gBuffer(pLoader, "gBuffer/", _resolution);
             _fxHDR = new fx_HDR(pLoader, "hdr/", _resolution);
-
+            _fxLens = new fx_Lens(pLoader, tLoader, "lens/", _resolution);
         }
 
 
@@ -97,6 +98,7 @@ namespace KailashEngine.Render
             _fxFinal.load();
             _fxGBuffer.load();
             _fxHDR.load();
+            _fxLens.load();
         }
 
         public void load()
