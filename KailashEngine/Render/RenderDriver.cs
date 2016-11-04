@@ -187,7 +187,7 @@ namespace KailashEngine.Render
             _fxCrosshair.render(scene.animation_timer.seconds);
 
 
-            //_fxSpecial.blur_MovingAverage(200.0f, _fxGBuffer.tDiffuse_ID);
+            //_fxSpecial.blur_Streak(_fxQuad, 50, 30.0f, _fxHDR.tBloom);
 
 
             //------------------------------------------------------

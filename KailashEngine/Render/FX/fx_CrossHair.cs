@@ -87,12 +87,9 @@ namespace KailashEngine.Render.FX
             _iCrosshair.bind(_pCrosshair.getSamplerUniform(0), 0);
 
             // Rotate Crosshair
-            float angle = -animation_time * 2.0f;
-            Vector2 rot = new Vector2(
-                    (float)(Math.Sin(angle)),
-                    (float)(Math.Cos(angle))
-                );
-            GL.Uniform2(_pCrosshair.getUniform("rotation"), rot);
+            float angle = animation_time * 100.0f;
+            float[] rotations = EngineHelper.createRotationFloats(angle);
+            GL.Uniform2(_pCrosshair.getUniform("rotation"), rotations[0], rotations[1]);
             
             // Render Point Sprite
             GL.BindVertexArray(vao_crosshair);

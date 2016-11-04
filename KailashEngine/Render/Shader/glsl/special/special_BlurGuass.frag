@@ -3,10 +3,10 @@
 in vec2 v_TexCoord;
 
 
-uniform sampler2D sampler0;				// Source Texture
+uniform sampler2D sampler0;		// Source Texture
 
 
-uniform float blur_amount;
+uniform int blur_amount;
 uniform vec2 texture_size;
 
 

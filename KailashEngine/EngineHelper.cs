@@ -91,8 +91,23 @@ namespace KailashEngine
 
 
         //------------------------------------------------------
-        // Data Helpers
+        // Data Creators
         //------------------------------------------------------
+        public static Vector2 createRotationVector(float angle)
+        {
+            float angle_rad = MathHelper.DegreesToRadians(angle);
+            return new Vector2((float)Math.Sin(angle_rad), (float)-Math.Cos(angle_rad));
+        }
+
+        public static float[] createRotationFloats(float angle)
+        {
+            float angle_rad = MathHelper.DegreesToRadians(angle);
+            return new float[] {
+                (float)Math.Sin(angle_rad),
+                (float)-Math.Cos(angle_rad)
+            };
+        }
+
         public static float[] createArray(Vector4 vector)
         {
             return new float[]

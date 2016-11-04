@@ -8,12 +8,12 @@ writeonly uniform image2D sampler1;		// Destination Texture
 
 
 uniform int flip;
-uniform float kernel;
+uniform int kernel;
 uniform float destination_scale;
 
 void h_blur()
 {
-	int cKernelSize = int(kernel);
+	int cKernelSize = kernel;
 	int cKernelHalfDist = cKernelSize/2;
 	float recKernelSize = 1.0 / float(cKernelSize);
 
@@ -46,7 +46,7 @@ void h_blur()
 
 void v_blur()
 {
-	int cKernelSize = int(kernel);
+	int cKernelSize = kernel;
 	int cKernelHalfDist = cKernelSize/2;
 	float recKernelSize = 1.0 / float(cKernelSize);
 

@@ -19,6 +19,7 @@ namespace KailashEngine.Render.FX
         // Programs
         private Program _pBlur_Guass;
         private Program _pBlur_MovingAverage;
+        private Program _pBlur_Streak;
 
         // Frame Buffers
         private FrameBuffer _fSpecial;
@@ -42,7 +43,7 @@ namespace KailashEngine.Render.FX
             {
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "special_BlurGuass.frag", null)
             });
-            _pBlur_Guass.enable_Samplers(2);
+            _pBlur_Guass.enable_Samplers(1);
             _pBlur_Guass.addUniform("blur_amount");
             _pBlur_Guass.addUniform("texture_size");
 
@@ -54,6 +55,15 @@ namespace KailashEngine.Render.FX
             _pBlur_MovingAverage.addUniform("flip");
             _pBlur_MovingAverage.addUniform("kernel");
             _pBlur_MovingAverage.addUniform("destination_scale");
+
+            _pBlur_Streak = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "special_BlurStreak.frag", null)
+            });
+            _pBlur_Streak.enable_Samplers(1);
+            _pBlur_Streak.addUniform("blur_amount");
+            _pBlur_Streak.addUniform("iteration");
+            _pBlur_Streak.addUniform("size_and_direction");
         }
 
         protected override void load_Buffers()
@@ -97,11 +107,22 @@ namespace KailashEngine.Render.FX
         }
 
 
-        private void clearSpecialTexture()
+        //------------------------------------------------------
+        // Helpers
+        //------------------------------------------------------
+
+        private void clearAndBindSpecialFrameBuffer()
         {
             _fSpecial.bind(DrawBuffersEnum.ColorAttachment0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
+
+        private void bindExternalTexture(Texture texture_to_bind)
+        {
+            _fSpecial.bind(DrawBuffersEnum.ColorAttachment1);
+            _fSpecial.bindTexture(FramebufferAttachment.ColorAttachment1, texture_to_bind.id);
+        }
+
 
         //------------------------------------------------------
         // Guassian Blur Functions
@@ -109,12 +130,11 @@ namespace KailashEngine.Render.FX
 
         public void blur_Guass(
             fx_Quad quad,
-            float blur_amount, float blur_angle,
+            int blur_amount, float blur_angle,
             Texture texture_to_blur,
             float destination_scale = 1)
         {
-            float angle_rad = MathHelper.DegreesToRadians(blur_angle);
-            Vector2 angle_mod = new Vector2((float)Math.Sin(angle_rad), (float)-Math.Cos(angle_rad));
+            Vector2 angle_mod = EngineHelper.createRotationVector(blur_angle);
 
             blur_Guass(
                 quad,
@@ -126,12 +146,11 @@ namespace KailashEngine.Render.FX
 
         public void blur_Guass(
             fx_Quad quad,
-            float blur_amount, float blur_angle,
+            int blur_amount, float blur_angle,
             Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement,
             float destination_scale = 1)
         {
-            float angle_rad = MathHelper.DegreesToRadians(blur_angle);
-            Vector2 angle_mod = new Vector2((float)Math.Sin(angle_rad), (float)-Math.Cos(angle_rad));
+            Vector2 angle_mod = EngineHelper.createRotationVector(blur_angle);
 
             blur_Guass(
                 quad,
@@ -144,7 +163,7 @@ namespace KailashEngine.Render.FX
 
         public void blur_Guass(
             fx_Quad quad,
-            float blur_amount,
+            int blur_amount,
             Texture texture_to_blur,
             float destination_scale = 1)
         {
@@ -158,7 +177,7 @@ namespace KailashEngine.Render.FX
 
         public void blur_Guass(
             fx_Quad quad,
-            float blur_amount,
+            int blur_amount,
             Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement,
             float destination_scale = 1)
         {
@@ -173,7 +192,7 @@ namespace KailashEngine.Render.FX
 
         private void blur_Guass(
             fx_Quad quad,
-            float blur_amount,
+            int blur_amount,
             Vector2 horizontal_mod, Vector2 vertical_mod,
             Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement,
             float destination_scale = 1)
@@ -194,7 +213,7 @@ namespace KailashEngine.Render.FX
             // Horizontal
             //------------------------------------------------------
             // Bind special texture and clear it
-            clearSpecialTexture();
+            clearAndBindSpecialFrameBuffer();
             GL.Viewport(0, 0, (int)texture_to_blur_size.X, (int)texture_to_blur_size.Y);
 
             GL.Uniform2(_pBlur_Guass.getUniform("texture_size"), horizontal_mod * horizontal_texture_size);
@@ -216,8 +235,7 @@ namespace KailashEngine.Render.FX
             }
             else
             {
-                _fSpecial.bind(DrawBuffersEnum.ColorAttachment1);
-                _fSpecial.bindTexture(FramebufferAttachment.ColorAttachment1, texture_to_blur.id);
+                bindExternalTexture(texture_to_blur);
             }
             GL.Viewport(0, 0, (int)(_tSpecial.width / destination_scale), (int)(_tSpecial.height / destination_scale));
 
@@ -237,18 +255,17 @@ namespace KailashEngine.Render.FX
         // Moving Average Blur Functions
         //------------------------------------------------------
 
-        public void blur_MovingAverage(float blur_amount, Texture texture_to_blur, float destination_scale = 1)
+        public void blur_MovingAverage(int blur_amount, Texture texture_to_blur, float destination_scale = 1)
         {
             int thread_group_size = 32;
 
             _pBlur_MovingAverage.bind();
-            clearSpecialTexture();
+            clearAndBindSpecialFrameBuffer();
 
             Vector2 texture_to_blur_size = new Vector2(texture_to_blur.width * destination_scale, texture_to_blur.height * destination_scale);
 
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("kernel"), blur_amount);
 
-            
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("kernel"), blur_amount);         
 
             //------------------------------------------------------
             // Horizontal - 1
@@ -323,5 +340,77 @@ namespace KailashEngine.Render.FX
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
         }
 
+
+        //------------------------------------------------------
+        // Streak Blur Functions
+        //------------------------------------------------------
+
+        public void blur_Streak(
+            fx_Quad quad,
+            int blur_amount, float streak_angle,
+            Texture texture_to_blur,
+            float destination_scale = 1)
+        {
+            blur_Streak(
+                quad,
+                blur_amount, streak_angle,
+                texture_to_blur, _fSpecial, DrawBuffersEnum.ColorAttachment1,
+                destination_scale);
+        }
+
+        public void blur_Streak(
+            fx_Quad quad, 
+            int blur_amount, float streak_angle,
+            Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement, 
+            float destination_scale = 1)
+        {
+            _pBlur_Streak.bind();
+
+            GL.Uniform1(_pBlur_Streak.getUniform("blur_amount"), blur_amount);
+            Vector2 rotation_vector = EngineHelper.createRotationVector(streak_angle);
+
+
+            Vector2 texture_to_blur_size = new Vector2(texture_to_blur.width, texture_to_blur.height) * destination_scale;
+            Vector2 destination_texture_size = new Vector2(1.0f / texture_to_blur_size.X, 1.0f / texture_to_blur_size.Y);
+            Vector2 source_texture_size = new Vector2(1.0f / _tSpecial.width, 1.0f / _tSpecial.height);
+
+            //------------------------------------------------------
+            // Iteration 1
+            //------------------------------------------------------
+            // Bind special texture and clear it
+            clearAndBindSpecialFrameBuffer();
+            GL.Viewport(0, 0, (int)texture_to_blur_size.X, (int)texture_to_blur_size.Y);
+
+
+            GL.Uniform2(_pBlur_Streak.getUniform("size_and_direction"), rotation_vector * destination_texture_size);
+            GL.Uniform1(_pBlur_Streak.getUniform("iteration"), 0);
+            texture_to_blur.bind(_pBlur_Streak.getSamplerUniform(0), 0);
+
+            quad.render();
+
+
+            //------------------------------------------------------
+            // Iteration 2
+            //------------------------------------------------------
+            // Bind special texture and clear it
+            if (texture_frame_buffer.id != _fSpecial.id)
+            {
+                texture_frame_buffer.bind(attachement);
+            }
+            else
+            {
+                bindExternalTexture(texture_to_blur);
+            }
+            GL.Viewport(0, 0, (int)(_tSpecial.width / destination_scale), (int)(_tSpecial.height / destination_scale));
+
+
+            GL.Uniform2(_pBlur_Streak.getUniform("size_and_direction"), rotation_vector * source_texture_size);
+            GL.Uniform1(_pBlur_Streak.getUniform("iteration"), 1);
+            _tSpecial.bind(_pBlur_Streak.getSamplerUniform(0), 0);
+
+
+            quad.render();
+
+        }
     }
 }
