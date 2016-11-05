@@ -56,5 +56,5 @@ void main()
 		blur_amount, atten, iteration);
 
 
-	color = vec4(streak , 1.0);
+	color = vec4(streak, 1.0);
 }

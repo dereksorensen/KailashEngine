@@ -30,6 +30,5 @@ void main()
 	vec4 flare = texture(sampler3, v_TexCoord) * 1.0;
 	flare += flare * lens_star;
 
-
 	color = bloom + flare;
 }

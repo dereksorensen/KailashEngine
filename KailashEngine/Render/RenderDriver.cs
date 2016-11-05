@@ -201,7 +201,7 @@ namespace KailashEngine.Render
             if(_enable_debug_views)
             {
                 _fxQuad.render_Texture2D(_fxLens.tFlare, 0.25f, 3);
-                _fxQuad.render_Texture2D(_fxLens.tBrightSpots, 0.25f, 2);
+                _fxQuad.render_Texture2D(_fxLens.tBloom, 0.25f, 2);
                 _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
                 _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }

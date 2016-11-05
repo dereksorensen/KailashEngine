@@ -31,12 +31,6 @@ namespace KailashEngine.Render.FX
         private Image _iLensDirt;
         private Image _iLensStar;
 
-        private Texture _tBrightSpots;
-        public Texture tBrightSpots
-        {
-            get { return _tBrightSpots; }
-        }
-
         private Texture _tBloom;
         public Texture tBloom
         {
@@ -90,15 +84,6 @@ namespace KailashEngine.Render.FX
             // Load Textures
             float default_texture_scale = 0.25f;
 
-            float bright_spots_scale = default_texture_scale;
-            Vector2 bright_spots_resolution = new Vector2(_resolution.W * bright_spots_scale, _resolution.H * bright_spots_scale);
-            _tBrightSpots = new Texture(TextureTarget.Texture2D,
-                (int)bright_spots_resolution.X, (int)bright_spots_resolution.Y,
-                0, true, false,
-                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
-                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tBrightSpots.load();
-
             float bloom_scale = default_texture_scale;
             Vector2 bloom_resolution = new Vector2(_resolution.W * bloom_scale, _resolution.H * bloom_scale);
             _tBloom = new Texture(TextureTarget.Texture2D,
@@ -112,7 +97,7 @@ namespace KailashEngine.Render.FX
             Vector2 flare_resolution = new Vector2(_resolution.W * flare_scale, _resolution.H * flare_scale);
             _tFlare = new Texture(TextureTarget.Texture2D,
                 (int)flare_resolution.X, (int)flare_resolution.Y,
-                0, true, false,
+                0, false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tFlare.load();
@@ -121,9 +106,8 @@ namespace KailashEngine.Render.FX
             _fLens = new FrameBuffer("Lens");
             _fLens.load(new Dictionary<FramebufferAttachment, Texture>()
             {
-                { FramebufferAttachment.ColorAttachment0, _tBrightSpots },
-                { FramebufferAttachment.ColorAttachment1, _tBloom },
-                { FramebufferAttachment.ColorAttachment2, _tFlare }
+                { FramebufferAttachment.ColorAttachment0, _tBloom },
+                { FramebufferAttachment.ColorAttachment1, _tFlare }
             });
         }
 
@@ -148,7 +132,7 @@ namespace KailashEngine.Render.FX
         {
             _fLens.bind(DrawBuffersEnum.ColorAttachment0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, _tBrightSpots.width, _tBrightSpots.height);
+            GL.Viewport(0, 0, _tBloom.width, _tBloom.height);
 
             _pBrightSpots.bind();
 
@@ -156,46 +140,44 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
-            _tBrightSpots.generateMipMap();
+            _tBloom.generateMipMap();
         }
 
-        private void genBloom(fx_Quad quad, fx_Special special)
+
+        private void genFlare(fx_Quad quad, fx_Special special)
         {
             _fLens.bind(DrawBuffersEnum.ColorAttachment1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, _tFlare.width, _tFlare.height);
+
+            _pFlare.bind();
+
+            _tBloom.bind(_pFlare.getSamplerUniform(0), 0);
+            _iLensColor.bind(_pFlare.getSamplerUniform(1), 1);
+
+            quad.render();
+
+            special.blur_Guass(quad, 120, _tFlare, _fLens, DrawBuffersEnum.ColorAttachment1);
+            //special.blur_MovingAverage(13, _tFlare);
+        }
+
+
+        private void genBloom(fx_Quad quad, fx_Special special)
+        {
 
             // Blur bloom texture at multiple levels of detail and combine for noice effect
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-            special.blur_Guass(quad, 40, _tBrightSpots, _fLens, DrawBuffersEnum.ColorAttachment1, 1);
-            special.blur_Guass(quad, 40, _tBrightSpots, _fLens, DrawBuffersEnum.ColorAttachment1, 0.5f);
-            special.blur_Guass(quad, 50, _tBrightSpots, _fLens, DrawBuffersEnum.ColorAttachment1, 0.25f);
-            special.blur_Guass(quad, 60, _tBrightSpots, _fLens, DrawBuffersEnum.ColorAttachment1, 0.125f);
-
-            //special.blur_Streak(quad, 50, 90.0f, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment1);
+            special.blur_Guass(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 1);
+            special.blur_Guass(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.5f);
+            special.blur_Guass(quad, 50, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.25f);
+            special.blur_Guass(quad, 60, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.125f);
 
             GL.Disable(EnableCap.Blend);
         }
 
-
-        private void genFlare(fx_Quad quad, fx_Special special)
-        {
-            _fLens.bind(DrawBuffersEnum.ColorAttachment2);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, _tFlare.width, _tFlare.height);
-
-            _pFlare.bind();
-
-            _tBrightSpots.bind(_pFlare.getSamplerUniform(0), 0);
-            _iLensColor.bind(_pFlare.getSamplerUniform(1), 1);
-
-            quad.render();
-
-            special.blur_Guass(quad, 120, _tFlare);
-            //special.blur_MovingAverage(13, _tFlare);
-        }
 
         // Spin the lens star mod with camera movements
         private Matrix3 getLensStarMod(Matrix4 camera_matrix)
@@ -250,7 +232,7 @@ namespace KailashEngine.Render.FX
 
             // Lerp the lens star mod so the spin is delayed
             Matrix3 current_lens_star_mod = getLensStarMod(camera_matrix);
-            Matrix3 lens_star_mod = EngineHelper.lerp(_previous_lens_star_mod, current_lens_star_mod, 0.3f);
+            Matrix3 lens_star_mod = EngineHelper.lerp(_previous_lens_star_mod, current_lens_star_mod, 0.1f);
             _previous_lens_star_mod = lens_star_mod;
 
             GL.UniformMatrix3(_pBlend.getUniform("lens_star_mod"), true, ref lens_star_mod);
@@ -263,8 +245,8 @@ namespace KailashEngine.Render.FX
         {
             getBrightSpots(quad, scene_texture);
 
-            genBloom(quad, special);
             genFlare(quad, special);
+            genBloom(quad, special);
 
             blend(quad, scene_fbo, camera_matrix);
         }

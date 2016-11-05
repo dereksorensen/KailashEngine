@@ -73,7 +73,7 @@ namespace KailashEngine.Client
         {
             _physics_character = new PhysicsCharacter(physics_world, EngineHelper.otk2bullet(-_character.spatial.position), 2.0f);
             _previous_position = _character.spatial.position;
-            _physical = true;
+            _physical = false;
         }
 
 
