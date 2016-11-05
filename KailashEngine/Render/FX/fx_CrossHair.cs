@@ -20,10 +20,10 @@ namespace KailashEngine.Render.FX
         private Program _pCrosshair;
 
         // Frame Buffers
-        int vao_crosshair;
+        private int _vao_crosshair;
 
         // Textures
-        public Image _iCrosshair;
+        private Image _iCrosshair;
 
 
         public fx_Crosshair(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name, Resolution full_resolution)
@@ -45,11 +45,11 @@ namespace KailashEngine.Render.FX
         protected override void load_Buffers()
         {
             // Load Crosshair texture
-            _iCrosshair = _tLoader.createImage(_path_static_textures + "crosshair.png", TextureWrapMode.ClampToEdge);
+            _iCrosshair = _tLoader.createImage(_path_static_textures + "crosshair.png", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge, false);
 
 
             // Create dummy VAO for point rendering
-            GL.GenVertexArrays(1, out vao_crosshair);
+            GL.GenVertexArrays(1, out _vao_crosshair);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
@@ -92,7 +92,7 @@ namespace KailashEngine.Render.FX
             GL.Uniform2(_pCrosshair.getUniform("rotation"), rotations[0], rotations[1]);
             
             // Render Point Sprite
-            GL.BindVertexArray(vao_crosshair);
+            GL.BindVertexArray(_vao_crosshair);
             GL.DrawArrays(PrimitiveType.Points, 0, 1);
             GL.BindVertexArray(0);
 

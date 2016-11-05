@@ -28,9 +28,9 @@ namespace KailashEngine.Render
         }
 
 
-        public Image createImage(string static_texture_path, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
+        public Image createImage(string static_texture_path, TextureTarget texture_target, TextureWrapMode wrap_mode, bool use_srgb = true)
         {
-            Image temp_image = new Image(_path_static_textures_base + static_texture_path, false, wrap_mode);
+            Image temp_image = new Image(_path_static_textures_base + static_texture_path, use_srgb, texture_target, wrap_mode);
             temp_image.load();
             return temp_image;
         }

@@ -94,6 +94,8 @@ namespace KailashEngine.Render.Objects
             get { return _depth; }
         }
 
+        
+
         //------------------------------------------------------
         // Texture Parameters
         //------------------------------------------------------
@@ -195,22 +197,47 @@ namespace KailashEngine.Render.Objects
 
         public void load(IntPtr data)
         {
-            GL.BindTexture(_target, _id);
-            GL.TexImage2D(
-                _target,
-                0,
-                _pif,
-                _width,
-                _height,
-                0,
-                _pf,
-                _pt,
-                data);
 
-            //GL.TexEnv(
-            //    TextureEnvTarget.TextureEnv,
-            //    TextureEnvParameter.TextureEnvMode,
-            //    (float)TextureEnvMode.Modulate);
+            GL.BindTexture(_target, _id);
+
+            switch (_target)
+            {
+                case TextureTarget.Texture1D:
+                    GL.TexImage1D(
+                        _target,
+                        0,
+                        _pif,
+                        _width,
+                        0,
+                        _pf,
+                        _pt,
+                        data);
+                    break;
+                case TextureTarget.Texture2D:
+                    GL.TexImage2D(
+                        _target,
+                        0,
+                        _pif,
+                        _width,
+                        _height,
+                        0,
+                        _pf,
+                        _pt,
+                        data);
+                    break;
+                case TextureTarget.Texture2DArray:
+
+                    break;
+                case TextureTarget.TextureCubeMap:
+
+                    break;
+                case TextureTarget.Texture3D:
+
+                    break;
+            }
+
+            
+
             GL.TexParameter(
                 _target,
                 TextureParameterName.TextureMinFilter,
@@ -226,6 +253,10 @@ namespace KailashEngine.Render.Objects
             GL.TexParameter(
                 _target,
                 TextureParameterName.TextureWrapT,
+                (float)_wrap_mode);
+            GL.TexParameter(
+                _target,
+                TextureParameterName.TextureWrapR,
                 (float)_wrap_mode);
 
 

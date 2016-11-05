@@ -19,7 +19,8 @@ namespace KailashEngine.Render
     class RenderDriver
     {
         private Resolution _resolution;
-        
+
+        private bool _enable_debug_views;
 
         // Render UBOs
         private UniformBuffer _ubo_camera;
@@ -42,7 +43,7 @@ namespace KailashEngine.Render
             Resolution resolution)
         {
             _resolution = resolution;
-
+            _enable_debug_views = true;
 
             // Render UBOs
             _ubo_game_config = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[]
@@ -172,7 +173,9 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
 
-            _fxHDR.genBloom(_fxQuad, _fxSpecial, _fxFinal.tFinalScene);
+            _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene);
+
+
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
@@ -195,14 +198,21 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
-            _fxQuad.render_Texture2D(_fxHDR.tBloom, 0.25f, 2);
-            _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
-            _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+            if(_enable_debug_views)
+            {
+                _fxQuad.render_Texture2D(_fxLens.tFlare, 0.25f, 3);
+                _fxQuad.render_Texture2D(_fxLens.tBrightSpots, 0.25f, 2);
+                _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
+                _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+            }
 
         }
 
 
-
+        public void toggleDebugViews()
+        {
+            _enable_debug_views = !_enable_debug_views;
+        }
 
 
     }

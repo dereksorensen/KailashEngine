@@ -19,11 +19,9 @@ namespace KailashEngine.Render.FX
         // Programs
         private Program _pLuminosity;
         private Program _pAutoExposure;
-        private Program _pBloom;
         private Program _pScaleScene;
 
         // Frame Buffers
-        private FrameBuffer _fBloom;
 
         // Textures
         private Texture _tLuminosity;
@@ -37,13 +35,7 @@ namespace KailashEngine.Render.FX
         {
             get { return _tTempScene; }
         }
-
-        private Texture _tBloom;
-        public Texture tBloom
-        {
-            get { return _tBloom; }
-        }
-
+        
 
 
         // Other Buffers
@@ -66,12 +58,6 @@ namespace KailashEngine.Render.FX
             });
             _pAutoExposure.enable_Samplers(1);
             _pAutoExposure.addUniform("luminosity_lod");
-
-            _pBloom = _pLoader.createProgram_PostProcessing(new ShaderFile[]
-            {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "hdr_Bloom.frag", null)
-            });
-            _pBloom.enable_Samplers(1);
 
             _pScaleScene = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -101,22 +87,6 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tTempScene.load();
 
-
-
-            float bloom_scale = 0.25f;
-            Vector2 bloom_resolution = new Vector2(_resolution.W * bloom_scale, _resolution.H * bloom_scale);
-            _tBloom = new Texture(TextureTarget.Texture2D,
-                (int)bloom_resolution.X, (int)bloom_resolution.Y,
-                0, true, false,
-                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
-                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tBloom.load();
-
-            _fBloom = new FrameBuffer("Bloom");
-            _fBloom.load(new Dictionary<FramebufferAttachment, Texture>()
-            {
-                { FramebufferAttachment.ColorAttachment0, _tBloom }
-            });
 
         }
 
@@ -197,33 +167,7 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void genBloom(fx_Quad quad, fx_Special special, Texture scene_texture)
-        {
-            _fBloom.bind(DrawBuffersEnum.ColorAttachment0);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, _tBloom.width, _tBloom.height);
-
-            _pBloom.bind();
-
-            scene_texture.bind(_pBloom.getSamplerUniform(0), 0);
-
-            quad.render();
-
-            _tBloom.generateMipMap();
-
-            // Blur bloom texture at multiple levels of detail and combine for noice effect
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-
-            special.blur_Guass(quad, 40, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 1);
-            special.blur_Guass(quad, 40, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.5f);
-            special.blur_Guass(quad, 50, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.25f);
-            special.blur_Guass(quad, 60, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0, 0.125f);
-            special.blur_Streak(quad, 50, 90.0f, _tBloom, _fBloom, DrawBuffersEnum.ColorAttachment0);
-
-            GL.Disable(EnableCap.Blend);
-        }
+        
 
 
         public void scaleScene(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture)
@@ -240,7 +184,6 @@ namespace KailashEngine.Render.FX
             _pScaleScene.bind();
 
             _tTempScene.bind(_pScaleScene.getSamplerUniform(0), 0);
-            _tBloom.bind(_pScaleScene.getSamplerUniform(1), 1);
             _ssboExposure.bind(0);
 
             quad.render();

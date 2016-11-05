@@ -17,7 +17,10 @@ namespace KailashEngine.Render.FX
 
         private int _vao;
 
+        // Programs
         private Program _pRenderTexture2D;
+        private Program _pRenderTexture1D;
+
 
         public fx_Quad(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
             : base(pLoader, glsl_effect_path, full_resolution)
@@ -30,6 +33,12 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture2D.frag", null)
             });
             _pRenderTexture2D.enable_Samplers(1);
+
+            _pRenderTexture1D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture1D.frag", null)
+            });
+            _pRenderTexture1D.enable_Samplers(1);
         }
 
         protected override void load_Buffers()
@@ -78,6 +87,10 @@ namespace KailashEngine.Render.FX
         }
 
 
+        //------------------------------------------------------
+        // Render Full Screen Quad
+        //------------------------------------------------------
+
         public void render()
         {
             GL.BindVertexArray(_vao);
@@ -85,6 +98,21 @@ namespace KailashEngine.Render.FX
             GL.BindVertexArray(0);
         }
 
+        public void renderBlend()
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            render();
+
+            GL.Disable(EnableCap.Blend);
+        }
+
+
+        //------------------------------------------------------
+        // Render Textures
+        //------------------------------------------------------
 
         public void render_Texture2D(Texture texture)
         {
@@ -105,7 +133,15 @@ namespace KailashEngine.Render.FX
             
             GL.Viewport(pos_x, pos_y, size_x, size_y);
 
-            _pRenderTexture2D.bind();
+            switch(texture.target)
+            {
+                case TextureTarget.Texture1D:
+                    _pRenderTexture1D.bind();
+                    break;
+                case TextureTarget.Texture2D:
+                    _pRenderTexture2D.bind();
+                    break;
+            }
 
             texture.bind(_pRenderTexture2D.getSamplerUniform(0), 0);
 

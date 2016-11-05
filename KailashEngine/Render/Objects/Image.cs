@@ -31,8 +31,15 @@ namespace KailashEngine.Render.Objects
         //------------------------------------------------------
         // Constructor
         //------------------------------------------------------
+        public Image(string filename, bool use_srgb)
+            : this(filename, use_srgb, TextureTarget.Texture2D, TextureWrapMode.Repeat)
+        { }
 
         public Image(string filename, bool use_srgb, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
+            : this(filename, use_srgb, TextureTarget.Texture2D, wrap_mode)
+        { }
+
+        public Image(string filename, bool use_srgb, TextureTarget texture_target = TextureTarget.Texture2D, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
         {
 
             _filename = filename.Replace("%20", " ");
@@ -94,7 +101,7 @@ namespace KailashEngine.Render.Objects
 
                 // Load new texture
                 _texture = new Texture(
-                    TextureTarget.Texture2D,
+                    texture_target,
                     texture_width, texture_height, 0,
                     true, true,
                     pif, pf, pt,

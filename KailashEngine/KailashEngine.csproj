@@ -517,6 +517,7 @@
     <None Include="packages.config" />
     <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
+    <None Include="Render\Shader\glsl\common\render_Texture1D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.frag" />
@@ -532,7 +533,9 @@
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
     <None Include="Render\Shader\glsl\hdr\hdr_AutoExposure.comp" />
     <None Include="Render\Shader\glsl\hdr\hdr_Luminosity.comp" />
-    <None Include="Render\Shader\glsl\hdr\hdr_Bloom.frag" />
+    <None Include="Render\Shader\glsl\lens\lens_Flare.frag" />
+    <None Include="Render\Shader\glsl\lens\lens_Blend.frag" />
+    <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
@@ -552,7 +555,6 @@
   <ItemGroup>
     <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
-    <Folder Include="Render\Shader\glsl\lens\" />
     <Folder Include="Render\Shader\glsl\special\helpers\" />
     <Folder Include="Resources\SaveData\" />
     <Folder Include="Resources\Textures\_static\lens\" />
