@@ -16,6 +16,8 @@ namespace KailashEngine.Render.FX
     class fx_Lens : RenderEffect
     {
 
+        private Matrix3 _previous_lens_star_mod;
+
         // Programs
         private Program _pBlend;
         private Program _pBrightSpots;
@@ -51,7 +53,9 @@ namespace KailashEngine.Render.FX
 
         public fx_Lens(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name, Resolution full_resolution)
             : base(pLoader, tLoader, resource_folder_name, full_resolution)
-        { }
+        {
+            _previous_lens_star_mod = Matrix3.Identity;
+        }
 
         protected override void load_Programs()
         {
@@ -60,6 +64,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "lens_Blend.frag", null)
             });
             _pBlend.enable_Samplers(4);
+            _pBlend.addUniform("lens_star_mod");
 
             _pBrightSpots = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -77,9 +82,9 @@ namespace KailashEngine.Render.FX
         protected override void load_Buffers()
         {
             // Load Lens Images
-            _iLensColor = _tLoader.createImage(_path_static_textures + "lf_lensColor-2.png", TextureTarget.Texture1D, TextureWrapMode.ClampToEdge);
-            _iLensDirt = _tLoader.createImage(_path_static_textures + "lf_lensDirt-5.jpg", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
-            _iLensStar = _tLoader.createImage(_path_static_textures + "lf_lensStar.png", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
+            _iLensColor = _tLoader.createImage(_path_static_textures + "lens_Color.png", TextureTarget.Texture1D, TextureWrapMode.ClampToEdge);
+            _iLensDirt = _tLoader.createImage(_path_static_textures + "lens_Dirt-5.jpg", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
+            _iLensStar = _tLoader.createImage(_path_static_textures + "lens_Star.png", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
 
 
             // Load Textures
@@ -188,11 +193,50 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
-            special.blur_MovingAverage(13, _tFlare);
+            special.blur_Guass(quad, 120, _tFlare);
+            //special.blur_MovingAverage(13, _tFlare);
         }
 
+        // Spin the lens star mod with camera movements
+        private Matrix3 getLensStarMod(Matrix4 camera_matrix)
+        {
+            Vector3 cam_z;
+            Vector3 cam_x;
 
-        private void blend(fx_Quad quad, FrameBuffer scene_fbo)
+            cam_z = camera_matrix.Column1.Xyz;
+            cam_x = camera_matrix.Column0.Xyz;
+
+            cam_x = Vector3.Cross(cam_x, cam_z) + cam_x;
+
+            float camrot = Vector3.Dot(cam_x, new Vector3(0.0f, 0.0f, 1.0f)) + Vector3.Dot(cam_z, new Vector3(0.0f, 1.0f, 0.0f));
+
+
+            float cosRot = (float)Math.Cos(camrot * 13.0f);
+            float sinRot = (float)Math.Sin(camrot * 13.0f);
+
+            Matrix3 rotation = new Matrix3(
+                cosRot, -sinRot, 0.0f,
+                sinRot, cosRot, 0.0f,
+                0.0f, 0.0f, 1.0f);
+
+            float scaleMod = (float)Math.Cos(camrot * 13.0f) - (float)Math.Sin(camrot * 13.0f);
+            scaleMod /= 23.0f;
+            scaleMod -= 0.32f;
+
+            Matrix3 scale_bias_1 = new Matrix3(
+                2.0f, 0.0f, -1.0f,
+                0.0f, 2.0f, -1.0f,
+                0.0f, 0.0f, 1.0f);
+
+            Matrix3 scale_bias_2 = new Matrix3(
+                scaleMod, 0.0f, 0.5f,
+                0.0f, scaleMod, 0.5f,
+                0.0f, 0.0f, 1.0f);
+
+            return scale_bias_2 * rotation * scale_bias_1;
+        }
+
+        private void blend(fx_Quad quad, FrameBuffer scene_fbo, Matrix4 camera_matrix)
         {
             scene_fbo.bind(DrawBuffersEnum.ColorAttachment0);
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
@@ -204,18 +248,25 @@ namespace KailashEngine.Render.FX
             _tBloom.bind(_pBlend.getSamplerUniform(2), 2);
             _tFlare.bind(_pBlend.getSamplerUniform(3), 3);
 
+            // Lerp the lens star mod so the spin is delayed
+            Matrix3 current_lens_star_mod = getLensStarMod(camera_matrix);
+            Matrix3 lens_star_mod = EngineHelper.lerp(_previous_lens_star_mod, current_lens_star_mod, 0.3f);
+            _previous_lens_star_mod = lens_star_mod;
+
+            GL.UniformMatrix3(_pBlend.getUniform("lens_star_mod"), true, ref lens_star_mod);
+
             quad.renderBlend();
         }
 
 
-        public void render(fx_Quad quad, fx_Special special, Texture scene_texture, FrameBuffer scene_fbo)
+        public void render(fx_Quad quad, fx_Special special, Texture scene_texture, FrameBuffer scene_fbo, Matrix4 camera_matrix)
         {
             getBrightSpots(quad, scene_texture);
 
             genBloom(quad, special);
             genFlare(quad, special);
 
-            blend(quad, scene_fbo);
+            blend(quad, scene_fbo, camera_matrix);
         }
     }
 }

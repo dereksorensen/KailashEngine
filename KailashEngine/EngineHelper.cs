@@ -61,6 +61,15 @@ namespace KailashEngine
             return src0 + (src1 - src0) * t;
         }
 
+        public static Matrix3 lerp(Matrix3 src0, Matrix3 src1, float t)
+        {
+            Vector3 row0 = Vector3.Lerp(src0.Row0, src1.Row0, t);
+            Vector3 row1 = Vector3.Lerp(src0.Row1, src1.Row1, t);
+            Vector3 row2 = Vector3.Lerp(src0.Row2, src1.Row2, t);
+
+            return new Matrix3(row0, row1, row2);
+        }
+
         public static Matrix4 lerp(Matrix4 src0, Matrix4 src1, float t)
         {
             Vector3 temp_translation = Vector3.Lerp(src0.ExtractTranslation(), src1.ExtractTranslation(), t);
@@ -143,6 +152,7 @@ namespace KailashEngine
             return temp_floats.ToArray();
         }
 
+
         public static Matrix4 createMatrix(float[] matrix_values)
         {
             if (matrix_values.Length != 16)
@@ -159,7 +169,6 @@ namespace KailashEngine
 
             return temp_matrix;
         }
-
 
         public static Matrix4 createMatrix(Vector3 translation, Vector3 rotation_euler, Vector3 scale)
         {

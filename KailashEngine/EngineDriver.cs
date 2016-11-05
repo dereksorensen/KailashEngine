@@ -387,13 +387,14 @@ namespace KailashEngine
             // this is called every frame, put game logic here
             _physics_driver.update((float)e.Time, _game.config.fps_target, _fps);
 
-            inputBuffer();
+            
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _fps = (float)(1.0d / e.Time);
 
+            inputBuffer();
 
             _render_driver.updateUBO_GameConfig(
                 _game.config.near_far_full,
@@ -416,7 +417,7 @@ namespace KailashEngine
             _game.scene.flashlight.spatial.rotation_matrix =  Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
 
 
-            _render_driver.render(_game.scene);
+            _render_driver.render(_game.scene, _game.player.camera.spatial);
 
 
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;

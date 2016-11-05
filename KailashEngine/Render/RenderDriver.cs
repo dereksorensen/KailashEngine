@@ -12,7 +12,7 @@ using KailashEngine.Client;
 using KailashEngine.Output;
 using KailashEngine.Render.Objects;
 using KailashEngine.Render.FX;
-using KailashEngine.Render.Shader;
+using KailashEngine.World;
 
 namespace KailashEngine.Render
 {
@@ -149,7 +149,7 @@ namespace KailashEngine.Render
         //------------------------------------------------------
         // Rendering
         //------------------------------------------------------
-        public void render(Scene scene)
+        public void render(Scene scene, SpatialData camera_spatial_data)
         {
 
             //------------------------------------------------------
@@ -173,7 +173,7 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
 
-            _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene);
+            _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
