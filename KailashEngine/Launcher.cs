@@ -9,6 +9,8 @@ using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Client;
 
+using KailashEngine.Scripting;
+
 namespace KailashEngine
 {
     class Launcher
@@ -42,10 +44,47 @@ namespace KailashEngine
                 0.1f                                            // Character Look Sensitivity
             );
 
+            //*************************************************************************************
+            //** Scripting Tests begin Here 
+            //*************************************************************************************
+            
+            //Initialize ScriptBase (static class) and add initial test environment ("testbed")
+            ScriptBase.Initialize();
+            ScriptBase.CreateEnvironment("testbed");
+
+            //Add a script named "test" with the Lua source "return a + b", which accepts two arguments (int a, int b)
+            ScriptBase.AddScript("testbed", "test", "return a + b", true, 
+                                new KeyValuePair<string, Type>("a", typeof(int)), 
+                                new KeyValuePair<string, Type>("b", typeof(int)));
+
+            //Run the "test" script and fetch the int return value
+            var result = ScriptBase.RunScript<int>("testbed", "test", 10, 20);
+            Console.WriteLine("Script test: 10 + 20 = " + result);
+
+            //Reverse scenario: Lua calling C# code
+            //Create a Func object out of a lambda, neat and clean.
+            Func<double> GetPi = () =>
+            {
+                return Math.PI;
+            };
+
+            //Add our C# function cSharpFunc to environment "testbed"; 
+            //can now be used by any script in that environment
+            ScriptBase.AddFunction("testbed", "getPi", GetPi); 
+            
+            //Add another script and call it
+            ScriptBase.AddScript("testbed", "funcTest", "return getPi()", true);
+            var result2 = ScriptBase.RunScript<double>("testbed", "funcTest");
+
+            Console.WriteLine("Pi, according to Lua by way of C# = " + result2);
+
+            //*************************************************************************************
+            //** Scripting Tests end here, set a breakpoint at next statement 
+            //** to examine console output before game assets load
+            //*************************************************************************************
 
             // Initialize Game
             Game game = new Game(game_config);
-
 
             using (EngineDriver KailashEngine = new EngineDriver(game))
             {

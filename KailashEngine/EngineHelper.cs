@@ -47,7 +47,7 @@ namespace KailashEngine
                 path_found = dirs[dirs.Length - 2] == getProjectName();
                 cur_search += "../";
             }
-
+            Console.WriteLine(Path.GetFullPath(cur_search));
             return base_path;
         }
 
