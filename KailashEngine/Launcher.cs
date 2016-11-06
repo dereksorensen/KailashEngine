@@ -85,7 +85,9 @@ namespace KailashEngine
             //in turn call native C# functions), and call those in C#
             //at the appropriate time; letting you drive your game logic through Lua
             ScriptBase.AddScript("testbed", "getFunc", "function luaSays(text) \n"    +
-                                                        "    return 'Lua Says: ' .. text \n"   + // '..' is the Lua string concatenation operator; weird, I know!
+                                                             //You get full access to the CLR through the clr namespace in Lua. So cool.
+                                                        "    clr.System.Console.WriteLine('From Lua: ' .. text) \n" + // '..' is the Lua string concatenation operator; weird, I know!
+                                                        "    return text \n"   + 
                                                         "end", 
                                                         true);
 
@@ -100,12 +102,12 @@ namespace KailashEngine
             var printline = ScriptBase.GetFunction<string>("testbed", "luaSays");
             var result3 = printline("hey!");
 
-            Console.WriteLine(result3.ToType(typeof(string)));
+            Console.WriteLine("From C#: " + result3.ToType(typeof(string)));
 
             //There're also helper methods to call Lua functions directly and extract the result
             //Generic syntax is <Return Type, Argument 1 Type, Argument 2 Type, etc.> (up to four arguments).
             string result4 = ScriptBase.CallFunction<string, string>("testbed", "luaSays", "You know it!");
-            Console.WriteLine(result4);
+            Console.WriteLine("From C#: " + result4);
 
             //*************************************************************************************
             //** Scripting Tests end here, set a breakpoint at next statement 
