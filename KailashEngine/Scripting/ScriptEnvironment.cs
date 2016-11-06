@@ -27,12 +27,76 @@ namespace KailashEngine.Scripting
             _chunks[name] = chunk;
         }
 
-        public void AddFunction<T>(string luaFunctionName, Func<T> func)
+        public void AddFunction<R>(string luaFunctionName, Func<R> func)
         {
             dynamic r = _global;
             r[luaFunctionName] = func;
         }
-  
+
+        public void AddFunction<R, T>(string luaFunctionName, Func<T, R> func)
+        {
+            dynamic r = _global;
+            r[luaFunctionName] = func;
+        }
+
+        public void AddFunction<R, T1, T2>(string luaFunctionName, Func<T1, T2, R> func)
+        {
+            dynamic r = _global;
+            r[luaFunctionName] = func;
+        }
+
+        public void AddFunction<R, T1, T2, T3>(string luaFunctionName, Func<T1, T2, T3, R> func)
+        {
+            dynamic r = _global;
+            r[luaFunctionName] = func;
+        }
+
+        public void AddFunction<R, T1, T2, T3, T4>(string luaFunctionName, Func<T1, T2, T3, T4, R> func)
+        {
+            dynamic r = _global;
+            r[luaFunctionName] = func;
+        }
+
+        public Func<LuaResult> GetFunction(string funcName)
+        {
+            dynamic g = _global;
+            var ret = (Func<LuaResult>)g[funcName];
+
+            return ret;
+        }
+
+        public Func<T, LuaResult> GetFunction<T>(string funcName)
+        {
+            dynamic g = _global;
+            Func<T, LuaResult> ret = g[funcName];
+            
+            return ret;
+        }
+
+        public Func<T1, T2, LuaResult> GetFunction<T1, T2>(string funcName)
+        {
+            dynamic g = _global;
+            var ret = (Func<T1, T2, LuaResult>)g[funcName];
+
+            return ret;
+        }
+
+        public Func<T1, T2, T3, LuaResult> GetFunction<T1, T2, T3>(string funcName)
+        {
+            dynamic g = _global;
+            var ret = (Func<T1, T2, T3, LuaResult>)g[funcName];
+
+            return ret;
+        }
+
+        public Func<T1, T2, T3, T4, LuaResult> GetFunction<T1, T2, T3, T4>(string funcName)
+        {
+            dynamic g = _global;
+            var ret = (Func<T1, T2, T3, T4, LuaResult>)g[funcName];
+
+            return ret;
+        }
+
         public void ExecuteScript(string name)
         {
             try

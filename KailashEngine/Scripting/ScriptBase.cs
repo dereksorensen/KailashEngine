@@ -83,14 +83,107 @@ namespace KailashEngine.Scripting
         /// <summary>
         /// Add a C# function to a Lua environment's global space
         /// </summary>
-        /// <typeparam name="T">Return type of function.</typeparam>
+        /// <typeparam name="R">Return type of function.</typeparam>
         /// <param name="environment">Name of script environment.</param>
         /// <param name="name">Name of script.</param>
         /// <param name="funcName">Name of the function callable within Lua.</param>
         /// <param name="func">C# Function to add.</param>
-        public static void AddFunction<T>(string environment, string funcName, Func<T> func)
+        public static void AddFunction<R>(string environment, string funcName, Func<R> func)
         {
-            _environments[environment].AddFunction<T>(funcName, func);
+            _environments[environment].AddFunction(funcName, func);
+        }
+
+        public static void AddFunction<R, T>(string environment, string funcName, Func<T, R> func)
+        {
+            _environments[environment].AddFunction(funcName, func);
+        }
+
+        public static void AddFunction<R, T1, T2>(string environment, string funcName, Func<T1, T2, R> func)
+        {
+            _environments[environment].AddFunction(funcName, func);
+        }
+
+        public static void AddFunction<R, T1, T2, T3>(string environment, string funcName, Func<T1, T2, T3, R> func)
+        {
+            _environments[environment].AddFunction(funcName, func);
+        }
+
+        public static void AddFunction<R, T1, T2, T3, T4>(string environment, string funcName, Func<T1, T2, T3, T4, R> func)
+        {
+            _environments[environment].AddFunction(funcName, func);
+        }
+
+        /// <summary>
+        /// Get a function by name from the Lua environment.
+        /// </summary>
+        /// <param name="environment">Environment to search.</param>
+        /// <param name="funcName">The name of the function (case sensitive).</param>
+        /// <returns></returns>
+        public static Func<LuaResult> GetFunction(string environment, string funcName)
+        {
+            return _environments[environment].GetFunction(funcName);
+        }
+
+        public static Func<T, LuaResult> GetFunction<T>(string environment, string funcName)
+        {
+            return _environments[environment].GetFunction<T>(funcName);
+        }
+
+        public static Func<T1, T2, LuaResult> GetFunction<T1, T2>(string environment, string funcName)
+        {
+            return _environments[environment].GetFunction<T1, T2>(funcName);
+        }
+
+        public static Func<T1, T2, T3, LuaResult> GetFunction<T1, T2, T3>(string environment, string funcName)
+        {
+            return _environments[environment].GetFunction<T1, T2, T3>(funcName);
+        }
+
+        public static Func<T1, T2, T3, T4, LuaResult> GetFunction<T1, T2, T3, T4>(string environment, string funcName)
+        {
+            return _environments[environment].GetFunction<T1, T2, T3, T4>(funcName);
+        }
+
+        /// <summary>
+        /// Helper method to call a Lua function and extract the result.
+        /// </summary>
+        /// <typeparam name="R">The return type of the function.</typeparam>
+        /// <param name="environment">Environment to search.</param>
+        /// <param name="funcName">The name of the function (case sensitive).</param>
+        /// <returns></returns>
+        public static R CallFunction<R>(string environment, string funcName)
+        {
+            var f = GetFunction(environment, funcName);
+            var result = f();
+            return (R)result.ToType(typeof(R));
+        }
+
+        public static R CallFunction<R, T>(string environment, string funcName, T arg)
+        {
+            var f = GetFunction<T>(environment, funcName);
+            var result = f(arg);
+            return (R)result.ToType(typeof(R));
+        }
+
+        public static R CallFunction<R, T1, T2>(string environment, string funcName, T1 arg1, T2 arg2)
+        {
+            var f = GetFunction<T1, T2>(environment, funcName);
+            var result = f(arg1, arg2);
+            return (R)result.ToType(typeof(R));
+        }
+
+        public static R CallFunction<R, T1, T2, T3>(string environment, string funcName, T1 arg1, T2 arg2, T3 arg3)
+        {
+            var f = GetFunction<T1, T2, T3>(environment, funcName);
+            var result = f(arg1, arg2, arg3);
+            return (R)result.ToType(typeof(R));
+        }
+
+        public static R CallFunction<R, T1, T2, T3, T4>(string environment, string funcName, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            var f = GetFunction<T1, T2, T3, T4>(environment, funcName);
+            var result = f(arg1, arg2, arg3, arg4);
+            return (R)result.ToType(typeof(R));
         }
 
         /// <summary>

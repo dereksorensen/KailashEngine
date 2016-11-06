@@ -49,6 +49,7 @@ namespace KailashEngine
             //*************************************************************************************
             
             //Initialize ScriptBase (static class) and add initial test environment ("testbed")
+            //TODO: Make ScriptBase non-static so multiple instances can be created for multithreading
             ScriptBase.Initialize();
             ScriptBase.CreateEnvironment("testbed");
 
@@ -77,6 +78,34 @@ namespace KailashEngine
             var result2 = ScriptBase.RunScript<double>("testbed", "funcTest");
 
             Console.WriteLine("Pi, according to Lua by way of C# = " + result2);
+
+            //Add a script containing a very simple Lua function to be called from C#
+            //The possibilities here are great: You could write a script 
+            //with functions like "onUpdate()", "onDestroy()", "onCreate()", etc. (which
+            //in turn call native C# functions), and call those in C#
+            //at the appropriate time; letting you drive your game logic through Lua
+            ScriptBase.AddScript("testbed", "getFunc", "function luaSays(text) \n"    +
+                                                        "    return 'Lua Says: ' .. text \n"   + // '..' is the Lua string concatenation operator; weird, I know!
+                                                        "end", 
+                                                        true);
+
+            //Must run the script initially so Lua function winds up in the environment.
+            //TODO: Make this step transparent (i.e. have the option for the system to run
+            //      the script automatically upon adding to establish the Lua functions it
+            //      contains; effectively a "compilation" step).
+            ScriptBase.RunScript("testbed", "getFunc");
+
+            //The global space (environment) now contains the "luaSays(text)" Lua function,
+            //so we can assign it to a C# function object and call it at will.
+            var printline = ScriptBase.GetFunction<string>("testbed", "luaSays");
+            var result3 = printline("hey!");
+
+            Console.WriteLine(result3.ToType(typeof(string)));
+
+            //There're also helper methods to call Lua functions directly and extract the result
+            //Generic syntax is <Return Type, Argument 1 Type, Argument 2 Type, etc.> (up to four arguments).
+            string result4 = ScriptBase.CallFunction<string, string>("testbed", "luaSays", "You know it!");
+            Console.WriteLine(result4);
 
             //*************************************************************************************
             //** Scripting Tests end here, set a breakpoint at next statement 
