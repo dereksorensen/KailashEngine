@@ -32,7 +32,7 @@ namespace KailashEngine
                 path_found = dirs[dirs.Length - 2] == search_path;
                 cur_search += "../";
             }
-            Console.WriteLine(Path.GetFullPath(cur_search));
+
             return base_path;
         }
 
