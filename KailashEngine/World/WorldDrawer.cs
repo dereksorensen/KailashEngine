@@ -174,7 +174,7 @@ namespace KailashEngine.World
 
 
                 GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), light.color);
-                GL.Uniform1(program.getUniform(RenderHelper.uEmission), light.intensity);
+                GL.Uniform1(program.getUniform(RenderHelper.uEmission), light.intensity * (light.falloff / 5.0f));
                 GL.Uniform3(program.getUniform(RenderHelper.uSpecularColor), new Vector3(0.0f));
                 GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), 0.0f);
                 GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), 0.0f);

@@ -44,8 +44,8 @@ namespace KailashEngine
 
         public static string getPath_MaterialTextures(string filepath)
         {
-            filepath = filepath.Replace("%20", " ");
-            filepath = Path.GetFullPath(filepath).Replace(path_resources_textures, "");
+            filepath = filepath.Replace("%20", " ").Replace("/", "\\");
+            filepath = filepath.Replace(path_resources_textures, "");
             filepath = Path.GetFullPath(path_resources_textures + filepath);
             return filepath;
         }
