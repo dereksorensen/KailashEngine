@@ -67,6 +67,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Neo.Lua, Version=5.3.0.0, Culture=neutral, PublicKeyToken=fdb0cd4fe8a6e3b2, processorArchitecture=MSIL">
+      <HintPath>..\packages\NeoLua.1.2.8\lib\net45\Neo.Lua.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Neo.Lua.Desktop, Version=5.3.0.0, Culture=neutral, PublicKeyToken=fdb0cd4fe8a6e3b2, processorArchitecture=MSIL">
+      <HintPath>..\packages\NeoLua.1.2.8\lib\net45\Neo.Lua.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NVorbis, Version=0.8.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NVorbis.0.8.5.0\lib\NVorbis.dll</HintPath>
       <Private>True</Private>
@@ -485,6 +493,8 @@
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
     <Compile Include="Render\StaticImageLoader.cs" />
+    <Compile Include="Scripting\LuaScriptBase.cs" />
+    <Compile Include="Scripting\LuaScriptEnvironment.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="World\ControllableWorldObject.cs" />
     <Compile Include="World\LightLoader.cs" />
