@@ -11,6 +11,46 @@ namespace KailashEngine
 {
     static class EngineHelper
     {
+        //------------------------------------------------------
+        // Project Helpers
+        //------------------------------------------------------
+        public static string getProjectName()
+        {
+            return System.Reflection.Assembly.GetCallingAssembly().FullName.Split(',')[0];
+        }
+
+        private static string getPathTo(string search_path)
+        {
+            bool path_found = false;
+            string cur_search = "../";
+            string base_path = "";
+
+            while (!path_found)
+            {
+                base_path = Path.GetFullPath(cur_search);
+                string[] dirs = base_path.Split('\\');
+                path_found = dirs[dirs.Length - 2] == search_path;
+                cur_search += "../";
+            }
+
+            return base_path;
+        }
+
+
+        public static string getPath_ProjectBase()
+        {
+            return getPathTo(getProjectName());
+        }
+
+        public static string getPath_MaterialTextures(string filepath)
+        {
+            filepath = filepath.Replace("%20", " ");
+            filepath = Path.GetFullPath(filepath).Replace(path_resources_textures, "");
+            filepath = Path.GetFullPath(path_resources_textures + filepath);
+            return filepath;
+        }
+
+
 
         //------------------------------------------------------
         // Constants
@@ -26,30 +66,17 @@ namespace KailashEngine
             mat4 = sizeof(float) * 16,
         }
 
-        //------------------------------------------------------
-        // Project Helpers
-        //------------------------------------------------------
-        public static string getProjectName()
-        {
-            return System.Reflection.Assembly.GetCallingAssembly().FullName.Split(',')[0];
-        }
+        public static string path_resources_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Resources/"); } }
+        public static string path_resources_audio { get { return Path.GetFullPath(path_resources_base + "Audio/"); } }
+        public static string path_resources_save_data { get { return Path.GetFullPath(path_resources_base + "SaveData/"); } }
+        public static string path_resources_scene { get { return Path.GetFullPath(path_resources_base + "Scene/"); } }
+        public static string path_resources_textures { get { return Path.GetFullPath(path_resources_base + "Textures/"); } }
+        public static string path_resources_textures_static { get { return Path.GetFullPath(path_resources_textures + "_static/"); } }
 
-        public static string getProjectBasePath()
-        {
-            bool path_found = false;
-            string cur_search = "../";
-            string base_path = "";
-
-            while (!path_found)
-            {
-                base_path = Path.GetFullPath(cur_search);
-                string[] dirs = base_path.Split('\\');
-                path_found = dirs[dirs.Length - 2] == getProjectName();
-                cur_search += "../";
-            }
-
-            return base_path;
-        }
+        public static string path_glsl_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Render/Shader/glsl/"); } }
+        public static string path_glsl_common { get { return "common/"; } }
+        public static string path_glsl_common_helpers { get { return "common/helpers/"; } }
+        public static string path_glsl_common_generic_vs { get { return "render_Texture2D.vert"; } }
 
 
         //------------------------------------------------------

@@ -104,7 +104,7 @@ namespace KailashEngine.Client
         // Load Scene
         //------------------------------------------------------
 
-        public void load(Physics.PhysicsWorld physics_world)
+        public void load(PhysicsWorld physics_world)
         {
             _world_loader = new WorldLoader(_path_scene, "light_objects", physics_world);
 

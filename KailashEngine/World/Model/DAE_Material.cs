@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
 using grendgine_collada;
 
@@ -27,7 +26,6 @@ namespace KailashEngine.World.Model
         public void load(Grendgine_Collada_Effect effect, Dictionary<string, string> image_collection)
         {
 
-
             //------------------------------------------------------
             // Diffuse
             //------------------------------------------------------
@@ -37,8 +35,8 @@ namespace KailashEngine.World.Model
                 string filename;
 
                 if (image_collection.TryGetValue(texture_id, out filename))
-                {                 
-                    _diffuse_image = new Image(filename, true);
+                {
+                    _diffuse_image = new Image(EngineHelper.getPath_MaterialTextures(filename), true);
                     _diffuse_image.load();
                     _diffuse_color = new Vector3(0.0f);
                 }
@@ -67,7 +65,7 @@ namespace KailashEngine.World.Model
 
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
-                    _specular_image = new Image(filename, true);
+                    _specular_image = new Image(EngineHelper.getPath_MaterialTextures(filename), true);
                     _specular_image.load();
                 }
                 else
@@ -93,7 +91,7 @@ namespace KailashEngine.World.Model
 
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
-                    _normal_image = new Image(filename, false);
+                    _normal_image = new Image(EngineHelper.getPath_MaterialTextures(filename), false);
                     _normal_image.load();
                 }
                 else
@@ -115,7 +113,7 @@ namespace KailashEngine.World.Model
 
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
-                    _displacement_image = new Image(filename, false);
+                    _displacement_image = new Image(EngineHelper.getPath_MaterialTextures(filename), false);
                     _displacement_image.load();
                 }
                 else
@@ -137,7 +135,7 @@ namespace KailashEngine.World.Model
 
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
-                    _parallax_image = new Image(filename, false);
+                    _parallax_image = new Image(EngineHelper.getPath_MaterialTextures(filename), false);
                     _parallax_image.load();
                 }
                 else
