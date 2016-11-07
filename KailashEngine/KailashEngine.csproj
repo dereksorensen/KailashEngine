@@ -493,8 +493,8 @@
     <Compile Include="Render\Shader\ShaderFile.cs" />
     <Compile Include="Render\Objects\UniformBuffer.cs" />
     <Compile Include="Render\StaticImageLoader.cs" />
-    <Compile Include="Scripting\ScriptBase.cs" />
-    <Compile Include="Scripting\ScriptEnvironment.cs" />
+    <Compile Include="Scripting\LuaScriptBase.cs" />
+    <Compile Include="Scripting\LuaScriptEnvironment.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="World\ControllableWorldObject.cs" />
     <Compile Include="World\LightLoader.cs" />
