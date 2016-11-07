@@ -56,7 +56,7 @@ void main()
 		weight_ghost = pow(1.0 - weight_ghost, 3.0);
 		final_ghost_orbs += vec4(textureDistorted(sampler0, offset, direction, distortion),1.0) * weight_ghost;
 	}
-	final_ghost_orbs *= texture(sampler1, 1.0 - length(vec2(0.5) - flare_TexCoord) / length(vec2(0.5)));
+	final_ghost_orbs *= texture(sampler1, 1.0 - length(vec2(0.5) - flare_TexCoord) / length(vec2(0.65)));
 	final_ghost_orbs *= 0.6;
 
 

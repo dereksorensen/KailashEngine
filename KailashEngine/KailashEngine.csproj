@@ -550,6 +550,12 @@
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurGuass.frag" />
+    <None Include="Resources\Audio\cow.ogg" />
+    <None Include="Resources\Audio\cow.wav.reapeaks" />
+    <None Include="Resources\Audio\goat.wav.reapeaks" />
+    <None Include="Resources\Audio\render_wav.rpp" />
+    <None Include="Resources\Audio\render_wav.rpp-bak" />
+    <None Include="Resources\Audio\test1.ogg" />
     <None Include="Resources\Blender\Scripts\export_collada.py" />
     <None Include="Resources\Scene\light_objects\light_objects.dae" />
     <None Include="Resources\Scene\light_objects\light_objects.lights" />
@@ -566,10 +572,15 @@
     <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
     <Folder Include="Render\Shader\glsl\special\helpers\" />
+    <Folder Include="Render\Shader\glsl\test\" />
     <Folder Include="Resources\SaveData\" />
     <Folder Include="Resources\Textures\_static\lens\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Audio\cow.wav" />
+    <Content Include="Resources\Audio\goat.wav" />
+    <Content Include="Resources\Audio\test1.wav" />
+    <Content Include="Resources\Audio\test2.wav" />
     <Content Include="Resources\Textures\_static\crosshair\crosshair_2.png" />
     <Content Include="toolbox.txt" />
   </ItemGroup>

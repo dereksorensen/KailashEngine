@@ -21,49 +21,6 @@ namespace KailashEngine.Client
             set { _title = value; }
         }
 
-
-        //------------------------------------------------------
-        // Paths
-        //------------------------------------------------------
-
-
-        // Finds the base engine dir which all path defaults are based from
-        private string getBasePath(string base_dir)
-        {
-            bool path_found = false;
-            string cur_search = "../";
-            string base_path = "";
-
-            while (!path_found)
-            {
-                base_path = Path.GetFullPath(cur_search);
-                string[] dirs = base_path.Split('\\');
-                path_found = dirs[dirs.Length - 2] == base_dir;
-                cur_search += "../";
-            }
-
-            return base_path;
-        }
-
-        private string _path_base;
-        public string path_base
-        {
-            get { return _path_base; }
-            set { _path_base = value; }
-        }
-
-        public string path_resources_base { get { return Path.GetFullPath(_path_base + "Resources/"); } }
-        public string path_resources_save_data { get { return Path.GetFullPath(path_resources_base + "SaveData/"); } }
-        public string path_resources_scene { get { return Path.GetFullPath(path_resources_base + "Scene/"); } }
-        public string path_resources_textures { get { return Path.GetFullPath(path_resources_base + "Textures/"); } }
-        public string path_resources_textures_static { get { return Path.GetFullPath(path_resources_textures + "_static/"); } }
-
-        public string path_glsl_base { get { return Path.GetFullPath(_path_base + "Render/Shader/glsl/"); } }
-        public string path_glsl_common { get { return "common/"; } }
-        public string path_glsl_common_helpers { get { return "common/helpers/"; } }
-        public string path_glsl_common_generic_vs { get { return "render_Texture2D.vert"; } }
-
-
         //------------------------------------------------------
         // OpenGL
         //------------------------------------------------------
@@ -99,7 +56,6 @@ namespace KailashEngine.Client
                 return _gl_major_version + "." + _gl_minor_version;
             }
         }
-
 
         //------------------------------------------------------
         // Display
@@ -235,9 +191,6 @@ namespace KailashEngine.Client
             float movement_speed_walk, float movement_speed_run, float look_sensitivity)
         {
             _title = title;
-
-            // Get base engine path for defaults
-            _path_base = EngineHelper.getProjectBasePath();
 
             _gl_major_version = gl_major_version;
             _gl_minor_version = gl_minor_version;

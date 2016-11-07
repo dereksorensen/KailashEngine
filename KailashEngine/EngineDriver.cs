@@ -360,8 +360,8 @@ namespace KailashEngine
 
             // Create Engine Objects
             _render_driver = new RenderDriver(
-                new ProgramLoader(_game.config.glsl_version, _game.config.path_glsl_base, _game.config.path_glsl_common, _game.config.path_glsl_common_helpers, _game.config.path_glsl_common_generic_vs),
-                new StaticImageLoader(_game.config.path_resources_textures_static),
+                new ProgramLoader(_game.config.glsl_version, EngineHelper.path_glsl_base, EngineHelper.path_glsl_common, EngineHelper.path_glsl_common_helpers, EngineHelper.path_glsl_common_generic_vs),
+                new StaticImageLoader(EngineHelper.path_resources_textures_static),
                 _game.display.resolution
             );
             _debug_window = new DebugWindow();
@@ -374,10 +374,11 @@ namespace KailashEngine
             _debug_window.load();
 
 
+            // Load Sound System
             SoundSystem.Instance.Initialize();
-            _sound_cow = new Sound(_game.config.path_base + "Output/cow.ogg");
+            _sound_cow = new Sound(EngineHelper.path_resources_audio + "cow.ogg");
             _sound_cow.IsRelativeToListener = false;
-            _sound_goat = new Sound(_game.config.path_base + "Output/test1.ogg");
+            _sound_goat = new Sound(EngineHelper.path_resources_audio + "test1.ogg");
 
             
         }
