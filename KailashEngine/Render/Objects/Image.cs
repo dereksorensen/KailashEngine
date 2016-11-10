@@ -210,7 +210,9 @@ namespace KailashEngine.Render.Objects
 
 
             }
-            //if (use_srgb) pif = PixelInternalFormat.Srgb;
+
+
+            if (use_srgb) pif = PixelInternalFormat.Srgb;
 
             // Load new texture
             _texture = new Texture(

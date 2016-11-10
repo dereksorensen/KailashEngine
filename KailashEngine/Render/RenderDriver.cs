@@ -202,7 +202,7 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if(_enable_debug_views)
             {
-                _fxQuad.render_Texture(_fxLens.iSpace.texture, 0, 0.25f, 3);
+                _fxQuad.render_Texture(_fxLens.iSpace.texture, 1, 0.25f, 3);
                 _fxQuad.render_Texture(_fxLens.tBloom, 0.25f, 2);
                 _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
