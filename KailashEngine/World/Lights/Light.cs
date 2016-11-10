@@ -45,6 +45,14 @@ namespace KailashEngine.World.Lights
             set { _intensity = value; }
         }
 
+        private float _object_emission;
+        public float object_emission
+        {
+            get { return _object_emission; }
+            set { _object_emission = value; }
+        }
+
+
         private float _falloff;
         public float falloff
         {
@@ -90,6 +98,7 @@ namespace KailashEngine.World.Lights
             _falloff = falloff;
             _shadow = shadow;
 
+            _object_emission = _intensity;
         }
 
 

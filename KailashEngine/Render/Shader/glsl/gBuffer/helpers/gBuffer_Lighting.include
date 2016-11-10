@@ -182,10 +182,9 @@ void calcLighting(
 	//gaussianTerm = cookTorranceSpecular(L, E, N, specular_shininess, 0.9);
 
 	vec4 specular = vec4(
-		light_color *
+		light_color * (light_intensity / 10.0) *
 		(gaussianTerm * max_inc) *
-		specular_color, 1.0
-	);
+		specular_color, 1.0);
 
 
 	//------------------------------------------------------

@@ -31,6 +31,8 @@ namespace KailashEngine.Render.FX
         private Image _iLensDirt;
         private Image _iLensStar;
 
+        public Image iSpace;
+
         private Texture _tBloom;
         public Texture tBloom
         {
@@ -80,6 +82,17 @@ namespace KailashEngine.Render.FX
             _iLensDirt = _tLoader.createImage(_path_static_textures + "lens_Dirt-5.jpg", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
             _iLensStar = _tLoader.createImage(_path_static_textures + "lens_Star.png", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
 
+            string[] space_files =
+            {
+                EngineHelper.path_resources_textures_static + "space\\space_right1.png",
+                EngineHelper.path_resources_textures_static + "space\\space_left2.png",
+                EngineHelper.path_resources_textures_static + "space\\space_top3.png",
+                EngineHelper.path_resources_textures_static + "space\\space_bottom4.png",
+                EngineHelper.path_resources_textures_static + "space\\space_front5.png",
+                EngineHelper.path_resources_textures_static + "space\\space_back6.png"
+            };
+            iSpace = new Image(space_files, false, TextureTarget.Texture2DArray, TextureWrapMode.Clamp);
+            iSpace.load();
 
             // Load Textures
             float default_texture_scale = 0.25f;

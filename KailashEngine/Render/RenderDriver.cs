@@ -173,10 +173,12 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
 
-            _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
-
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
+
+
+            _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
+
 
 
             //------------------------------------------------------
@@ -200,10 +202,10 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if(_enable_debug_views)
             {
-                _fxQuad.render_Texture2D(_fxLens.tFlare, 0.25f, 3);
-                _fxQuad.render_Texture2D(_fxLens.tBloom, 0.25f, 2);
-                _fxQuad.render_Texture2D(_fxSpecial.tSpecial, 0.25f, 1);
-                _fxQuad.render_Texture2D(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+                _fxQuad.render_Texture(_fxLens.iSpace.texture, 0, 0.25f, 3);
+                _fxQuad.render_Texture(_fxLens.tBloom, 0.25f, 2);
+                _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
+                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 
         }

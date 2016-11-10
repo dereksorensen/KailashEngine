@@ -18,8 +18,9 @@ namespace KailashEngine.Render.FX
         private int _vao;
 
         // Programs
-        private Program _pRenderTexture2D;
         private Program _pRenderTexture1D;
+        private Program _pRenderTexture2D;
+        private Program _pRenderTexture3D;
 
 
         public fx_Quad(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
@@ -28,17 +29,24 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            _pRenderTexture1D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture1D.frag", null)
+            });
+            _pRenderTexture1D.enable_Samplers(1);
+
             _pRenderTexture2D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture2D.frag", null)
             });
             _pRenderTexture2D.enable_Samplers(1);
 
-            _pRenderTexture1D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            _pRenderTexture3D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture1D.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture3D.frag", null)
             });
-            _pRenderTexture1D.enable_Samplers(1);
+            _pRenderTexture3D.enable_Samplers(1);
+            _pRenderTexture3D.addUniform("layer");
         }
 
         protected override void load_Buffers()
@@ -114,12 +122,22 @@ namespace KailashEngine.Render.FX
         // Render Textures
         //------------------------------------------------------
 
-        public void render_Texture2D(Texture texture)
+        public void render_Texture(Texture texture)
         {
-            render_Texture2D(texture, 1, 0);
+            render_Texture(texture, 1, 0);
         }
 
-        public void render_Texture2D(Texture texture, float size, int position)
+        public void render_Texture(Texture texture, int layer)
+        {
+            render_Texture(texture, layer, 1, 0);
+        }
+
+        public void render_Texture(Texture texture, float size, int position)
+        {
+            render_Texture(texture, 0, size, position);
+        }
+
+        public void render_Texture(Texture texture, int layer, float size, int position)
         {
             // Calculate Quad Positioning
             int size_x = (int)(_resolution.W * size);
@@ -137,13 +155,21 @@ namespace KailashEngine.Render.FX
             {
                 case TextureTarget.Texture1D:
                     _pRenderTexture1D.bind();
+                    texture.bind(_pRenderTexture1D.getSamplerUniform(0), 0);
                     break;
                 case TextureTarget.Texture2D:
                     _pRenderTexture2D.bind();
+                    texture.bind(_pRenderTexture2D.getSamplerUniform(0), 0);
+                    break;
+                case TextureTarget.Texture3D:
+                case TextureTarget.Texture2DArray:
+                case TextureTarget.TextureCubeMap:
+                    _pRenderTexture3D.bind();
+                    GL.Uniform1(_pRenderTexture3D.getUniform("layer"), layer);
+                    texture.bind(_pRenderTexture3D.getSamplerUniform(0), 0);
                     break;
             }
 
-            texture.bind(_pRenderTexture2D.getSamplerUniform(0), 0);
 
             render();
         }

@@ -13,7 +13,7 @@ void main()
 	vec3 scene = texture(sampler0, v_TexCoord).rgb;
 
 	float Y = dot(scene, vec3(0.299, 0.587, 0.144));
-	vec3 final = scene * 1.0 * smoothstep(0.8, 7.5, Y);
+	vec3 final = scene * 1.0 * smoothstep(0.8, 1.5, Y);
 
 	//vec3 final = max(vec3(0.0), scene - 1.5) / 1.5;
 	final *= vec3(0.4125, 0.4125, 0.621);

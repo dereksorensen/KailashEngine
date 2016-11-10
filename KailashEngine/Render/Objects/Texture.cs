@@ -134,7 +134,7 @@ namespace KailashEngine.Render.Objects
 
             _width = width;
             _height = height;
-            _depth = depth;
+            _depth = (target == TextureTarget.TextureCubeMap) ? 6 : depth;
 
             _enable_mipmap = enable_mipmap;
             _enable_aniso = enable_aniso;
@@ -185,58 +185,8 @@ namespace KailashEngine.Render.Objects
             GL.GenerateTextureMipmap(_id);
         }
 
-
-        //------------------------------------------------------
-        // Main Methods
-        //------------------------------------------------------
-
-        public void load()
+        private void setTextureParameters()
         {
-            load((IntPtr)0);
-        }
-
-        public void load(IntPtr data)
-        {
-
-            GL.BindTexture(_target, _id);
-
-            switch (_target)
-            {
-                case TextureTarget.Texture1D:
-                    GL.TexImage1D(
-                        _target,
-                        0,
-                        _pif,
-                        _width,
-                        0,
-                        _pf,
-                        _pt,
-                        data);
-                    break;
-                case TextureTarget.Texture2D:
-                    GL.TexImage2D(
-                        _target,
-                        0,
-                        _pif,
-                        _width,
-                        _height,
-                        0,
-                        _pf,
-                        _pt,
-                        data);
-                    break;
-                case TextureTarget.Texture2DArray:
-
-                    break;
-                case TextureTarget.TextureCubeMap:
-
-                    break;
-                case TextureTarget.Texture3D:
-
-                    break;
-            }
-
-            
 
             GL.TexParameter(
                 _target,
@@ -271,6 +221,96 @@ namespace KailashEngine.Render.Objects
                 GL.TexParameter(_target, (TextureParameterName)All.TextureMaxAnisotropyExt, _max_anisotropy);
             }
         }
+
+        //------------------------------------------------------
+        // Loading
+        //------------------------------------------------------
+
+        public void load()
+        {
+            load((IntPtr)0);
+        }
+
+        public void load(IntPtr data)
+        {
+
+            GL.BindTexture(_target, _id);
+
+            switch (_target)
+            {
+                case TextureTarget.Texture1D:
+                    GL.TexImage1D(_target, 0, _pif, _width, 0, _pf, _pt, data);
+                    break;
+                case TextureTarget.Texture2D:
+                    GL.TexImage2D( _target, 0, _pif, _width, _height, 0, _pf, _pt, data);
+                    break;
+                case TextureTarget.Texture2DArray:
+                    for (int slice = 0; slice < _depth; slice++)
+                    {
+                        GL.TexSubImage3D(_target, 0, 0, 0, slice, _width, _height, 1, _pf, _pt, data);
+                    }
+                    break;
+                case TextureTarget.TextureCubeMap:
+                    for (int face = 0; face < _depth; face++)
+                    {
+                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + face, 0, _pif, _width, _height, 0, _pf, _pt, data);
+                    }
+                    break;
+                case TextureTarget.Texture3D:
+                    GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, data);
+                    break;
+            }
+
+            setTextureParameters();
+
+        }
+
+
+        public void load(IntPtr[] data)
+        {
+            if(data.Length != _depth)
+            {
+                throw new Exception("Load Texture: Length of data array does not match texture's depth");
+            }
+
+            GL.BindTexture(_target, _id);
+
+            switch (_target)
+            {
+                case TextureTarget.Texture1D:
+                    throw new Exception("Load Texture: Cannot load data array into Texture1D");
+                case TextureTarget.Texture2D:
+                    throw new Exception("Load Texture: Cannot load data array into Texture2D");
+                case TextureTarget.Texture2DArray:
+                    for (int slice = 0; slice < _depth; slice++)
+                    {
+                        GL.TexSubImage3D(_target, 0, 0, 0, slice, _width, _height, 1, _pf, _pt, data[slice]);
+                    }
+                    break;
+                case TextureTarget.TextureCubeMap:
+                    for (int face = 0; face < 6; face++)
+                    {
+                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + face, 0, _pif, _width, _height, 0, _pf, _pt, data[face]);
+                    }
+                    break;
+                case TextureTarget.Texture3D:
+                    GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, data);
+                    break;
+            }
+
+            setTextureParameters();
+        }
+
+
+
+
+
+        //------------------------------------------------------
+        // Binding
+        //------------------------------------------------------
+
+
+
 
         public void bind(int texture_uniform, int index)
         {

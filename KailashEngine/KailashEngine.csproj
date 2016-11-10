@@ -528,6 +528,7 @@
     <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
     <None Include="Render\Shader\glsl\common\render_Texture1D.frag" />
+    <None Include="Render\Shader\glsl\common\render_Texture3D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.frag" />
