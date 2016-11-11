@@ -16,6 +16,7 @@ layout (std430, binding=0) buffer ex
 void main()
 {
 
+
 	vec4 scene = texture(sampler0, v_TexCoord);
 
 	//float lum_avg = -log(exposure[0].y * exposure[0].y);

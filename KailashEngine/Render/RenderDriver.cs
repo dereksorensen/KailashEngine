@@ -27,12 +27,15 @@ namespace KailashEngine.Render
         private UniformBuffer _ubo_game_config;
 
         // Render FXs
+        private List<RenderEffect> _effects;
+
         private fx_Quad _fxQuad;
         private fx_Test _fxTest;
         private fx_Crosshair _fxCrosshair;
         private fx_Special _fxSpecial;
         private fx_Final _fxFinal;
         private fx_gBuffer _fxGBuffer;
+        private fx_SkyBox _fxSkyBox;
         private fx_HDR _fxHDR;
         private fx_Lens _fxLens;
 
@@ -66,7 +69,8 @@ namespace KailashEngine.Render
             _fxCrosshair = new fx_Crosshair(pLoader, tLoader, "crosshair/", _resolution);
             _fxSpecial = new fx_Special(pLoader, "special/", _resolution);
             _fxFinal = new fx_Final(pLoader, "final/", _resolution);
-            _fxGBuffer = new fx_gBuffer(pLoader, "gBuffer/", _resolution);
+            _fxGBuffer = new fx_gBuffer(pLoader, tLoader, "gBuffer/", _resolution);
+            _fxSkyBox = new fx_SkyBox(pLoader, tLoader, "skybox/", _resolution);
             _fxHDR = new fx_HDR(pLoader, "hdr/", _resolution);
             _fxLens = new fx_Lens(pLoader, tLoader, "lens/", _resolution);
         }
@@ -98,6 +102,7 @@ namespace KailashEngine.Render
             _fxSpecial.load();
             _fxFinal.load();
             _fxGBuffer.load();
+            _fxSkyBox.load();
             _fxHDR.load();
             _fxLens.load();
         }
@@ -169,15 +174,19 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             GL.Disable(EnableCap.DepthTest);
 
+            
+
 
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
-
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
+
+
+            _fxSkyBox.render(_fxQuad, _fxFinal.fFinalScene);
 
 
 
@@ -202,7 +211,7 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if(_enable_debug_views)
             {
-                _fxQuad.render_Texture(_fxLens.iSpace.texture, 1, 0.25f, 3);
+                _fxQuad.render_Texture(_fxSkyBox.iSkyBox.texture, 1, 0.25f, 3);
                 _fxQuad.render_Texture(_fxLens.tBloom, 0.25f, 2);
                 _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);

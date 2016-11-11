@@ -35,6 +35,19 @@ namespace KailashEngine.Render
             return temp_image;
         }
 
+        public Image createImage(string[] files, TextureTarget texture_target, TextureWrapMode wrap_mode, bool use_srgb)
+        {
+            List<string> filepaths = new List<string>();
+            foreach (string file in files)
+            {
+                filepaths.Add(_path_static_textures_base + file);
+            }
+            Image temp_image = new Image(filepaths.ToArray(), use_srgb, texture_target, wrap_mode, true, true);
+            temp_image.load();
+
+            filepaths.Clear();
+            return temp_image;
+        }
 
     }
 }

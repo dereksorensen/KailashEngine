@@ -472,6 +472,7 @@
     <Compile Include="Physics\PhysicsWorld.cs" />
     <Compile Include="Physics\RigidBodyObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Render\FX\fx_SkyBox.cs" />
     <Compile Include="Render\FX\fx_Lens.cs" />
     <Compile Include="Render\FX\fx_Crosshair.cs" />
     <Compile Include="Render\FX\fx_Special.cs" />
@@ -528,6 +529,7 @@
     <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
     <None Include="Render\Shader\glsl\common\render_Texture1D.frag" />
+    <None Include="Render\Shader\glsl\common\render_TextureCube.vert" />
     <None Include="Render\Shader\glsl\common\render_Texture3D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
@@ -548,6 +550,7 @@
     <None Include="Render\Shader\glsl\lens\lens_Blend.frag" />
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
+    <None Include="Render\Shader\glsl\skybox\skybox_Render.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurGuass.frag" />

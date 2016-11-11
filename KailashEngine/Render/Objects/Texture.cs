@@ -185,6 +185,12 @@ namespace KailashEngine.Render.Objects
             GL.GenerateTextureMipmap(_id);
         }
 
+
+
+        //------------------------------------------------------
+        // Loading
+        //------------------------------------------------------
+
         private void setTextureParameters()
         {
 
@@ -221,10 +227,6 @@ namespace KailashEngine.Render.Objects
                 GL.TexParameter(_target, (TextureParameterName)All.TextureMaxAnisotropyExt, _max_anisotropy);
             }
         }
-
-        //------------------------------------------------------
-        // Loading
-        //------------------------------------------------------
 
         public void load()
         {
@@ -265,7 +267,6 @@ namespace KailashEngine.Render.Objects
             setTextureParameters();
 
         }
-
 
         public void load(IntPtr[] data)
         {
@@ -309,14 +310,9 @@ namespace KailashEngine.Render.Objects
 
 
 
-
-
         //------------------------------------------------------
         // Binding
         //------------------------------------------------------
-
-
-
 
         public void bind(int texture_uniform, int index)
         {
@@ -327,13 +323,18 @@ namespace KailashEngine.Render.Objects
 
         public void bindImageUnit(int texture_uniform, int index, TextureAccess access)
         {
+            bindImageUnit(texture_uniform, index, access, 0);
+        }
+
+        public void bindImageUnit(int texture_uniform, int index, TextureAccess access, int layer)
+        {
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             GL.BindImageTexture(
                 index,
                 _id,
                 0,
                 false,
-                0,
+                layer,
                 access,
                 (SizedInternalFormat)_pif);
             GL.Uniform1(texture_uniform, index);

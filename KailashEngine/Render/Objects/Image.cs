@@ -12,12 +12,6 @@ namespace KailashEngine.Render.Objects
     class Image
     {
 
-        private string _filename;
-        public string filename
-        {
-            get { return _filename; }
-            set { _filename = value; }
-        }
 
         private struct ImageData
         {
@@ -43,94 +37,14 @@ namespace KailashEngine.Render.Objects
         // Constructor
         //------------------------------------------------------
         public Image(string filename, bool use_srgb)
-            : this(filename, use_srgb, TextureTarget.Texture2D, TextureWrapMode.Repeat)
-        { }
-
-        public Image(string filename, bool use_srgb, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
-            : this(filename, use_srgb, TextureTarget.Texture2D, wrap_mode)
+            : this(new string[] { filename }, use_srgb, TextureTarget.Texture2D, TextureWrapMode.Repeat, true, true)
         { }
 
         public Image(string filename, bool use_srgb, TextureTarget texture_target = TextureTarget.Texture2D, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
-        {
-            _image_data_list = new List<ImageData>();
+            : this(new string[] { filename }, use_srgb, texture_target, wrap_mode, true, true)
+        { }
 
-            _filename = filename.Replace("%20", " ");
-
-            if (File.Exists(_filename))
-            {
-                ImageData image_data = new ImageData();
-
-                image_data.bitmap = new System.Drawing.Bitmap(_filename);
-                
-                int texture_width = image_data.bitmap.Width;
-                int texture_height = image_data.bitmap.Height;
-
-                image_data.bitmap_data = image_data.bitmap.LockBits(
-                    new System.Drawing.Rectangle(0, 0, texture_width, texture_height),
-                    System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                    image_data.bitmap.PixelFormat
-                    );
-
-                // Add image data to list so we can load it into textures later
-                _image_data_list.Add(image_data);
-
-                PixelInternalFormat pif;
-                PixelFormat pf;
-                PixelType pt;
-
-                switch (image_data.bitmap.PixelFormat)
-                {
-                    case System.Drawing.Imaging.PixelFormat.Format8bppIndexed: // misses glColorTable setup
-                        pif = PixelInternalFormat.Rgb8;
-                        pf = PixelFormat.ColorIndex;
-                        pt = PixelType.Bitmap;
-                        break;
-                    case System.Drawing.Imaging.PixelFormat.Format16bppArgb1555:
-                    case System.Drawing.Imaging.PixelFormat.Format16bppRgb555: // does not work
-                        pif = PixelInternalFormat.Rgb5A1;
-                        pf = PixelFormat.Bgr;
-                        pt = PixelType.UnsignedShort5551Ext;
-                        break;
-                    //case System.Drawing.Imaging.PixelFormat.Format16bppRgb565:
-                    //    pif = OpenTK.Graphics.OpenGL.PixelInternalFormat.R5G6B5IccSgix;
-                    //    pf = OpenTK.Graphics.OpenGL.PixelFormat.R5G6B5IccSgix;
-                    //    pt = OpenTK.Graphics.OpenGL.PixelType.UnsignedByte;
-                    //    break;
-                    case System.Drawing.Imaging.PixelFormat.Format24bppRgb: // works
-                        pif = PixelInternalFormat.Rgb8;
-                        pf = PixelFormat.Bgr;
-                        pt = PixelType.UnsignedByte;
-                        break;
-                    case System.Drawing.Imaging.PixelFormat.Format32bppRgb: // has alpha too? wtf?
-                    case System.Drawing.Imaging.PixelFormat.Canonical:
-                    case System.Drawing.Imaging.PixelFormat.Format32bppArgb: // works
-                        pif = PixelInternalFormat.Rgba;
-                        pf = PixelFormat.Bgra;
-                        pt = PixelType.UnsignedByte;
-                        break;
-                    default:
-                        throw new ArgumentException(Debug.DebugHelper.format("[ ERROR ] Unsupported Pixel Format on " + Path.GetFileName(_filename), image_data.bitmap.PixelFormat.ToString()));
-
-                }
-
-                if (use_srgb) pif = PixelInternalFormat.Srgb;
-
-                // Load new texture
-                _texture = new Texture(
-                    texture_target,
-                    texture_width, texture_height, 0,
-                    true, true,
-                    pif, pf, pt,
-                    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, wrap_mode);
-
-            }
-            else
-            {
-                Debug.DebugHelper.logError("Texture Not Found", _filename);
-            }
-        }
-
-        public Image(string[] filenames, bool use_srgb, TextureTarget texture_target = TextureTarget.Texture2D, TextureWrapMode wrap_mode = TextureWrapMode.Repeat)
+        public Image(string[] filenames, bool use_srgb, TextureTarget texture_target, TextureWrapMode wrap_mode, bool enable_mipmap, bool enable_aniso)
         {
             _image_data_list = new List<ImageData>();
 
@@ -143,74 +57,41 @@ namespace KailashEngine.Render.Objects
 
             foreach (string file in filenames)
             {
-                _filename = file.Replace("%20", " ");
-
-                if (File.Exists(_filename))
+                string filename = file.Replace("%20", " ");
+                if (File.Exists(filename))
                 {
-                    ImageData image_data = new ImageData();
-
-                    image_data.bitmap = new System.Drawing.Bitmap(_filename);
-
-                    texture_width = image_data.bitmap.Width;
-                    texture_height = image_data.bitmap.Height;
-
-                    image_data.bitmap_data = image_data.bitmap.LockBits(
-                        new System.Drawing.Rectangle(0, 0, texture_width, texture_height),
-                        System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                        image_data.bitmap.PixelFormat
-                        );
-
-                    // Add image data to list so we can load it into textures later
-                    _image_data_list.Add(image_data);
-
-
-
-                    switch (image_data.bitmap.PixelFormat)
+                    try
                     {
-                        case System.Drawing.Imaging.PixelFormat.Format8bppIndexed: // misses glColorTable setup
-                            pif = PixelInternalFormat.Rgb8;
-                            pf = PixelFormat.ColorIndex;
-                            pt = PixelType.Bitmap;
-                            break;
-                        case System.Drawing.Imaging.PixelFormat.Format16bppArgb1555:
-                        case System.Drawing.Imaging.PixelFormat.Format16bppRgb555: // does not work
-                            pif = PixelInternalFormat.Rgb5A1;
-                            pf = PixelFormat.Bgr;
-                            pt = PixelType.UnsignedShort5551Ext;
-                            break;
-                        //case System.Drawing.Imaging.PixelFormat.Format16bppRgb565:
-                        //    pif = OpenTK.Graphics.OpenGL.PixelInternalFormat.R5G6B5IccSgix;
-                        //    pf = OpenTK.Graphics.OpenGL.PixelFormat.R5G6B5IccSgix;
-                        //    pt = OpenTK.Graphics.OpenGL.PixelType.UnsignedByte;
-                        //    break;
-                        case System.Drawing.Imaging.PixelFormat.Format24bppRgb: // works
-                            pif = PixelInternalFormat.Rgb8;
-                            pf = PixelFormat.Bgr;
-                            pt = PixelType.UnsignedByte;
-                            break;
-                        case System.Drawing.Imaging.PixelFormat.Format32bppRgb: // has alpha too? wtf?
-                        case System.Drawing.Imaging.PixelFormat.Canonical:
-                        case System.Drawing.Imaging.PixelFormat.Format32bppArgb: // works
-                            pif = PixelInternalFormat.Rgba;
-                            pf = PixelFormat.Bgra;
-                            pt = PixelType.UnsignedByte;
-                            break;
-                        default:
-                            throw new ArgumentException(Debug.DebugHelper.format("[ ERROR ] Unsupported Pixel Format on " + Path.GetFileName(_filename), image_data.bitmap.PixelFormat.ToString()));
+                        // Create a new image data struct and load bitmap data into it
+                        ImageData image_data = new ImageData();
 
+                        image_data.bitmap = new System.Drawing.Bitmap(filename);
+
+                        texture_width = image_data.bitmap.Width;
+                        texture_height = image_data.bitmap.Height;
+
+                        image_data.bitmap_data = image_data.bitmap.LockBits(
+                            new System.Drawing.Rectangle(0, 0, texture_width, texture_height),
+                            System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                            image_data.bitmap.PixelFormat);
+
+
+                        // Add image data to list so we can load it into textures later
+                        _image_data_list.Add(image_data);
+
+                        // Get the texture format from bitmap pixel format
+                        getImageFormat(image_data.bitmap.PixelFormat, ref pif, ref pf, ref pt);
                     }
-
-
+                    catch (Exception e)
+                    {
+                        Debug.DebugHelper.logError("[ ERROR ] Unable to load Image: ", filename + "\n" + e.Message);
+                    }
                 }
                 else
                 {
-                    Debug.DebugHelper.logError("Texture Not Found", _filename);
+                    Debug.DebugHelper.logError("Texture Not Found", filename);
                 }
-
-
-
             }
-
 
             if (use_srgb) pif = PixelInternalFormat.Srgb;
 
@@ -218,14 +99,56 @@ namespace KailashEngine.Render.Objects
             _texture = new Texture(
                 texture_target,
                 texture_width, texture_height, filenames.Length,
-                false, false,
+                true, true,
                 pif, pf, pt,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, wrap_mode);
         }
 
 
         //------------------------------------------------------
-        // Main Methods
+        // Helpers
+        //------------------------------------------------------
+
+        private void getImageFormat(System.Drawing.Imaging.PixelFormat bitmap_format, ref PixelInternalFormat pif, ref PixelFormat pf, ref PixelType pt)
+        {
+            switch (bitmap_format)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed: // misses glColorTable setup
+                    pif = PixelInternalFormat.Rgb8;
+                    pf = PixelFormat.ColorIndex;
+                    pt = PixelType.Bitmap;
+                    break;
+                case System.Drawing.Imaging.PixelFormat.Format16bppArgb1555:
+                case System.Drawing.Imaging.PixelFormat.Format16bppRgb555: // does not work
+                    pif = PixelInternalFormat.Rgb5A1;
+                    pf = PixelFormat.Bgr;
+                    pt = PixelType.UnsignedShort5551Ext;
+                    break;
+                //case System.Drawing.Imaging.PixelFormat.Format16bppRgb565:
+                //    pif = OpenTK.Graphics.OpenGL.PixelInternalFormat.R5G6B5IccSgix;
+                //    pf = OpenTK.Graphics.OpenGL.PixelFormat.R5G6B5IccSgix;
+                //    pt = OpenTK.Graphics.OpenGL.PixelType.UnsignedByte;
+                //    break;
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb: // works
+                    pif = PixelInternalFormat.Rgb8;
+                    pf = PixelFormat.Bgr;
+                    pt = PixelType.UnsignedByte;
+                    break;
+                case System.Drawing.Imaging.PixelFormat.Format32bppRgb: // has alpha too? wtf?
+                case System.Drawing.Imaging.PixelFormat.Canonical:
+                case System.Drawing.Imaging.PixelFormat.Format32bppArgb: // works
+                    pif = PixelInternalFormat.Rgba;
+                    pf = PixelFormat.Bgra;
+                    pt = PixelType.UnsignedByte;
+                    break;
+                default:
+                    throw new Exception("Unsupported Pixel Format: " + bitmap_format.ToString());
+            }
+        }
+
+
+        //------------------------------------------------------
+        // Loading
         //------------------------------------------------------
 
         public void load()
@@ -248,8 +171,14 @@ namespace KailashEngine.Render.Objects
                     data.bitmap.Dispose();
                 }
             }
-            
+
+            _image_data_list.Clear();
         }
+
+
+        //------------------------------------------------------
+        // Binding
+        //------------------------------------------------------
 
         public void bind(int texture_uniform, int index)
         {

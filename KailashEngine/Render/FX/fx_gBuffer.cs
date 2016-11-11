@@ -30,6 +30,8 @@ namespace KailashEngine.Render.FX
         private FrameBuffer _fGBuffer;
 
         // Textures
+        
+
         private Texture _tDepthStencil;
         public Texture tDepthStencil
         {
@@ -68,8 +70,8 @@ namespace KailashEngine.Render.FX
 
 
 
-        public fx_gBuffer(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
-            : base(pLoader, glsl_effect_path, full_resolution)
+        public fx_gBuffer(ProgramLoader pLoader, StaticImageLoader tLoader, string glsl_effect_path, Resolution full_resolution)
+            : base(pLoader, tLoader, glsl_effect_path, full_resolution)
         { }
 
 
