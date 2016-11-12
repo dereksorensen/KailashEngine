@@ -27,7 +27,7 @@ void main()
 	vec4 bloom = texture(sampler2, v_TexCoord);
 	bloom += bloom * lens_dirt;
 
-	vec4 flare = texture(sampler3, v_TexCoord) * 1.0;
+	vec4 flare = texture(sampler3, v_TexCoord) * 0.4;
 	flare += flare * lens_star;
 
 	color = bloom + flare;

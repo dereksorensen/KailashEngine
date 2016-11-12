@@ -9,9 +9,18 @@ namespace KailashEngine.Animation
 {
     class Timer
     {
-        private Stopwatch _stopwatch;
+        protected Stopwatch _stopwatch;
 
-        private bool _paused;
+        protected bool _paused;
+
+
+        public float minutes
+        {
+            get
+            {
+                return _stopwatch.ElapsedMilliseconds / 1000.0f / 60.0f;
+            }
+        }
 
         public float seconds
         {
@@ -29,12 +38,22 @@ namespace KailashEngine.Animation
             }
         }
 
+
+        //------------------------------------------------------
+        // Constructor
+        //------------------------------------------------------
+
         public Timer()
         {
             _stopwatch = new Stopwatch();
             _paused = true;
         }
 
+
+
+        //------------------------------------------------------
+        // Methods
+        //------------------------------------------------------
 
         public void start()
         {

@@ -34,6 +34,12 @@ namespace KailashEngine.Client
             get { return _animation_timer; }
         }
 
+        private CircadianTimer _circadian_timer;
+        public CircadianTimer circadian_timer
+        {
+            get { return _circadian_timer; }
+        }
+
 
 
         // Master Lists
@@ -57,6 +63,9 @@ namespace KailashEngine.Client
             get { return _flashlight; }
         }
 
+        //------------------------------------------------------
+        // Constructor
+        //------------------------------------------------------
 
         public Scene(string path_scene)
         {
@@ -68,6 +77,7 @@ namespace KailashEngine.Client
             _lights = new List<Light>();
 
             _animation_timer = new Timer();
+            _circadian_timer = new CircadianTimer(11.0f, 3.0f);
         }
 
 
@@ -119,7 +129,8 @@ namespace KailashEngine.Client
             load_Flashlight();
 
 
-            animation_timer.start();
+            _animation_timer.start();
+            _circadian_timer.start();
         }
 
 
@@ -127,10 +138,22 @@ namespace KailashEngine.Client
         // Render Scene
         //------------------------------------------------------
 
+        public void pauseAnimation()
+        {
+            _animation_timer.pause();
+            _circadian_timer.pause();
+        }
+
+        public void resetAnimation()
+        {
+            _animation_timer.restart();
+            _circadian_timer.restart();
+        }
+
         public void render(Program program)
         {
             // Draw Scene
-            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, animation_timer.seconds);
+            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, _animation_timer.seconds);
             WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
 
         }

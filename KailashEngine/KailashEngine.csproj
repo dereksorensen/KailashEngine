@@ -99,6 +99,7 @@
     <Compile Include="Animation\AnimationHelper.cs" />
     <Compile Include="Animation\ObjectAnimator.cs" />
     <Compile Include="Animation\SkeletonAnimator.cs" />
+    <Compile Include="Animation\CircadianTimer.cs" />
     <Compile Include="Animation\Timer.cs" />
     <Compile Include="Client\Scene.cs" />
     <Compile Include="Debug\DebugWindow.cs" />
@@ -577,6 +578,7 @@
   <ItemGroup>
     <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
+    <Folder Include="External\Spacescape\" />
     <Folder Include="Render\Shader\glsl\special\helpers\" />
     <Folder Include="Render\Shader\glsl\test\" />
     <Folder Include="Resources\SaveData\" />

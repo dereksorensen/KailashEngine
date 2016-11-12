@@ -171,7 +171,7 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_DeferredShading(scene);
 
 
-            _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer);
+            _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer, scene.circadian_timer.position);
 
 
 
@@ -215,7 +215,6 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if(_enable_debug_views)
             {
-                _fxQuad.render_Texture(_fxGBuffer.tNormal_Depth, 0.25f, 1, 0, 3);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 

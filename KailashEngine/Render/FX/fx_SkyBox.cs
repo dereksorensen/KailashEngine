@@ -41,6 +41,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "skybox_Render.frag", null)
             });
             _pSkyBox.enable_Samplers(1);
+            _pSkyBox.addUniform("circadian_position");
         }
 
         protected override void load_Buffers()
@@ -74,7 +75,7 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public int render(fx_Quad quad, FrameBuffer scene_fbo)
+        public void render(fx_Quad quad, FrameBuffer scene_fbo, Vector3 circadian_position)
         {
             // Write into gBuffer's frame buffer attachemnts
             scene_fbo.bind(new DrawBuffersEnum[]
@@ -90,10 +91,10 @@ namespace KailashEngine.Render.FX
             _pSkyBox.bind();
 
             _iSkyBox.bind(_pSkyBox.getSamplerUniform(0), 0);
+            GL.Uniform3(_pSkyBox.getUniform("circadian_position"), Vector3.Normalize(circadian_position));
 
             quad.renderFullQuad();
 
-            return 0;
         }
     }
 }

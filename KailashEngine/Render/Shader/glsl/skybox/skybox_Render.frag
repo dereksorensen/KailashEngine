@@ -14,10 +14,13 @@ layout(std140, binding = 0) uniform gameConfig
 in vec3 ray;
 
 uniform samplerCube sampler0;		// SkyBox
+uniform vec3 circadian_position;
 
 void main()
 {
-	diffuse_id = texture(sampler0, ray);
+	vec3 skybox = texture(sampler0, reflect(ray, circadian_position)).xyz;
+
+	diffuse_id = vec4(skybox, 1.0);
 	normal_depth = vec4(vec3(0.0), near_far.y);
 	gl_FragDepth = 1.0;
 }

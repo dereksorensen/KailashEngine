@@ -152,11 +152,11 @@ namespace KailashEngine
                     break;
                 case Key.P:
                     _physics_driver.pause();
-                    _game.scene.animation_timer.pause();
+                    _game.scene.pauseAnimation();
                     break;
                 case Key.R:
                     _physics_driver.reset();
-                    _game.scene.animation_timer.restart();
+                    _game.scene.resetAnimation();
                     break;
                 case Key.X:
                     _physics_driver.throwObject(EngineHelper.otk2bullet(getWorldSpaceRay()));
