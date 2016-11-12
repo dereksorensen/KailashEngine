@@ -58,6 +58,7 @@ namespace KailashEngine.Render
             _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 1, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
                 EngineHelper.size.vec3,
                 EngineHelper.size.vec3
             });
@@ -137,12 +138,13 @@ namespace KailashEngine.Render
             _ubo_game_config.update(1, target_fps);
         }
 
-        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Vector3 position, Vector3 look)
+        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Matrix4 inv_view_perspective, Vector3 position, Vector3 look)
         {
             _ubo_camera.update(0, view);
             _ubo_camera.update(1, perspective);
-            _ubo_camera.update(2, position);
-            _ubo_camera.update(3, look);
+            _ubo_camera.update(2, inv_view_perspective);
+            _ubo_camera.update(3, position);
+            _ubo_camera.update(4, look);
         }
 
         public void handle_MouseState(bool locked)
@@ -169,15 +171,19 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_DeferredShading(scene);
 
 
+            _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer);
+
+
+
             //------------------------------------------------------
             // Post-processing
             //------------------------------------------------------
             GL.Disable(EnableCap.DepthTest);
 
-            
 
 
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
+
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
@@ -185,8 +191,6 @@ namespace KailashEngine.Render
 
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
-
-            _fxSkyBox.render(_fxQuad, _fxFinal.fFinalScene);
 
 
 
@@ -211,9 +215,7 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if(_enable_debug_views)
             {
-                _fxQuad.render_Texture(_fxSkyBox.iSkyBox.texture, 1, 0.25f, 3);
-                _fxQuad.render_Texture(_fxLens.tBloom, 0.25f, 2);
-                _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
+                _fxQuad.render_Texture(_fxGBuffer.tNormal_Depth, 0.25f, 1, 0, 3);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 

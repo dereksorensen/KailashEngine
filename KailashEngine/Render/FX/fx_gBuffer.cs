@@ -27,7 +27,7 @@ namespace KailashEngine.Render.FX
         private Program _pAccumulation;
 
         // Frame Buffers
-        private FrameBuffer _fGBuffer;
+        public FrameBuffer _fGBuffer;
 
         // Textures
         
@@ -222,7 +222,7 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
-
+            
 
             _pGeometry.bind();
             scene.render(_pGeometry);

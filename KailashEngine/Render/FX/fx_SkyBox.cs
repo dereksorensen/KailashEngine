@@ -20,7 +20,6 @@ namespace KailashEngine.Render.FX
         private Program _pSkyBox;
 
         // Frame Buffers
-        private FrameBuffer _fSkyBox;
 
         // Textures
         private Image _iSkyBox;
@@ -75,16 +74,26 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void render(fx_Quad quad, FrameBuffer scene_fbo)
+        public int render(fx_Quad quad, FrameBuffer scene_fbo)
         {
-            scene_fbo.bind(DrawBuffersEnum.ColorAttachment0);
+            // Write into gBuffer's frame buffer attachemnts
+            scene_fbo.bind(new DrawBuffersEnum[]
+            {
+                DrawBuffersEnum.ColorAttachment0,
+                DrawBuffersEnum.ColorAttachment1
+            });
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
 
             _pSkyBox.bind();
 
             _iSkyBox.bind(_pSkyBox.getSamplerUniform(0), 0);
 
-            quad.render();
+            quad.renderFullQuad();
+
+            return 0;
         }
     }
 }

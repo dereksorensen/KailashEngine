@@ -20,6 +20,7 @@ layout(std140, binding = 1) uniform cameraSpatials
 {
 	mat4 view;
 	mat4 perspective;
+	mat4 inv_view_perspective;
 	vec3 cam_position;
 	vec3 cam_look;
 };

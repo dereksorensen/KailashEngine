@@ -3,7 +3,7 @@
 out vec4 color;
 in vec2 v_TexCoord;
 
-uniform sampler3D sampler0;
+uniform sampler2DArray sampler0;
 uniform int layer;
 
 void main()

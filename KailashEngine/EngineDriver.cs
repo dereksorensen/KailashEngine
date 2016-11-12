@@ -403,6 +403,7 @@ namespace KailashEngine
             _render_driver.updateUBO_Camera(
                 _game.player.camera.spatial.transformation,
                 _game.player.camera.spatial.perspective,
+                Matrix4.Invert(_game.player.camera.spatial.rotation_matrix * _game.player.camera.spatial.perspective),
                 _game.player.camera.spatial.position,
                 _game.player.camera.spatial.look);
             _render_driver.handle_MouseState(_game.mouse.locked);

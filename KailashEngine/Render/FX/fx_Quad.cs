@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Render.Shader;
@@ -20,7 +21,9 @@ namespace KailashEngine.Render.FX
         // Programs
         private Program _pRenderTexture1D;
         private Program _pRenderTexture2D;
+        private Program _pRenderTexture2DArray;
         private Program _pRenderTexture3D;
+        private Program _pRenderTextureCube;
 
 
         public fx_Quad(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
@@ -40,6 +43,14 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture2D.frag", null)
             });
             _pRenderTexture2D.enable_Samplers(1);
+            _pRenderTexture2D.addUniform("channel");
+
+            _pRenderTexture2DArray = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture2DArray.frag", null)
+            });
+            _pRenderTexture2DArray.enable_Samplers(1);
+            _pRenderTexture2DArray.addUniform("layer");
 
             _pRenderTexture3D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -47,6 +58,13 @@ namespace KailashEngine.Render.FX
             });
             _pRenderTexture3D.enable_Samplers(1);
             _pRenderTexture3D.addUniform("layer");
+
+            _pRenderTextureCube = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_TextureCube.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_TextureCube.frag", null)
+            });
+            _pRenderTextureCube.enable_Samplers(1);
         }
 
         protected override void load_Buffers()
@@ -106,6 +124,14 @@ namespace KailashEngine.Render.FX
             GL.BindVertexArray(0);
         }
 
+        // Renders full quad instead of hacked triangles
+        public void renderFullQuad()
+        {
+            GL.BindVertexArray(_vao);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            GL.BindVertexArray(0);
+        }
+
         public void renderBlend()
         {
             GL.Enable(EnableCap.Blend);
@@ -122,22 +148,19 @@ namespace KailashEngine.Render.FX
         // Render Textures
         //------------------------------------------------------
 
-        public void render_Texture(Texture texture)
+
+
+        public void render_Texture(Texture texture, int channel = -1)
         {
-            render_Texture(texture, 1, 0);
+            render_Texture(texture, 1, 0, 0, channel);
         }
 
-        public void render_Texture(Texture texture, int layer)
+        public void render_Texture(Texture texture, int layer = 0, int channel = -1)
         {
-            render_Texture(texture, layer, 1, 0);
+            render_Texture(texture, 1, 0, layer, channel);
         }
 
-        public void render_Texture(Texture texture, float size, int position)
-        {
-            render_Texture(texture, 0, size, position);
-        }
-
-        public void render_Texture(Texture texture, int layer, float size, int position)
+        public void render_Texture(Texture texture, float size, int position, int layer = 0, int channel = -1)
         {
             // Calculate Quad Positioning
             int size_x = (int)(_resolution.W * size);
@@ -151,7 +174,11 @@ namespace KailashEngine.Render.FX
             
             GL.Viewport(pos_x, pos_y, size_x, size_y);
 
-            switch(texture.target)
+            // Clamp requested layer to texture's depth
+            layer = MathHelper.Clamp(layer, 0, texture.depth);
+            channel = MathHelper.Clamp(channel, -1, 3);
+
+            switch (texture.target)
             {
                 case TextureTarget.Texture1D:
                     _pRenderTexture1D.bind();
@@ -160,14 +187,23 @@ namespace KailashEngine.Render.FX
                 case TextureTarget.Texture2D:
                     _pRenderTexture2D.bind();
                     texture.bind(_pRenderTexture2D.getSamplerUniform(0), 0);
+                    GL.Uniform1(_pRenderTexture2D.getUniform("channel"), channel);
                     break;
                 case TextureTarget.Texture3D:
-                case TextureTarget.Texture2DArray:
-                case TextureTarget.TextureCubeMap:
                     _pRenderTexture3D.bind();
                     GL.Uniform1(_pRenderTexture3D.getUniform("layer"), layer);
                     texture.bind(_pRenderTexture3D.getSamplerUniform(0), 0);
                     break;
+                case TextureTarget.Texture2DArray:
+                    _pRenderTexture2DArray.bind();
+                    GL.Uniform1(_pRenderTexture2DArray.getUniform("layer"), layer);
+                    texture.bind(_pRenderTexture2DArray.getSamplerUniform(0), 0);
+                    break;
+                case TextureTarget.TextureCubeMap:
+                    _pRenderTextureCube.bind();
+                    texture.bind(_pRenderTextureCube.getSamplerUniform(0), 0);
+                    renderFullQuad();
+                    return;
             }
 
 
