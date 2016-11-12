@@ -38,6 +38,7 @@ namespace KailashEngine.Render
         private fx_SkyBox _fxSkyBox;
         private fx_HDR _fxHDR;
         private fx_Lens _fxLens;
+        private fx_DepthOfField _fxDepthOfField;
 
 
         public RenderDriver(
@@ -63,23 +64,43 @@ namespace KailashEngine.Render
                 EngineHelper.size.vec3
             });
 
+            // Render FX List
+            _effects = new List<RenderEffect>();
 
             // Render FXs
-            _fxQuad = new fx_Quad(pLoader, "common/", _resolution);
-            _fxTest = new fx_Test(pLoader, "test/", _resolution);
-            _fxCrosshair = new fx_Crosshair(pLoader, tLoader, "crosshair/", _resolution);
-            _fxSpecial = new fx_Special(pLoader, "special/", _resolution);
-            _fxFinal = new fx_Final(pLoader, "final/", _resolution);
-            _fxGBuffer = new fx_gBuffer(pLoader, tLoader, "gBuffer/", _resolution);
-            _fxSkyBox = new fx_SkyBox(pLoader, tLoader, "skybox/", _resolution);
-            _fxHDR = new fx_HDR(pLoader, "hdr/", _resolution);
-            _fxLens = new fx_Lens(pLoader, tLoader, "lens/", _resolution);
+            _fxQuad = createEffect<fx_Quad>(pLoader, "common/");
+            _fxTest = createEffect<fx_Test>(pLoader, "test/");
+            _fxCrosshair = createEffect<fx_Crosshair>(pLoader, tLoader, "crosshair/");
+            _fxSpecial = createEffect<fx_Special>(pLoader, "special/");
+            _fxFinal = createEffect<fx_Final>(pLoader, "final/");
+            _fxGBuffer = createEffect<fx_gBuffer>(pLoader, tLoader, "gBuffer/");
+            _fxSkyBox = createEffect<fx_SkyBox>(pLoader, tLoader, "skybox/");
+            _fxHDR = createEffect<fx_HDR>(pLoader, "hdr/");
+            _fxLens = createEffect<fx_Lens>(pLoader, tLoader, "lens/");
+            _fxDepthOfField = createEffect<fx_DepthOfField>(pLoader, tLoader, "dof/");
         }
+
+
 
 
         //------------------------------------------------------
         // Loading
         //------------------------------------------------------
+
+        // Factory workers to create effects
+        private T createEffect<T>(ProgramLoader pLoader, string resource_folder_name) where T : RenderEffect
+        {
+            T temp_effect = (T)Activator.CreateInstance(typeof(T), pLoader, resource_folder_name, _resolution);
+            _effects.Add(temp_effect);
+            return temp_effect;
+        }
+        private T createEffect<T>(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name) where T : RenderEffect
+        {
+            T temp_effect = (T)Activator.CreateInstance(typeof(T), pLoader, tLoader, resource_folder_name, _resolution);
+            _effects.Add(temp_effect);
+            return temp_effect;
+        }
+
 
         private void load_DefaultGL()
         {
@@ -98,14 +119,10 @@ namespace KailashEngine.Render
 
         private void load_FX()
         {
-            _fxQuad.load();
-            _fxCrosshair.load();
-            _fxSpecial.load();
-            _fxFinal.load();
-            _fxGBuffer.load();
-            _fxSkyBox.load();
-            _fxHDR.load();
-            _fxLens.load();
+            foreach(RenderEffect effect in _effects)
+            {
+                effect.load();
+            }
         }
 
         public void load()

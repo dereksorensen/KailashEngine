@@ -473,6 +473,7 @@
     <Compile Include="Physics\PhysicsWorld.cs" />
     <Compile Include="Physics\RigidBodyObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Render\FX\fx_DepthOfField.cs" />
     <Compile Include="Render\FX\fx_SkyBox.cs" />
     <Compile Include="Render\FX\fx_Lens.cs" />
     <Compile Include="Render\FX\fx_Crosshair.cs" />
@@ -538,6 +539,7 @@
     <None Include="Render\Shader\glsl\common\render_TextureCube.frag" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.frag" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.vert" />
+    <None Include="Render\Shader\glsl\dof\dof_AutoFocus.comp" />
     <None Include="Render\Shader\glsl\final\final_Scene.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_POINT.frag" />

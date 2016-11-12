@@ -38,7 +38,7 @@ namespace KailashEngine.World.Lights
                     0.0f,
                     -scaler.Z
                 );
-
+            
             // Build full transformation
             transformation = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * transformation.ClearScale();
             _bounding_unique_mesh = new UniqueMesh(id + "-bounds", light_mesh, transformation);
