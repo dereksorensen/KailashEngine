@@ -208,25 +208,26 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
-            special.blur_Guass(quad, 50, _tCOC_Foreground, _fDepthOfField, DrawBuffersEnum.ColorAttachment1, 0.25f);
+            //special.blur_Guass(quad, 50, _tCOC_Foreground, _fDepthOfField, DrawBuffersEnum.ColorAttachment1, 0.25f);
+            //special.blur_MovingAverage(20, _tCOC_Foreground, 0.5f);
 
             //------------------------------------------------------
             // Fix COC
             //------------------------------------------------------
 
-            _fDepthOfField.bind(new DrawBuffersEnum[]
-            {
-                DrawBuffersEnum.ColorAttachment0,
-            });
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, (int)coc_resolution.X, (int)coc_resolution.Y);
+            //_fDepthOfField.bind(new DrawBuffersEnum[]
+            //{
+            //    DrawBuffersEnum.ColorAttachment0,
+            //});
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.Viewport(0, 0, (int)coc_resolution.X, (int)coc_resolution.Y);
 
-            _pCOC_Fix.bind();
+            //_pCOC_Fix.bind();
 
-            _tCOC_Foreground.bind(_pCOC_Fix.getSamplerUniform(0), 0);
-            _tCOC_Foreground_2.bind(_pCOC_Fix.getSamplerUniform(1), 1);
+            //_tCOC_Foreground.bind(_pCOC_Fix.getSamplerUniform(0), 0);
+            //_tCOC_Foreground_2.bind(_pCOC_Fix.getSamplerUniform(1), 1);
 
-            quad.render();
+            //quad.render();
         }
 
 

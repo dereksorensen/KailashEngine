@@ -9,7 +9,7 @@ writeonly uniform image2D sampler1;		// Destination Texture
 
 uniform int flip;
 uniform int kernel;
-uniform float destination_scale;
+uniform vec2 texture_size;
 
 void h_blur()
 {
@@ -17,7 +17,7 @@ void h_blur()
 	int cKernelHalfDist = cKernelSize/2;
 	float recKernelSize = 1.0 / float(cKernelSize);
 
-	vec2 screenSize = vec2(imageSize(sampler1));
+	vec2 screenSize = texture_size;
 	vec2 rec_screenSize = vec2(1.0) / screenSize;
 
 	int y = int(gl_GlobalInvocationID.x);
@@ -50,7 +50,7 @@ void v_blur()
 	int cKernelHalfDist = cKernelSize/2;
 	float recKernelSize = 1.0 / float(cKernelSize);
 
-	vec2 screenSize = vec2(imageSize(sampler1));
+	vec2 screenSize = texture_size;
 	vec2 rec_screenSize = vec2(1.0) / screenSize;
 
 	int y = int(gl_GlobalInvocationID.x);

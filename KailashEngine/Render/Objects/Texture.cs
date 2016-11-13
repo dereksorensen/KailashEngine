@@ -94,7 +94,13 @@ namespace KailashEngine.Render.Objects
             get { return _depth; }
         }
 
-        
+        public Vector3 dimensions
+        {
+            get
+            {
+                return new Vector3(_width, _height, _depth);
+            }
+        }
 
         //------------------------------------------------------
         // Texture Parameters

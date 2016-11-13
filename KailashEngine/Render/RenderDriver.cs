@@ -225,16 +225,16 @@ namespace KailashEngine.Render
             _fxCrosshair.render(scene.animation_timer.seconds);
 
 
-            //_fxSpecial.blur_Streak(_fxQuad, 50, 30.0f, _fxHDR.tBloom);
-
+            _fxSpecial.blur_MovingAverage(20, _fxDepthOfField.tCOC);
 
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
-            if(_enable_debug_views)
+            if (_enable_debug_views)
             {
                 _fxQuad.render_Texture(_fxDepthOfField.tCOC_Foreground_2, 0.25f, 3);
-                _fxQuad.render_Texture(_fxDepthOfField.tCOC_Foreground, 0.25f, 2);
+                _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 2);
+                _fxQuad.render_Texture(_fxDepthOfField.tCOC, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 

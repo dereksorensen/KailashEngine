@@ -54,7 +54,7 @@ namespace KailashEngine.Render.FX
             _pBlur_MovingAverage.enable_Samplers(2);
             _pBlur_MovingAverage.addUniform("flip");
             _pBlur_MovingAverage.addUniform("kernel");
-            _pBlur_MovingAverage.addUniform("destination_scale");
+            _pBlur_MovingAverage.addUniform("texture_size");
 
             _pBlur_Streak = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -255,17 +255,23 @@ namespace KailashEngine.Render.FX
         // Moving Average Blur Functions
         //------------------------------------------------------
 
-        public void blur_MovingAverage(int blur_amount, Texture texture_to_blur, float destination_scale = 1)
+        public void blur_MovingAverage(int blur_amount, Texture texture_to_blur)
         {
-            int thread_group_size = 32;
-
             _pBlur_MovingAverage.bind();
             clearAndBindSpecialFrameBuffer();
 
-            Vector2 texture_to_blur_size = new Vector2(texture_to_blur.width * destination_scale, texture_to_blur.height * destination_scale);
+
+            int thread_group_size = 32;
+            Vector2 num_compute_groups_destination = new Vector2(
+                ((texture_to_blur.width) + thread_group_size - 1) / thread_group_size,
+                ((texture_to_blur.height) + thread_group_size - 1) / thread_group_size);
+            Vector2 num_compute_groups_special = new Vector2(
+                ((texture_to_blur.width) + thread_group_size - 1) / thread_group_size,
+                ((texture_to_blur.height) + thread_group_size - 1) / thread_group_size);
 
 
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("kernel"), blur_amount);         
+            GL.Uniform1(_pBlur_MovingAverage.getUniform("kernel"), blur_amount);
+            GL.Uniform2(_pBlur_MovingAverage.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
 
             //------------------------------------------------------
             // Horizontal - 1
@@ -273,9 +279,8 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pBlur_MovingAverage.getUniform("flip"), 0);
             texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
-
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), destination_scale);
-            GL.DispatchCompute(((int)(texture_to_blur.height * destination_scale) + thread_group_size - 1) / thread_group_size, 1, 1);
+            
+            GL.DispatchCompute((int)num_compute_groups_destination.Y, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -285,9 +290,8 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
-
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), 1.0f);
-            GL.DispatchCompute((_tSpecial.height + thread_group_size - 1) / thread_group_size, 1, 1);
+            
+            GL.DispatchCompute((int)num_compute_groups_special.Y, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -297,9 +301,8 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
-
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), destination_scale);
-            GL.DispatchCompute(((int)(texture_to_blur.height * destination_scale) + thread_group_size - 1) / thread_group_size, 1, 1);
+            
+            GL.DispatchCompute((int)num_compute_groups_destination.Y, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -310,9 +313,8 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pBlur_MovingAverage.getUniform("flip"), 1);
             _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
-
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), 1.0f);
-            GL.DispatchCompute((_tSpecial.width + thread_group_size - 1) / thread_group_size, 1, 1);
+            
+            GL.DispatchCompute((int)num_compute_groups_special.X, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -321,9 +323,8 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             texture_to_blur.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
-
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), destination_scale);
-            GL.DispatchCompute(((int)(texture_to_blur.width * destination_scale) + thread_group_size - 1) / thread_group_size, 1, 1);
+            
+            GL.DispatchCompute((int)num_compute_groups_destination.X, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -333,9 +334,8 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             _tSpecial.bind(_pBlur_MovingAverage.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_MovingAverage.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
-
-            GL.Uniform1(_pBlur_MovingAverage.getUniform("destination_scale"), 1.0f);
-            GL.DispatchCompute((_tSpecial.width + thread_group_size - 1) / thread_group_size, 1, 1);
+            
+            GL.DispatchCompute((int)num_compute_groups_special.X, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
         }
