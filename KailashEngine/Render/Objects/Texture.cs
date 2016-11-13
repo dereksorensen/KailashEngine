@@ -244,7 +244,7 @@ namespace KailashEngine.Render.Objects
                     GL.TexImage1D(_target, 0, _pif, _width, 0, _pf, _pt, data);
                     break;
                 case TextureTarget.Texture2D:
-                    GL.TexImage2D( _target, 0, _pif, _width, _height, 0, _pf, _pt, data);
+                    GL.TexImage2D(_target, 0, _pif, _width, _height, 0, _pf, _pt, data);
                     break;
                 case TextureTarget.Texture2DArray:
                     GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, (IntPtr)0);

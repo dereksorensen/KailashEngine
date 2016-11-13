@@ -528,8 +528,9 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
+    <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
+    <None Include="Render\Shader\glsl\common\helpers\interpolation.include" />
     <None Include="Render\Shader\glsl\common\render_Texture1D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2DArray.frag" />
     <None Include="Render\Shader\glsl\common\render_TextureCube.vert" />
@@ -540,6 +541,8 @@
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.frag" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.vert" />
     <None Include="Render\Shader\glsl\dof\dof_AutoFocus.comp" />
+    <None Include="Render\Shader\glsl\dof\dof_COC_Fix.frag" />
+    <None Include="Render\Shader\glsl\dof\dof_COC.frag" />
     <None Include="Render\Shader\glsl\final\final_Scene.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_POINT.frag" />

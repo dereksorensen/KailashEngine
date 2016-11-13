@@ -3,32 +3,27 @@ layout (local_size_x = 1) in;
 
 layout (std430, binding=0) buffer fd
 {
-	vec2 focusDistance[];
+	vec2 focus_distance[];
 };
 
-layout (size4x32, binding = 1) readonly uniform image2D sampler1;
+uniform sampler2D sampler0;
 
-uniform float linearDepth;
-uniform float focusDelay;
 
-float slerp(float start, float dest, float delay)
-{
-	float start2 = max(start, 0.001);
-    return pow(dest / start2, delay) * start2;
-}
+uniform float focus_delay;
+
 
 void main() 
 {
-	ivec2 imageSize = imageSize(sampler1);
-	ivec2 imageSize_half = imageSize / ivec2(2.0);
+	ivec2 texture_size = textureSize(sampler0, 0);
+	ivec2 texture_size_half = texture_size / ivec2(2);
 
-	float curFocusDistance = imageLoad(sampler1, imageSize_half).a / linearDepth;
-	float oldFocusDistance = focusDistance[0].x;
+	float curFocusDistance = texelFetch(sampler0, texture_size_half, 0).a;
+	float oldFocusDistance = focus_distance[0].x;
 
-    curFocusDistance = slerp(oldFocusDistance, curFocusDistance, focusDelay);
+    curFocusDistance = slerp(oldFocusDistance, curFocusDistance, 0.1);
 	oldFocusDistance = curFocusDistance;
 
-	focusDistance[0] = vec2(oldFocusDistance, curFocusDistance);
+	focus_distance[0] = vec2(oldFocusDistance, curFocusDistance);
 }
 
 

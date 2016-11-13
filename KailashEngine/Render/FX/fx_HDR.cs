@@ -48,13 +48,19 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            string[] autoexposure_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "interpolation.include"
+
+            };
+
             _pLuminosity = _pLoader.createProgram(new ShaderFile[]{
                 new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect  + "hdr_Luminosity.comp", null)
             });
             _pLuminosity.enable_Samplers(2);
 
             _pAutoExposure = _pLoader.createProgram(new ShaderFile[]{
-                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect  + "hdr_AutoExposure.comp", null)
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect  + "hdr_AutoExposure.comp", autoexposure_helpers)
             });
             _pAutoExposure.enable_Samplers(1);
             _pAutoExposure.addUniform("luminosity_lod");
