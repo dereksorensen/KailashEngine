@@ -157,6 +157,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "dof_Bokeh_Extract.frag", null)
             });
             _pBokeh_Extract.enable_Samplers(5);
+            _pBokeh_Extract.addUniform("bokeh_counter");
 
         }
 
@@ -174,8 +175,6 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // COC
             //------------------------------------------------------
-
-
             _tCOC = new Texture(TextureTarget.Texture2D,
                 _resolution_half.W, _resolution_half.H,
                 0, false, false,
@@ -225,7 +224,7 @@ namespace KailashEngine.Render.FX
             _tBokeh_Colors.load();
 
             _tBokeh_Points = new Texture(TextureTarget.Texture2D,
-                _resolution_half.W, _resolution_half.H, 0, 
+                _resolution_half.W, _resolution_half.H, 0,
                 false, false,
                 PixelInternalFormat.Rgb16f, PixelFormat.Rgb, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -450,7 +449,7 @@ namespace KailashEngine.Render.FX
             DrawArraysIndirectCommand temp_bokeh_point_counter = new DrawArraysIndirectCommand();
 
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, _bokeh_indirect_buffer);
-            GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, (IntPtr)0, icmdSize, ref temp_bokeh_point_counter);
+            GL.GetBufferSubData(BufferTarget.DrawIndirectBuffer, (IntPtr)0, icmdSize, ref temp_bokeh_point_counter);
 
             Debug.DebugHelper.logInfo(1, "Bokeh Count", temp_bokeh_point_counter.primCount.ToString());
         }
@@ -461,14 +460,17 @@ namespace KailashEngine.Render.FX
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
-            //scene_texture.bind(_pBokeh_Extract.getSamplerUniform(0), 0);
-            //depth_texture.bind(_pBokeh_Extract.getSamplerUniform(1), 1);
-            //_tCOC_Final.bind(_pBokeh_Extract.getSamplerUniform(2), 2);
+            _pBokeh_Extract.bind();
 
-            //_tBokeh_Positions.bindImageUnit(_pBokeh_Extract.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
-            //_tBokeh_Colors.bindImageUnit(_pBokeh_Extract.getSamplerUniform(4), 4, TextureAccess.WriteOnly);
+            scene_texture.bind(_pBokeh_Extract.getSamplerUniform(0), 0);
+            depth_texture.bind(_pBokeh_Extract.getSamplerUniform(1), 1);
+            _tCOC_Final.bind(_pBokeh_Extract.getSamplerUniform(2), 2);
 
-            //GL.BindBufferRange(BufferRangeTarget.AtomicCounterBuffer, 0, _bokeh_indirect_buffer, (IntPtr)4, (IntPtr)sizeof(uint));
+            _tBokeh_Positions.bindImageUnit(_pBokeh_Extract.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+            _tBokeh_Colors.bindImageUnit(_pBokeh_Extract.getSamplerUniform(4), 4, TextureAccess.WriteOnly);
+
+            GL.BindBufferRange(BufferRangeTarget.AtomicCounterBuffer, 0, _bokeh_indirect_buffer, (IntPtr)4, (IntPtr)sizeof(uint));
+            //GL.Uniform1(_pBokeh_Extract.getUniform("bokeh_counter"), 0);
 
             quad.render();
         }
@@ -487,11 +489,12 @@ namespace KailashEngine.Render.FX
         public void render(fx_Quad quad, fx_Special special, Texture depth_texture, Texture scene_texture)
         {
             autoFocus(depth_texture);
-            //printFocusDistance();
+            ////printFocusDistance();
             genCOC(quad, special, depth_texture);
 
-            //resetBokeh();
-            extractBokeh(quad, depth_texture, scene_texture);
+            resetBokeh();
+            extractBokeh(quad, depth_texture, depth_texture);
+            printBokehCount();
         }
     }
 }

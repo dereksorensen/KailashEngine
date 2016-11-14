@@ -232,7 +232,7 @@ namespace KailashEngine.Render
             if (_enable_debug_views)
             {
                 _fxQuad.render_Texture(_fxDepthOfField.tCOC_Foreground_2, 0.25f, 3);
-                _fxQuad.render_Texture(_fxDepthOfField.tCOC_Foreground, 0.25f, 2);
+                _fxQuad.render_Texture(_fxDepthOfField.tBokeh_Points, 0.25f, 2);
                 _fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }

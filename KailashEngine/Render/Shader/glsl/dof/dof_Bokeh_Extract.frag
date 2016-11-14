@@ -17,7 +17,7 @@ vec3 sampler5x5(vec3 scene)
 	vec3 final = vec3(0.0);
 	vec2 tc;
 	
-	vec2 texture_size = textureSize(sampler0, 0);
+	vec2 texture_size = 1.0 / textureSize(sampler0, 0);
 		
 	final += textureLod(sampler0,(gl_FragCoord.xy+vec2(-1.5f,-1.5f))*texture_size,0).xyz;
 	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( -0.5f,-1.5f))*texture_size,0).xyz;
@@ -42,7 +42,7 @@ vec3 sampler5x5(vec3 scene)
 
 void main()
 {
-	/*
+
 	vec3 scene = texture(sampler0, v_TexCoord).rgb;
 	float depth = texture(sampler1, v_TexCoord).w;
 	float coc = texture(sampler2, v_TexCoord).r;
@@ -60,7 +60,7 @@ void main()
 
 
 	// Copy over scene if not a bokeh point
-	//color = vec4(scene,1.0);
+	color = vec4(scene,1.0);
 	if( diff > lum_threshold && coc > coc_threshold)
 	{
 		int current = int(atomicCounterIncrement(bokeh_counter));
@@ -70,7 +70,7 @@ void main()
 
 		color = vec4(scene/max(coc*5.0,1.0),1.0);
 	}
-	*/
 
-	color = vec4(1.0);
+
+	//color = vec4(1.0);
 }
