@@ -1,5 +1,5 @@
 ﻿
-out vec4 color;
+out vec3 color;
 
 in vec2 v_TexCoord;
 
@@ -17,22 +17,22 @@ vec3 sampler5x5(vec3 scene)
 	vec3 final = vec3(0.0);
 	vec2 tc;
 	
-	vec2 texture_size = 1.0 / textureSize(sampler0, 0);
+	vec2 texture_size = vec2(1.0) / textureSize(sampler0, 0);
 		
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2(-1.5f,-1.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( -0.5f,-1.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( 0.5f,-1.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( 1.5f,-1.5f))*texture_size,0).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2(-1.5f,-1.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( -0.5f,-1.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( 0.5f,-1.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( 1.5f,-1.5f))*texture_size).xyz;
 
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2(-1.5f, 0.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( -0.5f, 0.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( 0.5f, 0.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( 1.5f, 0.5f))*texture_size,0).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2(-1.5f, 0.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( -0.5f, 0.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( 0.5f, 0.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( 1.5f, 0.5f))*texture_size).xyz;
 
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2(-1.5f, 1.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( -0.5f, 1.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( 0.5f, 1.5f))*texture_size,0).xyz;
-	final += textureLod(sampler0,(gl_FragCoord.xy+vec2( 1.5f, 1.5f))*texture_size,0).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2(-1.5f, 1.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( -0.5f, 1.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( 0.5f, 1.5f))*texture_size).xyz;
+	final += texture(sampler0,(gl_FragCoord.xy+vec2( 1.5f, 1.5f))*texture_size).xyz;
 
 	final /= 12.0;
 	
@@ -55,12 +55,12 @@ void main()
 
 	float diff = max((scene_lum - average_lum),0.0);
 	
-	float lum_threshold = 0.5;
+	float lum_threshold = 1.9;
 	float coc_threshold = 0.1;
 
 
 	// Copy over scene if not a bokeh point
-	color = vec4(scene,1.0);
+	color = scene;
 	if( diff > lum_threshold && coc > coc_threshold)
 	{
 		int current = int(atomicCounterIncrement(bokeh_counter));
@@ -68,9 +68,9 @@ void main()
 		imageStore(sampler3, current, vec4(v_TexCoord.x, v_TexCoord.y, depth, coc));
 		imageStore(sampler4, current, vec4(scene.xyz,1.0));
 
-		color = vec4(scene/max(coc*5.0,1.0),1.0);
+		color = scene / vec3(max(coc*5.0,1.0));
 	}
 
 
-	//color = vec4(1.0);
+	//color = vec3(coc);
 }

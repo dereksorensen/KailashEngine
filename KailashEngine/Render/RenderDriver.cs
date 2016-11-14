@@ -205,7 +205,7 @@ namespace KailashEngine.Render
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
-            _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.tFinalScene);
+            _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
