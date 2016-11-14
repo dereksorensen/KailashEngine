@@ -16,6 +16,6 @@ void main()
 	float coc_blurred = texture(sampler0, v_TexCoord).r;
 	float coc = texture(sampler1, v_TexCoord).r;
 
-	coc_fixed = max((2 * max( coc_blurred, coc_blurred-coc ) - coc), coc);  
+	coc_fixed = 2 * max( coc_blurred, coc ) - coc;
 }
 

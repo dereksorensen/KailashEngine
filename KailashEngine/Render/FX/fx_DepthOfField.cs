@@ -15,17 +15,43 @@ namespace KailashEngine.Render.FX
 {
     class fx_DepthOfField : RenderEffect
     {
+        // Properties
+        private const float _texture_scale = 0.5f;
+        private Resolution _resolution_half;
+
+        private const float _max_blur = 80.0f;
+        private const float _focus_length = 0.2f;
+        private const float _fStop = 0.1f;
+        private const float _sensor_width = 33.0f;
+        private float _PPM;
+
+        private const int _bokeh_max_shapes = 10000;
+        private int _bokeh_indirect_buffer = 0;
+        private int _bokeh_vao = 0;
+
+        struct DrawArraysIndirectCommand
+        {
+            public uint count;
+            public uint primCount;
+            public uint first;
+            public uint reservedMustBeZero;
+        }
+        private DrawArraysIndirectCommand _bokeh_point_counter;
 
         // Programs
         private Program _pAutoFocus;
         private Program _pCOC;
         private Program _pCOC_Fix;
+        private Program _pCOC_Combine;
+        private Program _pBokeh_Reset;
+        private Program _pBokeh_Extract;
+        private Program _pBokeh_Render;
 
         // Frame Buffers
-        private FrameBuffer _fDepthOfField;
+        private FrameBuffer _fHalfResolution;
+        private FrameBuffer _fFullResoution;
 
-        // Textures
-        private const float coc_texture_scale = 0.5f;
+        // Textures - COC
 
         private Texture _tCOC;
         public Texture tCOC
@@ -45,6 +71,33 @@ namespace KailashEngine.Render.FX
             get { return _tCOC_Foreground_2; }
         }
 
+        private Texture _tCOC_Final;
+        public Texture tCOC_Final
+        {
+            get { return _tCOC_Final; }
+        }
+
+        // Textures - Bokeh
+        private Image _iBokehShape;
+
+        private Texture _tBokeh_Positions;
+        private Texture _tBokeh_Colors;
+
+        private Texture _tBokeh_Points;
+        public Texture tBokeh_Points
+        {
+            get { return _tBokeh_Points; }
+        }
+
+
+        // Textures - DOF
+        private Texture _tDOF_Scene;
+        public Texture tDOF_Scene
+        {
+            get { return _tDOF_Scene; }
+        }
+
+
 
         // Other Buffers
         private ShaderStorageBuffer _ssboAutoFocus;
@@ -52,7 +105,10 @@ namespace KailashEngine.Render.FX
 
         public fx_DepthOfField(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name, Resolution full_resolution)
             : base(pLoader, tLoader, resource_folder_name, full_resolution)
-        { }
+        {
+            _resolution_half = new Resolution(_resolution.W * _texture_scale, _resolution.H * _texture_scale);
+            _PPM = (float)Math.Sqrt((_resolution_half.W_2) + (_resolution_half.H_2)) / _sensor_width;
+        }
 
         protected override void load_Programs()
         {
@@ -84,46 +140,172 @@ namespace KailashEngine.Render.FX
             });
             _pCOC_Fix.enable_Samplers(2);
 
+            _pCOC_Combine = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "dof_COC_Combine.frag", null)
+            });
+            _pCOC_Combine.enable_Samplers(3);
+
+
+            _pBokeh_Reset = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "dof_Bokeh_Reset.comp", null)
+            });
+
+            _pBokeh_Extract = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "dof_Bokeh_Extract.frag", null)
+            });
+            _pBokeh_Extract.enable_Samplers(5);
+
         }
 
         protected override void load_Buffers()
         {
+            //------------------------------------------------------
+            // AutoFocus
+            //------------------------------------------------------
+
             _ssboAutoFocus = new ShaderStorageBuffer(new EngineHelper.size[]
             {
                 EngineHelper.size.vec2
             });
 
+            //------------------------------------------------------
+            // COC
+            //------------------------------------------------------
 
-            Vector2 coc_resolution = new Vector2(_resolution.W * coc_texture_scale, _resolution.H * coc_texture_scale);
 
             _tCOC = new Texture(TextureTarget.Texture2D,
-                (int)coc_resolution.X, (int)coc_resolution.Y,
+                _resolution_half.W, _resolution_half.H,
                 0, false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC.load();
 
             _tCOC_Foreground = new Texture(TextureTarget.Texture2D,
-                (int)coc_resolution.X, (int)coc_resolution.Y,
+                _resolution_half.W, _resolution_half.H,
                 0, false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Foreground.load();
 
             _tCOC_Foreground_2 = new Texture(TextureTarget.Texture2D,
-                (int)coc_resolution.X, (int)coc_resolution.Y,
+                _resolution_half.W, _resolution_half.H,
                 0, false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Foreground_2.load();
 
-            _fDepthOfField = new FrameBuffer("Depth Of Field");
-            _fDepthOfField.load(new Dictionary<FramebufferAttachment, Texture>()
+
+            _tCOC_Final = new Texture(TextureTarget.Texture2D,
+                _resolution.W, _resolution.H,
+                0, false, false,
+                PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tCOC_Final.load();
+
+            //------------------------------------------------------
+            // Bokeh
+            //------------------------------------------------------
+            _iBokehShape = _tLoader.createImage(_path_static_textures + "bokeh_pentagon.png", TextureTarget.Texture2D, TextureWrapMode.Clamp);
+
+            _tBokeh_Positions = new Texture(TextureTarget.Texture1D,
+                _bokeh_max_shapes, 0, 0,
+                false, false,
+                PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Nearest, TextureMagFilter.Nearest, TextureWrapMode.Clamp);
+            _tBokeh_Positions.load();
+
+            _tBokeh_Colors = new Texture(TextureTarget.Texture1D,
+                _bokeh_max_shapes, 0, 0,
+                false, false,
+                PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Nearest, TextureMagFilter.Nearest, TextureWrapMode.Clamp);
+            _tBokeh_Colors.load();
+
+            _tBokeh_Points = new Texture(TextureTarget.Texture2D,
+                _resolution_half.W, _resolution_half.H, 0, 
+                false, false,
+                PixelInternalFormat.Rgb16f, PixelFormat.Rgb, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tBokeh_Points.load();
+
+
+            load_BuffersBokeh();
+
+
+            //------------------------------------------------------
+            // DOF
+            //------------------------------------------------------
+            _tDOF_Scene = new Texture(TextureTarget.Texture2D,
+                _resolution_half.W, _resolution_half.H, 0, 
+                false, false,
+                PixelInternalFormat.Rgb16f, PixelFormat.Rgb, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tDOF_Scene.load();
+
+
+            //------------------------------------------------------
+            // Frame Buffers
+            //------------------------------------------------------
+            _fHalfResolution = new FrameBuffer("DOF - Half Resolution");
+            _fHalfResolution.load(new Dictionary<FramebufferAttachment, Texture>()
             {
                 { FramebufferAttachment.ColorAttachment0, _tCOC },
                 { FramebufferAttachment.ColorAttachment1, _tCOC_Foreground },
-                { FramebufferAttachment.ColorAttachment2, _tCOC_Foreground_2 }
+                { FramebufferAttachment.ColorAttachment2, _tCOC_Foreground_2 },
+                { FramebufferAttachment.ColorAttachment3, _tBokeh_Points },
+                { FramebufferAttachment.ColorAttachment4, _tDOF_Scene }
             });
+
+            _fFullResoution = new FrameBuffer("DOF - Full Resolution");
+            _fFullResoution.load(new Dictionary<FramebufferAttachment, Texture>()
+            {
+                { FramebufferAttachment.ColorAttachment0, _tCOC_Final }
+            });
+
+        }
+
+        private void load_BuffersBokeh()
+        {
+            //INDIRECT BUFFER
+            GL.GenBuffers(1, out _bokeh_indirect_buffer);
+            GL.BindBuffer(BufferTarget.DrawIndirectBuffer, _bokeh_indirect_buffer);
+
+            _bokeh_point_counter.count = 1;
+            _bokeh_point_counter.primCount = 0;
+            _bokeh_point_counter.first = 0;
+            _bokeh_point_counter.reservedMustBeZero = 0;
+
+            int icmdSize = System.Runtime.InteropServices.Marshal.SizeOf(_bokeh_point_counter);
+
+            GL.BufferData(BufferTarget.DrawIndirectBuffer, (IntPtr)icmdSize, ref _bokeh_point_counter, BufferUsageHint.DynamicDraw);
+
+            // Ghost VAO for indirect draw calls later
+            float[] temp = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+            int bSize = 4 * sizeof(float);
+            int bokeh_vbo = 0;
+            GL.GenBuffers(1, out bokeh_vbo);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bokeh_vbo);
+            GL.BufferData(
+                BufferTarget.ArrayBuffer,
+                (IntPtr)bSize,
+                temp,
+                BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+            _bokeh_vao = 0;
+            GL.GenVertexArrays(1, out _bokeh_vao);
+            GL.BindVertexArray(_bokeh_vao);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bokeh_vbo);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindVertexArray(0);
         }
 
         public override void load()
@@ -170,46 +352,38 @@ namespace KailashEngine.Render.FX
         }
 
         //------------------------------------------------------
-        // Bokeh
+        // COC
         //------------------------------------------------------
-        private void calcCOC(fx_Quad quad, fx_Special special, Texture depth_texture, Texture scene_texture)
+        private void genCOC(fx_Quad quad, fx_Special special, Texture depth_texture)
         {
             //------------------------------------------------------
             // Calculate COC
             //------------------------------------------------------
 
-            Vector2 coc_resolution = new Vector2(_resolution.W * coc_texture_scale, _resolution.H * coc_texture_scale);
-
-            _fDepthOfField.bind(new DrawBuffersEnum[]
+            _fHalfResolution.bind(new DrawBuffersEnum[]
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1,
                 DrawBuffersEnum.ColorAttachment2
             });
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, (int)coc_resolution.X, (int)coc_resolution.Y);
+            GL.Viewport(0, 0, _tCOC.width, _tCOC.height);
 
             _pCOC.bind();
 
-            float max_blur = 80.0f;
-            float focus_length = 0.2f;
-            float fStop = 0.1f;
-            float sensor_width = 33.0f;
-
-            float PPM = (float)Math.Sqrt((coc_resolution.X * coc_resolution.X) + (coc_resolution.Y * coc_resolution.Y)) / sensor_width;
 
             _ssboAutoFocus.bind(0);
             depth_texture.bind(_pCOC.getSamplerUniform(0), 0);
 
-            GL.Uniform1(_pCOC.getUniform("PPM"), PPM);
-            GL.Uniform1(_pCOC.getUniform("focus_length"), focus_length);
-            GL.Uniform1(_pCOC.getUniform("fStop"), fStop);
-            GL.Uniform1(_pCOC.getUniform("max_blur"), max_blur);
+            GL.Uniform1(_pCOC.getUniform("PPM"), _PPM);
+            GL.Uniform1(_pCOC.getUniform("focus_length"), _focus_length);
+            GL.Uniform1(_pCOC.getUniform("fStop"), _fStop);
+            GL.Uniform1(_pCOC.getUniform("max_blur"), _max_blur);
 
             quad.render();
 
-            //special.blur_Guass(quad, 50, _tCOC_Foreground, _fDepthOfField, DrawBuffersEnum.ColorAttachment1, 0.25f);
-            //special.blur_MovingAverage(20, _tCOC_Foreground, 0.5f);
+
+            special.blur_MovingAverage(11, _tCOC_Foreground);
 
             //------------------------------------------------------
             // Fix COC
@@ -220,16 +394,89 @@ namespace KailashEngine.Render.FX
             //    DrawBuffersEnum.ColorAttachment0,
             //});
             //GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.Viewport(0, 0, (int)coc_resolution.X, (int)coc_resolution.Y);
+            //GL.Viewport(0, 0, _tCOC.width, _tCOC.height);
 
-            //_pCOC_Fix.bind();
+            //_pCOC.bind();
 
             //_tCOC_Foreground.bind(_pCOC_Fix.getSamplerUniform(0), 0);
             //_tCOC_Foreground_2.bind(_pCOC_Fix.getSamplerUniform(1), 1);
 
             //quad.render();
+
+            //special.blur_MovingAverage(3, _tCOC);
+
+            //------------------------------------------------------
+            // Combine COC
+            //------------------------------------------------------
+            _fFullResoution.bind(new DrawBuffersEnum[]
+            {
+                DrawBuffersEnum.ColorAttachment0,
+            });
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, _tCOC_Final.width, _tCOC_Final.height);
+
+            _pCOC_Combine.bind();
+
+            _tCOC.bind(_pCOC_Combine.getSamplerUniform(0), 0);
+            _tCOC_Foreground.bind(_pCOC_Combine.getSamplerUniform(1), 1);
+            _tCOC_Foreground_2.bind(_pCOC_Combine.getSamplerUniform(2), 2);
+
+            quad.render();
+
         }
 
+
+        //------------------------------------------------------
+        // Bokeh
+        //------------------------------------------------------
+        private void resetBokeh()
+        {
+            GL.MemoryBarrier(MemoryBarrierFlags.AllBarrierBits);
+
+            _pBokeh_Reset.bind();
+
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, _bokeh_indirect_buffer);
+            GL.DispatchCompute(1, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, 0);
+        }
+
+        private void printBokehCount()
+        {
+            GL.MemoryBarrier(MemoryBarrierFlags.AllBarrierBits);
+
+            int icmdSize = System.Runtime.InteropServices.Marshal.SizeOf(_bokeh_point_counter);
+            DrawArraysIndirectCommand temp_bokeh_point_counter = new DrawArraysIndirectCommand();
+
+            GL.BindBuffer(BufferTarget.DrawIndirectBuffer, _bokeh_indirect_buffer);
+            GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, (IntPtr)0, icmdSize, ref temp_bokeh_point_counter);
+
+            Debug.DebugHelper.logInfo(1, "Bokeh Count", temp_bokeh_point_counter.primCount.ToString());
+        }
+
+        private void extractBokeh(fx_Quad quad, Texture depth_texture, Texture scene_texture)
+        {
+            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
+
+            //scene_texture.bind(_pBokeh_Extract.getSamplerUniform(0), 0);
+            //depth_texture.bind(_pBokeh_Extract.getSamplerUniform(1), 1);
+            //_tCOC_Final.bind(_pBokeh_Extract.getSamplerUniform(2), 2);
+
+            //_tBokeh_Positions.bindImageUnit(_pBokeh_Extract.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+            //_tBokeh_Colors.bindImageUnit(_pBokeh_Extract.getSamplerUniform(4), 4, TextureAccess.WriteOnly);
+
+            //GL.BindBufferRange(BufferRangeTarget.AtomicCounterBuffer, 0, _bokeh_indirect_buffer, (IntPtr)4, (IntPtr)sizeof(uint));
+
+            quad.render();
+        }
+
+        private void genBokeh()
+        {
+
+        }
 
         //------------------------------------------------------
         // Depth Of Field
@@ -241,7 +488,10 @@ namespace KailashEngine.Render.FX
         {
             autoFocus(depth_texture);
             //printFocusDistance();
-            calcCOC(quad, special, depth_texture, scene_texture);
+            genCOC(quad, special, depth_texture);
+
+            //resetBokeh();
+            extractBokeh(quad, depth_texture, scene_texture);
         }
     }
 }

@@ -15,8 +15,10 @@ namespace KailashEngine.Render.FX
 {
     class fx_Lens : RenderEffect
     {
-
+        // Properties
         private Matrix3 _previous_lens_star_mod;
+        private const float _texture_scale = 0.25f;
+        private Resolution _resolution_lens;
 
         // Programs
         private Program _pBlend;
@@ -49,6 +51,7 @@ namespace KailashEngine.Render.FX
             : base(pLoader, tLoader, resource_folder_name, full_resolution)
         {
             _previous_lens_star_mod = Matrix3.Identity;
+            _resolution_lens = new Resolution(_resolution.W * _texture_scale, _resolution.H * _texture_scale);
         }
 
         protected override void load_Programs()
@@ -81,21 +84,15 @@ namespace KailashEngine.Render.FX
             _iLensStar = _tLoader.createImage(_path_static_textures + "lens_Star.png", TextureTarget.Texture2D, TextureWrapMode.ClampToEdge);
 
             // Load Textures
-            float default_texture_scale = 0.25f;
-
-            float bloom_scale = default_texture_scale;
-            Vector2 bloom_resolution = new Vector2(_resolution.W * bloom_scale, _resolution.H * bloom_scale);
             _tBloom = new Texture(TextureTarget.Texture2D,
-                (int)bloom_resolution.X, (int)bloom_resolution.Y,
+                _resolution_lens.W, _resolution_lens.H,
                 0, true, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tBloom.load();
 
-            float flare_scale = default_texture_scale;
-            Vector2 flare_resolution = new Vector2(_resolution.W * flare_scale, _resolution.H * flare_scale);
             _tFlare = new Texture(TextureTarget.Texture2D,
-                (int)flare_resolution.X, (int)flare_resolution.Y,
+                _resolution_lens.W, _resolution_lens.H,
                 0, false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -156,8 +153,7 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
-            special.blur_Guass(quad, 120, _tFlare, _fLens, DrawBuffersEnum.ColorAttachment1);
-            //special.blur_MovingAverage(13, _tFlare);
+            special.blur_MovingAverage(15, _tFlare);
         }
 
 
