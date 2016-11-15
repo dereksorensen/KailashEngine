@@ -4,29 +4,15 @@ in vec2 v_TexCoord;
 
 out vec4 color;
 
-uniform sampler2D sampler0;		//Scene Texture
-uniform sampler2D sampler1;		//Depth Texture
-uniform sampler2D sampler2;		//DOF COC
+uniform sampler2D sampler0;		// Scene
+uniform sampler2D sampler1;		// Depth
+uniform sampler2D sampler2;		// COC
 
 
-uniform vec2 renderSize;
-uniform float maxBlur;
-uniform float sigmaCoeff;
+uniform vec2 texture_size;
+uniform float maxBlur = 160.0;
+uniform float sigmaCoeff = 18.7;
 
-
-vec3 textureDistorted(
-      sampler2D tex,
-      vec2 texcoord,
-      vec2 direction, // direction of distortion
-      vec3 distortion // per-channel distortion factor
-   ) 
-{
-    return vec3(
-        texture(tex, texcoord + direction * distortion.r).r,
-        texture(tex, texcoord + direction * distortion.g).g,
-        texture(tex, texcoord + direction * distortion.b).b
-    );
-}
 
 vec4 guassBlur()
 {
@@ -36,7 +22,8 @@ vec4 guassBlur()
 	float depth = texture(sampler1,v_TexCoord).w;
 
 
-	float coc = texture(sampler2, v_TexCoord).r * MAX_BLUR;
+	float coc = texture(sampler2, v_TexCoord).r;
+	coc = min(coc* maxBlur, maxBlur);
 	int numSamples = int(ceil(coc));
 
 	if(numSamples <= 0)
@@ -60,28 +47,18 @@ vec4 guassBlur()
 	gaussInc.xy *= gaussInc.yz;
 
 
-
-	vec2 texelSize = 1.0 / vec2(textureSize(sampler1, 0));
-	float distortionVariable = 1.1 * clamp(depth, 0.05, 0.07);
-	vec3 distortion = vec3(-texelSize.x * distortionVariable, texelSize.y * (distortionVariable/2.0), texelSize.y * distortionVariable);
-	vec2 direction = vec2(0.5,0.5) * (coc/2.0);
-
-
-
 	//numSamples += int(weight);
 
 	for(int i = 1; i < numSamples; i++)
 	{
 
-		vec2 offset = float(i) * renderSize;
+		vec2 offset = float(i) * texture_size;
 		vec2 texCoord_n = v_TexCoord - offset;
 		vec2 texCoord_p = v_TexCoord + offset;
 
 		float coc_n = texture(sampler2, texCoord_n).r;
 		float coc_p = texture(sampler2, texCoord_p).r;
 
-		//vec4 scene_n = vec4(textureDistorted(sampler0, texCoord_n, direction, distortion),1.0);
-		//vec4 scene_p = vec4(textureDistorted(sampler0, texCoord_p, direction, distortion),1.0);
 		vec4 scene_n = texture(sampler0, texCoord_n);
 		vec4 scene_p = texture(sampler0, texCoord_p);
 
@@ -136,7 +113,7 @@ vec3 gatherBlur()
 
 	for(int i = -numSamples; i <= numSamples; ++i)
 	{
-		vec2 coord = v_TexCoord + float(i) * renderSize;
+		vec2 coord = v_TexCoord + float(i) * texture_size;
 
 		float sampleCOC = texture(sampler2, coord).r;
 		float sampleDEPTH = texture(sampler1,coord).w;

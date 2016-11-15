@@ -546,6 +546,7 @@
     <None Include="Render\Shader\glsl\dof\dof_Bokeh_Reset.comp" />
     <None Include="Render\Shader\glsl\dof\dof_AutoFocus.comp" />
     <None Include="Render\Shader\glsl\dof\dof_Bokeh_Extract.frag" />
+    <None Include="Render\Shader\glsl\dof\dof_DOF_Blend.frag" />
     <None Include="Render\Shader\glsl\dof\dof_DOF_Blur.frag" />
     <None Include="Render\Shader\glsl\dof\dof_COC_Combine.frag" />
     <None Include="Render\Shader\glsl\dof\dof_COC_Fix.frag" />

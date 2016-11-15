@@ -18,7 +18,7 @@ void main()
 	float sceneDepth = texture(sampler1, texCoord).w;
 	float coc = texture(sampler2, texCoord).r;
 	vec4 shape = texture(sampler0, g_TexCoord);
-	shape *= shape.a;
+	//shape *= shape.a;
 
 	float depthCullThreshold = 0.0;
 

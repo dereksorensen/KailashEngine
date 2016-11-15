@@ -71,7 +71,7 @@ namespace KailashEngine.Render.FX
             _tSpecial = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
-                PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tSpecial.load();
 
