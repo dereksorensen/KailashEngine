@@ -10,7 +10,7 @@ uniform sampler2D sampler2;		// COC
 
 
 uniform vec2 texture_size;
-uniform float maxBlur = 160.0;
+uniform float maxBlur = 60.0;
 uniform float sigmaCoeff = 18.7;
 
 

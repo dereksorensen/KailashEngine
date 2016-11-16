@@ -13,7 +13,7 @@ nam Point.001
 typ POINT
 ity 5.0
 col 1.0 1.0 1.0
-fal 14.8100004196167
+fal 38.779998779296875
 ang 0
 blr 0
 sha 0
@@ -21,9 +21,9 @@ sha 0
 == == ==
 nam Point.002
 typ POINT
-ity 0.38999974727630615
+ity 6.179999828338623
 col 1.0 1.0 1.0
-fal 20.029998779296875
+fal 35.459999084472656
 ang 0
 blr 0
 sha 0

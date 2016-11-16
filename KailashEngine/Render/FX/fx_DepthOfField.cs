@@ -19,13 +19,13 @@ namespace KailashEngine.Render.FX
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
 
-        private const float _max_blur = 80.0f;
-        private const float _focus_length = 0.1f;
+        private const float _max_blur = 40.0f;
+        private const float _focus_length = 0.09f;
         private const float _fStop = 0.1f;
         private const float _sensor_width = 33.0f;
         private float _PPM;
 
-        private const int _bokeh_max_shapes = 10000;
+        private const int _bokeh_max_shapes = 1000;
         private int _bokeh_indirect_buffer = 0;
         private int _bokeh_vao = 0;
 
@@ -417,7 +417,7 @@ namespace KailashEngine.Render.FX
             quad.render();
 
 
-            special.blur_MovingAverage(11, _tCOC_Foreground);
+            special.blur_MovingAverage(19, _tCOC_Foreground);
 
             //------------------------------------------------------
             // Fix COC
@@ -452,8 +452,8 @@ namespace KailashEngine.Render.FX
             _pCOC_Combine.bind();
 
             _tCOC.bind(_pCOC_Combine.getSamplerUniform(0), 0);
-            _tCOC_Foreground.bind(_pCOC_Combine.getSamplerUniform(1), 1);
-            _tCOC_Foreground_2.bind(_pCOC_Combine.getSamplerUniform(2), 2);
+            _tCOC_Foreground_2.bind(_pCOC_Combine.getSamplerUniform(1), 1);
+            _tCOC_Foreground.bind(_pCOC_Combine.getSamplerUniform(2), 2);
 
             quad.render();
 

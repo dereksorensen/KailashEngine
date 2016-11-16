@@ -11,8 +11,8 @@ layout(size4x32, binding = 3) readonly uniform image1D sampler3;
 layout(size4x32, binding = 4) readonly uniform image1D sampler4;
 
 
-uniform float max_bokeh_size = 80.0;
-uniform float maxBlur = 80.0;
+uniform float max_bokeh_size = 60.0;
+uniform float maxBlur = 60.0;
 
 
 void main()
