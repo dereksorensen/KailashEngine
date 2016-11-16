@@ -11,7 +11,6 @@ uniform sampler2D sampler2;		// COC
 
 uniform vec2 texture_size;
 
-
 void main()
 {
 	vec2 texCoord = gl_FragCoord.xy * texture_size;

@@ -6,13 +6,11 @@ out float v_bokehDepth;
 out float v_bokehSize;
 
 
-//layout(binding = 0, offset = 0) uniform atomic_uint bokehCounter;
 layout(size4x32, binding = 3) readonly uniform image1D sampler3;
 layout(size4x32, binding = 4) readonly uniform image1D sampler4;
 
 
-uniform float max_bokeh_size = 60.0;
-uniform float maxBlur = 60.0;
+uniform float max_blur;
 
 
 void main()
@@ -26,7 +24,7 @@ void main()
 	float bokehDepth = bokehProperties.z;
 	float objectID = bokehColor.w;
 	bokehColor.w = 1.0;
-	float coc = bokehProperties.w * maxBlur;
+	float coc = bokehProperties.w * max_blur;
 	
 
 	// Bokeh Position
@@ -34,11 +32,12 @@ void main()
 	gl_Position = vec4(pointPosition, 0.0, 1.0);
 	
 	// Bokeh Size
-	float bokehSize = clamp(coc/5.0, 0.0, max_bokeh_size);
+	float max_bokeh_size = max_blur;
+	float bokehSize = clamp(coc/50.0, 0.0, max_bokeh_size);
 
 	// Bokeh Color
 	float cocArea = coc * coc * 3.14159;
-	float falloff = pow( (1.0/cocArea) , 0.41);
+	float falloff = pow( (1.0/cocArea) , 0.40);
 	vec4 colorMod = bokehColor * falloff;
 
 	v_bokehColor = colorMod;

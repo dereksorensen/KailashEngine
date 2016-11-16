@@ -25,7 +25,7 @@ namespace KailashEngine.Render.FX
         private const float _sensor_width = 33.0f;
         private float _PPM;
 
-        private const int _bokeh_max_shapes = 1000;
+        private const int _bokeh_max_shapes = 10000;
         private int _bokeh_indirect_buffer = 0;
         private int _bokeh_vao = 0;
 
@@ -174,6 +174,7 @@ namespace KailashEngine.Render.FX
             });
             _pBokeh_Render.enable_Samplers(5);
             _pBokeh_Render.addUniform("texture_size");
+            _pBokeh_Render.addUniform("max_blur");
 
             _pDOF_Blur = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -181,6 +182,7 @@ namespace KailashEngine.Render.FX
             });
             _pDOF_Blur.enable_Samplers(3);
             _pDOF_Blur.addUniform("texture_size");
+            _pDOF_Blur.addUniform("max_blur");
 
             _pDOF_Blend = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -526,7 +528,7 @@ namespace KailashEngine.Render.FX
             _tCOC_Final.bind(_pBokeh_Render.getSamplerUniform(2), 2);
 
             GL.Uniform2(_pBokeh_Render.getUniform("texture_size"), 1.0f / _tBokeh_Points.width, 1.0f / _tBokeh_Points.height);
-
+            GL.Uniform1(_pBokeh_Render.getUniform("max_blur"), _max_blur);
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
@@ -542,8 +544,13 @@ namespace KailashEngine.Render.FX
         //------------------------------------------------------
         // Depth Of Field
         //------------------------------------------------------
-        private void genDOF(fx_Quad quad, Texture depth_texture)
+        private void genDOF(fx_Quad quad)
         {
+
+            _pDOF_Blur.bind();
+            GL.Uniform1(_pDOF_Blur.getUniform("max_blur"), _max_blur);
+
+
             //------------------------------------------------------
             // Horizontal
             //------------------------------------------------------
@@ -552,13 +559,11 @@ namespace KailashEngine.Render.FX
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
-            _pDOF_Blur.bind();
 
             _tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            depth_texture.bind(_pDOF_Blur.getSamplerUniform(1), 1);
-            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(2), 2);
+            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
 
-            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), 1.0f / _tDOF_Scene.width, 0f / _tDOF_Scene.height);
+            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), 1.0f / _tDOF_Scene.width, 0);
 
             quad.render();
 
@@ -568,13 +573,11 @@ namespace KailashEngine.Render.FX
             _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            _pDOF_Blur.bind();
 
             _tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            depth_texture.bind(_pDOF_Blur.getSamplerUniform(1), 1);
-            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(2), 2);
+            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
 
-            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), 0f / _tDOF_Scene.width, 1.0f / _tDOF_Scene.height);
+            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), 0, 1.0f / _tDOF_Scene.height);
 
             quad.render();
         }
@@ -611,7 +614,7 @@ namespace KailashEngine.Render.FX
             //printBokehCount();
             genBokeh(depth_texture);
 
-            genDOF(quad, depth_texture);
+            genDOF(quad);
             blendDOF(quad, special, scene_fbo, scene_texture);
         }
     }

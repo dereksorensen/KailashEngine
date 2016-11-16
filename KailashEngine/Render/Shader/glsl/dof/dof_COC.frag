@@ -45,7 +45,6 @@ void main()
 	float coc = calculateCOC(depth, focus_distance[0].y);
 
 
-
 	coc_all = coc;
 	coc_foreground = coc;
 	

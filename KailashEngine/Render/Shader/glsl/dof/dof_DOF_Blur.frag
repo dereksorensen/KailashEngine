@@ -5,85 +5,70 @@ in vec2 v_TexCoord;
 out vec4 color;
 
 uniform sampler2D sampler0;		// Scene
-uniform sampler2D sampler1;		// Depth
-uniform sampler2D sampler2;		// COC
+uniform sampler2D sampler1;		// COC
 
 
 uniform vec2 texture_size;
-uniform float maxBlur = 60.0;
+uniform float max_blur;
 uniform float sigmaCoeff = 18.7;
 
 
 vec4 guassBlur()
 {
 	vec4 scene = texture(sampler0, v_TexCoord);
+	float coc = texture(sampler1, v_TexCoord).r;
 
-	const float MAX_BLUR = maxBlur;
-	float depth = texture(sampler1,v_TexCoord).w;
+	coc = min(coc * max_blur, max_blur);
+	int num_samples = int(ceil(coc));
 
-
-	float coc = texture(sampler2, v_TexCoord).r;
-	coc = min(coc* maxBlur, maxBlur);
-	int numSamples = int(ceil(coc));
-
-	if(numSamples <= 0)
+	if(num_samples <= 0)
 	{
 		return scene;
 	}
 
-	float SIGMA = coc / sigmaCoeff;
+	float SIGMA = float(num_samples) / sigmaCoeff;
 	float sig2 = SIGMA * SIGMA;
-	float TWO_PI = 6.2831853071795;
 
-	vec3 gaussInc;
-	gaussInc.x = 1.0 / (sqrt(TWO_PI) * SIGMA);
-	gaussInc.y = exp(-0.5 / sig2);
-	gaussInc.z = gaussInc.y * gaussInc.y;
-
-	vec4 curPixel = scene * gaussInc.x;
-	vec4 final = curPixel;
-
-	float cSum = gaussInc.x;
-	gaussInc.xy *= gaussInc.yz;
+	vec3 guass_increment;
+	guass_increment.x = 1.0 / (sqrt(MATH_2_PI) * SIGMA);
+	guass_increment.y = exp(-0.5 / sig2);
+	guass_increment.z = guass_increment.y * guass_increment.y;
 
 
-	//numSamples += int(weight);
+	vec4 final = scene * guass_increment.x;
 
-	for(int i = 1; i < numSamples; i++)
+	float increment_sum = guass_increment.x;
+	guass_increment.xy *= guass_increment.yz;
+
+	for(int i = 1; i < num_samples; i++)
 	{
 
 		vec2 offset = float(i) * texture_size;
-		vec2 texCoord_n = v_TexCoord - offset;
-		vec2 texCoord_p = v_TexCoord + offset;
+		vec2 texCoord_n = v_TexCoord - offset;// * guass_increment.x;
+		vec2 texCoord_p = v_TexCoord + offset;// * guass_increment.x;
 
-		float coc_n = texture(sampler2, texCoord_n).r;
-		float coc_p = texture(sampler2, texCoord_p).r;
+		float coc_n = texture(sampler1, texCoord_n).r;
+		float coc_p = texture(sampler1, texCoord_p).r;
 
 		vec4 scene_n = texture(sampler0, texCoord_n);
 		vec4 scene_p = texture(sampler0, texCoord_p);
-
-		float depth_n = texture(sampler1,texCoord_n).w;
-		float depth_p = texture(sampler1,texCoord_p).w;
-
+		
 		float cocWeight_n = clamp(coc + 1.0f - abs(float(i)),0,1);
 		float cocWeight_p = clamp(coc + 1.0f - abs(float(i)),0,1);
 		float blurWeight_n = coc_n;
 		float blurWeight_p = coc_p;
-		float depthWeight_n = (depth_n >= depth) ? 1.0 : 0.0;
-		float depthWeight_p = (depth_p >= depth) ? 1.0 : 0.0;
 		float weight_n = clamp(blurWeight_n, 0.0, 1.0);
 		float weight_p = clamp(blurWeight_p, 0.0, 1.0);
 
-		final += scene_n * gaussInc.x * weight_n / cocWeight_p;
-		final += scene_p * gaussInc.x * weight_p / cocWeight_p;
+		final += scene_n * guass_increment.x * weight_n / cocWeight_p;
+		final += scene_p * guass_increment.x * weight_p / cocWeight_p;
 
-		cSum += 2.0 * gaussInc.x * (weight_n + weight_p) / (2.0 * cocWeight_n);
-		gaussInc.xy *= gaussInc.yz;
+		increment_sum += 2.0 * guass_increment.x * (weight_n + weight_p) / (2.0 * cocWeight_n);
+		guass_increment.xy *= guass_increment.yz;
 
 	}
 
-	return final / cSum;
-
+	return final / increment_sum;
 }
 	
 
@@ -94,13 +79,13 @@ vec3 gatherBlur()
 
 	vec4 scene = texture(sampler0, v_TexCoord);
 
-	const float MAX_BLUR = maxBlur;
+	const float MAX_BLUR = max_blur;
 	float depth = texture(sampler1,v_TexCoord).w;
 
-	float coc = texture(sampler2, v_TexCoord).r * MAX_BLUR;
-	int numSamples = int(ceil(coc));
+	float coc = texture(sampler1, v_TexCoord).r * MAX_BLUR;
+	int num_samples = int(ceil(coc));
 
-	if(numSamples <= 0)
+	if(num_samples <= 0)
 	{
 		return scene.xyz;
 	}
@@ -111,11 +96,11 @@ vec3 gatherBlur()
 
 	vec3 final = vec3(0.0);
 
-	for(int i = -numSamples; i <= numSamples; ++i)
+	for(int i = -num_samples; i <= num_samples; ++i)
 	{
 		vec2 coord = v_TexCoord + float(i) * texture_size;
 
-		float sampleCOC = texture(sampler2, coord).r;
+		float sampleCOC = texture(sampler1, coord).r;
 		float sampleDEPTH = texture(sampler1,coord).w;
 
 		float cocWeight = clamp(coc + 1.0f - abs(float(i)),0,1);

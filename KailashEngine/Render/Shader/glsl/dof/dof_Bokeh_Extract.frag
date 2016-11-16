@@ -46,7 +46,6 @@ void main()
 	float depth = texture(sampler1, v_TexCoord).w;
 	float coc = texture(sampler2, v_TexCoord).r;
 
-
 	vec3 scene_average = sampler5x5();
 	
 	vec3 lum_operator = vec3(0.299, 0.587, 0.144);
@@ -59,9 +58,6 @@ void main()
 	float coc_threshold = 0.1;
 
 	// Copy over scene if not a bokeh point
-	vec3 darker = vec3(0.0);
-
-
 	color = scene;
 	if(diff > lum_threshold && coc > coc_threshold)
 	{
