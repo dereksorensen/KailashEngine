@@ -17,31 +17,28 @@ void main()
 {
 
 	// Load bokeh data
-	vec4 bokehProperties = imageLoad(sampler3, gl_InstanceID);
-	vec4 bokehColor = imageLoad(sampler4, gl_InstanceID);
+	vec4 bokeh_properties = imageLoad(sampler3, gl_InstanceID);
+	vec4 bokeh_color = imageLoad(sampler4, gl_InstanceID);
 
 	// Parse data
-	float bokehDepth = bokehProperties.z;
-	float objectID = bokehColor.w;
-	bokehColor.w = 1.0;
-	float coc = bokehProperties.w * max_blur;
-	
+	float bokeh_depth = bokeh_properties.z;
+	float coc = bokeh_properties.w;	
 
 	// Bokeh Position
-	vec2 pointPosition = 2.0*(bokehProperties.xy-vec2(0.5));
-	gl_Position = vec4(pointPosition, 0.0, 1.0);
+	vec2 point_position = 2.0*(bokeh_properties.xy-vec2(0.5));
+	gl_Position = vec4(point_position, 0.0, 1.0);
 	
 	// Bokeh Size
-	float max_bokeh_size = max_blur;
-	float bokehSize = clamp(coc/50.0, 0.0, max_bokeh_size);
+	float max_bokeh_size = max_blur / 5.2;
+	float bokeh_size = min(coc * max_bokeh_size, max_bokeh_size);
 
 	// Bokeh Color
-	float cocArea = coc * coc * 3.14159;
-	float falloff = pow( (1.0/cocArea) , 0.40);
-	vec4 colorMod = bokehColor * falloff;
+	float coc_area = bokeh_size * bokeh_size * MATH_PI;
+	float falloff = pow(1.0/coc_area, 0.41);
+	vec4 color_mod = bokeh_color * falloff;
 
-	v_bokehColor = colorMod;
-	v_bokehDepth = bokehDepth;
-	v_bokehSize = bokehSize;
+	v_bokehColor = color_mod;
+	v_bokehDepth = bokeh_depth;
+	v_bokehSize = bokeh_size;
 }
 

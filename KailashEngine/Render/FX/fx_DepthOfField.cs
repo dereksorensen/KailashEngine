@@ -19,9 +19,9 @@ namespace KailashEngine.Render.FX
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
 
-        private const float _max_blur = 40.0f;
-        private const float _focus_length = 0.09f;
-        private const float _fStop = 0.1f;
+        private const float _max_blur = 100.0f;
+        private const float _focus_length = 10.0f;
+        private const float _fStop = 0.2f;
         private const float _sensor_width = 33.0f;
         private float _PPM;
 
@@ -206,30 +206,30 @@ namespace KailashEngine.Render.FX
             // COC
             //------------------------------------------------------
             _tCOC = new Texture(TextureTarget.Texture2D,
-                _resolution_half.W, _resolution_half.H,
-                0, false, false,
+                _resolution_half.W, _resolution_half.H, 0,
+                false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC.load();
 
             _tCOC_Foreground = new Texture(TextureTarget.Texture2D,
-                _resolution_half.W, _resolution_half.H,
-                0, false, false,
+                _resolution_half.W, _resolution_half.H, 0,
+                false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Foreground.load();
 
             _tCOC_Foreground_2 = new Texture(TextureTarget.Texture2D,
-                _resolution_half.W, _resolution_half.H,
-                0, false, false,
+                _resolution_half.W, _resolution_half.H, 0,
+                false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Foreground_2.load();
 
 
             _tCOC_Final = new Texture(TextureTarget.Texture2D,
-                _resolution.W, _resolution.H,
-                0, false, false,
+                _resolution.W, _resolution.H, 0,
+                false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Final.load();
@@ -268,7 +268,7 @@ namespace KailashEngine.Render.FX
             // DOF
             //------------------------------------------------------
             _tDOF_Scene = new Texture(TextureTarget.Texture2D,
-                _resolution_half.W, _resolution_half.H, 0, 
+                _resolution_half.W, _resolution_half.H, 0,
                 false, false,
                 PixelInternalFormat.Rgb16f, PixelFormat.Rgb, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -557,13 +557,13 @@ namespace KailashEngine.Render.FX
 
             _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
+            GL.Viewport(0, 0, _tDOF_Scene_2.width, _tDOF_Scene_2.height);
 
 
             _tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
             _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
 
-            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), 1.0f / _tDOF_Scene.width, 0);
+            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), 1.0f / _tDOF_Scene_2.width, 0);
 
             quad.render();
 
@@ -572,7 +572,7 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-
+            GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
             _tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
             _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);

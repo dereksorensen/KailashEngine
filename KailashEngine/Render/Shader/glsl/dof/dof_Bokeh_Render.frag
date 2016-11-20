@@ -1,5 +1,5 @@
 ﻿
-out vec4 color; 
+out vec3 color; 
 
 in vec4 g_bokehColor;
 in float g_bokehDepth;
@@ -14,14 +14,14 @@ uniform vec2 texture_size;
 void main()
 {
 	vec2 texCoord = gl_FragCoord.xy * texture_size;
-	float sceneDepth = texture(sampler1, texCoord).w;
+	float depth = texture(sampler1, texCoord).w;
 	float coc = texture(sampler2, texCoord).r;
 	vec4 shape = texture(sampler0, g_TexCoord);
-	//shape *= shape.a;
+	shape *= shape.a;
 
 	float depthCullThreshold = 0.0;
 
-	float weight = clamp(sceneDepth - (g_bokehDepth + depthCullThreshold), 0.0, 1.0);
+	float weight = clamp(depth - g_bokehDepth + depthCullThreshold, 0.0, 1.0);
 	weight = clamp(weight + coc, 0.0, 1.0);
 
 	
@@ -30,6 +30,6 @@ void main()
 	att = 1.0 - pow(att,Attenuation);
 	
 
-	color = shape * g_bokehColor * weight;// * att;
-
+	color = shape.xyz * g_bokehColor.xyz * weight;// * att;
+	//color = vec3(0.0);
 }

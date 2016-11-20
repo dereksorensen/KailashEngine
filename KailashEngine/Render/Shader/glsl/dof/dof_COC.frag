@@ -26,8 +26,9 @@ layout (std430, binding=0) buffer fd
 
 float calculateCOC(float depth, float current_focus_distance)
 {
-	float ms = focus_length / (current_focus_distance - focus_length);
-    float blur_coef = (focus_length * ms) / fStop;
+	float fl = 1.0 / focus_length;
+	float ms = fl / (current_focus_distance - fl);
+    float blur_coef = (fl * ms) / fStop;
 
 	float xd = abs(depth - current_focus_distance);
 	float xdd = (depth < current_focus_distance) ? (current_focus_distance - xd) : (current_focus_distance + xd);
@@ -36,13 +37,23 @@ float calculateCOC(float depth, float current_focus_distance)
 	return b * PPM;
 }
 
+float calculateCOC(float depth, float current_focus_distance, float f_length)
+{
+	
+	float z_start = current_focus_distance;
+	float z_end = -f_length;
 
+	return abs((depth - z_start) / (z_end - z_start));
+}
 
 void main()
 {
 
 	float depth = texture(sampler0, v_TexCoord).w;
 	float coc = calculateCOC(depth, focus_distance[0].y);
+
+
+	//coc = calculateCOC(depth, focus_distance[0].y, 10.0);
 
 
 	coc_all = coc;
