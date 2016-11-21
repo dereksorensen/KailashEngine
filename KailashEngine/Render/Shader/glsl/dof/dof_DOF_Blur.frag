@@ -2,7 +2,7 @@
 in vec2 v_TexCoord;
 
 
-out vec4 color;
+out vec3 color;
 
 uniform sampler2D sampler0;		// Scene
 uniform sampler2D sampler1;		// COC
@@ -13,9 +13,9 @@ uniform float max_blur;
 uniform float sigmaCoeff = 18.7;
 
 
-vec4 guassBlur()
+vec3 guassBlur()
 {
-	vec4 scene = texture(sampler0, v_TexCoord);
+	vec3 scene = texture(sampler0, v_TexCoord).xyz;
 	float coc = texture(sampler1, v_TexCoord).r;
 
 	coc = min(coc * max_blur, max_blur);
@@ -35,7 +35,7 @@ vec4 guassBlur()
 	guass_increment.z = guass_increment.y * guass_increment.y;
 
 
-	vec4 final = scene * guass_increment.x;
+	vec3 final = scene * guass_increment.x;
 
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
@@ -44,14 +44,14 @@ vec4 guassBlur()
 	{
 
 		vec2 offset = float(i) * texture_size;
-		vec2 texCoord_n = v_TexCoord - offset;// * guass_increment.x;
-		vec2 texCoord_p = v_TexCoord + offset;// * guass_increment.x;
+		vec2 texCoord_n = v_TexCoord - offset;
+		vec2 texCoord_p = v_TexCoord + offset;
 
 		float coc_n = texture(sampler1, texCoord_n).r;
 		float coc_p = texture(sampler1, texCoord_p).r;
 
-		vec4 scene_n = texture(sampler0, texCoord_n);
-		vec4 scene_p = texture(sampler0, texCoord_p);
+		vec3 scene_n = texture(sampler0, texCoord_n).xyz;
+		vec3 scene_p = texture(sampler0, texCoord_p).xyz;
 		
 		float cocWeight_n = clamp(coc + 1.0f - abs(float(i)),0,1);
 		float cocWeight_p = clamp(coc + 1.0f - abs(float(i)),0,1);
@@ -77,19 +77,17 @@ vec4 guassBlur()
 vec3 gatherBlur()
 {
 
-	vec4 scene = texture(sampler0, v_TexCoord);
-
-	const float MAX_BLUR = max_blur;
+	vec3 scene = texture(sampler0, v_TexCoord).xyz;
 	float depth = texture(sampler1,v_TexCoord).w;
+	float coc = texture(sampler1, v_TexCoord).r;
 
-	float coc = texture(sampler1, v_TexCoord).r * MAX_BLUR;
+	coc = min(coc * (max_blur / 25.0), max_blur);
 	int num_samples = int(ceil(coc));
 
 	if(num_samples <= 0)
 	{
 		return scene.xyz;
 	}
-
 
 	int count = 0;
 	float totalWeight = 0;
@@ -122,6 +120,6 @@ vec3 gatherBlur()
 
 void main()
 {
-	color = vec4(guassBlur().xyz,1.0);
-	//color = vec4(gatherBlur(),1.0);
+	color = guassBlur();
+	//color = gatherBlur();
 }

@@ -29,7 +29,7 @@ vec4 guassian_blur()
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
 
-	for(float i = 1; i < num_samples; i+=1)
+	for(float i = 1; i < num_samples; i++)
 	{		
 		vec2 offset = float(i) * texture_size;
 		final += texture(sampler0, v_TexCoord - offset) * guass_increment.x;

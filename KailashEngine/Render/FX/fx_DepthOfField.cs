@@ -25,7 +25,7 @@ namespace KailashEngine.Render.FX
         private const float _sensor_width = 33.0f;
         private float _PPM;
 
-        private const int _bokeh_max_shapes = 10000;
+        private const int _bokeh_max_shapes = 15000;
         private int _bokeh_indirect_buffer = 0;
         private int _bokeh_vao = 0;
 

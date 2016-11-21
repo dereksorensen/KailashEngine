@@ -17,7 +17,7 @@ void main()
 	float depth = texture(sampler1, texCoord).w;
 	float coc = texture(sampler2, texCoord).r;
 	vec4 shape = texture(sampler0, g_TexCoord);
-	shape *= shape.a;
+	//shape *= shape.a;
 
 	float depthCullThreshold = 0.0;
 
@@ -30,6 +30,6 @@ void main()
 	att = 1.0 - pow(att,Attenuation);
 	
 
-	color = shape.xyz * g_bokehColor.xyz * weight;// * att;
+	color = shape.xyz * g_bokehColor.xyz * weight * att;
 	//color = vec3(0.0);
 }
