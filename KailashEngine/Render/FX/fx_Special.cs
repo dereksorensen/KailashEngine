@@ -18,8 +18,7 @@ namespace KailashEngine.Render.FX
 
         // Programs
         private Program _pBlur_Gauss;
-        private Program _pBlur_GaussCompute_H;
-        private Program _pBlur_GaussCompute_V;
+        private Program _pBlur_GaussCompute;
         private Program _pBlur_MovingAverage;
         private Program _pBlur_Streak;
 
@@ -49,21 +48,15 @@ namespace KailashEngine.Render.FX
             _pBlur_Gauss.addUniform("blur_amount");
             _pBlur_Gauss.addUniform("texture_size");
 
-            _pBlur_GaussCompute_H = _pLoader.createProgram(new ShaderFile[]
+            _pBlur_GaussCompute = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurGauss_H.comp", null)
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurGauss.comp", null)
             });
-            _pBlur_GaussCompute_H.enable_Samplers(2);
-            _pBlur_GaussCompute_H.addUniform("blur_amount");
-            _pBlur_GaussCompute_H.addUniform("texture_size");
+            _pBlur_GaussCompute.enable_Samplers(2);
+            _pBlur_GaussCompute.addUniform("blur_amount");
+            _pBlur_GaussCompute.addUniform("texture_size");
+            _pBlur_GaussCompute.addUniform("direction_selector");
 
-            _pBlur_GaussCompute_V = _pLoader.createProgram(new ShaderFile[]
-            {
-                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurGauss_V.comp", null)
-            });
-            _pBlur_GaussCompute_V.enable_Samplers(2);
-            _pBlur_GaussCompute_V.addUniform("blur_amount");
-            _pBlur_GaussCompute_V.addUniform("texture_size");
 
             _pBlur_MovingAverage = _pLoader.createProgram(new ShaderFile[]
             {
@@ -280,17 +273,17 @@ namespace KailashEngine.Render.FX
 
             clearAndBindSpecialFrameBuffer();
 
+            _pBlur_GaussCompute.bind();
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("blur_amount"), blur_amount);
+            GL.Uniform2(_pBlur_GaussCompute.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
 
             //------------------------------------------------------
             // Horizontal
             //------------------------------------------------------
-            _pBlur_GaussCompute_H.bind();
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("direction_selector"), 0);
 
-            GL.Uniform1(_pBlur_GaussCompute_H.getUniform("blur_amount"), blur_amount);
-            GL.Uniform2(_pBlur_GaussCompute_H.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
-
-            texture_to_blur.bind(_pBlur_GaussCompute_H.getSamplerUniform(0), 0);
-            _tSpecial.bindImageUnit(_pBlur_GaussCompute_H.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+            texture_to_blur.bind(_pBlur_GaussCompute.getSamplerUniform(0), 0);
+            _tSpecial.bindImageUnit(_pBlur_GaussCompute.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
             GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
  
@@ -299,13 +292,10 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Vertical
             //------------------------------------------------------
-            _pBlur_GaussCompute_V.bind();
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("direction_selector"), 1);
 
-            GL.Uniform1(_pBlur_GaussCompute_V.getUniform("blur_amount"), blur_amount);
-            GL.Uniform2(_pBlur_GaussCompute_V.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
-
-            _tSpecial.bind(_pBlur_GaussCompute_V.getSamplerUniform(0), 0);
-            texture_to_blur.bindImageUnit(_pBlur_GaussCompute_V.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+            _tSpecial.bind(_pBlur_GaussCompute.getSamplerUniform(0), 0);
+            texture_to_blur.bindImageUnit(_pBlur_GaussCompute.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
             GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
 

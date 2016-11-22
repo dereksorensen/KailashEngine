@@ -229,9 +229,9 @@ namespace KailashEngine.Render
             //_fxSpecial.blur_MovingAverage(100, _fxGBuffer.tDiffuse_ID);
             Debug.DebugHelper.time_function("timing", () =>
             {
-                _fxSpecial.blur_GaussCompute(200, _fxLens.tBloom);
-                //_fxSpecial.blur_Gauss(_fxQuad, 1, _fxLens.tBloom);
-                //_fxSpecial.blur_MovingAverage(50, _fxLens.tBloom);
+                //_fxSpecial.blur_GaussCompute(500, _fxLens.tBloom);
+                _fxSpecial.blur_Gauss(_fxQuad, 500, _fxLens.tBloom);
+                //_fxSpecial.blur_MovingAverage(100, _fxLens.tBloom);
             });
 
             //------------------------------------------------------

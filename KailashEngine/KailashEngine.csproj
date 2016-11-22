@@ -551,6 +551,7 @@
     <None Include="Render\Shader\glsl\dof\dof_COC_Combine.frag" />
     <None Include="Render\Shader\glsl\dof\dof_COC_Fix.frag" />
     <None Include="Render\Shader\glsl\dof\dof_COC.frag" />
+    <None Include="Render\Shader\glsl\dof\dof_DOF_Blur.comp" />
     <None Include="Render\Shader\glsl\final\final_Scene.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_POINT.frag" />
@@ -567,8 +568,7 @@
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.frag" />
-    <None Include="Render\Shader\glsl\special\special_BlurGauss_V.comp" />
-    <None Include="Render\Shader\glsl\special\special_BlurGauss_H.comp" />
+    <None Include="Render\Shader\glsl\special\special_BlurGauss.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurGauss.frag" />

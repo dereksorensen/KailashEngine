@@ -614,7 +614,10 @@ namespace KailashEngine.Render.FX
             //printBokehCount();
             genBokeh(depth_texture);
 
-            genDOF(quad);
+            Debug.DebugHelper.time_function("timing", () =>
+            {
+                genDOF(quad);
+            });
             blendDOF(quad, special, scene_fbo, scene_texture);
         }
     }

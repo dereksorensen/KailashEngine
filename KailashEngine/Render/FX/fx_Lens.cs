@@ -241,7 +241,7 @@ namespace KailashEngine.Render.FX
             getBrightSpots(quad, scene_texture);
 
             genFlare(quad, special);
-            //genBloom(quad, special);
+            genBloom(quad, special);
 
             blend(quad, scene_fbo, camera_matrix);
         }
