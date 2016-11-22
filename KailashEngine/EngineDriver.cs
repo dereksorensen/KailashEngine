@@ -380,7 +380,6 @@ namespace KailashEngine
             _sound_cow.IsRelativeToListener = false;
             _sound_goat = new Sound(EngineHelper.path_resources_audio + "test1.ogg");
 
-            
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -416,7 +415,8 @@ namespace KailashEngine
             _game.scene.flashlight.unique_mesh.transformation = Matrix4.Invert(_game.player.character.spatial.transformation);
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Invert(_game.player.character.spatial.transformation);
             _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
-            _game.scene.flashlight.spatial.rotation_matrix =  Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
+            _game.scene.flashlight.spatial.rotation_matrix = Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
+
 
 
             _render_driver.render(_game.scene, _game.player.camera.spatial);
@@ -428,8 +428,8 @@ namespace KailashEngine
 
             SoundSystem.Instance.Update(e.Time, _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
 
-
             _debug_window.render(_fps);
+
 
             DebugHelper.logGLError();
             SwapBuffers();

@@ -20,7 +20,7 @@ void main()
 	vec3 bokeh = texture(sampler3, v_TexCoord).rgb;
 
 	
-	float lerp = clamp(coc * 2.3, 0.0, 1.0);
+	float lerp = clamp(coc * 2.1, 0.0, 1.0);
 
 	vec3 final = mix(scene, dof + bokeh, lerp);
 

@@ -165,10 +165,10 @@ namespace KailashEngine.Render.FX
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-            special.blur_Guass(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 1);
-            special.blur_Guass(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.5f);
-            special.blur_Guass(quad, 50, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.25f);
-            special.blur_Guass(quad, 60, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.125f);
+            special.blur_Gauss(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 1);
+            special.blur_Gauss(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.5f);
+            special.blur_Gauss(quad, 50, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.25f);
+            special.blur_Gauss(quad, 60, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.125f);
 
             GL.Disable(EnableCap.Blend);
         }
@@ -241,7 +241,7 @@ namespace KailashEngine.Render.FX
             getBrightSpots(quad, scene_texture);
 
             genFlare(quad, special);
-            genBloom(quad, special);
+            //genBloom(quad, special);
 
             blend(quad, scene_fbo, camera_matrix);
         }

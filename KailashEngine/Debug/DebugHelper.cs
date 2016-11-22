@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,25 @@ namespace KailashEngine.Debug
 {
     static class DebugHelper
     {
+        //------------------------------------------------------
+        // Debug
+        //------------------------------------------------------
+
+
+        public static void time_function(string label, Action action)
+        {
+            float dummy = 0f;
+            time_function(label, ref dummy, action);
+        }
+
+        public static void time_function(string label, ref float variable, Action action)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            action();
+            sw.Stop();
+            variable = (float)sw.Elapsed.TotalMilliseconds;
+            Console.WriteLine(label + ": " + variable);
+        }
 
         //------------------------------------------------------
         // Logging

@@ -567,9 +567,11 @@
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.frag" />
+    <None Include="Render\Shader\glsl\special\special_BlurGauss_V.comp" />
+    <None Include="Render\Shader\glsl\special\special_BlurGauss_H.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
-    <None Include="Render\Shader\glsl\special\special_BlurGuass.frag" />
+    <None Include="Render\Shader\glsl\special\special_BlurGauss.frag" />
     <None Include="Resources\Audio\cow.ogg" />
     <None Include="Resources\Audio\cow.wav.reapeaks" />
     <None Include="Resources\Audio\goat.wav.reapeaks" />

@@ -19,7 +19,7 @@ namespace KailashEngine.Render.FX
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
 
-        private const float _max_blur = 100.0f;
+        private const float _max_blur = 200.0f;
         private const float _focus_length = 10.0f;
         private const float _fStop = 0.2f;
         private const float _sensor_width = 33.0f;

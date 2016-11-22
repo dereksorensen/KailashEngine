@@ -17,7 +17,9 @@ namespace KailashEngine.Render.FX
     {
 
         // Programs
-        private Program _pBlur_Guass;
+        private Program _pBlur_Gauss;
+        private Program _pBlur_GaussCompute_H;
+        private Program _pBlur_GaussCompute_V;
         private Program _pBlur_MovingAverage;
         private Program _pBlur_Streak;
 
@@ -39,13 +41,29 @@ namespace KailashEngine.Render.FX
         protected override void load_Programs()
         {
 
-            _pBlur_Guass = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            _pBlur_Gauss = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "special_BlurGuass.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "special_BlurGauss.frag", null)
             });
-            _pBlur_Guass.enable_Samplers(1);
-            _pBlur_Guass.addUniform("blur_amount");
-            _pBlur_Guass.addUniform("texture_size");
+            _pBlur_Gauss.enable_Samplers(1);
+            _pBlur_Gauss.addUniform("blur_amount");
+            _pBlur_Gauss.addUniform("texture_size");
+
+            _pBlur_GaussCompute_H = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurGauss_H.comp", null)
+            });
+            _pBlur_GaussCompute_H.enable_Samplers(2);
+            _pBlur_GaussCompute_H.addUniform("blur_amount");
+            _pBlur_GaussCompute_H.addUniform("texture_size");
+
+            _pBlur_GaussCompute_V = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurGauss_V.comp", null)
+            });
+            _pBlur_GaussCompute_V.enable_Samplers(2);
+            _pBlur_GaussCompute_V.addUniform("blur_amount");
+            _pBlur_GaussCompute_V.addUniform("texture_size");
 
             _pBlur_MovingAverage = _pLoader.createProgram(new ShaderFile[]
             {
@@ -125,10 +143,10 @@ namespace KailashEngine.Render.FX
 
 
         //------------------------------------------------------
-        // Guassian Blur Functions
+        // Gaussian Blur Functions
         //------------------------------------------------------
 
-        public void blur_Guass(
+        public void blur_Gauss(
             fx_Quad quad,
             int blur_amount, float blur_angle,
             Texture texture_to_blur,
@@ -136,7 +154,7 @@ namespace KailashEngine.Render.FX
         {
             Vector2 angle_mod = EngineHelper.createRotationVector(blur_angle);
 
-            blur_Guass(
+            blur_Gauss(
                 quad,
                 blur_amount,
                 angle_mod, angle_mod,
@@ -144,7 +162,7 @@ namespace KailashEngine.Render.FX
                 destination_scale);
         }
 
-        public void blur_Guass(
+        public void blur_Gauss(
             fx_Quad quad,
             int blur_amount, float blur_angle,
             Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement,
@@ -152,7 +170,7 @@ namespace KailashEngine.Render.FX
         {
             Vector2 angle_mod = EngineHelper.createRotationVector(blur_angle);
 
-            blur_Guass(
+            blur_Gauss(
                 quad,
                 blur_amount,
                 angle_mod, angle_mod,
@@ -161,13 +179,13 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void blur_Guass(
+        public void blur_Gauss(
             fx_Quad quad,
             int blur_amount,
             Texture texture_to_blur,
             float destination_scale = 1)
         {
-            blur_Guass(
+            blur_Gauss(
                 quad,
                 blur_amount,
                 new Vector2(1.0f, 0.0f), new Vector2(0.0f, 1.0f),
@@ -175,13 +193,13 @@ namespace KailashEngine.Render.FX
                 destination_scale);
         }
 
-        public void blur_Guass(
+        public void blur_Gauss(
             fx_Quad quad,
             int blur_amount,
             Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement,
             float destination_scale = 1)
         {
-            blur_Guass(
+            blur_Gauss(
                 quad,
                 blur_amount,
                 new Vector2(1.0f, 0.0f), new Vector2(0.0f, 1.0f),
@@ -190,17 +208,17 @@ namespace KailashEngine.Render.FX
         }
 
 
-        private void blur_Guass(
+        private void blur_Gauss(
             fx_Quad quad,
             int blur_amount,
             Vector2 horizontal_mod, Vector2 vertical_mod,
             Texture texture_to_blur, FrameBuffer texture_frame_buffer, DrawBuffersEnum attachement,
             float destination_scale = 1)
         {
-            _pBlur_Guass.bind();
+            _pBlur_Gauss.bind();
 
 
-            GL.Uniform1(_pBlur_Guass.getUniform("blur_amount"), blur_amount);
+            GL.Uniform1(_pBlur_Gauss.getUniform("blur_amount"), blur_amount);
 
 
             Vector2 texture_to_blur_size = new Vector2(texture_to_blur.width, texture_to_blur.height) * destination_scale;
@@ -216,10 +234,10 @@ namespace KailashEngine.Render.FX
             clearAndBindSpecialFrameBuffer();
             GL.Viewport(0, 0, (int)texture_to_blur_size.X, (int)texture_to_blur_size.Y);
 
-            GL.Uniform2(_pBlur_Guass.getUniform("texture_size"), horizontal_mod * horizontal_texture_size);
+            GL.Uniform2(_pBlur_Gauss.getUniform("texture_size"), horizontal_mod * horizontal_texture_size);
 
             // Source
-            texture_to_blur.bind(_pBlur_Guass.getSamplerUniform(0), 0);
+            texture_to_blur.bind(_pBlur_Gauss.getSamplerUniform(0), 0);
 
             quad.render();
 
@@ -241,12 +259,57 @@ namespace KailashEngine.Render.FX
 
 
 
-            GL.Uniform2(_pBlur_Guass.getUniform("texture_size"), vertical_mod * vertical_texture_size);
+            GL.Uniform2(_pBlur_Gauss.getUniform("texture_size"), vertical_mod * vertical_texture_size);
 
             // Source
-            _tSpecial.bind(_pBlur_Guass.getSamplerUniform(0), 0);
+            _tSpecial.bind(_pBlur_Gauss.getSamplerUniform(0), 0);
 
             quad.render();
+
+        }
+
+
+        //------------------------------------------------------
+        // Gaussian Blur Compute Functions
+        //------------------------------------------------------
+
+        public void blur_GaussCompute(
+            int blur_amount,
+            Texture texture_to_blur)
+        {
+
+            clearAndBindSpecialFrameBuffer();
+
+
+            //------------------------------------------------------
+            // Horizontal
+            //------------------------------------------------------
+            _pBlur_GaussCompute_H.bind();
+
+            GL.Uniform1(_pBlur_GaussCompute_H.getUniform("blur_amount"), blur_amount);
+            GL.Uniform2(_pBlur_GaussCompute_H.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
+
+            texture_to_blur.bind(_pBlur_GaussCompute_H.getSamplerUniform(0), 0);
+            _tSpecial.bindImageUnit(_pBlur_GaussCompute_H.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
+ 
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+            //------------------------------------------------------
+            // Vertical
+            //------------------------------------------------------
+            _pBlur_GaussCompute_V.bind();
+
+            GL.Uniform1(_pBlur_GaussCompute_V.getUniform("blur_amount"), blur_amount);
+            GL.Uniform2(_pBlur_GaussCompute_V.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
+
+            _tSpecial.bind(_pBlur_GaussCompute_V.getSamplerUniform(0), 0);
+            texture_to_blur.bindImageUnit(_pBlur_GaussCompute_V.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
         }
 
@@ -261,7 +324,7 @@ namespace KailashEngine.Render.FX
             clearAndBindSpecialFrameBuffer();
 
 
-            int thread_group_size = 32;
+            int thread_group_size = 16;
             Vector2 num_compute_groups_destination = new Vector2(
                 ((texture_to_blur.width) + thread_group_size - 1) / thread_group_size,
                 ((texture_to_blur.height) + thread_group_size - 1) / thread_group_size);

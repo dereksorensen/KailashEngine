@@ -201,7 +201,7 @@ namespace KailashEngine.Render
 
 
 
-            _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
+            //_fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
@@ -225,6 +225,14 @@ namespace KailashEngine.Render
             _fxCrosshair.render(scene.animation_timer.seconds);
 
 
+            //_fxSpecial.blur_Gauss(_fxQuad, 100, _fxGBuffer.tDiffuse_ID);
+            //_fxSpecial.blur_MovingAverage(100, _fxGBuffer.tDiffuse_ID);
+            Debug.DebugHelper.time_function("timing", () =>
+            {
+                _fxSpecial.blur_GaussCompute(200, _fxLens.tBloom);
+                //_fxSpecial.blur_Gauss(_fxQuad, 1, _fxLens.tBloom);
+                //_fxSpecial.blur_MovingAverage(50, _fxLens.tBloom);
+            });
 
             //------------------------------------------------------
             // Debug Views
@@ -232,8 +240,8 @@ namespace KailashEngine.Render
             if (_enable_debug_views)
             {
                 _fxQuad.render_Texture(_fxDepthOfField.tCOC_Final, 0.25f, 3);
-                _fxQuad.render_Texture(_fxDepthOfField.tBokeh_Points, 0.25f, 2);
-                _fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 1);
+                _fxQuad.render_Texture(_fxLens.tBloom, 0.25f, 2);
+                _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 
