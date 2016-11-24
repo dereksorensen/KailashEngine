@@ -15,41 +15,22 @@ namespace KailashEngine.Debug
         //------------------------------------------------------
         // Debug
         //------------------------------------------------------
-
-
         public static void time_function(string label, Action action)
         {
-            float dummy = 0f;
-            time_function(label, ref dummy, action);
-        }
-
-        public static void time_function(string label, ref float variable, Action action)
-        {
-            //GL.Finish();
-            //Stopwatch sw = Stopwatch.StartNew();
-
- 
-            //action();
-
-
-            //sw.Stop();
-            //GL.Finish();
-            //variable = (float)sw.Elapsed.TotalMilliseconds;
-            //Console.WriteLine(label + ": " + variable);
-
-            // Create a query object.
             int query = 0;
             GL.GenQueries(1, out query);
-            // Query current timestamp 1
             GL.BeginQuery(QueryTarget.TimeElapsed, query);
+            Stopwatch sw = Stopwatch.StartNew();
 
             action();
 
+            sw.Stop();
             GL.EndQuery(QueryTarget.TimeElapsed);
-            // See how much time the rendering of object i took in nanoseconds.
-            int result = 0;
-            GL.GetQueryObject(query, GetQueryObjectParam.QueryResult, out result);
-            Console.WriteLine(label + ": " + result / 1000.0f / 1000.0f + "ms");
+
+            float csharp_time = (float)sw.Elapsed.TotalMilliseconds;
+            int opengl_time = 0;
+            GL.GetQueryObject(query, GetQueryObjectParam.QueryResult, out opengl_time);
+            logInfo(0, label, (opengl_time / 1000.0f / 1000.0f) + csharp_time + " ms");
         }
 
         //------------------------------------------------------

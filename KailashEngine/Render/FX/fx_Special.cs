@@ -53,6 +53,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "special_BlurGauss.comp", null)
             });
             _pBlur_GaussCompute.enable_Samplers(2);
+            _pBlur_GaussCompute.addUniform("counter");
             _pBlur_GaussCompute.addUniform("blur_amount");
             _pBlur_GaussCompute.addUniform("texture_size");
             _pBlur_GaussCompute.addUniform("direction_selector");
@@ -274,29 +275,49 @@ namespace KailashEngine.Render.FX
             clearAndBindSpecialFrameBuffer();
 
             _pBlur_GaussCompute.bind();
-            GL.Uniform1(_pBlur_GaussCompute.getUniform("blur_amount"), blur_amount);
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("blur_amount"), blur_amount / 2);
             GL.Uniform2(_pBlur_GaussCompute.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
 
             //------------------------------------------------------
-            // Horizontal
+            // Horizontal - 1
             //------------------------------------------------------
             GL.Uniform1(_pBlur_GaussCompute.getUniform("direction_selector"), 0);
-
             texture_to_blur.bind(_pBlur_GaussCompute.getSamplerUniform(0), 0);
             _tSpecial.bindImageUnit(_pBlur_GaussCompute.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
+
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 0);
             GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
  
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 1);
+            GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
+
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 2);
+            GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
+
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 3);
+            GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
+
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
 
             //------------------------------------------------------
             // Vertical
             //------------------------------------------------------
             GL.Uniform1(_pBlur_GaussCompute.getUniform("direction_selector"), 1);
-
             _tSpecial.bind(_pBlur_GaussCompute.getSamplerUniform(0), 0);
             texture_to_blur.bindImageUnit(_pBlur_GaussCompute.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 0);
+            GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
+
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 1);
+            GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
+
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 2);
+            GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
+
+            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 3);
             GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);

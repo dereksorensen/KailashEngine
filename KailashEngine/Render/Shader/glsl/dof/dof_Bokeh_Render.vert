@@ -29,7 +29,7 @@ void main()
 	gl_Position = vec4(point_position, 0.0, 1.0);
 	
 	// Bokeh Size
-	float max_bokeh_size = max_blur / 5.7;
+	float max_bokeh_size = max_blur / 6.0;
 	float bokeh_size = min(coc * max_bokeh_size, max_bokeh_size);
 
 	// Bokeh Color
