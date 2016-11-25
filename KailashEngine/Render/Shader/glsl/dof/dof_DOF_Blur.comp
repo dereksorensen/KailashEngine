@@ -1,5 +1,5 @@
 ﻿
-layout (local_size_x = 1024) in;
+layout (local_size_x = 512) in;
 
 
 uniform sampler2D sampler0;				// Source Texture
@@ -16,12 +16,13 @@ uniform vec2 texture_size;
 
 uniform float max_blur;
 
+int fragmentation = 2;
+
 void main() 
 {
 	uint id = gl_LocalInvocationID.x;
-	int mult = 2;
 
-	ivec2 texCoord = ivec2(id * mult + counter, gl_WorkGroupID.x);
+	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
 
 	// Swizzle with uniform so we don't have to branch
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
@@ -32,7 +33,7 @@ void main()
 	barrier();
 	memoryBarrierShared();
 
-	if(id > texture_size_early_out / mult)
+	if(id > texture_size_early_out / fragmentation)
 	{
 		imageStore(sampler1, texCoord, vec4(0.0));
 		return;
@@ -61,15 +62,21 @@ void main()
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
 
+
 	for (int i = 1; i < num_samples; i++)
 	{
 		int index = i;
+		ivec2 samplerCoord = ivec2(id + index, id - index);
 
-		final += cache[id + index] * guass_increment.x;
-		final += cache[id - index] * guass_increment.x;
+		final += (
+			(cache[samplerCoord.x] * guass_increment.x) + 
+			(cache[samplerCoord.y] * guass_increment.x)
+		);
+
 
 		increment_sum += 2.0 * guass_increment.x;
 		guass_increment.xy *= guass_increment.yz;
+
 	}
 
 	final /= increment_sum;

@@ -274,6 +274,7 @@ namespace KailashEngine.Render.FX
 
             clearAndBindSpecialFrameBuffer();
 
+
             _pBlur_GaussCompute.bind();
             GL.Uniform1(_pBlur_GaussCompute.getUniform("blur_amount"), blur_amount / 2);
             GL.Uniform2(_pBlur_GaussCompute.getUniform("texture_size"), texture_to_blur.dimensions.Xy);
@@ -288,15 +289,15 @@ namespace KailashEngine.Render.FX
 
             GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 0);
             GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
- 
+
             GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 1);
             GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
 
-            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 2);
-            GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
+            //GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 2);
+            //GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
 
-            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 3);
-            GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
+            //GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 3);
+            //GL.DispatchCompute((int)texture_to_blur.dimensions.Y, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
@@ -314,11 +315,11 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 1);
             GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
 
-            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 2);
-            GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
+            //GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 2);
+            //GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
 
-            GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 3);
-            GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
+            //GL.Uniform1(_pBlur_GaussCompute.getUniform("counter"), 3);
+            //GL.DispatchCompute((int)texture_to_blur.dimensions.X, 1, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 

@@ -669,7 +669,7 @@ namespace KailashEngine.Render.FX
 
             Debug.DebugHelper.time_function("timing", () =>
             {
-               genDOF(quad);
+                genDOF(quad);
             });
             blendDOF(quad, special, scene_fbo, scene_texture);
         }

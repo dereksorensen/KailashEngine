@@ -226,19 +226,25 @@ namespace KailashEngine.Render
 
 
 
-            //_fxSpecial.blur_GaussCompute(250, _fxLens.tBloom);
-            //_fxSpecial.blur_Gauss(_fxQuad, 500, _fxLens.tBloom);
-            //_fxSpecial.blur_MovingAverage(500, _fxLens.tBloom);
+            //Debug.DebugHelper.time_function("timing", () =>
+            //{
+            //    //_fxSpecial.blur_GaussCompute(100, _fxDepthOfField.tDOF_Scene);
+            //    //_fxSpecial.blur_Gauss(_fxQuad, 200, _fxDepthOfField.tDOF_Scene);
+            //    //_fxSpecial.blur_MovingAverage(500, _fxLens.tBloom);
+            //});
 
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
             if (_enable_debug_views)
             {
-                _fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 0.25f, 3);
-                _fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 2);
-                _fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
-                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
+                //_fxQuad.render_Texture(_fxSpecial.tSpecial, 1f, 0);
+
+                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 0.25f, 3);
+                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 2);
+                //_fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
+                //_fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 
         }
