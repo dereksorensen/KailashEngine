@@ -28,8 +28,10 @@ namespace KailashEngine.Debug
         private Bar _bar_fps;
         private FloatVariable _fps;
 
-        private Bar _bar_logs;
-        private StringVariable _logs;
+        private Bar _bar_timers;
+        private FloatVariable _timer_1;
+        private FloatVariable _timer_2;
+        private FloatVariable _timer_3;
 
 
         public DebugWindow()
@@ -43,7 +45,7 @@ namespace KailashEngine.Debug
         public void load()
         {
             createWindow_FPS(_context_debug);
-            createWindow_Logs(_context_debug);
+            createWindow_Timers(_context_debug);
         }
 
 
@@ -108,24 +110,39 @@ namespace KailashEngine.Debug
             _bar_fps.Label = "FPS";
             _bar_fps.Contained = true;
             _bar_fps.Color = Color.Black;
-            _bar_fps.Size = new Size(300, 70);
-            _bar_fps.ValueColumnWidth = 120;
+            _bar_fps.Size = new Size(250, 50);
+            _bar_fps.ValueColumnWidth = 90;
             _bar_fps.Position = new Point(10, 10);
+            _bar_fps.RefreshRate = 1;
 
             _fps = new FloatVariable(_bar_fps, 0.0f);
             _fps.Label = "FPS";
 
-            new Separator(_bar_fps);
         }
 
         //------------------------------------------------------
-        // Logs Window
-        //------------------------------------------------------.
-        private void createWindow_Logs(Context context)
+        // Timers Window
+        //------------------------------------------------------
+        public void toggleTimers()
         {
-            _bar_logs = new Bar(context);
-            _bar_logs.Iconified = true;
-            _bar_logs.RefreshRate = 1;    
+            _bar_timers.Iconified = !_bar_timers.Iconified;
+        }
+
+        private void createWindow_Timers(Context context)
+        {
+            _bar_timers = new Bar(context);
+            _bar_timers.Label = "Timers (ms)";
+            _bar_timers.Contained = true;
+            _bar_timers.Color = Color.DarkRed;
+            _bar_timers.Size = new Size(250, 100);
+            _bar_timers.ValueColumnWidth = 90;
+            _bar_timers.Position = new Point(10, 70);
+            _bar_timers.RefreshRate = 1;
+
+
+            _timer_1 = new FloatVariable(_bar_timers);
+            _timer_2 = new FloatVariable(_bar_timers);
+            _timer_3 = new FloatVariable(_bar_timers);
         }
 
         //------------------------------------------------------
@@ -141,10 +158,15 @@ namespace KailashEngine.Debug
         {
             try
             {
-                //_bar_debug.Iconified = GV.display_debugWindow;
-
-                //_bar_logs.Help = DebugHelper.current_log;
                 _fps.Value = current_fps;
+
+                _timer_1.Value = DebugHelper.timer_1.time;
+                _timer_1.Label = DebugHelper.timer_1.name ?? "N/A";
+                _timer_2.Value = DebugHelper.timer_2.time;
+                _timer_2.Label = DebugHelper.timer_2.name ?? "N/A";
+                _timer_3.Value = DebugHelper.timer_3.time;
+                _timer_3.Label = DebugHelper.timer_3.name ?? "N/A";
+
                 _context_debug.Draw();
             }
             catch (Exception e)

@@ -174,6 +174,9 @@ namespace KailashEngine
                         centerMouse();
                     }
                     break;
+                case Key.F8:
+                    _debug_window.toggleTimers();
+                    break;
                 case Key.F9:
                     _render_driver.toggleDebugViews();
                     break;

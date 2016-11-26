@@ -659,15 +659,22 @@ namespace KailashEngine.Render.FX
         public void render(fx_Quad quad, fx_Special special, Texture depth_texture, FrameBuffer scene_fbo, Texture scene_texture)
         {
             autoFocus(depth_texture);
-            ////printFocusDistance();
-            genCOC(quad, special, depth_texture);
+            Debug.DebugHelper.time_function("DOF COC", 1, () =>
+            {
 
-            resetBokeh();
-            extractBokeh(quad, depth_texture, scene_texture);
-            //printBokehCount();
-            genBokeh(depth_texture);
+                ////printFocusDistance();
+                genCOC(quad, special, depth_texture);
+            });
 
-            Debug.DebugHelper.time_function("timing", () =>
+            Debug.DebugHelper.time_function("DOF BOKEH", 2, () =>
+            {
+                resetBokeh();
+                extractBokeh(quad, depth_texture, scene_texture);
+                //printBokehCount();
+                genBokeh(depth_texture);
+            });
+
+            Debug.DebugHelper.time_function("DOF Blur", 3, () =>
             {
                 genDOF(quad);
             });

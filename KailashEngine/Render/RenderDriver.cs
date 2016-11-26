@@ -170,6 +170,11 @@ namespace KailashEngine.Render
         }
 
 
+        public void toggleDebugViews()
+        {
+            _enable_debug_views = !_enable_debug_views;
+        }
+
         //------------------------------------------------------
         // Rendering
         //------------------------------------------------------
@@ -250,10 +255,6 @@ namespace KailashEngine.Render
         }
 
 
-        public void toggleDebugViews()
-        {
-            _enable_debug_views = !_enable_debug_views;
-        }
 
 
     }

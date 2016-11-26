@@ -13,9 +13,9 @@ namespace KailashEngine.Debug
     static class DebugHelper
     {
         //------------------------------------------------------
-        // Debug
+        // Timers
         //------------------------------------------------------
-        public static void time_function(string label, Action action)
+        public static void time_function(string label, int timer, Action action)
         {
             int query = 0;
             GL.GenQueries(1, out query);
@@ -30,14 +30,42 @@ namespace KailashEngine.Debug
             float csharp_time = (float)sw.Elapsed.TotalMilliseconds;
             int opengl_time = 0;
             GL.GetQueryObject(query, GetQueryObjectParam.QueryResult, out opengl_time);
-            logInfo(0, label, (opengl_time / 1000.0f / 1000.0f) + csharp_time + " ms");
+
+            float total_time = (opengl_time / 1000.0f / 1000.0f) + csharp_time;
+            switch(timer)
+            {
+                case 1:
+                    _timer_1.time = total_time;
+                    _timer_1.name = label;
+                    break;
+                case 2:
+                    _timer_2.time = total_time;
+                    _timer_2.name = label;
+                    break;
+                case 3:
+                    _timer_3.time = total_time;
+                    _timer_3.name = label;
+                    break;
+            }
         }
+
+        public struct Timer
+        {
+            public string name;
+            public float time;
+        }
+
+        private static Timer _timer_1;
+        public static Timer timer_1 { get { return _timer_1; } }
+        private static Timer _timer_2;
+        public static Timer timer_2 { get { return _timer_2; } }
+        private static Timer _timer_3;
+        public static Timer timer_3 { get { return _timer_3; } }
+
 
         //------------------------------------------------------
         // Logging
         //------------------------------------------------------
-
-
         private const string log_format = "{0, -40} {1, 0}";
         private const int verbosity_base = 3;
 
