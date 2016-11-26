@@ -11,9 +11,6 @@ uniform sampler2D sampler3;		// Bokeh
 
 void main()
 {
-
-	const float MAX_BLUR = 3.0;
-
 	vec3 scene = texture(sampler0, v_TexCoord).rgb;
 	vec3 dof = texture(sampler1, v_TexCoord).rgb;
 	float coc = texture(sampler2, v_TexCoord).r;

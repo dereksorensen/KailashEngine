@@ -18,7 +18,8 @@ uniform float max_blur;
 
 int fragmentation = 2;
 
-void main() 
+
+void gaussian() 
 {
 	uint id = gl_LocalInvocationID.x;
 
@@ -83,4 +84,64 @@ void main()
 
 	imageStore(sampler1, texCoord, vec4(final, 1.0));
 
+}
+
+void box()
+{
+	uint id = gl_LocalInvocationID.x;
+
+	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
+
+	// Swizzle with uniform so we don't have to branch
+	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
+	float texture_size_early_out = texture_size[direction_selector];
+
+	cache[id] = texture(sampler0, texCoord / texture_size).xyz;
+	
+	barrier();
+	memoryBarrierShared();
+
+	if(id > texture_size_early_out / fragmentation)
+	{
+		imageStore(sampler1, texCoord, vec4(0.0));
+		return;
+	}
+
+	float coc = texture(sampler2, texCoord / texture_size).r / 20;
+	coc = min(coc * max_blur, max_blur / 1.0);
+	int num_samples = int(ceil(coc));
+
+	if(num_samples <= 0)
+	{
+		imageStore(sampler1, texCoord, vec4(cache[id],1.0));
+		return;
+	}
+	
+	
+	vec3 final = cache[id];
+
+
+	for (int i = 1; i < num_samples; i++)
+	{
+		int index = i;
+		ivec2 samplerCoord = ivec2(id + index, id - index);
+
+		final += (
+			(cache[samplerCoord.x]) + 
+			(cache[samplerCoord.y])
+		);
+
+	}
+
+	final /= num_samples;
+
+	imageStore(sampler1, texCoord, vec4(final, 1.0));
+
+}
+
+
+void main() 
+{
+	//gaussian();
+	box();
 }

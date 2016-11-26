@@ -54,7 +54,7 @@ void main()
 
 	float diff = max((scene_lum - average_lum),0.0);
 	
-	float lum_threshold = 0.05;
+	float lum_threshold = 0.1;
 	float coc_threshold = 0.1;
 
 	// Copy over scene if not a bokeh point

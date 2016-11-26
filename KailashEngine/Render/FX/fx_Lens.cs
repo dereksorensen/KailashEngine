@@ -153,7 +153,8 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
-            special.blur_MovingAverage(15, _tFlare);
+            //special.blur_MovingAverage(15, _tFlare);
+            special.blur_Gauss(quad, 75, _tFlare, _fLens, DrawBuffersEnum.ColorAttachment1);
         }
 
 
@@ -167,8 +168,8 @@ namespace KailashEngine.Render.FX
 
             special.blur_Gauss(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 1);
             special.blur_Gauss(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.5f);
-            special.blur_Gauss(quad, 50, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.25f);
-            special.blur_Gauss(quad, 60, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.125f);
+            special.blur_Gauss(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.25f);
+            special.blur_Gauss(quad, 40, _tBloom, _fLens, DrawBuffersEnum.ColorAttachment0, 0.125f);
 
             GL.Disable(EnableCap.Blend);
         }

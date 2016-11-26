@@ -190,7 +190,10 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
-            _fxGBuffer.pass_DeferredShading(scene);
+            Debug.DebugHelper.time_function("gbuff", 2, () =>
+            {
+                _fxGBuffer.pass_DeferredShading(scene);
+            });
 
 
             _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer, scene.circadian_timer.position);
@@ -231,11 +234,11 @@ namespace KailashEngine.Render
 
 
 
-            //Debug.DebugHelper.time_function("timing", () =>
+            //Debug.DebugHelper.time_function("Moving Average",1 , () =>
             //{
             //    //_fxSpecial.blur_GaussCompute(100, _fxDepthOfField.tDOF_Scene);
-            //    //_fxSpecial.blur_Gauss(_fxQuad, 200, _fxDepthOfField.tDOF_Scene);
-            //    //_fxSpecial.blur_MovingAverage(500, _fxLens.tBloom);
+            //    _fxSpecial.blur_Gauss(_fxQuad, 75, _fxDepthOfField.tDOF_Scene);
+            //    //_fxSpecial.blur_MovingAverage(19, _fxDepthOfField.tDOF_Scene);
             //});
 
             //------------------------------------------------------
@@ -243,13 +246,13 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if (_enable_debug_views)
             {
-                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
+                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 1f, 0);
                 //_fxQuad.render_Texture(_fxSpecial.tSpecial, 1f, 0);
 
-                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 0.25f, 3);
-                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 2);
-                //_fxQuad.render_Texture(_fxSpecial.tSpecial, 0.25f, 1);
-                //_fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+                _fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 0.25f, 3);
+                _fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 2);
+                _fxQuad.render_Texture(_fxDepthOfField.tCOC_Foreground, 0.25f, 1);
+                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 
         }

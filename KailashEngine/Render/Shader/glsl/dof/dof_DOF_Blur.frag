@@ -13,7 +13,7 @@ uniform float max_blur;
 uniform float sigmaCoeff = 18.7;
 
 
-vec3 guassBlur()
+vec3 gaussBlur()
 {
 	vec3 scene = texture(sampler0, v_TexCoord).xyz;
 	float coc = texture(sampler1, v_TexCoord).r;
@@ -74,14 +74,16 @@ vec3 guassBlur()
 
 
 
-vec3 gatherBlur()
+
+vec3 boxBlur()
 {
 
 	vec3 scene = texture(sampler0, v_TexCoord).xyz;
 	float depth = texture(sampler1,v_TexCoord).w;
 	float coc = texture(sampler1, v_TexCoord).r;
 
-	coc = min(coc * (max_blur / 25.0), max_blur);
+	float max_blur_adjusted = max_blur / 22.0;
+	coc = min(coc * max_blur_adjusted, max_blur_adjusted);
 	int num_samples = int(ceil(coc));
 
 	if(num_samples <= 0)
@@ -96,19 +98,24 @@ vec3 gatherBlur()
 
 	for(int i = -num_samples; i <= num_samples; ++i)
 	{
-		vec2 coord = v_TexCoord + float(i) * texture_size;
+		vec2 offset = float(i) * texture_size;
+		vec2 coord = v_TexCoord + offset;
 
-		float sampleCOC = texture(sampler1, coord).r;
-		float sampleDEPTH = texture(sampler1,coord).w;
+		float coc_left = texture(sampler1, coord).r;
+		float depth_left = texture(sampler1,coord).w;
 
 		float cocWeight = clamp(coc + 1.0f - abs(float(i)),0,1);
-		float depthWeight = float(sampleDEPTH >= depth);
-		float blurWeight= sampleCOC;
-		float tapWeight = cocWeight * clamp(depthWeight + blurWeight,0,1);
+		float depthWeight = float(depth_left >= depth);
+		float tapWeight = cocWeight * clamp(depthWeight + coc_left,0,1);
 
-		vec3 color = texture(sampler0, coord).xyz;
+		float cocWeight_n = clamp(coc + 1.0f - abs(float(i)),0,1);
+		float blurWeight_n = coc_left;
+		float weight_n = clamp(blurWeight_n, 0.0, 1.0);
+		//tapWeight = weight_n / cocWeight_n;
+
+		vec3 color = texture(sampler0, coord).xyz * tapWeight;
 			
-		final += color*tapWeight;
+		final += color;
 		totalWeight += tapWeight;
 	}
 	final /= totalWeight;
@@ -117,9 +124,8 @@ vec3 gatherBlur()
 }
 
 
-
 void main()
 {
-	color = guassBlur();
-	//color = gatherBlur();
+	//color = gaussBlur();
+	color = boxBlur();
 }
