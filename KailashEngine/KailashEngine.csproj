@@ -554,11 +554,14 @@
     <None Include="Render\Shader\glsl\dof\dof_DOF_Blur.comp" />
     <None Include="Render\Shader\glsl\final\final_Scene.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Accumulation.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.geom" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.tesc" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.tese" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_POINT.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Stencil.vert" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_SPOT.frag" />
-    <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.frag" />
-    <None Include="Render\Shader\glsl\gBuffer\gen_gBuffer.vert" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.frag" />
+    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.vert" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Lighting.include" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
     <None Include="Render\Shader\glsl\hdr\hdr_AutoExposure.comp" />

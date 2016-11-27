@@ -19,6 +19,9 @@ namespace KailashEngine.Render.FX
 {
     class fx_gBuffer : RenderEffect
     {
+        // Properties
+        private bool _enable_Wireframe = false;
+
         // Programs
         private Program _pGeometry;
         private Program _pStencil;
@@ -56,10 +59,10 @@ namespace KailashEngine.Render.FX
             get { return _tSpecular; }
         }
 
-        private Texture _tLighting;
-        public Texture tLighting
+        private Texture _tLighting_Diffuse;
+        public Texture tLighting_Diffuse
         {
-            get { return _tLighting; }
+            get { return _tLighting_Diffuse; }
         }
 
         private Texture _tLighting_Specular;
@@ -93,10 +96,15 @@ namespace KailashEngine.Render.FX
             // Rendering Geometry into gBuffer
             _pGeometry = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gen_gBuffer.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gen_gBuffer.frag", geometry_helpers)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Geometry.vert", null),
+                new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", null),
+                new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", null),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "gBuffer_Geometry.geom", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Geometry.frag", geometry_helpers)
             });
             _pGeometry.enable_MeshLoading();
+            _pGeometry.addUniform("enable_Wireframe");
+            _pGeometry.addUniform("render_size");
 
             // Stencil light bounds for lighting pass
             _pStencil = _pLoader.createProgram(new ShaderFile[]
@@ -164,12 +172,12 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tSpecular.load();
 
-            _tLighting = new Texture(TextureTarget.Texture2D,
+            _tLighting_Diffuse = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tLighting.load();
+            _tLighting_Diffuse.load();
 
             _tLighting_Specular = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
@@ -185,7 +193,7 @@ namespace KailashEngine.Render.FX
                 { FramebufferAttachment.ColorAttachment0, _tDiffuse_ID },
                 { FramebufferAttachment.ColorAttachment1, _tNormal_Depth },
                 { FramebufferAttachment.ColorAttachment2, _tSpecular },
-                { FramebufferAttachment.ColorAttachment6, _tLighting },
+                { FramebufferAttachment.ColorAttachment6, _tLighting_Diffuse },
                 { FramebufferAttachment.ColorAttachment7, _tLighting_Specular }
             });
         }
@@ -206,7 +214,18 @@ namespace KailashEngine.Render.FX
 
         }
 
+        //------------------------------------------------------
+        // Helpers
+        //------------------------------------------------------
+        public void toggleWireframe()
+        {
+            _enable_Wireframe = !_enable_Wireframe;
+        }
 
+
+        //------------------------------------------------------
+        // Geometry
+        //------------------------------------------------------
 
         private void pass_Geometry(Scene scene)
         {
@@ -223,12 +242,16 @@ namespace KailashEngine.Render.FX
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
             
-
             _pGeometry.bind();
+            GL.Uniform1(_pGeometry.getUniform("enable_Wireframe"), _enable_Wireframe ? 1 : 0);
+            GL.Uniform2(_pGeometry.getUniform("render_size"), _resolution.dimensions);
+
             scene.render(_pGeometry);
         }
 
-
+        //------------------------------------------------------
+        // Lighting
+        //------------------------------------------------------
 
         private void pass_Stencil(Light l)
         {
@@ -309,6 +332,9 @@ namespace KailashEngine.Render.FX
         }
 
 
+        //------------------------------------------------------
+        // Passes
+        //------------------------------------------------------
 
         public void pass_DeferredShading(Scene scene)
         {
@@ -324,7 +350,10 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Fill gBuffer with Scene
             //------------------------------------------------------
-            pass_Geometry(scene);
+            Debug.DebugHelper.time_function("Geo Pass", 1, () =>
+            {
+                pass_Geometry(scene);
+            });
 
             //------------------------------------------------------
             // Accumulate Lighting from Scene
@@ -366,7 +395,7 @@ namespace KailashEngine.Render.FX
 
             _pAccumulation.bind();
 
-            _tLighting.bind(_pAccumulation.getSamplerUniform(0), 0);
+            _tLighting_Diffuse.bind(_pAccumulation.getSamplerUniform(0), 0);
             _tLighting_Specular.bind(_pAccumulation.getSamplerUniform(1), 1);
             _tDiffuse_ID.bind(_pAccumulation.getSamplerUniform(2), 2);
 

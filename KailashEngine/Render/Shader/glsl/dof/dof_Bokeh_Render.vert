@@ -34,7 +34,7 @@ void main()
 
 	// Bokeh Color
 	float coc_area = bokeh_size * bokeh_size * MATH_PI;
-	float falloff = pow(1.0/coc_area, 0.57);
+	float falloff = pow(1.0/coc_area, 0.47);
 	vec4 color_mod = bokeh_color * falloff;
 
 	v_bokehColor = color_mod;

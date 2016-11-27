@@ -155,7 +155,6 @@ namespace KailashEngine.Client
             // Draw Scene
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, _animation_timer.seconds);
             WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
-
         }
 
     }

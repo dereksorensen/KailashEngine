@@ -180,6 +180,9 @@ namespace KailashEngine
                 case Key.F9:
                     _render_driver.toggleDebugViews();
                     break;
+                case Key.F10:
+                    _render_driver.toggleWireframe();
+                    break;
                 case Key.Escape:
                     Exit();
                     break;
@@ -436,7 +439,7 @@ namespace KailashEngine
 
             DebugHelper.logGLError();
             SwapBuffers();
-            
+
         }
 
         protected override void OnUnload(EventArgs e)

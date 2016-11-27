@@ -175,6 +175,11 @@ namespace KailashEngine.Render
             _enable_debug_views = !_enable_debug_views;
         }
 
+        public void toggleWireframe()
+        {
+            _fxGBuffer.toggleWireframe();
+        }
+
         //------------------------------------------------------
         // Rendering
         //------------------------------------------------------
@@ -190,10 +195,7 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
-            Debug.DebugHelper.time_function("gbuff", 2, () =>
-            {
-                _fxGBuffer.pass_DeferredShading(scene);
-            });
+            _fxGBuffer.pass_DeferredShading(scene);
 
 
             _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer, scene.circadian_timer.position);

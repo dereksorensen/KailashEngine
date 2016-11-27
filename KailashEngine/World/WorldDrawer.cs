@@ -34,11 +34,16 @@ namespace KailashEngine.World
         // Standard OGL calls to draw meshes / lights
         private static void draw(Mesh mesh, string mesh_category)
         {
+            draw(mesh, BeginMode.Triangles, mesh_category);
+        }
+
+        private static void draw(Mesh mesh, BeginMode begin_mode, string mesh_category)
+        {
             try
             {
                 GL.BindVertexArray(mesh.vao);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, mesh.ibo);
-                GL.DrawElements(BeginMode.Triangles, mesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(begin_mode, mesh.index_data.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindVertexArray(0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -143,7 +148,7 @@ namespace KailashEngine.World
                     trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
 
                     
-                    draw(submesh, "mesh");
+                    draw(submesh, BeginMode.Patches, "mesh");
 
                 }
             }
@@ -197,7 +202,7 @@ namespace KailashEngine.World
 
 
 
-                draw(light.unique_mesh.mesh.submeshes.ElementAt(0), "light");
+                draw(light.unique_mesh.mesh.submeshes.ElementAt(0), BeginMode.Patches, "light");
 
                 //------------------------------------------------------
                 // Display Light Bounds

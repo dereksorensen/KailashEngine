@@ -6,10 +6,10 @@ layout(location = 3) in vec2 texCoord;
 layout(location = 4) in vec4 bone_ids;
 layout(location = 5) in vec4 bone_weights;
 
-out vec2 v_TexCoords;
+out vec2 v_TexCoord;
 out vec4 v_objectPosition;
 out vec3 v_worldPosition;
-out vec3 v_viewPosition;
+//out vec3 v_viewPosition;
 out vec3 v_Normal;
 out vec3 v_Tangent;
 
@@ -56,13 +56,14 @@ void main()
 	v_objectPosition = v_position;
 	vec4 world_position = (model * v_objectPosition);
 	v_worldPosition = world_position.xyz;
-	vec4 viewPosition = view *  world_position;
-	v_viewPosition = viewPosition.xyz;
-	vec4 clipPosition = perspective * viewPosition;
-	gl_Position = clipPosition;
+
+	//vec4 viewPosition = view *  world_position;
+	//v_viewPosition = viewPosition.xyz;
+	//vec4 clipPosition = perspective * viewPosition;
+	//gl_Position = clipPosition;
 
 	// Texture Coordinates
-	v_TexCoords = texCoord;
+	v_TexCoord = texCoord;
 
 	// Put vertex normal in world space
 	v_Normal = normalize((model_normal * v_normal).xyz);
