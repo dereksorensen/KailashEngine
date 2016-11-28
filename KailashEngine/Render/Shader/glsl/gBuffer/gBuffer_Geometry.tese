@@ -28,9 +28,9 @@ layout(std140, binding = 1) uniform cameraSpatials
 
 
 
-uniform sampler2D displacementMap;
-uniform int enable_DisplacementMap = 0;
-uniform float displacementStrength;
+uniform sampler2D displacement_texture;
+uniform int enable_displacement_texture;
+uniform float displacement_strength = 0.00005;
 
 
 vec2 interpolate2D_triangle(vec2 v0, vec2 v1, vec2 v2)
@@ -79,10 +79,9 @@ void main()
 	te_worldPosition = interpolate3D_triangle(tc_worldPosition[0], tc_worldPosition[1], tc_worldPosition[2]);
 	vec4 objectPosition = interpolate3D_triangle(tc_objectPosition[0], tc_objectPosition[1], tc_objectPosition[2]);
 
-	if(enable_DisplacementMap == 1)
+	if(enable_displacement_texture == 1)
 	{	
-		float displacement = texture(displacementMap, te_TexCoord).r * displacementStrength;
-		float previous_Displacement = displacement;
+		float displacement = texture(displacement_texture, te_TexCoord).r * displacement_strength;
 		vec3 displacement_mod = te_Normal * displacement;
 		te_worldPosition += displacement_mod;
 	}

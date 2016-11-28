@@ -229,7 +229,6 @@ namespace KailashEngine.Render.FX
 
         private void pass_Geometry(Scene scene)
         {
-
             _fGBuffer.bind(new DrawBuffersEnum[]
             {
                 DrawBuffersEnum.ColorAttachment0,

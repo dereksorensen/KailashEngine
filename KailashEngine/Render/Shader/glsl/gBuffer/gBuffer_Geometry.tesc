@@ -26,8 +26,8 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_look;
 };
 
-uniform int enable_DisplacementMap = 0;
-uniform vec2 renderSize;
+uniform int enable_displacement_texture;
+uniform vec2 render_size;
 
 float GetTessLevel(float Distance0, float Distance1)
 {
@@ -61,7 +61,7 @@ float screenSphereSize(vec4 e1, vec4 e2)
 	p2 = p2 / p2.w;
 	//p2 = p2 * 0.5 + 0.5;
 
-	float l = length((p1.xy - p2.xy) * renderSize * 0.5);
+	float l = length((p1.xy - p2.xy) * render_size * 0.5);
 
 	return (clamp(l / 15.0, 1.0, 64.0));
 }
@@ -94,7 +94,7 @@ void main()
 		edgeInFrustum(vertex_position[2], vertex_position[0]) || 
 		edgeInFrustum(vertex_position[2], vertex_position[1]))
 	{
-		if(enable_DisplacementMap == 0)
+		if(enable_displacement_texture == 0)
 		{
 			tessLevel = 1.0;
 			gl_TessLevelOuter[2] = tessLevel;

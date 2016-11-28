@@ -47,7 +47,6 @@ uniform float specular_shininess;
 uniform int enable_normal_texture;
 uniform sampler2D normal_texture;
 
-uniform sampler2D displacement_texture;
 
 uniform int enable_parallax_texture;
 uniform sampler2D parallax_texture;

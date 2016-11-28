@@ -115,7 +115,7 @@ namespace KailashEngine.World.Model
             _emission = 0.0f;
             _specular_color = new Vector3(1.0f, 1.0f, 1.0f);
             _specular_shininess = 50.0f;
-            _displacement_strength = 1.0f;
+            _displacement_strength = 0.5f;
 
             _diffuse_image = null;
             _specular_image = null;
