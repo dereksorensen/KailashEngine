@@ -127,9 +127,6 @@ namespace KailashEngine.World
                 }
 
 
-
-
-
                 foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {
                     //------------------------------------------------------
@@ -182,16 +179,17 @@ namespace KailashEngine.World
                 // Load Mesh's pre-transformation Matrix
                 Matrix4 temp_mat = light.unique_mesh.transformation;
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
+
+                // Handle previous frame's world matrix
+                Matrix4 temp_mat_previous = light.unique_mesh.previous_transformation;
+                GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Previous), false, ref temp_mat_previous);
+                light.unique_mesh.previous_transformation = temp_mat;
+
                 // Convert matrix for normals
                 temp_mat = Matrix4.Invert(temp_mat);
                 temp_mat = Matrix4.Transpose(temp_mat);
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
-
-                //------------------------------------------------------
-                // Copy over previous transformation data
-                //------------------------------------------------------
-                light.unique_mesh.previous_transformation = temp_mat;
 
 
                 GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), light.color);

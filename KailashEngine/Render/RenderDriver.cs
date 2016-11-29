@@ -39,6 +39,7 @@ namespace KailashEngine.Render
         private fx_HDR _fxHDR;
         private fx_Lens _fxLens;
         private fx_DepthOfField _fxDepthOfField;
+        private fx_MotionBlur _fxMotionBlur;
 
 
         public RenderDriver(
@@ -60,6 +61,8 @@ namespace KailashEngine.Render
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
                 EngineHelper.size.vec3,
                 EngineHelper.size.vec3
             });
@@ -78,6 +81,7 @@ namespace KailashEngine.Render
             _fxHDR = createEffect<fx_HDR>(pLoader, "hdr/");
             _fxLens = createEffect<fx_Lens>(pLoader, tLoader, "lens/");
             _fxDepthOfField = createEffect<fx_DepthOfField>(pLoader, tLoader, "dof/");
+            _fxMotionBlur = createEffect<fx_MotionBlur>(pLoader, "motion_blur/");
         }
 
 
@@ -155,13 +159,18 @@ namespace KailashEngine.Render
             _ubo_game_config.update(1, target_fps);
         }
 
-        public void updateUBO_Camera(Matrix4 view, Matrix4 perspective, Matrix4 inv_view_perspective, Vector3 position, Vector3 look)
+        public void updateUBO_Camera(
+            Matrix4 view, Matrix4 perspective, Matrix4 inv_view_perspective, 
+            Matrix4 previous_view_perspective, Matrix4 inv_previous_view_perspective,
+            Vector3 position, Vector3 look)
         {
             _ubo_camera.update(0, view);
             _ubo_camera.update(1, perspective);
             _ubo_camera.update(2, inv_view_perspective);
-            _ubo_camera.update(3, position);
-            _ubo_camera.update(4, look);
+            _ubo_camera.update(3, previous_view_perspective);
+            _ubo_camera.update(4, inv_previous_view_perspective);
+            _ubo_camera.update(5, position);
+            _ubo_camera.update(6, look);
         }
 
         public void handle_MouseState(bool locked)
@@ -214,6 +223,9 @@ namespace KailashEngine.Render
             _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
+            _fxMotionBlur.render(_fxQuad, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
+
+
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
@@ -248,10 +260,10 @@ namespace KailashEngine.Render
             if (_enable_debug_views)
             {
                 //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 1f, 0);
-                //_fxQuad.render_Texture(_fxSpecial.tSpecial, 1f, 0);
+                _fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
                 //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 0.25f, 3);
-                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 0.25f, 2);
+                _fxQuad.render_Texture(_fxMotionBlur.tFinal, 0.25f, 2);
                 _fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }

@@ -31,6 +31,12 @@ namespace KailashEngine.World.View
         private Vector3 _position_current;
         private Vector3 _position_previous;
 
+        private Matrix4 _previous_view_perspective;
+        public Matrix4 previous_view_perspective
+        {
+            get { return _previous_view_perspective; }
+            set { _previous_view_perspective = value; }
+        }
 
 
         public Camera(string id, float fov, float aspect_ratio, Vector2 near_far)
@@ -49,6 +55,7 @@ namespace KailashEngine.World.View
             _position_current = _spatial.position;
 
             _spatial.setPerspective(_fov_current, _default_aspect_ratio, _default_near_far);
+            _previous_view_perspective = _spatial.transformation * _spatial.perspective;
         }
 
 

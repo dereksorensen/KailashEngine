@@ -24,6 +24,8 @@ layout(std140, binding = 1) uniform cameraSpatials
 	mat4 view;
 	mat4 perspective;
 	mat4 inv_view_perspective;
+	mat4 previous_view_persepctive;
+	mat4 inv_previous_view_persepctive;
 	vec3 cam_position;
 	vec3 cam_look;
 };
@@ -35,7 +37,7 @@ uniform int enable_displacement_texture;
 uniform float displacement_strength = 0.00005;
 
 uniform mat4 model_previous;
-uniform mat4 mvp_previous;
+
 
 vec2 interpolate2D_triangle(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -89,6 +91,7 @@ void main()
 		float displacement = texture(displacement_texture, te_TexCoord).r * displacement_strength;
 		vec3 displacement_mod = te_Normal * displacement;
 		te_worldPosition += displacement_mod;
+		previous_worldPosition.xyz = previous_worldPosition.xyz + (displacement * te_Normal);
 	}
 
 	vec4 viewPosition =  view * vec4(te_worldPosition, 1.0);
@@ -99,7 +102,7 @@ void main()
 
 
 	//Send moments for Velocity Map
-	te_currentPosition = vec4(te_worldPosition, 1.0);
-	te_previousPosition = previous_worldPosition;
+	te_currentPosition = clipPosition;
+	te_previousPosition = previous_view_persepctive * previous_worldPosition;
 
 }

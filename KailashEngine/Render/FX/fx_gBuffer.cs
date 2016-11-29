@@ -181,7 +181,7 @@ namespace KailashEngine.Render.FX
             _tVelocity = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
-                PixelInternalFormat.Rg16, PixelFormat.Rg, PixelType.Float,
+                PixelInternalFormat.Rg16f, PixelFormat.Rg, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVelocity.load();
 

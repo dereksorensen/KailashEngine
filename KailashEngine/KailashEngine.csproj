@@ -474,6 +474,7 @@
     <Compile Include="Physics\RigidBodyObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\FX\fx_DepthOfField.cs" />
+    <Compile Include="Render\FX\fx_MotionBlur.cs" />
     <Compile Include="Render\FX\fx_SkyBox.cs" />
     <Compile Include="Render\FX\fx_Lens.cs" />
     <Compile Include="Render\FX\fx_Crosshair.cs" />
@@ -570,6 +571,7 @@
     <None Include="Render\Shader\glsl\lens\lens_Blend.frag" />
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
+    <None Include="Render\Shader\glsl\motion_blur\mb_Blur.frag" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurGauss.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />

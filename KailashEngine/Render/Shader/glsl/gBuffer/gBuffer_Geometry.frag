@@ -31,6 +31,8 @@ layout(std140, binding = 1) uniform cameraSpatials
 	mat4 view;
 	mat4 perspective;
 	mat4 inv_view_perspective;
+	mat4 previous_view_persepctive;
+	mat4 inv_previous_view_persepctive;
 	vec3 cam_position;
 	vec3 cam_look;
 };
@@ -131,7 +133,7 @@ void main()
 
 	vec2 a = (g_currentPosition.xy / g_currentPosition.w);// * 0.5 + 0.5;
 	vec2 b = (g_previousPosition.xy / g_previousPosition.w);// * 0.5 + 0.5;
-	vec2 V = (a - b);
+	vec2 V = (a - b) / 60.0;
 	velocity = V;
 
 }

@@ -27,7 +27,6 @@ namespace KailashEngine.World
         }
 
 
-
         public WorldObject(string id)
             : this (id, new SpatialData(new Vector3(), new Vector3(), new Vector3()))
         { }
