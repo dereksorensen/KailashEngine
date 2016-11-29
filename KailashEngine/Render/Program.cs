@@ -61,6 +61,7 @@ namespace KailashEngine.Render
         {
             addUniform(RenderHelper.uModel);
             addUniform(RenderHelper.uModel_Normal);
+            addUniform(RenderHelper.uModel_Previous);
 
             addUniform(RenderHelper.uEnableDiffuseTexture);
             addUniform(RenderHelper.uDiffuseTexture);
@@ -84,7 +85,6 @@ namespace KailashEngine.Render
 
             addUniform(RenderHelper.uEnableSkinning);
             addUniform(RenderHelper.uBoneMatrices);
-
         }
 
         // Setup program to calculate lighting

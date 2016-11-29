@@ -64,6 +64,7 @@ namespace KailashEngine.World
             {
 
                 Matrix4 temp_mat = unique_mesh.transformation;
+                Matrix4 temp_mat_previous = unique_mesh.previous_transformation;
 
                 //------------------------------------------------------
                 // Object Animation Matrix
@@ -91,6 +92,11 @@ namespace KailashEngine.World
                 // World Matrix
                 //------------------------------------------------------
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
+
+                // Handle previous frame's world matrix
+                GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Previous), false, ref temp_mat_previous);
+                unique_mesh.previous_transformation = temp_mat;
+
                 // Convert matrix for normals
                 try
                 {
@@ -119,6 +125,10 @@ namespace KailashEngine.World
                 {
                     GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
                 }
+
+
+
+
 
                 foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {
@@ -176,6 +186,12 @@ namespace KailashEngine.World
                 temp_mat = Matrix4.Invert(temp_mat);
                 temp_mat = Matrix4.Transpose(temp_mat);
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
+
+
+                //------------------------------------------------------
+                // Copy over previous transformation data
+                //------------------------------------------------------
+                light.unique_mesh.previous_transformation = temp_mat;
 
 
                 GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), light.color);

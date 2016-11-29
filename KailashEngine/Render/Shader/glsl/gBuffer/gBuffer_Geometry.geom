@@ -7,12 +7,17 @@ in vec3 te_Tangent[];
 in vec3 te_viewPosition[];
 in vec3 te_worldPosition[];
 in vec2 te_TexCoord[];
+in vec4 te_currentPosition[];
+in vec4 te_previousPosition[];
 
 out vec3 g_Normal;
 out vec3 g_Tangent;
 out vec3 g_viewPosition;
 out vec3 g_worldPosition;
 out vec2 g_TexCoord;
+out vec4 g_currentPosition;
+out vec4 g_previousPosition;
+
 
 noperspective out vec3 g_wireframe_distance;
 uniform vec2 render_size;
@@ -37,6 +42,8 @@ void main()
 		g_viewPosition = te_viewPosition[i];
 		g_worldPosition = te_worldPosition[i];
 		g_TexCoord = te_TexCoord[i];
+		g_currentPosition = te_currentPosition[i];
+		g_previousPosition = te_previousPosition[i];
 
 		gl_Position = gl_in[i].gl_Position;
 		EmitVertex();

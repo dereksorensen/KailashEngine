@@ -29,6 +29,13 @@ namespace KailashEngine.World.Model
             set { _transformation = value; }
         }
 
+        protected Matrix4 _previous_transformation;
+        public Matrix4 previous_transformation
+        {
+            get { return _previous_transformation; }
+            set { _previous_transformation = value; }
+        }
+
 
         private Mesh _mesh;
         public Mesh mesh
@@ -84,6 +91,7 @@ namespace KailashEngine.World.Model
             _id = id;
             _mesh = mesh;
             _transformation = transformation;
+            _previous_transformation = _transformation;
             _animated = false;
             _physical = false;
         }

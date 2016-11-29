@@ -3,12 +3,15 @@
 layout(location = 0) out vec4 diffuse_id;
 layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec4 specular;
+layout(location = 3) out vec2 velocity;
 
 in vec2 g_TexCoord;
 in vec3 g_worldPosition;
 in vec3 g_viewPosition;
 in vec3 g_Normal;
 in vec3 g_Tangent;
+in vec4 g_currentPosition;
+in vec4 g_previousPosition;
 noperspective in vec3 g_wireframe_distance;
 
 //------------------------------------------------------
@@ -112,7 +115,7 @@ void main()
 
 	//------------------------------------------------------
 	// Specular Mapping
-	//------------------------------------------------------	
+	//------------------------------------------------------
 	vec3 specular_color_final = specular_color;
 	float specular_shininess_final = max(0.05, 0.9 - (log2(specular_shininess) / 9.0));
 	if (enable_specular_texture == 1)
@@ -120,5 +123,15 @@ void main()
 		specular_color_final = texture(specular_texture, tex_coords).xyz;
 	}
 	specular = vec4(specular_color_final, specular_shininess_final);
+
+
+	//------------------------------------------------------
+	// Velocity Mapping
+	//------------------------------------------------------
+
+	vec2 a = (g_currentPosition.xy / g_currentPosition.w);// * 0.5 + 0.5;
+	vec2 b = (g_previousPosition.xy / g_previousPosition.w);// * 0.5 + 0.5;
+	vec2 V = (a - b);
+	velocity = V;
 
 }

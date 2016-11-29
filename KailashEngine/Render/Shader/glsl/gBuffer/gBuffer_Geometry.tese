@@ -13,6 +13,8 @@ out vec3 te_Tangent;
 out vec3 te_viewPosition;
 out vec3 te_worldPosition;
 out vec2 te_TexCoord;
+out vec4 te_currentPosition;
+out vec4 te_previousPosition;
 
 //------------------------------------------------------
 // Camera Spatials
@@ -32,6 +34,8 @@ uniform sampler2D displacement_texture;
 uniform int enable_displacement_texture;
 uniform float displacement_strength = 0.00005;
 
+uniform mat4 model_previous;
+uniform mat4 mvp_previous;
 
 vec2 interpolate2D_triangle(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -78,6 +82,7 @@ void main()
 	te_Tangent = normalize(interpolate3D_triangle(tc_Tangent[0], tc_Tangent[1], tc_Tangent[2]));
 	te_worldPosition = interpolate3D_triangle(tc_worldPosition[0], tc_worldPosition[1], tc_worldPosition[2]);
 	vec4 objectPosition = interpolate3D_triangle(tc_objectPosition[0], tc_objectPosition[1], tc_objectPosition[2]);
+	vec4 previous_worldPosition = model_previous * vec4(objectPosition.xyz,1.0);
 
 	if(enable_displacement_texture == 1)
 	{	
@@ -91,5 +96,10 @@ void main()
 	vec4 clipPosition = perspective * viewPosition;
 
 	gl_Position = clipPosition;
+
+
+	//Send moments for Velocity Map
+	te_currentPosition = vec4(te_worldPosition, 1.0);
+	te_previousPosition = previous_worldPosition;
 
 }

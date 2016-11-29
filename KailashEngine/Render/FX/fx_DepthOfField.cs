@@ -21,7 +21,7 @@ namespace KailashEngine.Render.FX
 
         private const float _max_blur = 150.0f;
         private const float _focus_length = 10.0f;
-        private const float _fStop = 0.2f;
+        private const float _fStop = 0.15f;
         private const float _sensor_width = 33.0f;
         private float _PPM;
 

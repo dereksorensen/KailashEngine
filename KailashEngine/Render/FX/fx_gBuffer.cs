@@ -59,6 +59,12 @@ namespace KailashEngine.Render.FX
             get { return _tSpecular; }
         }
 
+        private Texture _tVelocity;
+        public Texture tVelocity
+        {
+            get { return _tVelocity; }
+        }
+
         private Texture _tLighting_Diffuse;
         public Texture tLighting_Diffuse
         {
@@ -172,6 +178,13 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tSpecular.load();
 
+            _tVelocity = new Texture(TextureTarget.Texture2D,
+                _resolution.W, _resolution.H,
+                0, false, false,
+                PixelInternalFormat.Rg16, PixelFormat.Rg, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tVelocity.load();
+
             _tLighting_Diffuse = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
                 0, false, false,
@@ -193,6 +206,7 @@ namespace KailashEngine.Render.FX
                 { FramebufferAttachment.ColorAttachment0, _tDiffuse_ID },
                 { FramebufferAttachment.ColorAttachment1, _tNormal_Depth },
                 { FramebufferAttachment.ColorAttachment2, _tSpecular },
+                { FramebufferAttachment.ColorAttachment3, _tVelocity },
                 { FramebufferAttachment.ColorAttachment6, _tLighting_Diffuse },
                 { FramebufferAttachment.ColorAttachment7, _tLighting_Specular }
             });
@@ -233,7 +247,8 @@ namespace KailashEngine.Render.FX
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1,
-                DrawBuffersEnum.ColorAttachment2
+                DrawBuffersEnum.ColorAttachment2,
+                DrawBuffersEnum.ColorAttachment3
             });
 
             GL.DepthMask(true);

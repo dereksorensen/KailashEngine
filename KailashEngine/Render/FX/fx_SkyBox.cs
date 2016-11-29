@@ -75,10 +75,10 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void render(fx_Quad quad, FrameBuffer scene_fbo, Vector3 circadian_position)
+        public void render(fx_Quad quad, FrameBuffer gbuffer_fbo, Vector3 circadian_position)
         {
             // Write into gBuffer's frame buffer attachemnts
-            scene_fbo.bind(new DrawBuffersEnum[]
+            gbuffer_fbo.bind(new DrawBuffersEnum[]
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1
