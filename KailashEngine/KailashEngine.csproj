@@ -571,6 +571,7 @@
     <None Include="Render\Shader\glsl\lens\lens_Blend.frag" />
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
+    <None Include="Render\Shader\glsl\motion_blur\mb_Blend.frag" />
     <None Include="Render\Shader\glsl\motion_blur\mb_Blur.frag" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurGauss.comp" />

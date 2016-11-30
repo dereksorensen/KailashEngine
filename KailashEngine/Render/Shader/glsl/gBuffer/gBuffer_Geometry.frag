@@ -133,7 +133,7 @@ void main()
 
 	vec2 a = (g_currentPosition.xy / g_currentPosition.w);// * 0.5 + 0.5;
 	vec2 b = (g_previousPosition.xy / g_previousPosition.w);// * 0.5 + 0.5;
-	vec2 V = (a - b) / 60.0;
+	vec2 V = (a - b) / 90.0;
 	velocity = V;
 
 }
