@@ -30,12 +30,6 @@ namespace KailashEngine.Render.FX
             get { return _tFinal; }
         }
 
-        private Texture _tFinal_2;
-        public Texture tFinal_2
-        {
-            get { return _tFinal_2; }
-        }
-
 
         // Other Buffers
         private ShaderStorageBuffer _ssboExposure;
@@ -55,36 +49,23 @@ namespace KailashEngine.Render.FX
             _pBlur.enable_Samplers(3);
             _pBlur.addUniform("fps_scaler");
 
-            _pBlend = _pLoader.createProgram_PostProcessing(new ShaderFile[]
-            {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "mb_Blend.frag", null)
-            });
-            _pBlend.enable_Samplers(3);
-            _pBlend.addUniform("fps_scaler");
         }
 
         protected override void load_Buffers()
         {
 
             _tFinal = new Texture(TextureTarget.Texture2D,
-                _resolution.W / 4, _resolution.H / 4,
+                _resolution.W, _resolution.H,
                 0, false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tFinal.load();
 
-            _tFinal_2 = new Texture(TextureTarget.Texture2D,
-                _resolution.W / 4, _resolution.H / 4,
-                0, false, false,
-                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
-                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tFinal_2.load();
 
             _fMotionBlur = new FrameBuffer("Motion Blur");
             _fMotionBlur.load(new Dictionary<FramebufferAttachment, Texture>()
             {
                 { FramebufferAttachment.ColorAttachment0, _tFinal },
-                { FramebufferAttachment.ColorAttachment1, _tFinal_2 }
             });
 
         }
@@ -109,16 +90,6 @@ namespace KailashEngine.Render.FX
         public void render(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, Texture velocity_texture)
         {
 
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _fMotionBlur.id);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment1);
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, scene_fbo.id);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-
-            GL.BlitFramebuffer(0, 0, _resolution.W, _resolution.H,
-                    0, 0, _tFinal.width, _tFinal.height,
-                    ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
-
-
 
             GL.Viewport(0, 0, _tFinal.width, _tFinal.height);
 
@@ -141,7 +112,7 @@ namespace KailashEngine.Render.FX
             _fMotionBlur.bind(DrawBuffersEnum.ColorAttachment0);
 
             // Source Texture
-            _tFinal_2.bind(_pBlur.getSamplerUniform(0), 0);
+            scene_texture.bind(_pBlur.getSamplerUniform(0), 0);
 
             quad.render();
 
@@ -149,7 +120,7 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Pass 2
             //------------------------------------------------------
-            _fMotionBlur.bind(DrawBuffersEnum.ColorAttachment1);
+            scene_fbo.bind(DrawBuffersEnum.ColorAttachment0);
 
             // Source Texture
             _tFinal.bind(_pBlur.getSamplerUniform(0), 0);
@@ -176,32 +147,7 @@ namespace KailashEngine.Render.FX
             //// Source Texture
             //_tFinal.bind(_pBlur.getSamplerUniform(0), 0);
 
-            quad.render();
-
-
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _fMotionBlur.id);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, scene_fbo.id);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-
-            GL.BlitFramebuffer(0, 0, _resolution.W, _resolution.H,
-                    0, 0, _tFinal.width, _tFinal.height,
-                    ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
-
-
-            _pBlend.bind();
-            GL.Viewport(0, 0, _resolution.W, _resolution.H);
-            scene_fbo.bind(DrawBuffersEnum.ColorAttachment0);
-
-
-            velocity_texture.bind(_pBlend.getSamplerUniform(0), 0);
-            _tFinal_2.bind(_pBlend.getSamplerUniform(1), 1);
-            scene_texture.bind(_pBlend.getSamplerUniform(2), 2);
-
-
-            GL.Uniform1(_pBlend.getUniform("fps_scaler"), 60.0f);
-
-            quad.render();
+            //quad.render();
 
 
         }

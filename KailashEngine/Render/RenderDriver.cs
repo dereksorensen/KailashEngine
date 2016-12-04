@@ -223,10 +223,6 @@ namespace KailashEngine.Render
             _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
-            Debug.DebugHelper.time_function("Motion Blur", 2, () =>
-            {
-                _fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
-            });
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
@@ -235,6 +231,10 @@ namespace KailashEngine.Render
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
 
+            Debug.DebugHelper.time_function("Motion Blur", 2, () =>
+            {
+                _fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
+            });
 
             //------------------------------------------------------
             // Render to Screen

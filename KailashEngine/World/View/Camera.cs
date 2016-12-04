@@ -31,11 +31,27 @@ namespace KailashEngine.World.View
         private Vector3 _position_current;
         private Vector3 _position_previous;
 
-        private Matrix4 _previous_view_perspective;
+
+        private Matrix4 _previous_view_matrix;
+        public Matrix4 previous_view_matrix
+        {
+            get { return _previous_view_matrix; }
+            set { _previous_view_matrix = value; }
+        }
+
+        private Matrix4 _previous_perspective_matrix;
+        public Matrix4 previous_perspective_matrix
+        {
+            get { return _previous_perspective_matrix; }
+            set { _previous_perspective_matrix = value; }
+        }
+
         public Matrix4 previous_view_perspective
         {
-            get { return _previous_view_perspective; }
-            set { _previous_view_perspective = value; }
+            get
+            {
+                return _previous_view_matrix * _previous_perspective_matrix;
+            }
         }
 
 
@@ -55,7 +71,8 @@ namespace KailashEngine.World.View
             _position_current = _spatial.position;
 
             _spatial.setPerspective(_fov_current, _default_aspect_ratio, _default_near_far);
-            _previous_view_perspective = _spatial.transformation * _spatial.perspective;
+            _previous_view_matrix = _spatial.model_view;
+            _previous_perspective_matrix = _spatial.perspective;
         }
 
 

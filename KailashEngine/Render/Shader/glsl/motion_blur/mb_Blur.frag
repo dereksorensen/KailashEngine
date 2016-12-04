@@ -79,7 +79,6 @@ vec4 motion_blur()
 
 
 	final /= weight;
-	final.a = (abs(int(length_velocity)));
 	return final;
 }
 

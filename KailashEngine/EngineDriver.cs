@@ -408,14 +408,16 @@ namespace KailashEngine
             _render_driver.updateUBO_Camera(
                 _game.player.camera.spatial.transformation,
                 _game.player.camera.spatial.perspective,
-                Matrix4.Invert(_game.player.camera.spatial.transformation.ClearTranslation() * _game.player.camera.spatial.perspective),
+                Matrix4.Invert(_game.player.camera.spatial.model_view.ClearTranslation() * _game.player.camera.spatial.perspective),
                 _game.player.camera.previous_view_perspective,
-                Matrix4.Invert(_game.player.camera.previous_view_perspective),
+                Matrix4.Invert(_game.player.camera.previous_view_matrix.ClearTranslation() * _game.player.camera.previous_perspective_matrix),
                 _game.player.camera.spatial.position,
                 _game.player.camera.spatial.look);
             _render_driver.handle_MouseState(_game.mouse.locked);
             // Set camera's previous MVP matrix
-            _game.player.camera.previous_view_perspective = _game.player.camera.spatial.transformation * _game.player.camera.spatial.perspective;
+            _game.player.camera.previous_view_matrix = _game.player.camera.spatial.model_view;
+            _game.player.camera.previous_perspective_matrix =  _game.player.camera.spatial.perspective;
+
 
             // Flashlight stuff
 

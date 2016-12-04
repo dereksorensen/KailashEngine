@@ -37,7 +37,7 @@ namespace KailashEngine.Render.FX
         {
             _pSkyBox = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_TextureCube.vert", null),
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "skybox_Render.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "skybox_Render.frag", null)
             });
             _pSkyBox.enable_Samplers(1);
@@ -81,7 +81,8 @@ namespace KailashEngine.Render.FX
             gbuffer_fbo.bind(new DrawBuffersEnum[]
             {
                 DrawBuffersEnum.ColorAttachment0,
-                DrawBuffersEnum.ColorAttachment1
+                DrawBuffersEnum.ColorAttachment1,
+                DrawBuffersEnum.ColorAttachment3
             });
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
 
