@@ -31,10 +31,6 @@ namespace KailashEngine.Render.FX
         }
 
 
-        // Other Buffers
-        private ShaderStorageBuffer _ssboExposure;
-
-
         public fx_MotionBlur(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
             : base(pLoader, glsl_effect_path, full_resolution)
         { }

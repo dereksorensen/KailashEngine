@@ -267,9 +267,7 @@ namespace KailashEngine.Render.FX
         // Gaussian Blur Compute Functions
         //------------------------------------------------------
 
-        public void blur_GaussCompute(
-            int blur_amount,
-            Texture texture_to_blur)
+        public void blur_GaussCompute(int blur_amount, Texture texture_to_blur)
         {
 
             clearAndBindSpecialFrameBuffer();
@@ -336,7 +334,7 @@ namespace KailashEngine.Render.FX
             clearAndBindSpecialFrameBuffer();
 
 
-            int thread_group_size = 16;
+            int thread_group_size = 8;
             Vector2 num_compute_groups = new Vector2(
                 ((texture_to_blur.width) + thread_group_size - 1) / thread_group_size,
                 ((texture_to_blur.height) + thread_group_size - 1) / thread_group_size);

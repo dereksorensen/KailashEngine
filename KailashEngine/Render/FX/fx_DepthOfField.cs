@@ -50,7 +50,7 @@ namespace KailashEngine.Render.FX
         private Program _pDOF_Blend;
 
         // Frame Buffers
-        private FrameBuffer _fHalfResolution;
+        public FrameBuffer _fHalfResolution;
         private FrameBuffer _fFullResoution;
 
         // Textures - COC

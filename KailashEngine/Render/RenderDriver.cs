@@ -40,6 +40,7 @@ namespace KailashEngine.Render
         private fx_Lens _fxLens;
         private fx_DepthOfField _fxDepthOfField;
         private fx_MotionBlur _fxMotionBlur;
+        private fx_AtmosphericScattering _fxAtmosphericScattering;
 
 
         public RenderDriver(
@@ -82,6 +83,8 @@ namespace KailashEngine.Render
             _fxLens = createEffect<fx_Lens>(pLoader, tLoader, "lens/");
             _fxDepthOfField = createEffect<fx_DepthOfField>(pLoader, tLoader, "dof/");
             _fxMotionBlur = createEffect<fx_MotionBlur>(pLoader, "motion_blur/");
+            _fxAtmosphericScattering = createEffect<fx_AtmosphericScattering>(pLoader, "ats/");
+
         }
 
 
@@ -198,6 +201,8 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Pre-Processing
             //------------------------------------------------------
+            _fxAtmosphericScattering.precompute(_fxQuad);
+
             _fxHDR.calcExposure(_fxFinal.tFinalScene);
 
 
@@ -206,15 +211,15 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             _fxGBuffer.pass_DeferredShading(scene);
 
-
             _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer, scene.circadian_timer.position);
-
-
 
             //------------------------------------------------------
             // Post-processing
             //------------------------------------------------------
             GL.Disable(EnableCap.DepthTest);
+
+
+            _fxAtmosphericScattering.render(_fxQuad);
 
 
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
@@ -223,18 +228,16 @@ namespace KailashEngine.Render
             _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
-
-
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
 
-            Debug.DebugHelper.time_function("Motion Blur", 2, () =>
-            {
-                _fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
-            });
+            //Debug.DebugHelper.time_function("Motion Blur", 2, () =>
+            //{
+            //    _fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
+            //});
 
             //------------------------------------------------------
             // Render to Screen
@@ -250,10 +253,10 @@ namespace KailashEngine.Render
 
 
 
-            //Debug.DebugHelper.time_function("Moving Average",1 , () =>
+            //Debug.DebugHelper.time_function("Moving Average", 3, () =>
             //{
-            //    //_fxSpecial.blur_GaussCompute(100, _fxDepthOfField.tDOF_Scene);
-            //    _fxSpecial.blur_Gauss(_fxQuad, 75, _fxDepthOfField.tDOF_Scene);
+            //    _fxSpecial.blur_GaussCompute(100, _fxDepthOfField.tDOF_Scene);
+            //    //_fxSpecial.blur_Gauss(_fxQuad, 75, _fxDepthOfField.tDOF_Scene, _fxDepthOfField._fHalfResolution, DrawBuffersEnum.ColorAttachment4);
             //    //_fxSpecial.blur_MovingAverage(19, _fxDepthOfField.tDOF_Scene);
             //});
 
@@ -262,10 +265,10 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             if (_enable_debug_views)
             {
-                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 1f, 0);
+                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
-                //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene_2, 0.25f, 3);
+                _fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 3);
                 _fxQuad.render_Texture(_fxMotionBlur.tFinal, 0.25f, 2);
                 _fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);

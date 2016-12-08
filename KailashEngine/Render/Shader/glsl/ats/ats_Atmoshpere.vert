@@ -17,13 +17,9 @@ layout(std140, binding = 1) uniform cameraSpatials
 };
 
 
+out vec3 ray;
+out vec2 v_TexCoord;
 
-out vec4 current_worldPosition;
-out vec4 previous_worldPosition;
-out vec3 v_TexCoord;
-
-
-uniform vec3 circadian_position;
 
 const vec2 data[6] = vec2[]
 (
@@ -39,11 +35,9 @@ const vec2 data[6] = vec2[]
 void main()
 {
 	vec4 vPosition = vec4(data[gl_VertexID], 1, 1.0);
-	vec4 ray = inv_view_perspective * vPosition;
-	v_TexCoord = reflect(ray.xyz, circadian_position);
-	
-	current_worldPosition = perspective * (view * ray);
-	previous_worldPosition = previous_view_persepctive * (inv_view_perspective * vPosition);
+
+	ray = (inv_view_perspective * vPosition).xyz;
+	v_TexCoord = (vPosition.xy + vec2(1.0)) / vec2(2.0);
 
     gl_Position = vPosition;
 }
