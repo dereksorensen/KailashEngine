@@ -16,7 +16,7 @@ namespace KailashEngine.Render.FX
     class fx_AtmosphericScattering : RenderEffect
     {
         // Properties
-        private const float SCALE = 0.1f;
+        private const float SCALE = 1.0f;
         private const float Rg = 6360.0f * SCALE;
         private const float Rt = 6420.0f * SCALE;
         private const float RL = 6421.0f * SCALE;
@@ -127,7 +127,8 @@ namespace KailashEngine.Render.FX
             string[] ats_atmposhere_helpers = new string[]
             {
                 _path_glsl_effect + "helpers/ats_Functions.include",
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include"
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
+                _pLoader.path_glsl_common_helpers + "lightingFunctions.include"
             };
 
             //------------------------------------------------------

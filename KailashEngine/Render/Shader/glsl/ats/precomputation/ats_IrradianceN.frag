@@ -5,8 +5,8 @@ uniform sampler3D deltaSRSampler;
 uniform sampler3D deltaSMSampler;
 uniform float first;
 
-const float dphi = M_PI / float(IRRADIANCE_INTEGRAL_SAMPLES);
-const float dtheta = M_PI / float(IRRADIANCE_INTEGRAL_SAMPLES);
+const float dphi = MATH_PI / float(IRRADIANCE_INTEGRAL_SAMPLES);
+const float dtheta = MATH_PI / float(IRRADIANCE_INTEGRAL_SAMPLES);
 
 
 void main() 

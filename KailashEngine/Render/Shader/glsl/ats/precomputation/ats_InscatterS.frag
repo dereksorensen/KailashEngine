@@ -10,8 +10,8 @@ uniform sampler3D deltaSMSampler;
 uniform float first;
 
 
-const float dphi = M_PI / float(INSCATTER_SPHERICAL_INTEGRAL_SAMPLES);
-const float dtheta = M_PI / float(INSCATTER_SPHERICAL_INTEGRAL_SAMPLES);
+const float dphi = MATH_PI / float(INSCATTER_SPHERICAL_INTEGRAL_SAMPLES);
+const float dtheta = MATH_PI / float(INSCATTER_SPHERICAL_INTEGRAL_SAMPLES);
 
 
 void inscatter(float r, float mu, float muS, float nu, out vec3 raymie)
@@ -40,7 +40,7 @@ void inscatter(float r, float mu, float muS, float nu, out vec3 raymie)
         vec3 gtransp = vec3(0.0);
         if (ctheta < cthetamin) { // if ground visible in direction w
             // compute transparency gtransp between x and ground
-            greflectance = AVERAGE_GROUND_REFLECTANCE / M_PI;
+            greflectance = AVERAGE_GROUND_REFLECTANCE / MATH_PI;
             dground = -r * ctheta - sqrt(r * r * (ctheta * ctheta - 1.0) + Rg * Rg);
             gtransp = transmittance(Rg, -(r * ctheta + dground) / Rg, dground);
         }

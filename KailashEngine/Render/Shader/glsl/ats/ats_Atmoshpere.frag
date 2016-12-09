@@ -35,7 +35,7 @@ const float ISun = 100.0;
 // Inscatter
 //------------------------------------------------------
 
-//inscattered light along ray x+tv, when sun in direction s (=S[L]-T(x,x0)S[L]|x0)
+// inscattered light along ray x+tv, when sun in direction s (=S[L]-T(x,x0)S[L]|x0)
 vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, out float r, out float mu, out vec3 attenuation, out vec3 occluder_a) 
 {
 	vec3 result;
@@ -45,7 +45,6 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
 
 	bool inSpace = false;
 
-	
     if (d > 0.0) { // if x in space and ray intersects atmosphere	
 		vec3 x0 = x + t * v;
 		float r0 = length(x0);
@@ -77,16 +76,13 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
 		occluder_a = (inSpace) ? vec3(0.0) : inscatter.rgb;
 
 
-
         if (t > 0.0) {
 
 			occluder_a = vec3(0.0);
 
 			vec3 x0 = x + t * v;
 
-			
-
-			
+					
 			float r0 = length(x0);
 			float rMu0 = dot(x0, v);
 			float mu0 = rMu0 / r0;
@@ -95,7 +91,6 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
 
 			// avoids imprecision problems in transmittance computations based on textures
 			attenuation = clamp(analyticTransmittance(r, mu, t), 0.0, 1.0);
-
 
 
 			// Terrain in atmposhere
@@ -134,14 +129,12 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
 					inscatter = max(inScatter0 - inScatter1 * attenuation.rgbr, 0.0);
 				}
 			}
-
-
         }
 
         // avoids imprecision problems in Mie scattering when sun is below horizon
         inscatter.w *= smoothstep(0.00, 0.02, muS);
 
-        result = max(inscatter.rgb * phaseR + getMie(inscatter) * phaseM, 0.0); //  * max(angleOfInc, 0.0)
+        result = max(inscatter.rgb * phaseR + getMie(inscatter) * phaseM, 0.0);
     } else { // x in space and ray looking in space
         result = vec3(0.0);
 		attenuation = vec3(1.0);
@@ -154,19 +147,63 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
 //------------------------------------------------------
 // Ground Color
 //------------------------------------------------------
+// ground radiance at end of ray x+tv, when sun in direction s
+// attenuated bewteen ground and viewer (=R[L0]+R[L*])
+vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenuation, vec3 L, vec3 E, vec3 N, float angleOfInc, float object_id, vec3 diffuse)
+{
+    vec3 result = vec3(0.0);
+    if (t > 0.0) { // if ray hits ground surface
+        // ground reflectance at end of ray, x0
+        vec3 x0 = x;
+        float r0 = length(x0);
+		vec3 n = x0 / r0;
 
+
+		vec4 reflectance = vec4(diffuse, 1.0) * vec4(vec3(0.2), 1.0);// * ao;
+
+		// direct sun light (radiance) reaching x0
+		float muS = dot(n, s);
+		vec3 sunLight = transmittanceWithShadow(r0, muS);
+
+		// precomputed sky light (irradiance) (=E[L*]) at x0
+		vec3 groundSkyLight = irradiance(irradianceSampler, r0, muS);// * (1.0 + dot(n,N));
+
+		// light reflected at x0 (=(R[L0]+R[L*])/T(x,x0))
+		vec3 groundColor = reflectance.rgb * (angleOfInc * sunLight + groundSkyLight);
+
+
+		if (reflectance.w > 0.0) {
+			vec4 specular_properties = texture(sampler2, v_TexCoord);
+			float specular_shininess = specular_properties.w;
+			vec3 specular_color = specular_properties.xyz;
+
+			float gaussianTerm = wardSpecular(L, E, N, vec2(specular_shininess));
+			vec3 final_Specular = vec3(
+				((angleOfInc * sunLight)) *
+				(gaussianTerm * angleOfInc) *
+				specular_color.rgb);
+
+
+			groundColor += final_Specular;
+		}
+
+		result = attenuation * groundColor * ISun / MATH_PI; //=R[L0]+R[L*]
+    }
+
+    return result;
+}
 
 //------------------------------------------------------
 // Sun Color
 //------------------------------------------------------
 
 // direct sun light for ray x+tv, when sun in direction s (=L0)
-vec3 sunColor(float t, vec3 view_ray, float r, float mu) {
+vec3 sunColor(float t, vec3 view_ray, vec3 s, float r, float mu) {
     if (t > 0.0) {
         return vec3(0.0);
     } else {
         vec3 transmittance = r <= Rt ? transmittanceWithShadow(r, mu) : vec3(1.0); // T(x,xo)
-        float isun = smoothstep(cos((M_PI+4.0) / 180.0), cos(M_PI / 180.0), dot(view_ray, sun_position)) * ISun;// * 10.0; // Lsun
+        float isun = smoothstep(cos((MATH_PI+4.0) / 180.0), cos(MATH_PI / 180.0), dot(view_ray, s)) * ISun;// * 10.0; // Lsun
         return transmittance * isun; // Eq (9)
     }
 }
@@ -178,7 +215,7 @@ vec3 sunColor(float t, vec3 view_ray, float r, float mu) {
 
 void main() 
 {
-	vec3 cam_position = -cam_position;
+
 	vec3 view_ray = normalize(ray);
 
 	vec4 normal_depth = texture(sampler0, v_TexCoord);
@@ -191,27 +228,34 @@ void main()
 
 	vec3 scene = texture(sampler3, v_TexCoord).rgb;
 
-	vec3 world_position = calcWorldPosition(depth, view_ray, cam_position);
+	// Shift positions so ground y is at 0.0
+	vec3 world_position = calcWorldPosition(depth, view_ray, cam_position) + vec3(0.0, Rg, 0.0);
+	vec3 cam_position = -cam_position + vec3(0.0, Rg, 0.0);
 
-
-	depth = depth != 1 ? depth : -1.0;
+	depth = depth != 1000.0 ? depth : -1.0;
 
 	float r = length(cam_position);
 	float mu = dot(cam_position, view_ray) / r;
-	float t = -r * mu - sqrt(r * r * (mu * mu - 1.0) + Rg * Rg);
+	//float t = -r * mu - sqrt(r * r * (mu * mu - 1.0) + Rg * Rg);
+
+	vec3 E = normalize(cam_position - world_position);
+	vec3 N = normalize(normal);
+	vec3 L = sun_position;
+
+	float angleOfInc = depth != -1 ? max(dot(N, L), 0.0) : 1.0;
 
 	vec3 occluder_a;
 	vec3 attenuation;
-	vec3 color_inscatter = inscatter(cam_position, t, view_ray, sun_position, 0, r, mu, attenuation, occluder_a);	// S[L]-T(x,xs)S[l]|xs
-	vec3 color_ground = vec3(0.0);
-	vec3 color_sun = sunColor(t, view_ray, r, mu);		// L0
+	vec3 color_inscatter = inscatter(cam_position, depth, view_ray, sun_position, angleOfInc, r, mu, attenuation, occluder_a);	// S[L]-T(x,xs)S[l]|xs
+	vec3 color_ground = groundColor(world_position, depth, view_ray, sun_position, r, mu, attenuation, L, E, N, angleOfInc, object_id, diffuse);	// R[L0]+R[L*]
+	vec3 color_sun = sunColor(depth, view_ray, sun_position, r, mu);	// L0
 
 	vec3 final = color_inscatter + color_ground + color_sun;
 
 	if(object_id == 2)
 	{
 		vec3 space = diffuse;
-		final += max((space) * mix(vec3(0.0),vec3(1.0),0.2-length(final)), 0.0);
+		final += max((space) * mix(vec3(0.0),vec3(1.0),0.23-length(final)), 0.0);
 	}
 	else
 	{

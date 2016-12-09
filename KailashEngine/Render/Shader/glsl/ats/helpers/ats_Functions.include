@@ -1,6 +1,6 @@
 ﻿
 
-const float SCALE = 0.1;
+const float SCALE = 1.0;
 
 const float Rg = 6360.0 * SCALE;
 const float Rt = 6420.0 * SCALE;
@@ -107,7 +107,6 @@ const int INSCATTER_INTEGRAL_SAMPLES = 50;
 const int IRRADIANCE_INTEGRAL_SAMPLES = 32;
 const int INSCATTER_SPHERICAL_INTEGRAL_SAMPLES = 16;
 
-const float M_PI = 3.141592657;
 
 // ----------------------------------------------------------------------------
 // PARAMETERIZATION OPTIONS
@@ -314,12 +313,12 @@ vec3 irradiance(sampler2D sampler, float r, float muS) {
 
 // Rayleigh phase function
 float phaseFunctionR(float mu) {
-    return (3.0 / (16.0 * M_PI)) * (1.0 + mu * mu);
+    return (3.0 / (16.0 * MATH_PI)) * (1.0 + mu * mu);
 }
 
 // Mie phase function
 float phaseFunctionM(float mu) {
-	return 1.5 * 1.0 / (4.0 * M_PI) * (1.0 - mieG*mieG) * pow(1.0 + (mieG*mieG) - 2.0*mieG*mu, -3.0/2.0) * (1.0 + mu * mu) / (2.0 + mieG*mieG);
+	return 1.5 * 1.0 / (4.0 * MATH_PI) * (1.0 - mieG*mieG) * pow(1.0 + (mieG*mieG) - 2.0*mieG*mu, -3.0/2.0) * (1.0 + mu * mu) / (2.0 + mieG*mieG);
 }
 
 // approximated single Mie scattering (cf. approximate Cm in paragraph "Angular precision")

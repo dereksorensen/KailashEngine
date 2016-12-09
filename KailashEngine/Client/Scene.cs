@@ -77,7 +77,7 @@ namespace KailashEngine.Client
             _lights = new List<Light>();
 
             _animation_timer = new Timer();
-            _circadian_timer = new CircadianTimer(11.0f, 3.0f);
+            _circadian_timer = new CircadianTimer(21.0f, 3.0f);
         }
 
 
