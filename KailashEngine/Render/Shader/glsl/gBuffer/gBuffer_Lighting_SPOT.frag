@@ -94,5 +94,5 @@ void main()
 	diffuse = temp_diffuse * cone;
 	specular = temp_specular * cone;
 
-	//diffuse = vec4(depth);
+	//diffuse = vec4(world_position, 1.0);
 }

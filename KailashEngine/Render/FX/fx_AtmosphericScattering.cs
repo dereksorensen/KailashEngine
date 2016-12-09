@@ -16,9 +16,10 @@ namespace KailashEngine.Render.FX
     class fx_AtmosphericScattering : RenderEffect
     {
         // Properties
-        private const float Rg = 6360.0f;
-        private const float Rt = 6420.0f;
-        private const float RL = 6421.0f;
+        private const float SCALE = 0.1f;
+        private const float Rg = 6360.0f * SCALE;
+        private const float Rt = 6420.0f * SCALE;
+        private const float RL = 6421.0f * SCALE;
 
         private const int TRANSMITTANCE_W = 256;
         private const int TRANSMITTANCE_H = 64;
@@ -51,6 +52,7 @@ namespace KailashEngine.Render.FX
         private Program _pCopyInscatterN;
 
         private Program _pAtmoshpere;
+        private Program _pBlend;
 
         // Frame Buffers
         private FrameBuffer _fPrecompute;
@@ -122,6 +124,12 @@ namespace KailashEngine.Render.FX
                 _path_glsl_effect + "helpers/ats_Functions.include"
             };
 
+            string[] ats_atmposhere_helpers = new string[]
+            {
+                _path_glsl_effect + "helpers/ats_Functions.include",
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include"
+            };
+
             //------------------------------------------------------
             // Precomputation Programs
             //------------------------------------------------------
@@ -140,7 +148,7 @@ namespace KailashEngine.Render.FX
 
             _pInscatter1 = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", ats_functions),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_precomputation + "ats_Inscatter1.frag", ats_functions)
             });
             _pInscatter1.addUniform("transmittanceSampler");
@@ -157,7 +165,7 @@ namespace KailashEngine.Render.FX
 
             _pCopyInscatter1 = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", ats_functions),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_precomputation + "ats_CopyInscatter1.frag", ats_functions)
             });
             _pCopyInscatter1.addUniform("deltaSRSampler");
@@ -168,7 +176,7 @@ namespace KailashEngine.Render.FX
 
             _pPJ = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", ats_functions),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_precomputation + "ats_InscatterS.frag", ats_functions)
             });
             _pPJ.addUniform("first");
@@ -192,7 +200,7 @@ namespace KailashEngine.Render.FX
 
             _pInscatterN = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", ats_functions),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_precomputation + "ats_InscatterN.frag", ats_functions)
             });
             _pInscatterN.addUniform("first");
@@ -204,7 +212,7 @@ namespace KailashEngine.Render.FX
 
             _pCopyInscatterN = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", ats_functions),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_precomputation + "ats_Precompute.geom", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_precomputation + "ats_CopyInscatterN.frag", ats_functions)
             });
             _pCopyInscatterN.addUniform("deltaSRSampler");
@@ -219,10 +227,20 @@ namespace KailashEngine.Render.FX
 
             _pAtmoshpere = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "ats_Atmoshpere.vert", ats_functions),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "ats_Atmoshpere.frag", ats_functions)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "ats_Atmoshpere.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "ats_Atmoshpere.frag", ats_atmposhere_helpers)
             });
-            //_pAtmoshpere.addUniform("deltaSRSampler");
+            _pAtmoshpere.addUniform("transmittanceSampler");
+            _pAtmoshpere.addUniform("irradianceSampler");
+            _pAtmoshpere.addUniform("inscatterSampler");
+            _pAtmoshpere.enable_Samplers(4);
+            _pAtmoshpere.addUniform("sun_position");
+
+            _pBlend = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "ats_blend.frag", null)
+            });
+            _pBlend.enable_Samplers(1);
 
         }
 
@@ -319,6 +337,9 @@ namespace KailashEngine.Render.FX
 
         }
 
+        //------------------------------------------------------
+        // Precompute
+        //------------------------------------------------------
         void setLayer(Program program, int layer)
         {
             double r = layer / (RES_R - 1.0f);
@@ -484,17 +505,56 @@ namespace KailashEngine.Render.FX
         }
 
 
+        //------------------------------------------------------
+        // Render
+        //------------------------------------------------------
 
-
-        public void render(fx_Quad quad)
+        public void render(
+            fx_Quad quad, 
+            Texture normal_texture, 
+            Texture diffuse_texture, 
+            Texture specular_texture, 
+            FrameBuffer scene_fbo, Texture scene_texture,
+            Vector3 circadian_position)
         {
+            //------------------------------------------------------
+            // Render Atmoshpere
+            //------------------------------------------------------
 
             _fAtmosphere.bind(DrawBuffersEnum.ColorAttachment0);
 
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
             _pAtmoshpere.bind();
 
+
+            _tTransmittance.bind(_pAtmoshpere.getUniform("transmittanceSampler"), 0);
+            _tIrradiance.bind(_pAtmoshpere.getUniform("irradianceSampler"), 1);
+            _tInscatter.bind(_pAtmoshpere.getUniform("inscatterSampler"), 2);
+
+            normal_texture.bind(_pAtmoshpere.getSamplerUniform(0), 3);
+            diffuse_texture.bind(_pAtmoshpere.getSamplerUniform(1), 4);
+            specular_texture.bind(_pAtmoshpere.getSamplerUniform(2), 5);
+            scene_texture.bind(_pAtmoshpere.getSamplerUniform(3), 6);
+
+            Vector3 sun_position = Vector3.Cross(new Vector3(1.0f, 0.3f, 0.0f), circadian_position); 
+            sun_position = Vector3.Normalize(sun_position);
+            GL.Uniform3(_pAtmoshpere.getUniform("sun_position"), sun_position);
+
+
             quad.renderFullQuad();
+
+
+            //------------------------------------------------------
+            // Blend with scene
+            //------------------------------------------------------
+
+            scene_fbo.bind(DrawBuffersEnum.ColorAttachment0);
+
+            _pBlend.bind();
+
+            _tAtmoshpere.bind(_pBlend.getSamplerUniform(0), 0);
+
+            quad.render();
 
         }
 

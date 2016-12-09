@@ -23,7 +23,7 @@ void main()
 {
 	vec3 skybox = texture(sampler0, v_TexCoord).xyz;
 
-	diffuse_id = vec4(skybox, 1.0);
+	diffuse_id = vec4(skybox, 2);
 	normal_depth = vec4(vec3(0.0), near_far.y);
 	velocity = (current_worldPosition.xy / current_worldPosition.w - previous_worldPosition.xy / previous_worldPosition.w);
 

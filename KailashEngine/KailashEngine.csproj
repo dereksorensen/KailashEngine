@@ -530,6 +530,7 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Render\Shader\glsl\ats\ats_Blend.frag" />
     <None Include="Render\Shader\glsl\ats\ats_Atmoshpere.vert" />
     <None Include="Render\Shader\glsl\ats\ats_Atmoshpere.frag" />
     <None Include="Render\Shader\glsl\ats\helpers\ats_Functions.include" />

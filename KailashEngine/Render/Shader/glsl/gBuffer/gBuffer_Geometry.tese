@@ -91,7 +91,7 @@ void main()
 		float displacement = texture(displacement_texture, te_TexCoord).r * displacement_strength;
 		vec3 displacement_mod = te_Normal * displacement;
 		te_worldPosition += displacement_mod;
-		previous_worldPosition.xyz = previous_worldPosition.xyz + (displacement * te_Normal);
+		previous_worldPosition.xyz = previous_worldPosition.xyz + (displacement_mod);
 	}
 
 	vec4 viewPosition =  view * vec4(te_worldPosition, 1.0);

@@ -75,4 +75,5 @@ void main()
 	diffuse = temp_diffuse;
 	specular = temp_specular;
 
+	//diffuse = vec4(world_position, 1.0);
 }

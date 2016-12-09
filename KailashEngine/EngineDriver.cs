@@ -299,6 +299,9 @@ namespace KailashEngine
             }
 
             _game.mouse.wheel(e);
+
+            _game.scene.circadian_timer.time += e.Delta / 10.0f;
+
         }
 
         private void mouse_ButtonBuffer()

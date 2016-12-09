@@ -23,8 +23,9 @@ void main()
 	vec3 final = ((lighting + ambient) * diffuse) + lighting_specular;
 
 
-	vec3[] materials = vec3[2](
-		final, 
+	vec3[] materials = vec3[3](
+		final,
+		diffuse,
 		diffuse
 	);
 

@@ -1,6 +1,6 @@
 ﻿
 
-const float SCALE = 1.0;
+const float SCALE = 0.1;
 
 const float Rg = 6360.0 * SCALE;
 const float Rt = 6420.0 * SCALE;
