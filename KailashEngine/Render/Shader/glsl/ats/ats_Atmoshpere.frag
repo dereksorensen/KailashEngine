@@ -159,7 +159,7 @@ vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenu
 		vec3 n = x0 / r0;
 
 
-		vec4 reflectance = vec4(diffuse, 1.0) * vec4(vec3(0.2), 1.0);// * ao;
+		vec4 reflectance = vec4(diffuse, 1.0) * vec4(vec3(0.3), 1.0);// * ao;
 
 		// direct sun light (radiance) reaching x0
 		float muS = dot(n, s);
@@ -172,24 +172,14 @@ vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenu
 		vec3 groundColor = reflectance.rgb * (angleOfInc * sunLight + groundSkyLight);
 
 
-		if (reflectance.w > 0.0) {
+		if (reflectance.w > 0.0)
+		{
+			//------------------------------------------------------
+			// Specular
+			//------------------------------------------------------
 			vec4 specular_properties = texture(sampler2, v_TexCoord);
 			float specular_shininess = specular_properties.w;
 			vec3 specular_color = specular_properties.xyz;
-
-
-			float newDepth = -1.0;
-			float dummy_r = 0;
-			float dummy_mu = 0;
-			vec3 dummy_attenuation = vec3(0);
-			vec3 dummy_occluder_a = vec3(0);
-			vec3 sky_reflection = inscatter(x, newDepth, reflect(v, N), sun_position, angleOfInc, dummy_r, dummy_mu, dummy_attenuation, dummy_occluder_a) / ISun;
-
-
-			vec3 fresnel = vec3(0.09 + 0.98 * pow(dot(-v, N), 0.5));
-			fresnel = clamp(fresnel, 0.0, 1.0);
-			vec3 water_Color = sky_reflection * (1.0 - fresnel) + groundColor * (fresnel);
-
 
 			float gaussianTerm = wardSpecular(L, E, N, vec2(specular_shininess));
 			vec3 final_Specular = vec3(
@@ -197,8 +187,24 @@ vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenu
 				(gaussianTerm * angleOfInc) *
 				specular_color.rgb);
 
-			groundColor = water_Color;
+			//------------------------------------------------------
+			// Sky Reflection
+			//------------------------------------------------------
+			float newDepth = -1.0;
+			float dummy_r = 0;
+			float dummy_mu = 0;
+			vec3 dummy_attenuation = vec3(0);
+			vec3 dummy_occluder_a = vec3(0);
+			vec3 sky_reflection = inscatter(x, newDepth, reflect(v, N), sun_position, angleOfInc, dummy_r, dummy_mu, dummy_attenuation, dummy_occluder_a) / ISun;
+
+			vec3 fresnel = vec3(0.09 + 0.98 * pow(dot(-v, N), 0.6));
+			fresnel = clamp(fresnel, 0.0, 1.0);
+			vec3 water_Color = sky_reflection * (1.0 - fresnel) + groundColor * (fresnel);
+
+			//groundColor = water_Color;
+
 			groundColor += final_Specular;
+
 		}
 
 		result = attenuation * groundColor * ISun / MATH_PI; //=R[L0]+R[L*]
@@ -266,6 +272,7 @@ void main()
 	vec3 color_sun = sunColor(depth, view_ray, sun_position, r, mu);	// L0
 
 	vec3 final = color_inscatter + color_ground + color_sun;
+
 
 	if(object_id == 2)
 	{

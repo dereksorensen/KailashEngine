@@ -29,11 +29,11 @@ namespace KailashEngine.Physics
                 int index1 = (int)mesh.submeshes[0].index_data[i + 1];
                 int index2 = (int)mesh.submeshes[0].index_data[i + 2];
 
-                Vector3 vertex0 = new Vector3(mesh.submeshes[0].vertex_data[index0].position.X, mesh.submeshes[0].vertex_data[index0].position.Z, -mesh.submeshes[0].vertex_data[index0].position.Y) * (scale);
+                Vector3 vertex0 = new Vector3(mesh.submeshes[0].vertex_data[index0].position.X, mesh.submeshes[0].vertex_data[index0].position.Y, mesh.submeshes[0].vertex_data[index0].position.Z) * (scale);
                 //vertex0 *= shift;
-                Vector3 vertex1 = new Vector3(mesh.submeshes[0].vertex_data[index1].position.X, mesh.submeshes[0].vertex_data[index1].position.Z, -mesh.submeshes[0].vertex_data[index1].position.Y) * (scale);
+                Vector3 vertex1 = new Vector3(mesh.submeshes[0].vertex_data[index1].position.X, mesh.submeshes[0].vertex_data[index1].position.Y, mesh.submeshes[0].vertex_data[index1].position.Z) * (scale);
                 //vertex1 *= shift;
-                Vector3 vertex2 = new Vector3(mesh.submeshes[0].vertex_data[index2].position.X, mesh.submeshes[0].vertex_data[index2].position.Z, -mesh.submeshes[0].vertex_data[index2].position.Y) * (scale);
+                Vector3 vertex2 = new Vector3(mesh.submeshes[0].vertex_data[index2].position.X, mesh.submeshes[0].vertex_data[index2].position.Y, mesh.submeshes[0].vertex_data[index2].position.Z) * (scale);
                 //vertex2 *= shift;
 
                 trimesh.AddTriangle(vertex0, vertex1, vertex2);
@@ -70,9 +70,9 @@ namespace KailashEngine.Physics
                 int index1 = (int)mesh.submeshes[0].index_data[i + 1];
                 int index2 = (int)mesh.submeshes[0].index_data[i + 2];
 
-                Vector3 vertex0 = new Vector3(mesh.submeshes[0].vertex_data[index0].position.X, mesh.submeshes[0].vertex_data[index0].position.Z, -mesh.submeshes[0].vertex_data[index0].position.Y) * (scale);
-                Vector3 vertex1 = new Vector3(mesh.submeshes[0].vertex_data[index1].position.X, mesh.submeshes[0].vertex_data[index1].position.Z, -mesh.submeshes[0].vertex_data[index1].position.Y) * (scale);
-                Vector3 vertex2 = new Vector3(mesh.submeshes[0].vertex_data[index2].position.X, mesh.submeshes[0].vertex_data[index2].position.Z, -mesh.submeshes[0].vertex_data[index2].position.Y) * (scale);
+                Vector3 vertex0 = new Vector3(mesh.submeshes[0].vertex_data[index0].position.X, mesh.submeshes[0].vertex_data[index0].position.Y, mesh.submeshes[0].vertex_data[index0].position.Z) * (scale);
+                Vector3 vertex1 = new Vector3(mesh.submeshes[0].vertex_data[index1].position.X, mesh.submeshes[0].vertex_data[index1].position.Y, mesh.submeshes[0].vertex_data[index1].position.Z) * (scale);
+                Vector3 vertex2 = new Vector3(mesh.submeshes[0].vertex_data[index2].position.X, mesh.submeshes[0].vertex_data[index2].position.Y, mesh.submeshes[0].vertex_data[index2].position.Z) * (scale);
 
                 trimesh.AddTriangle(vertex0, vertex1, vertex2);
             }

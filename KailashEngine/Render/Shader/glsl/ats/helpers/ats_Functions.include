@@ -60,12 +60,12 @@ const int RES_NU = 8;
 const float AVERAGE_GROUND_REFLECTANCE = 0.1;
 
 // Rayleigh
-const float HR = 9.0 * SCALE;
+const float HR = 13.0 * SCALE;
 const vec3 betaR = vec3(5.8e-3, 1.35e-2, 3.31e-2) / SCALE;
 //const vec3 betaR = vec3(1e-2, 1e-2, 1e-2);
 
 // Mie
-// CURRENT
+// DEFAULT
 const float HM = 7.2 * SCALE;
 const vec3 betaMSca = vec3(10e-3) / SCALE;
 const vec3 betaMEx = betaMSca / 0.9;
@@ -73,10 +73,10 @@ const float mieG = 0.76;
 
 /*
 // DEFAULT
-const float HM = 1.2 * SCALE;
-const vec3 betaMSca = vec3(4e-3) / SCALE;
+const float HM = 7.2 * SCALE;
+const vec3 betaMSca = vec3(10e-3) / SCALE;
 const vec3 betaMEx = betaMSca / 0.9;
-const float mieG = 0.8;
+const float mieG = 0.76;
 
 // CLEAR SKY
 const float HM = 1.2 * SCALE;

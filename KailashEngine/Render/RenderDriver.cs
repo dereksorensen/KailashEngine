@@ -222,7 +222,10 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
 
-            _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, _fxFinal.fFinalScene, _fxFinal.tFinalScene, scene.circadian_timer.position);
+            Debug.DebugHelper.time_function("ATS", 2, () =>
+            {
+                _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, _fxFinal.fFinalScene, _fxFinal.tFinalScene, scene.circadian_timer.position);
+            });
 
 
             _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
