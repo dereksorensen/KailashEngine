@@ -177,17 +177,32 @@ vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenu
 			float specular_shininess = specular_properties.w;
 			vec3 specular_color = specular_properties.xyz;
 
+
+			float newDepth = -1.0;
+			float dummy_r = 0;
+			float dummy_mu = 0;
+			vec3 dummy_attenuation = vec3(0);
+			vec3 dummy_occluder_a = vec3(0);
+			vec3 sky_reflection = inscatter(x, newDepth, reflect(v, N), sun_position, angleOfInc, dummy_r, dummy_mu, dummy_attenuation, dummy_occluder_a) / ISun;
+
+
+			vec3 fresnel = vec3(0.09 + 0.98 * pow(dot(-v, N), 0.5));
+			fresnel = clamp(fresnel, 0.0, 1.0);
+			vec3 water_Color = sky_reflection * (1.0 - fresnel) + groundColor * (fresnel);
+
+
 			float gaussianTerm = wardSpecular(L, E, N, vec2(specular_shininess));
 			vec3 final_Specular = vec3(
-				((angleOfInc * sunLight)) *
+				sunLight *
 				(gaussianTerm * angleOfInc) *
 				specular_color.rgb);
 
-
+			groundColor = water_Color;
 			groundColor += final_Specular;
 		}
 
 		result = attenuation * groundColor * ISun / MATH_PI; //=R[L0]+R[L*]
+
     }
 
     return result;
@@ -262,11 +277,12 @@ void main()
 		final += scene;
 	}
 
-    color = vec4(view_ray, 1.0);
-	color = vec4(color_inscatter, 1.0);
-	//color = vec4(t);
 
 
 	color = vec4(final, 1.0);
+
+	//color = vec4(E, 1.0);
+	//color = vec4(color_inscatter, 1.0);
+	//color = vec4(t);
 
 }
