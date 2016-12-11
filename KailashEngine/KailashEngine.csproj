@@ -504,6 +504,7 @@
     <Compile Include="World\ControllableWorldObject.cs" />
     <Compile Include="World\LightLoader.cs" />
     <Compile Include="World\Lights\Light.cs" />
+    <Compile Include="World\Lights\LightManager.cs" />
     <Compile Include="World\Lights\pLight.cs" />
     <Compile Include="World\Lights\sLight.cs" />
     <Compile Include="World\Model\DAE_Bone.cs" />

@@ -222,13 +222,10 @@ namespace KailashEngine.Render
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxFinal.fFinalScene);
 
 
-            Debug.DebugHelper.time_function("ATS", 2, () =>
-            {
-                _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, _fxFinal.fFinalScene, _fxFinal.tFinalScene, scene.circadian_timer.position);
-            });
+            _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, _fxFinal.fFinalScene, _fxFinal.tFinalScene, scene.circadian_timer.position);
 
 
-            _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
+            //_fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
@@ -237,10 +234,7 @@ namespace KailashEngine.Render
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
 
-            //Debug.DebugHelper.time_function("Motion Blur", 2, () =>
-            //{
-            //    _fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
-            //});
+            //_fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
 
             //------------------------------------------------------
             // Render to Screen
@@ -256,7 +250,7 @@ namespace KailashEngine.Render
 
 
 
-            //Debug.DebugHelper.time_function("Moving Average", 3, () =>
+            //Debug.DebugHelper.time_function("Blur Test", 3, () =>
             //{
             //    _fxSpecial.blur_GaussCompute(100, _fxDepthOfField.tDOF_Scene);
             //    //_fxSpecial.blur_Gauss(_fxQuad, 75, _fxDepthOfField.tDOF_Scene, _fxDepthOfField._fHalfResolution, DrawBuffersEnum.ColorAttachment4);

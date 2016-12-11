@@ -27,6 +27,13 @@ namespace KailashEngine.Client
         private WorldLoader _world_loader;
 
 
+        private LightManager _light_manager;
+        public LightManager light_manager
+        {
+            get { return _light_manager; }
+        }
+
+
         // Timers
         private Timer _animation_timer;
         public Timer animation_timer
@@ -70,8 +77,8 @@ namespace KailashEngine.Client
         public Scene(string path_scene)
         {
             _path_scene = path_scene;
-            _MS = new MatrixStack();
-        
+
+            _light_manager = new LightManager();
 
             _meshes = new List<UniqueMesh>();
             _lights = new List<Light>();

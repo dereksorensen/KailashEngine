@@ -10,31 +10,18 @@ in vec3 tc_Tangent[];
 
 out vec3 te_Normal;
 out vec3 te_Tangent;
-out vec3 te_viewPosition;
+//out vec3 te_viewPosition;
 out vec3 te_worldPosition;
+out vec3 te_previousWorldPosition;
 out vec2 te_TexCoord;
-out vec4 te_currentPosition;
-out vec4 te_previousPosition;
-
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
+//out vec4 te_currentPosition;
+//out vec4 te_previousPosition;
 
 
 
 uniform sampler2D displacement_texture;
 uniform int enable_displacement_texture;
-uniform float displacement_strength = 0.00005;
+uniform float displacement_strength = 0.1;
 
 uniform mat4 model_previous;
 
@@ -84,25 +71,16 @@ void main()
 	te_Tangent = normalize(interpolate3D_triangle(tc_Tangent[0], tc_Tangent[1], tc_Tangent[2]));
 	te_worldPosition = interpolate3D_triangle(tc_worldPosition[0], tc_worldPosition[1], tc_worldPosition[2]);
 	vec4 objectPosition = interpolate3D_triangle(tc_objectPosition[0], tc_objectPosition[1], tc_objectPosition[2]);
-	vec4 previous_worldPosition = model_previous * vec4(objectPosition.xyz,1.0);
+	te_previousWorldPosition = (model_previous * vec4(objectPosition.xyz,1.0)).xyz;
 
 	if(enable_displacement_texture == 1)
 	{	
 		float displacement = texture(displacement_texture, te_TexCoord).r * displacement_strength;
 		vec3 displacement_mod = (te_Normal * displacement);
 		te_worldPosition += displacement_mod;
-		previous_worldPosition.xyz = previous_worldPosition.xyz + (displacement_mod);
+		te_previousWorldPosition = te_previousWorldPosition + (displacement_mod);
 	}
 
-	vec4 viewPosition =  view * vec4(te_worldPosition, 1.0);
-	te_viewPosition = viewPosition.xyz;
-	vec4 clipPosition = perspective * viewPosition;
 
-	gl_Position = clipPosition;
-
-
-	//Send moments for Velocity Map
-	te_currentPosition = clipPosition;
-	te_previousPosition = previous_view_persepctive * previous_worldPosition;
-
+	gl_Position = vec4(te_worldPosition, 1.0);
 }

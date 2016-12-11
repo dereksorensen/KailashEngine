@@ -74,21 +74,15 @@ bool edgeInFrustum(vec4 p, vec4 q)
 			|| (p.z < -p.w && q.z < -q.w) || (p.z > p.w && q.z > q.w) );
 }
 
-void main()
+void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position)
 {
-	tc_objectPosition[gl_InvocationID] = v_objectPosition[gl_InvocationID];
-    tc_worldPosition[gl_InvocationID] = v_worldPosition[gl_InvocationID];
-	tc_TexCoord[gl_InvocationID] = v_TexCoord[gl_InvocationID];
-	tc_Normal[gl_InvocationID] = v_Normal[gl_InvocationID];
-	tc_Tangent[gl_InvocationID] = v_Tangent[gl_InvocationID];
-
 	float tessLevel = 1.0;
 
 	vec4 vertex_position[3];
 
 	for (int i = 0; i < 3; i++)
 	{
-		vertex_position[i] = perspective * view * vec4(v_worldPosition[i], 1.0);
+		vertex_position[i] = mvp * vec4(world_position[i], 1.0);
 	}
 
 	if (
@@ -118,14 +112,17 @@ void main()
 		gl_TessLevelOuter[0] = gl_TessLevelOuter[1] = gl_TessLevelOuter[2] = 0.0;
 		gl_TessLevelInner[0] = 0.0;
 	}
+}
 
+void main()
+{
+	tc_objectPosition[gl_InvocationID] = v_objectPosition[gl_InvocationID];
+    tc_worldPosition[gl_InvocationID] = v_worldPosition[gl_InvocationID];
+	tc_TexCoord[gl_InvocationID] = v_TexCoord[gl_InvocationID];
+	tc_Normal[gl_InvocationID] = v_Normal[gl_InvocationID];
+	tc_Tangent[gl_InvocationID] = v_Tangent[gl_InvocationID];
 
-
-
-
-
-
-
+	controlTessellation(perspective * view, v_worldPosition);
 
 }
 

@@ -243,7 +243,7 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Bokeh
             //------------------------------------------------------
-            _iBokehShape = _tLoader.createImage(_path_static_textures + "bokeh_pentagon.png", TextureTarget.Texture2D, TextureWrapMode.Clamp, false);
+            _iBokehShape = _tLoader.createImage(_path_static_textures + "bokeh_circle.png", TextureTarget.Texture2D, TextureWrapMode.Clamp, true);
 
             _tBokeh_Positions = new Texture(TextureTarget.Texture1D,
                 _bokeh_max_shapes, 0, 0,

@@ -16,6 +16,13 @@ namespace KailashEngine.World.Lights
         public const string type_spot = "SPOT";
         public const string type_point = "POINT";
 
+        private string _sid;
+        public string sid
+        {
+            get { return _sid; }
+            set { _sid = value; }
+        }
+
 
         private string _type;
         public string type

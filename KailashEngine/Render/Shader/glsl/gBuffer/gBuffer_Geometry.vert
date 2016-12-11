@@ -59,10 +59,6 @@ void main()
 	vec4 world_position = (model * v_objectPosition);
 	v_worldPosition = world_position.xyz;
 
-	//vec4 viewPosition = view *  world_position;
-	//v_viewPosition = viewPosition.xyz;
-	//vec4 clipPosition = perspective * viewPosition;
-	//gl_Position = clipPosition;
 
 	// Texture Coordinates
 	v_TexCoord = texCoord;

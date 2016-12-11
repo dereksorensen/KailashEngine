@@ -104,45 +104,16 @@ namespace KailashEngine.World
             Debug.DebugHelper.logInfo(1, "", "");
         }
 
-        //public void createWorld(string filename, out List<UniqueMesh> meshes)
-        //{
-        //    Debug.DebugHelper.logInfo(1, "Loading World", filename);
-
-        //    // Build filenames
-        //    string[] filepaths = createFilePaths(filename);
-        //    string mesh_filename = filepaths[0];
-        //    string physics_filename = filepaths[1];
-        //    string lights_filename = filepaths[2];
-
-
-        //    Dictionary<string, UniqueMesh> temp_meshes;
-        //    Dictionary<string, Matrix4> light_matrix_collection;
-
-
-        //    DAE_Loader.load(
-        //        mesh_filename,
-        //        out temp_meshes,
-        //        out light_matrix_collection);
-
-        //    meshes = temp_meshes.Values.ToList();
-
-
-        //    temp_meshes.Clear();
-        //    light_matrix_collection.Clear();
-
-        //    Debug.DebugHelper.logInfo(1, "", "");
-        //}
-
 
         public void addWorldToScene(string[] filenames, List<UniqueMesh> meshes, List<Light> lights)
         {
+            List<UniqueMesh> temp_meshes;
+            List<Light> temp_lights;
+
             foreach (string filename in filenames)
             {
                 try
                 {
-                    List<UniqueMesh> temp_meshes;
-                    List<Light> temp_lights;
-
                     createWorld(filename, out temp_meshes, out temp_lights);
 
                     meshes.AddRange(temp_meshes);
