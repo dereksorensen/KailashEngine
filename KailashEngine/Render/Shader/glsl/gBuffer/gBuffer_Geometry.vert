@@ -6,29 +6,17 @@ layout(location = 3) in vec2 texCoord;
 layout(location = 4) in vec4 bone_ids;
 layout(location = 5) in vec4 bone_weights;
 
-out vec2 v_TexCoord;
-out vec4 v_objectPosition;
+
 out vec3 v_worldPosition;
-//out vec3 v_viewPosition;
+out vec3 v_previousWorldPosition;
+out vec2 v_TexCoord;
 out vec3 v_Normal;
 out vec3 v_Tangent;
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
 
 uniform mat4 model;
 uniform mat4 model_normal;
+uniform mat4 model_previous;
 
 uniform int enable_skinning;
 uniform mat4[32] bone_matrices;
@@ -54,11 +42,10 @@ void main()
 		v_tangent = bone_matrix * v_tangent;
 	}
 
-	// Position
-	v_objectPosition = v_position;
-	vec4 world_position = (model * v_objectPosition);
-	v_worldPosition = world_position.xyz;
-
+	// Positions
+	vec4 objectPosition = v_position;
+	v_worldPosition = (model * objectPosition).xyz;
+	v_previousWorldPosition = (model_previous * objectPosition).xyz;
 
 	// Texture Coordinates
 	v_TexCoord = texCoord;

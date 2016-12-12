@@ -38,6 +38,7 @@ layout(std140, binding = 1) uniform cameraSpatials
 noperspective out vec3 g_wireframe_distance;
 uniform vec2 render_size;
 
+
 void main() 
 {
 	
@@ -62,25 +63,24 @@ void main()
 
 	vec3 chooser[3] = vec3[3]( vec3(1.0,0.0,0.0), vec3(0.0,1.0,0.0), vec3(0.0,0.0,1.0) );
 
-
 	// Output triangle
 	for(int i = 0; i < 3; i++)
 	{
 		g_wireframe_distance = vec3(area/length(v[i])) * chooser[i];
 
-		g_Normal = te_Normal[i];
-		g_Tangent = te_Tangent[i];
 		g_worldPosition = te_worldPosition[i];
 		g_viewPosition = viewPositions[i].xyz;
-		g_TexCoord = te_TexCoord[i];
+		g_Tangent = te_Tangent[i];
 		g_currentPosition = clipPositions[i];
 		g_previousPosition = previous_view_persepctive * vec4(te_previousWorldPosition[i], 1.0);
+		g_TexCoord = te_TexCoord[i];
+		g_Normal = te_Normal[i];
 
 		gl_Position = clipPositions[i];
 		EmitVertex();
 	}
-
-
-
+		
 	EndPrimitive();
+
+
 }

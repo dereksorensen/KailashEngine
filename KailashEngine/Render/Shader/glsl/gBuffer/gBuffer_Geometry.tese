@@ -2,28 +2,24 @@
 
 layout(triangles, fractional_odd_spacing, ccw) in;
 
-in vec4 tc_objectPosition[];
+
 in vec3 tc_worldPosition[];
+in vec3 tc_previousWorldPosition[];
 in vec2 tc_TexCoord[];
 in vec3 tc_Normal[];
 in vec3 tc_Tangent[];
 
-out vec3 te_Normal;
-out vec3 te_Tangent;
-//out vec3 te_viewPosition;
 out vec3 te_worldPosition;
 out vec3 te_previousWorldPosition;
 out vec2 te_TexCoord;
-//out vec4 te_currentPosition;
-//out vec4 te_previousPosition;
-
+out vec3 te_Normal;
+out vec3 te_Tangent;
 
 
 uniform sampler2D displacement_texture;
 uniform int enable_displacement_texture;
 uniform float displacement_strength = 0.1;
 
-uniform mat4 model_previous;
 
 
 vec2 interpolate2D_triangle(vec2 v0, vec2 v1, vec2 v2)
@@ -66,12 +62,11 @@ vec3 interpolate3D_quad(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
 
 void main()
 {
+	te_worldPosition = interpolate3D_triangle(tc_worldPosition[0], tc_worldPosition[1], tc_worldPosition[2]);
+	te_previousWorldPosition = interpolate3D_triangle(tc_previousWorldPosition[0], tc_previousWorldPosition[1], tc_previousWorldPosition[2]);
 	te_TexCoord = interpolate2D_triangle(tc_TexCoord[0], tc_TexCoord[1], tc_TexCoord[2]);
 	te_Normal = normalize(interpolate3D_triangle(tc_Normal[0], tc_Normal[1], tc_Normal[2]));
 	te_Tangent = normalize(interpolate3D_triangle(tc_Tangent[0], tc_Tangent[1], tc_Tangent[2]));
-	te_worldPosition = interpolate3D_triangle(tc_worldPosition[0], tc_worldPosition[1], tc_worldPosition[2]);
-	vec4 objectPosition = interpolate3D_triangle(tc_objectPosition[0], tc_objectPosition[1], tc_objectPosition[2]);
-	te_previousWorldPosition = (model_previous * vec4(objectPosition.xyz,1.0)).xyz;
 
 	if(enable_displacement_texture == 1)
 	{	

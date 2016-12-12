@@ -2,14 +2,14 @@
 
 layout(vertices = 3) out;
 
-in vec4 v_objectPosition[];
 in vec3 v_worldPosition[];
+in vec3 v_previousWorldPosition[];
 in vec2 v_TexCoord[];
 in vec3 v_Normal[];
 in vec3 v_Tangent[];
 
-out vec4 tc_objectPosition[];
 out vec3 tc_worldPosition[];
+out vec3 tc_previousWorldPosition[];
 out vec2 tc_TexCoord[];
 out vec3 tc_Normal[];
 out vec3 tc_Tangent[];
@@ -31,26 +31,6 @@ layout(std140, binding = 1) uniform cameraSpatials
 uniform int enable_displacement_texture;
 uniform vec2 render_size;
 
-float GetTessLevel(float Distance0, float Distance1)
-{
-    float AvgDistance = (Distance0 + Distance1) / 2.0;
-
-    if (AvgDistance <= 100.0) {
-        return 64.0;
-    }
-    else if (AvgDistance <= 400.0) {
-        return 16.0;
-    }
-	else if (AvgDistance <= 1000.0) {
-        return 4.0;
-    }
-	else if (AvgDistance <= 10000.0) {
-        return 1.0;
-    }
-    else {
-        return 0.0;
-    }
-}
 
 float screenSphereSize(vec4 e1, vec4 e2)
 {
@@ -116,8 +96,8 @@ void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position)
 
 void main()
 {
-	tc_objectPosition[gl_InvocationID] = v_objectPosition[gl_InvocationID];
     tc_worldPosition[gl_InvocationID] = v_worldPosition[gl_InvocationID];
+    tc_previousWorldPosition[gl_InvocationID] = v_previousWorldPosition[gl_InvocationID];
 	tc_TexCoord[gl_InvocationID] = v_TexCoord[gl_InvocationID];
 	tc_Normal[gl_InvocationID] = v_Normal[gl_InvocationID];
 	tc_Tangent[gl_InvocationID] = v_Tangent[gl_InvocationID];

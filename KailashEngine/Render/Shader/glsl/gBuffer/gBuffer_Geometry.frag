@@ -72,6 +72,7 @@ void main()
 		tex_coords = calcParallaxMapping(parallax_texture, tex_coords, TBN, cam_position, g_worldPosition);
 	}
 
+
 	//------------------------------------------------------
 	// Diffuse Mapping + Material ID
 	//------------------------------------------------------
@@ -102,6 +103,7 @@ void main()
 
 		diffuse_id.xyz = lineColor_inner + lineColor_outer;
 	}
+
 
 	//------------------------------------------------------
 	// Normal Mapping + Linear Depth
