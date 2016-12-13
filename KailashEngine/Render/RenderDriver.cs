@@ -52,13 +52,13 @@ namespace KailashEngine.Render
             _enable_debug_views = true;
 
             // Render UBOs
-            _ubo_game_config = new UniformBuffer(BufferUsageHint.StaticDraw, 0, new EngineHelper.size[]
+            _ubo_game_config = new UniformBuffer(BufferStorageFlags.DynamicStorageBit, 0, new EngineHelper.size[]
             {
                 EngineHelper.size.vec4,
                 EngineHelper.size.f
             });
 
-            _ubo_camera = new UniformBuffer(BufferUsageHint.StaticDraw, 1, new EngineHelper.size[] {
+            _ubo_camera = new UniformBuffer(BufferStorageFlags.DynamicStorageBit, 1, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
@@ -158,8 +158,10 @@ namespace KailashEngine.Render
         //------------------------------------------------------
         public void updateUBO_GameConfig(Vector4 near_far, float target_fps)
         {
+            _ubo_game_config.bind();
             _ubo_game_config.update(0, near_far);
             _ubo_game_config.update(1, target_fps);
+            _ubo_game_config.unbind();
         }
 
         public void updateUBO_Camera(
@@ -167,6 +169,7 @@ namespace KailashEngine.Render
             Matrix4 previous_view_perspective, Matrix4 inv_previous_view_perspective,
             Vector3 position, Vector3 look)
         {
+            _ubo_camera.bind();
             _ubo_camera.update(0, view);
             _ubo_camera.update(1, perspective);
             _ubo_camera.update(2, inv_view_perspective);
@@ -174,6 +177,7 @@ namespace KailashEngine.Render
             _ubo_camera.update(4, inv_previous_view_perspective);
             _ubo_camera.update(5, position);
             _ubo_camera.update(6, look);
+            _ubo_camera.unbind();
         }
 
         public void handle_MouseState(bool locked)

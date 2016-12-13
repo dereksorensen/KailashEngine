@@ -26,6 +26,7 @@ namespace KailashEngine.Client
 
         private WorldLoader _world_loader;
 
+        private MaterialManager _material_manager;
 
         private LightManager _light_manager;
         public LightManager light_manager
@@ -78,8 +79,6 @@ namespace KailashEngine.Client
         {
             _path_scene = path_scene;
 
-            _light_manager = new LightManager();
-
             _meshes = new List<UniqueMesh>();
             _lights = new List<Light>();
 
@@ -123,7 +122,9 @@ namespace KailashEngine.Client
 
         public void load(PhysicsWorld physics_world)
         {
-            _world_loader = new WorldLoader(_path_scene, "light_objects", physics_world);
+            _material_manager = new MaterialManager();
+            _light_manager = new LightManager();
+            _world_loader = new WorldLoader(_path_scene, "light_objects", physics_world, _material_manager);
 
 
             // Load Scenes

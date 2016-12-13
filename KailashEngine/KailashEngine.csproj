@@ -512,6 +512,7 @@
     <Compile Include="World\Model\DAE_Material.cs" />
     <Compile Include="World\Model\DAE_Skeleton.cs" />
     <Compile Include="World\Model\Material.cs" />
+    <Compile Include="World\Model\MaterialManager.cs" />
     <Compile Include="World\Model\Mesh.cs" />
     <Compile Include="World\Model\DAE_Mesh.cs" />
     <Compile Include="World\Model\DAE_Polylist.cs" />

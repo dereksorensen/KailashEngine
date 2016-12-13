@@ -57,6 +57,9 @@ namespace KailashEngine
         //------------------------------------------------------
         public enum size : int
         {
+            ui = sizeof(uint),
+            ui64 = sizeof(ulong),
+            i = sizeof(int),
             f = sizeof(float),
             vec2 = sizeof(float) * 2,
             vec3 = sizeof(float) * 3,

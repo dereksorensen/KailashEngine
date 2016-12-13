@@ -33,14 +33,18 @@ namespace KailashEngine.World
 
         private PhysicsWorld _physics_world;
 
+        private MaterialManager _material_manager;
 
-        public WorldLoader(string path_scene, string light_objects_filename, PhysicsWorld physics_world)
+        public WorldLoader(string path_scene, string light_objects_filename, PhysicsWorld physics_world, MaterialManager material_manager)
         {
             // Fill Base Paths
             _path_scene = path_scene;
 
             // Assign physics world
             _physics_world = physics_world;
+
+            // Assign a material manager
+            _material_manager = material_manager;
 
             // Load standard light object meshes
             Dictionary<string, UniqueMesh> light_objects = new Dictionary<string, UniqueMesh>();

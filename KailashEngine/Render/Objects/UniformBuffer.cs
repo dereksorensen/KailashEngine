@@ -22,7 +22,7 @@ namespace KailashEngine.Render.Objects
 
         private EngineHelper.size[] _ubo_stack;
 
-        public UniformBuffer(BufferUsageHint buffer_usage, int index, EngineHelper.size[] ubo_stack)
+        public UniformBuffer(BufferStorageFlags storage_flags, int index, EngineHelper.size[] ubo_stack)
         {
             // Calculate total UBO byte size based on ubo_stack items
             _ubo_stack = ubo_stack;
@@ -30,24 +30,59 @@ namespace KailashEngine.Render.Objects
             foreach (EngineHelper.size e in _ubo_stack)
             {
                 size += (int)e;
-            }  
+            }
 
+            load(storage_flags, index, size);
+        }
+
+        public UniformBuffer(BufferStorageFlags storage_flags, int index, EngineHelper.size ubo_item_size, int length)
+        {
+            // Calculate total UBO byte size based on ubo_stack items
+            _ubo_stack = new EngineHelper.size[length];
+            int size = (int)ubo_item_size * length;
+
+            for(int i = 0; i < length; i++)
+            {
+                _ubo_stack[i] = ubo_item_size;
+            }
+
+            load(storage_flags, index, size);
+        }
+
+        private void load(BufferStorageFlags storage_flags, int index, int size)
+        {
             // Create Uniform Buffer
             GL.GenBuffers(1, out _buffer_id);
             GL.BindBuffer(BufferTarget.UniformBuffer, _buffer_id);
-            GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)size, (IntPtr)null, buffer_usage);
+            GL.BufferStorage(BufferTarget.UniformBuffer, size, (IntPtr)null, storage_flags);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
             //Bind uniform buffer to binding index since the block size is set and ubo is created
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, index, _buffer_id);
         }
 
+        public void bind()
+        {
+            GL.BindBuffer(BufferTarget.UniformBuffer, _buffer_id);
+        }
+
+        public void unbind()
+        {
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+        }
+
+        public void bindAndUpdate<T>(int component_index, T data)
+            where T : struct
+        {
+            bind();
+            update(component_index, data);
+            unbind();
+        }
+
 
         public void update<T>(int component_index, T data)
             where T : struct
         {
-            GL.BindBuffer(BufferTarget.UniformBuffer, _buffer_id);
-
             // Calculate offest by adding the data length of ubo_stack up until component_index
             int offset = 0;
             for(int i = 0; i < component_index; i++)
@@ -60,8 +95,15 @@ namespace KailashEngine.Render.Objects
 
             // Update UBO data
             GL.BufferSubData(BufferTarget.UniformBuffer, (IntPtr)offset, size, ref data);
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+            //IntPtr map = GL.MapBufferRange(BufferTarget.UniformBuffer, (IntPtr)offset, size, BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit);
+            //if(map != IntPtr.Zero)
+            //{
+            //    System.Runtime.InteropServices.Marshal.StructureToPtr(data, map, false);
+            //}
+            //GL.UnmapBuffer(BufferTarget.UniformBuffer);
         }
+
+
 
     }
 }
