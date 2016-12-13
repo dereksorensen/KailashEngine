@@ -25,23 +25,28 @@ namespace KailashEngine.Render
 
         public static readonly string uEnableDiffuseTexture = "enable_diffuse_texture";
         public static readonly string uDiffuseTexture = "diffuse_texture";
+        public static readonly string uDiffuseTextureUnit = "diffuse_texture_unit";
         public static readonly string uDiffuseColor = "diffuse_color";
         public static readonly string uEmission = "emission_strength";
 
         public static readonly string uEnableSpecularTexture = "enable_specular_texture";
         public static readonly string uSpecularTexture = "specular_texture";
+        public static readonly string uSpecularTextureUnit = "specular_texture_unit";
         public static readonly string uSpecularColor = "specular_color";
         public static readonly string uSpecularShininess = "specular_shininess";
 
         public static readonly string uEnableNormalTexture = "enable_normal_texture";
         public static readonly string uNormalTexture = "normal_texture";
+        public static readonly string uNormalTextureUnit = "normal_texture_unit";
 
         public static readonly string uEnableDisplacementTexture = "enable_displacement_texture";
         public static readonly string uDisplacementTexture = "displacement_texture";
+        public static readonly string uDisplacementTextureUnit = "displacement_texture_unit";
         public static readonly string uDisplacementStrength = "displacement_strength";
 
         public static readonly string uEnableParallaxTexture = "enable_parallax_texture";
         public static readonly string uParallaxTexture = "parallax_texture";
+        public static readonly string uParallaxTextureUnit = "parallax_texture_unit";
 
         public static readonly string uEnableSkinning = "enable_skinning";
         public static readonly string uBoneMatrices = "bone_matrices";

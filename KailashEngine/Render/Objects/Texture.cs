@@ -11,7 +11,9 @@ namespace KailashEngine.Render.Objects
 {
     class Texture
     {
-
+        //------------------------------------------------------
+        // IDs
+        //------------------------------------------------------
 
         private int _id;
         public int id
@@ -20,12 +22,18 @@ namespace KailashEngine.Render.Objects
 
         }
 
-
         private TextureTarget _target;
         public TextureTarget target
         {
             get { return _target; }
         }
+
+        private long _handle;
+        public long handle
+        {
+            get { return _handle; }
+        }
+
 
         //------------------------------------------------------
         // Options
@@ -48,6 +56,7 @@ namespace KailashEngine.Render.Objects
 
         private float _max_anisotropy;
 
+        private bool _bindless = false;
 
         //------------------------------------------------------
         // Pixel Settings
@@ -315,6 +324,12 @@ namespace KailashEngine.Render.Objects
         }
 
 
+        public void loadBindless()
+        {
+            _handle = GL.Arb.GetTextureHandle(_id);
+            _bindless = true;
+        }
+
 
         //------------------------------------------------------
         // Binding
@@ -346,5 +361,14 @@ namespace KailashEngine.Render.Objects
             GL.Uniform1(texture_uniform, index);
         }
 
+        public void makeResident()
+        {
+            GL.Arb.MakeTextureHandleResident(_handle);
+        }
+
+        public void makeNonResident()
+        {
+            GL.Arb.MakeTextureHandleNonResident(_handle);
+        }
     }
 }

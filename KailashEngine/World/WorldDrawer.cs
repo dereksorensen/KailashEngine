@@ -30,6 +30,19 @@ namespace KailashEngine.World
             }
         }
 
+        private static void trySetBindlessTextureUnit(Program program, Render.Objects.Image image, string uTextureUnit, string uEnableTexture, int texture_unit)
+        {
+            if (image != null)
+            {
+                program.enable_MaterialTexture(uTextureUnit, texture_unit);
+                program.enable_MaterialTexture(uEnableTexture, 1);
+            }
+            else
+            {
+                program.enable_MaterialTexture(uEnableTexture, 0);
+            }
+        }
+
 
         // Standard OGL calls to draw meshes / lights
         private static void draw(Mesh mesh, string mesh_category)
@@ -140,21 +153,26 @@ namespace KailashEngine.World
                     GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
 
                     // Diffuse 
-                    trySetMatrialImage(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTexture, RenderHelper.uEnableDiffuseTexture, 31);
+                    //trySetMatrialImage(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTexture, RenderHelper.uEnableDiffuseTexture, 31);
+                    trySetBindlessTextureUnit(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTextureUnit, RenderHelper.uEnableDiffuseTexture, submesh.material.diffuse_image_unit);
 
                     // Specular
-                    trySetMatrialImage(program, submesh.material.specular_image, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
+                    //trySetMatrialImage(program, submesh.material.specular_image, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
+                    trySetBindlessTextureUnit(program, submesh.material.specular_image, RenderHelper.uSpecularTextureUnit, RenderHelper.uEnableSpecularTexture, submesh.material.specular_image_unit);
 
                     // Normal
-                    trySetMatrialImage(program, submesh.material.normal_image, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture, 29);
+                    //trySetMatrialImage(program, submesh.material.normal_image, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture, 29);
+                    trySetBindlessTextureUnit(program, submesh.material.normal_image, RenderHelper.uNormalTextureUnit, RenderHelper.uEnableNormalTexture, submesh.material.normal_image_unit);
 
                     // Displacement
-                    trySetMatrialImage(program, submesh.material.displacement_image, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture, 28);
+                    //trySetMatrialImage(program, submesh.material.displacement_image, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture, 28);
+                    trySetBindlessTextureUnit(program, submesh.material.displacement_image, RenderHelper.uDisplacementTextureUnit, RenderHelper.uEnableDisplacementTexture, submesh.material.displacement_image_unit);
 
                     // Parallax
-                    trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
+                    //trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
+                    trySetBindlessTextureUnit(program, submesh.material.parallax_image, RenderHelper.uParallaxTextureUnit, RenderHelper.uEnableParallaxTexture, submesh.material.parallax_image_unit);
 
-                    
+
                     draw(submesh, BeginMode.Patches, "mesh");
 
                 }

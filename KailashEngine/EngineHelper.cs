@@ -60,6 +60,7 @@ namespace KailashEngine
             ui = sizeof(uint),
             ui64 = sizeof(ulong),
             i = sizeof(int),
+            i64 = sizeof(long),
             f = sizeof(float),
             vec2 = sizeof(float) * 2,
             vec3 = sizeof(float) * 3,

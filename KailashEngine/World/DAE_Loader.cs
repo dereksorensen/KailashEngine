@@ -21,7 +21,7 @@ namespace KailashEngine.World
         
 
 
-        public static void load(string filename, out Dictionary<string, UniqueMesh> unique_mesh_collection, out Dictionary<string, Matrix4> light_matrix_collection)
+        public static void load(string filename, MaterialManager material_manager, out Dictionary<string, UniqueMesh> unique_mesh_collection, out Dictionary<string, Matrix4> light_matrix_collection)
         {
             if(!File.Exists(filename))
             {
@@ -75,7 +75,7 @@ namespace KailashEngine.World
                         string id = e.ID;
 
                         DAE_Material temp_material = new DAE_Material(id);
-                        temp_material.load(e, image_collection);
+                        temp_material.load(e, image_collection, material_manager);
 
                         material_collection.Add(temp_material.id, temp_material);
                     }

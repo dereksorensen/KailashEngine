@@ -65,23 +65,28 @@ namespace KailashEngine.Render
 
             addUniform(RenderHelper.uEnableDiffuseTexture);
             addUniform(RenderHelper.uDiffuseTexture);
+            addUniform(RenderHelper.uDiffuseTextureUnit);
             addUniform(RenderHelper.uDiffuseColor);   
             addUniform(RenderHelper.uEmission);
 
             addUniform(RenderHelper.uEnableSpecularTexture);
             addUniform(RenderHelper.uSpecularTexture);
+            addUniform(RenderHelper.uSpecularTextureUnit);
             addUniform(RenderHelper.uSpecularColor);
             addUniform(RenderHelper.uSpecularShininess);
             
             addUniform(RenderHelper.uEnableNormalTexture);
             addUniform(RenderHelper.uNormalTexture);
+            addUniform(RenderHelper.uNormalTextureUnit);
 
             addUniform(RenderHelper.uEnableDisplacementTexture);
             addUniform(RenderHelper.uDisplacementTexture);
+            addUniform(RenderHelper.uDisplacementTextureUnit);
             addUniform(RenderHelper.uDisplacementStrength);
 
             addUniform(RenderHelper.uEnableParallaxTexture);
             addUniform(RenderHelper.uParallaxTexture);
+            addUniform(RenderHelper.uParallaxTextureUnit);
 
             addUniform(RenderHelper.uEnableSkinning);
             addUniform(RenderHelper.uBoneMatrices);

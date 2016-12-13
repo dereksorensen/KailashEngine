@@ -52,7 +52,8 @@ namespace KailashEngine.World
             try
             {
                 DAE_Loader.load(
-                    _path_scene + light_objects_filename + "/" + light_objects_filename + ".dae", 
+                    _path_scene + light_objects_filename + "/" + light_objects_filename + ".dae",
+                    _material_manager, 
                     out light_objects,
                     out garbage_matrix_collection);
                 _sLight_mesh = light_objects["sLight"].mesh;
@@ -95,7 +96,8 @@ namespace KailashEngine.World
             Dictionary<string, Matrix4> light_matrix_collection;
 
             DAE_Loader.load(
-                mesh_filename, 
+                mesh_filename,
+                _material_manager,
                 out temp_meshes, 
                 out light_matrix_collection);
             lights = LightLoader.load(lights_filename, light_matrix_collection, _sLight_mesh, _pLight_mesh);

@@ -15,8 +15,17 @@ out vec2 te_TexCoord;
 out vec3 te_Normal;
 out vec3 te_Tangent;
 
+//------------------------------------------------------
+// Bindless Material Textures
+//------------------------------------------------------
+layout(std140, binding = 2) uniform materialTextures
+{
+	sampler2D tex[256];
+};
+
 
 uniform sampler2D displacement_texture;
+uniform int displacement_texture_unit;
 uniform int enable_displacement_texture;
 uniform float displacement_strength = 0.1;
 
@@ -70,7 +79,7 @@ void main()
 
 	if(enable_displacement_texture == 1)
 	{	
-		float displacement = texture(displacement_texture, te_TexCoord).r * displacement_strength;
+		float displacement = texture(tex[displacement_texture_unit], te_TexCoord).r * displacement_strength;
 		vec3 displacement_mod = (te_Normal * displacement);
 		te_worldPosition += displacement_mod;
 		te_previousWorldPosition = te_previousWorldPosition + (displacement_mod);

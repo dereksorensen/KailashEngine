@@ -17,12 +17,20 @@ namespace KailashEngine.World.Model
             get { return _ubo_bindless; }
         }
 
-
+        private int _material_count = 0;
 
         public MaterialManager()
         {
             // Create UBO for bindless material textures
-            _ubo_bindless = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 2, EngineHelper.size.ui64, 256);
+            _ubo_bindless = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 2, EngineHelper.size.i64, 256 * 2);
+        }
+
+        public int addImage(long handle)
+        {
+            _ubo_bindless.bindAndUpdate(_material_count * 2, handle);
+
+            _material_count++;
+            return _material_count - 1;
         }
 
     }

@@ -69,39 +69,65 @@ namespace KailashEngine.World.Model
         // Texture Properties
         //------------------------------------------------------
 
+        protected int _diffuse_image_unit;
+        public int diffuse_image_unit
+        {
+            get { return _diffuse_image_unit; }
+        }
+
+        protected int _specular_image_unit;
+        public int specular_image_unit
+        {
+            get { return _specular_image_unit; }
+        }
+
+        protected int _normal_image_unit;
+        public int normal_image_unit
+        {
+            get { return _normal_image_unit; }
+        }
+
+        protected int _displacement_image_unit;
+        public int displacement_image_unit
+        {
+            get { return _displacement_image_unit; }
+        }
+
+        protected int _parallax_image_unit;
+        public int parallax_image_unit
+        {
+            get { return _parallax_image_unit; }
+        }
+
+
         protected Image _diffuse_image;
         public Image diffuse_image
         {
             get { return _diffuse_image; }
-            set { _diffuse_image = value; }
         }
 
         protected Image _specular_image;
         public Image specular_image
         {
             get { return _specular_image; }
-            set { _specular_image = value; }
         }
 
         protected Image _normal_image;
         public Image normal_image
         {
             get { return _normal_image; }
-            set { _normal_image = value; }
         }
 
         protected Image _displacement_image;
         public Image displacement_image
         {
             get { return _displacement_image; }
-            set { _displacement_image = value; }
         }
 
         protected Image _parallax_image;
         public Image parallax_image
         {
             get { return _parallax_image; }
-            set { _parallax_image = value; }
         }
 
 

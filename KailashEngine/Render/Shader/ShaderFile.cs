@@ -72,6 +72,11 @@ namespace KailashEngine.Render.Shader
 
         public int compile(int glsl_version)
         {
+            return compile(glsl_version, "");
+        }
+
+        public int compile(int glsl_version, string extensions)
+        {
             int shader_id = GL.CreateShader(_type);
 
             string shader_source = loadShaderFile(_filename);
@@ -93,8 +98,14 @@ namespace KailashEngine.Render.Shader
             string MATH_PI = "#define MATH_PI 3.1415926535897932384626433832795";
             string MATH_HALF_PI = "#define MATH_HALF_PI 1.57079632679489661923132169163975";
             string MATH_2_PI = "#define MATH_2_PI 6.283185307179586476925286766559";
-            
-            shader_source = "#version " + glsl_version + "\n" + MATH_PI + "\n" + MATH_HALF_PI + "\n" + MATH_2_PI + "\n" + shader_source;
+
+            shader_source = 
+                "#version " + glsl_version + "\n" +
+                "#extension GL_ARB_bindless_texture : require" + "\n" +
+                MATH_PI + "\n" + 
+                MATH_HALF_PI + "\n" + 
+                MATH_2_PI + "\n" + 
+                shader_source;
 
             try
             {
@@ -124,7 +135,7 @@ namespace KailashEngine.Render.Shader
                 {
                     // Complicated mess to add included shader files line length to error line number
                     string error_text_final = "";
-                    foreach(string error in error_text.ToString().Split('\n'))
+                    foreach (string error in error_text.ToString().Split('\n'))
                     {
                         Match error_lines = Regex.Match(error, "0\\((\\d+)\\)");
                         int line_number = 0;
@@ -158,6 +169,7 @@ namespace KailashEngine.Render.Shader
             }
 
         }
+
 
     }
 }

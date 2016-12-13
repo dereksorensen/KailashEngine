@@ -1,5 +1,6 @@
 ﻿
 
+
 layout(location = 0) out vec4 diffuse_id;
 layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec4 specular;
@@ -37,24 +38,36 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_look;
 };
 
+//------------------------------------------------------
+// Bindless Material Textures
+//------------------------------------------------------
+layout(std140, binding = 2) uniform materialTextures
+{
+	sampler2D tex[256];
+};
+
 uniform int enable_Wireframe;
 
 uniform int enable_diffuse_texture;
 uniform sampler2D diffuse_texture;
+uniform int diffuse_texture_unit;
 uniform vec3 diffuse_color;
 uniform float emission_strength;
 
 uniform int enable_specular_texture;
 uniform sampler2D specular_texture;
+uniform int specular_texture_unit;
 uniform vec3 specular_color;
 uniform float specular_shininess;
 
 uniform int enable_normal_texture;
 uniform sampler2D normal_texture;
+uniform int normal_texture_unit;
 
 
 uniform int enable_parallax_texture;
 uniform sampler2D parallax_texture;
+uniform int parallax_texture_unit;
 
 
 
@@ -69,7 +82,7 @@ void main()
 	vec2 tex_coords = g_TexCoord;
 	if (enable_parallax_texture == 1)
 	{
-		tex_coords = calcParallaxMapping(parallax_texture, tex_coords, TBN, cam_position, g_worldPosition);
+		tex_coords = calcParallaxMapping(tex[parallax_texture_unit], tex_coords, TBN, cam_position, g_worldPosition);
 	}
 
 
@@ -79,7 +92,7 @@ void main()
 	vec4 diffuse_color_final = vec4(diffuse_color, 1.0);
 	if (enable_diffuse_texture == 1)
 	{
-		diffuse_color_final = texture(diffuse_texture, tex_coords);
+		diffuse_color_final = texture(tex[diffuse_texture_unit], tex_coords);
 	}
 	int material_id = 0;
 	if (emission_strength > 0)
@@ -112,7 +125,7 @@ void main()
 	normal_depth = vec4(g_Normal, depth);
 	if (enable_normal_texture == 1)
 	{	
-		vec3 normal_map = calcNormalMapping(normal_texture, tex_coords, TBN);
+		vec3 normal_map = calcNormalMapping(tex[normal_texture_unit], tex_coords, TBN);
 		normal_depth = vec4(normal_map, depth);
 	}
 
@@ -124,7 +137,7 @@ void main()
 	float specular_shininess_final = max(0.05, 0.9 - (log2(specular_shininess) / 9.0));
 	if (enable_specular_texture == 1)
 	{
-		specular_color_final = texture(specular_texture, tex_coords).xyz;
+		specular_color_final = texture(tex[specular_texture_unit], tex_coords).xyz;
 	}
 	specular = vec4(specular_color_final, specular_shininess_final);
 

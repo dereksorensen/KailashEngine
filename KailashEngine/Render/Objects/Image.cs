@@ -175,6 +175,14 @@ namespace KailashEngine.Render.Objects
             _image_data_list.Clear();
         }
 
+        public long loadBindless()
+        {
+            load();
+            _texture.loadBindless();
+            _texture.makeResident();
+            return _texture.handle;
+        }
+
 
         //------------------------------------------------------
         // Binding
@@ -183,6 +191,16 @@ namespace KailashEngine.Render.Objects
         public void bind(int texture_uniform, int index)
         {
             _texture.bind(texture_uniform, index);
+        }
+
+        public void makeResident()
+        {
+            _texture.makeResident();
+        }
+
+        public void makeNonResident()
+        {
+            _texture.makeNonResident();
         }
 
     }

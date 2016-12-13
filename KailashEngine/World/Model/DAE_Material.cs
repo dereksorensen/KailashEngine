@@ -23,7 +23,7 @@ namespace KailashEngine.World.Model
         { }
 
 
-        public void load(Grendgine_Collada_Effect effect, Dictionary<string, string> image_collection)
+        public void load(Grendgine_Collada_Effect effect, Dictionary<string, string> image_collection, MaterialManager material_manager)
         {
 
             //------------------------------------------------------
@@ -37,7 +37,8 @@ namespace KailashEngine.World.Model
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
                     _diffuse_image = new Image(EngineHelper.getPath_MaterialTextures(filename), true);
-                    _diffuse_image.load();
+                    //_diffuse_image.load();
+                    _diffuse_image_unit = material_manager.addImage(_diffuse_image.loadBindless());
                     _diffuse_color = new Vector3(0.0f);
                 }
                 else
@@ -66,7 +67,8 @@ namespace KailashEngine.World.Model
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
                     _specular_image = new Image(EngineHelper.getPath_MaterialTextures(filename), true);
-                    _specular_image.load();
+                    //_specular_image.load();
+                    _specular_image_unit = material_manager.addImage(_specular_image.loadBindless());
                 }
                 else
                 {
@@ -92,7 +94,8 @@ namespace KailashEngine.World.Model
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
                     _normal_image = new Image(EngineHelper.getPath_MaterialTextures(filename), false);
-                    _normal_image.load();
+                    //_normal_image.load();
+                    _normal_image_unit = material_manager.addImage(_normal_image.loadBindless());
                 }
                 else
                 {
@@ -114,7 +117,8 @@ namespace KailashEngine.World.Model
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
                     _displacement_image = new Image(EngineHelper.getPath_MaterialTextures(filename), false);
-                    _displacement_image.load();
+                    //_displacement_image.load();
+                    _displacement_image_unit = material_manager.addImage(_displacement_image.loadBindless());
                 }
                 else
                 {
@@ -136,7 +140,8 @@ namespace KailashEngine.World.Model
                 if (image_collection.TryGetValue(texture_id, out filename))
                 {
                     _parallax_image = new Image(EngineHelper.getPath_MaterialTextures(filename), false);
-                    _parallax_image.load();
+                    //_parallax_image.load();
+                    _parallax_image_unit = material_manager.addImage(_parallax_image.loadBindless());
                 }
                 else
                 {
