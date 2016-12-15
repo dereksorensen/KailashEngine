@@ -16,12 +16,30 @@ namespace KailashEngine.World.Lights
         public const string type_spot = "SPOT";
         public const string type_point = "POINT";
 
-        private string _sid;
-        public string sid
+
+        private int _lid;
+        public int lid
+        {
+            get { return _lid; }
+            set { _lid = value; }
+        }
+
+
+        private int _sid;
+        public int sid
         {
             get { return _sid; }
             set { _sid = value; }
         }
+
+
+        private bool _enabled;
+        public bool enabled
+        {
+            get { return _enabled; }
+            set { _enabled = value; }
+        }
+
 
 
         private string _type;
@@ -99,6 +117,8 @@ namespace KailashEngine.World.Lights
         public Light(string id, string type, Vector3 color, float intensity, float falloff, bool shadow, Mesh light_mesh, Matrix4 transformation)
             : base(id, new SpatialData(transformation))
         {
+            _lid = _sid = -1;
+            _enabled = false;
             _type = type;
             _color = color;
             _intensity = intensity;

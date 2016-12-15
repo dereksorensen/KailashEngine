@@ -58,18 +58,19 @@ namespace KailashEngine.Client
             set { _meshes = value; }
         }
 
-        private List<Light> _lights;
+
         public List<Light> lights
         {
-            get { return _lights; }
-            set { _lights = value; }
+            get { return _light_manager.light_list; }
         }
+
 
         private Light _flashlight;
         public Light flashlight
         {
             get { return _flashlight; }
         }
+
 
         //------------------------------------------------------
         // Constructor
@@ -80,7 +81,6 @@ namespace KailashEngine.Client
             _path_scene = path_scene;
 
             _meshes = new List<UniqueMesh>();
-            _lights = new List<Light>();
 
             _animation_timer = new Timer();
             _circadian_timer = new CircadianTimer(21.0f, 2.0f);
@@ -93,14 +93,15 @@ namespace KailashEngine.Client
 
         public void toggleFlashlight(bool enabled)
         {
-            if (enabled)
-            {
-                _lights.Insert(0, _flashlight);
-            }
-            else
-            {
-                _lights.RemoveAt(0);
-            }
+            //if (enabled)
+            //{
+            //    _lights.Insert(0, _flashlight);
+            //}
+            //else
+            //{
+            //    _lights.RemoveAt(0);
+            //}
+            _flashlight.enabled = enabled;
         }
 
         private void load_Flashlight()
@@ -111,7 +112,8 @@ namespace KailashEngine.Client
                 new Vector3(1.0f), 2.0f, 40.0f, MathHelper.DegreesToRadians(70.0f), 0.1f,
                 false,
                 _world_loader.sLight_mesh, Matrix4.Identity);
-            
+
+            _light_manager.addLight(_flashlight);
             toggleFlashlight(true);
         }
 
@@ -130,8 +132,8 @@ namespace KailashEngine.Client
             // Load Scenes
             _world_loader.addWorldToScene(new string[]
             {
-                "sponza"
-            }, _meshes, _lights);
+                "test_scene"
+            }, _meshes, _light_manager);
 
 
             load_Flashlight();
@@ -158,11 +160,21 @@ namespace KailashEngine.Client
             _circadian_timer.restart();
         }
 
+
         public void render(Program program)
         {
-            // Draw Scene
+            renderMeshes(program);
+            renderLightObjects(program);
+        }
+
+        public void renderMeshes(Program program)
+        {
             WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, _animation_timer.seconds);
-            WorldDrawer.drawLights(_lights, program, Matrix4.Identity, false);
+        }
+
+        public void renderLightObjects(Program program)
+        {
+            WorldDrawer.drawLights(lights, program, Matrix4.Identity, false);
         }
 
     }

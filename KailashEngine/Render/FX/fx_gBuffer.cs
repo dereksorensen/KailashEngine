@@ -364,10 +364,7 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Fill gBuffer with Scene
             //------------------------------------------------------
-            Debug.DebugHelper.time_function("Geo Pass", 1, () =>
-            {
-                pass_Geometry(scene);
-            });
+            pass_Geometry(scene);
 
             //------------------------------------------------------
             // Accumulate Lighting from Scene
@@ -378,17 +375,20 @@ namespace KailashEngine.Render.FX
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
             foreach (Light l in scene.lights)
             {
-                pass_Stencil(l);
-           
-                switch (l.type)
+                if (l.enabled)
                 {
-                    case Light.type_spot:
-                        pass_sLight(l);
-                        break;
+                    pass_Stencil(l);
 
-                    case Light.type_point:
-                        pass_pLight(l);
-                        break;                  
+                    switch (l.type)
+                    {
+                        case Light.type_spot:
+                            pass_sLight(l);
+                            break;
+
+                        case Light.type_point:
+                            pass_pLight(l);
+                            break;
+                    }
                 }
             }
 

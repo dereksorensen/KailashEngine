@@ -1,35 +1,25 @@
 == == ==
-nam Point
-typ POINT
+nam Point.001
+typ SPOT
 ity 3.0
 col 1.0 1.0 1.0
-fal 16.31999969482422
-ang 0
-blr 0
-sha 0
-
-== == ==
-nam Point.001
-typ POINT
-ity 5.0
-col 1.0 1.0 1.0
-fal 38.779998779296875
-ang 0
-blr 0
+fal 79.88999938964844
+ang 0.8691740036010742
+blr 0.3862204849720001
 sha 0
 
 == == ==
 nam Point.002
-typ POINT
-ity 6.179999828338623
+typ SPOT
+ity 3.0
 col 1.0 1.0 1.0
-fal 35.459999084472656
-ang 0
-blr 0
+fal 79.88999938964844
+ang 0.8691740036010742
+blr 0.3862204849720001
 sha 0
 
 == == ==
-nam Point.004
+nam Point.003
 typ SPOT
 ity 3.0
 col 1.0 1.0 1.0
@@ -48,4 +38,4 @@ ang 0
 blr 0
 sha 0
 
-num 5
+num 4

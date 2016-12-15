@@ -27,7 +27,7 @@ namespace KailashEngine.World.Model
 
         public int addImage(long handle)
         {
-            _ubo_bindless.bindAndUpdate(_material_count * 2, handle);
+            _ubo_bindless.update(_material_count * 2, handle);
 
             _material_count++;
             return _material_count - 1;

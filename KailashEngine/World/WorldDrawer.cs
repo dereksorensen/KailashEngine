@@ -16,30 +16,16 @@ namespace KailashEngine.World
     static class WorldDrawer
     {
 
-
-        private static void trySetMatrialImage(Program program, Render.Objects.Image image, string uTexture, string uEnableTexture, int index)
-        {
-            if (image != null)
-            {
-                image.bind(program.getUniform(uTexture), index);
-                program.enable_MaterialTexture(uEnableTexture, 1);
-            }
-            else
-            {
-                program.enable_MaterialTexture(uEnableTexture, 0);
-            }
-        }
-
         private static void trySetBindlessTextureUnit(Program program, Render.Objects.Image image, string uTextureUnit, string uEnableTexture, int texture_unit)
         {
             if (image != null)
             {
-                program.enable_MaterialTexture(uTextureUnit, texture_unit);
-                program.enable_MaterialTexture(uEnableTexture, 1);
+                program.setUniform1(uTextureUnit, texture_unit);
+                program.setUniform1(uEnableTexture, 1);
             }
             else
             {
-                program.enable_MaterialTexture(uEnableTexture, 0);
+                program.setUniform1(uEnableTexture, 0);
             }
         }
 
@@ -152,24 +138,19 @@ namespace KailashEngine.World
                     GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), submesh.material.specular_shininess);
                     GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
 
-                    // Diffuse 
-                    //trySetMatrialImage(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTexture, RenderHelper.uEnableDiffuseTexture, 31);
+                    // Diffuse
                     trySetBindlessTextureUnit(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTextureUnit, RenderHelper.uEnableDiffuseTexture, submesh.material.diffuse_image_unit);
 
                     // Specular
-                    //trySetMatrialImage(program, submesh.material.specular_image, RenderHelper.uSpecularTexture, RenderHelper.uEnableSpecularTexture, 30);
                     trySetBindlessTextureUnit(program, submesh.material.specular_image, RenderHelper.uSpecularTextureUnit, RenderHelper.uEnableSpecularTexture, submesh.material.specular_image_unit);
 
                     // Normal
-                    //trySetMatrialImage(program, submesh.material.normal_image, RenderHelper.uNormalTexture, RenderHelper.uEnableNormalTexture, 29);
                     trySetBindlessTextureUnit(program, submesh.material.normal_image, RenderHelper.uNormalTextureUnit, RenderHelper.uEnableNormalTexture, submesh.material.normal_image_unit);
 
                     // Displacement
-                    //trySetMatrialImage(program, submesh.material.displacement_image, RenderHelper.uDisplacementTexture, RenderHelper.uEnableDisplacementTexture, 28);
                     trySetBindlessTextureUnit(program, submesh.material.displacement_image, RenderHelper.uDisplacementTextureUnit, RenderHelper.uEnableDisplacementTexture, submesh.material.displacement_image_unit);
 
                     // Parallax
-                    //trySetMatrialImage(program, submesh.material.parallax_image, RenderHelper.uParallaxTexture, RenderHelper.uEnableParallaxTexture, 27);
                     trySetBindlessTextureUnit(program, submesh.material.parallax_image, RenderHelper.uParallaxTextureUnit, RenderHelper.uEnableParallaxTexture, submesh.material.parallax_image_unit);
 
 
@@ -193,6 +174,7 @@ namespace KailashEngine.World
             //------------------------------------------------------
             foreach (Light light in lights)
             {
+                if (!light.enabled) continue;
 
                 // Load Mesh's pre-transformation Matrix
                 Matrix4 temp_mat = light.unique_mesh.transformation;
@@ -218,19 +200,19 @@ namespace KailashEngine.World
 
 
                 // Diffuse
-                program.enable_MaterialTexture(RenderHelper.uEnableDiffuseTexture, 0);
+                program.setUniform1(RenderHelper.uEnableDiffuseTexture, 0);
 
                 // Specular
-                program.enable_MaterialTexture(RenderHelper.uEnableSpecularTexture, 0);
+                program.setUniform1(RenderHelper.uEnableSpecularTexture, 0);
 
                 // Normal
-                program.enable_MaterialTexture(RenderHelper.uEnableNormalTexture, 0);
+                program.setUniform1(RenderHelper.uEnableNormalTexture, 0);
 
                 // Displacement
-                program.enable_MaterialTexture(RenderHelper.uEnableDisplacementTexture, 0);
+                program.setUniform1(RenderHelper.uEnableDisplacementTexture, 0);
 
                 // Parallax
-                program.enable_MaterialTexture(RenderHelper.uEnableParallaxTexture, 0);
+                program.setUniform1(RenderHelper.uEnableParallaxTexture, 0);
 
 
 
@@ -253,8 +235,7 @@ namespace KailashEngine.World
                     temp_mat = Matrix4.Transpose(temp_mat);
                     GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
-
-                    draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), "light bounds");
+                    draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), BeginMode.Patches, "light bounds");
 
                     GL.Enable(EnableCap.CullFace);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);

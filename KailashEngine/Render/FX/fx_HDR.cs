@@ -51,7 +51,6 @@ namespace KailashEngine.Render.FX
             string[] autoexposure_helpers = new string[]
             {
                 _pLoader.path_glsl_common_helpers + "interpolation.include"
-
             };
 
             _pLuminosity = _pLoader.createProgram(new ShaderFile[]{
@@ -78,6 +77,10 @@ namespace KailashEngine.Render.FX
             {
                 EngineHelper.size.vec2
             });
+            _ssboExposure.bind();
+            Vector2 default_luminosity = new Vector2(1000.0f, 0.0f);
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, (int)EngineHelper.size.vec2, ref default_luminosity, BufferUsageHint.DynamicCopy);
+            _ssboExposure.unbind();
 
             _tLuminosity = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H,
@@ -169,7 +172,7 @@ namespace KailashEngine.Render.FX
         {
             luminosity(scene_texture);
             autoExposure();
-            //printExposure();
+            printExposure();
         }
 
 

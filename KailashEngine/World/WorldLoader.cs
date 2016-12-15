@@ -111,7 +111,7 @@ namespace KailashEngine.World
         }
 
 
-        public void addWorldToScene(string[] filenames, List<UniqueMesh> meshes, List<Light> lights)
+        public void addWorldToScene(string[] filenames, List<UniqueMesh> meshes, LightManager light_manager)
         {
             List<UniqueMesh> temp_meshes;
             List<Light> temp_lights;
@@ -123,7 +123,7 @@ namespace KailashEngine.World
                     createWorld(filename, out temp_meshes, out temp_lights);
 
                     meshes.AddRange(temp_meshes);
-                    lights.AddRange(temp_lights);
+                    light_manager.addLight(temp_lights);
 
                     temp_meshes.Clear();
                     temp_lights.Clear();

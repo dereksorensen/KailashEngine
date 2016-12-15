@@ -71,14 +71,6 @@ namespace KailashEngine.Render.Objects
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
-        public void bindAndUpdate<T>(int component_index, T data)
-            where T : struct
-        {
-            bind();
-            update(component_index, data);
-            unbind();
-        }
-
 
         public void update<T>(int component_index, T data)
             where T : struct
@@ -94,13 +86,7 @@ namespace KailashEngine.Render.Objects
             int size = (int)_ubo_stack[component_index];
 
             // Update UBO data
-            GL.BufferSubData(BufferTarget.UniformBuffer, (IntPtr)offset, size, ref data);
-            //IntPtr map = GL.MapBufferRange(BufferTarget.UniformBuffer, (IntPtr)offset, size, BufferAccessMask.MapWriteBit | BufferAccessMask.MapInvalidateBufferBit);
-            //if(map != IntPtr.Zero)
-            //{
-            //    System.Runtime.InteropServices.Marshal.StructureToPtr(data, map, false);
-            //}
-            //GL.UnmapBuffer(BufferTarget.UniformBuffer);
+            GL.NamedBufferSubData(_buffer_id, (IntPtr)offset, size, ref data);
         }
 
 

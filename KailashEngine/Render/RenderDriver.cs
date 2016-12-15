@@ -158,10 +158,8 @@ namespace KailashEngine.Render
         //------------------------------------------------------
         public void updateUBO_GameConfig(Vector4 near_far, float target_fps)
         {
-            _ubo_game_config.bind();
             _ubo_game_config.update(0, near_far);
             _ubo_game_config.update(1, target_fps);
-            _ubo_game_config.unbind();
         }
 
         public void updateUBO_Camera(
@@ -169,7 +167,6 @@ namespace KailashEngine.Render
             Matrix4 previous_view_perspective, Matrix4 inv_previous_view_perspective,
             Vector3 position, Vector3 look)
         {
-            _ubo_camera.bind();
             _ubo_camera.update(0, view);
             _ubo_camera.update(1, perspective);
             _ubo_camera.update(2, inv_view_perspective);
@@ -177,7 +174,6 @@ namespace KailashEngine.Render
             _ubo_camera.update(4, inv_previous_view_perspective);
             _ubo_camera.update(5, position);
             _ubo_camera.update(6, look);
-            _ubo_camera.unbind();
         }
 
         public void handle_MouseState(bool locked)
