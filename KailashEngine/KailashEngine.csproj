@@ -475,6 +475,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\FX\fx_DepthOfField.cs" />
     <Compile Include="Render\FX\fx_AtmosphericScattering.cs" />
+    <Compile Include="Render\FX\fx_Shadow.cs" />
     <Compile Include="Render\FX\fx_MotionBlur.cs" />
     <Compile Include="Render\FX\fx_SkyBox.cs" />
     <Compile Include="Render\FX\fx_Lens.cs" />
@@ -618,6 +619,7 @@
     <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
     <Folder Include="External\Spacescape\" />
+    <Folder Include="Render\Shader\glsl\shadow\" />
     <Folder Include="Render\Shader\glsl\special\helpers\" />
     <Folder Include="Render\Shader\glsl\test\" />
     <Folder Include="Resources\SaveData\" />

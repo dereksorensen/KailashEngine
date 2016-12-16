@@ -433,7 +433,7 @@ namespace KailashEngine
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Invert(_game.player.character.spatial.transformation);
             _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
             _game.scene.flashlight.spatial.rotation_matrix = Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
-
+            
 
 
             _render_driver.render(_game.scene, _game.player.camera.spatial);

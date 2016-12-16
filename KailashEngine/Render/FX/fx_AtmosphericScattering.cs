@@ -537,7 +537,7 @@ namespace KailashEngine.Render.FX
             specular_texture.bind(_pAtmoshpere.getSamplerUniform(2), 5);
             scene_texture.bind(_pAtmoshpere.getSamplerUniform(3), 6);
 
-            Vector3 sun_position = Vector3.Cross(new Vector3(1.0f, 0.3f, 0.0f), circadian_position); 
+            Vector3 sun_position = Vector3.Cross(new Vector3(-0.5f, -0.5f, 0.5f), circadian_position); 
             sun_position = Vector3.Normalize(sun_position);
             GL.Uniform3(_pAtmoshpere.getUniform("sun_position"), sun_position);
 

@@ -172,7 +172,7 @@ namespace KailashEngine.Render.FX
         {
             luminosity(scene_texture);
             autoExposure();
-            printExposure();
+            //printExposure();
         }
 
 

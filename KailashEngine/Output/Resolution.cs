@@ -17,7 +17,6 @@ namespace KailashEngine.Output
             get { return _width; }
             set { _width = value; }
         }
-
         public int W_2
         {
             get
@@ -32,7 +31,6 @@ namespace KailashEngine.Output
             get { return _height; }
             set { _height = value; }
         }
-
         public int H_2
         {
             get
@@ -41,12 +39,14 @@ namespace KailashEngine.Output
             }
         }
 
+
         private Vector2 _dimensions;
         public Vector2 dimensions
         {
             get { return _dimensions; }
             set { _dimensions = value; }
         }
+
 
         public float aspect
         {
@@ -55,6 +55,9 @@ namespace KailashEngine.Output
                 return (float)_width / (float)_height;
             }
         }
+
+
+
 
         public Resolution(float width, float height)
             : this ((int)width, (int)height)

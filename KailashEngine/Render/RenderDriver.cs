@@ -35,6 +35,7 @@ namespace KailashEngine.Render
         private fx_Special _fxSpecial;
         private fx_Final _fxFinal;
         private fx_gBuffer _fxGBuffer;
+        private fx_Shadow _fxShadow;
         private fx_SkyBox _fxSkyBox;
         private fx_HDR _fxHDR;
         private fx_Lens _fxLens;
@@ -78,6 +79,7 @@ namespace KailashEngine.Render
             _fxSpecial = createEffect<fx_Special>(pLoader, "special/");
             _fxFinal = createEffect<fx_Final>(pLoader, "final/");
             _fxGBuffer = createEffect<fx_gBuffer>(pLoader, tLoader, "gBuffer/");
+            _fxShadow = createEffect<fx_Shadow>(pLoader, "shadow/");
             _fxSkyBox = createEffect<fx_SkyBox>(pLoader, tLoader, "skybox/");
             _fxHDR = createEffect<fx_HDR>(pLoader, "hdr/");
             _fxLens = createEffect<fx_Lens>(pLoader, tLoader, "lens/");
@@ -139,11 +141,11 @@ namespace KailashEngine.Render
         }
 
 
+
         private void unload_FX()
         {
 
         }
-
 
         public void unload()
         {
@@ -176,6 +178,7 @@ namespace KailashEngine.Render
             _ubo_camera.update(6, look);
         }
 
+
         public void handle_MouseState(bool locked)
         {
             _fxCrosshair.enabled = locked;
@@ -186,6 +189,7 @@ namespace KailashEngine.Render
         {
             _enable_debug_views = !_enable_debug_views;
         }
+
 
         public void toggleWireframe()
         {
