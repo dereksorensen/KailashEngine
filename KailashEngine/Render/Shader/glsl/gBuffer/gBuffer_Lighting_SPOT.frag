@@ -28,10 +28,17 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_look;
 };
 
+//------------------------------------------------------
+// Shadow Matrices - Spot
+//------------------------------------------------------
+layout(std140, binding = 3) uniform shadowMatrices
+{
+	mat4 mat[4];
+};
 
 uniform sampler2D sampler0;		// Normal & Depth
 uniform sampler2D sampler1;		// Specular
-
+uniform sampler2DArray sampler2;		// Shadow Depth
 
 uniform vec3 light_position;
 uniform vec3 light_direction;
@@ -41,6 +48,7 @@ uniform float light_falloff;
 uniform float light_spot_angle;
 uniform float light_spot_blur;
 
+uniform int shadow_id;
 
 
 float calcSpotLightCone(vec3 L, float outer_angle, float blur_amount)
@@ -62,12 +70,84 @@ float calcSpotLightCone(vec3 L, float outer_angle, float blur_amount)
 
 
 
+
+
+
+
+
+
+float unpack2(vec2 color)
+{
+	return color.x + (color.y / 255.0);
+}
+
+
+// Used to get rid of light bleed
+float linstep(float min, float max, float v)
+{
+	return clamp((v-min)/(max-min), 0.0, 1.0);
+}
+
+
+float vsm(vec3 depth)
+{
+	float bias = 0.0000002;
+	float distance = depth.z;
+	
+	vec4 c = texture(sampler2, vec3(depth.xy * 0.5 + 0.5, shadow_id));	
+
+	vec2 moments;
+	moments.x = unpack2(c.xy);
+	return moments.x;
+
+	if(distance <= moments.x-bias)
+	{
+		return 1.0;
+	}
+
+	moments.y = unpack2(c.zw);
+
+	float p = smoothstep(distance-0.0002, distance, moments.x);
+	float variance = max(moments.y - moments.x*moments.x, -0.001);
+	float d = distance - moments.x;
+	float p_max = linstep(0.2,1.0, variance / (variance + d*d));
+	return clamp(max(p,p_max), 0.0, 1.0);
+
+}
+
+float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
+{
+	//VSM
+	vec4 shadow_viewPosition = mat[int(shadow_id) * 2 + 1] * vec4(world_position, 1.0);
+	vec4 shadow_position = mat[int(shadow_id) * 2] * shadow_viewPosition;
+	vec3 shadow_depth = shadow_position.xyz / shadow_position.w;
+	shadow_depth = shadow_depth * 0.5 + 0.5;
+
+	float sdepth = texture(sampler2, vec3(shadow_depth.xy, shadow_id)).a;
+	float reconDepth = length(shadow_viewPosition.xyz);
+	
+	//shadow_depth.z = depth;
+
+	float visibility = 1.0;
+	//if(shadow_position.w > 0.0)
+	//{
+		if(sdepth < reconDepth - 0.1)
+		{
+			visibility = 0.0;
+		}
+	//}
+
+
+	return visibility;
+}
+
+
 void main()
 {
 
-	//Calculate Texture Coordinates
-	vec2 Resolution = textureSize(sampler0, 0);
-	vec2 tex_coord = gl_FragCoord.xy / Resolution;
+	// Calculate Texture Coordinates
+	vec2 resolution = textureSize(sampler0, 0);
+	vec2 tex_coord = gl_FragCoord.xy / resolution;
 
 	vec4 normal_depth = texture(sampler0, tex_coord);
 	float depth = normal_depth.a;
@@ -80,6 +160,11 @@ void main()
 	vec4 temp_diffuse;
 	vec4 temp_specular;
 
+	float visibility = 1.0;
+	if (shadow_id != -1)
+	{
+		visibility = calcShadow(world_position, depth, tex_coord);
+	}
 
 	calcLighting(
 		tex_coord, 
@@ -89,7 +174,7 @@ void main()
 		specular_properties,
 		L, temp_diffuse, temp_specular);
 
-	float cone = calcSpotLightCone(L, light_spot_angle, light_spot_blur);
+	float cone = calcSpotLightCone(L, light_spot_angle, light_spot_blur) * visibility;
 
 	diffuse = temp_diffuse * cone;
 	specular = temp_specular * cone;

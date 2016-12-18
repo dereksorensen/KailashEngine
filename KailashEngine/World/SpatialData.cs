@@ -136,11 +136,15 @@ namespace KailashEngine.World
         }
 
 
-        public void setPerspective(float fov, float aspect, Vector2 near_far)
+        public void setPerspective(float fov_degrees, float aspect, Vector2 near_far)
         {
-            _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), aspect, near_far.X, near_far.Y);
+            _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov_degrees), aspect, near_far.X, near_far.Y);
         }
 
+        public void setPerspective(float fov_degrees, float aspect, float near, float far)
+        {
+            _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov_degrees), aspect, near, far);
+        }
 
     }
 }

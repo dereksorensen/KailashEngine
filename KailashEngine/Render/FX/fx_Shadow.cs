@@ -101,6 +101,9 @@ namespace KailashEngine.Render.FX
 
         public void render(Scene scene)
         {
+            GL.Enable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Front);
+
             _fHalfResolution_Spot.bind(DrawBuffersEnum.ColorAttachment0);
 
             GL.DepthMask(true);
@@ -111,6 +114,8 @@ namespace KailashEngine.Render.FX
             _pSpot.bind();
 
             scene.renderMeshes(BeginMode.Triangles, _pSpot);
+
+            //GL.CullFace(CullFaceMode.Back);
         }
 
 

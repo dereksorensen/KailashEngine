@@ -47,7 +47,7 @@ namespace KailashEngine.World.Lights
             _lights = new Dictionary<int, Light>();
 
 
-            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, 4);
+            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, _max_shadows * 2);
         }
 
 
@@ -80,8 +80,10 @@ namespace KailashEngine.World.Lights
                 Matrix4 light_view_matrix_rot = Matrix4.Transpose(light_list[index].spatial.rotation_matrix);
                 Matrix4 light_view_matrix_pos = Matrix4.CreateTranslation(-light_list[index].spatial.position);
 
-                _ubo_shadow_spot.update(index * 2, p);
+                _ubo_shadow_spot.update(index * 2, light_list[index].spatial.perspective);
                 _ubo_shadow_spot.update(index * 2 + 1, light_view_matrix_pos * light_view_matrix_rot);
+
+                light_list[index].sid = i;
             }
         }
     }

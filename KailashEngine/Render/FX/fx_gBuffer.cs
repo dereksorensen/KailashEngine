@@ -125,6 +125,7 @@ namespace KailashEngine.Render.FX
             _pLighting_SPOT.addUniform(RenderHelper.uModel);
             _pLighting_SPOT.enable_LightCalculation();
             _pLighting_SPOT.enable_Samplers(3);
+            _pLighting_SPOT.addUniform("shadow_id");
 
             // Calculate Lighting for Point Lights
             _pLighting_POINT = _pLoader.createProgram(new ShaderFile[]
@@ -282,7 +283,7 @@ namespace KailashEngine.Render.FX
             WorldDrawer.drawLightBounds(l, _pStencil);
         }
 
-        private void pass_sLight(Light l)
+        private void pass_sLight(Light l, Texture shadowDepthTexture)
         {
             _fGBuffer.bindAttachements(new DrawBuffersEnum[] {
                 DrawBuffersEnum.ColorAttachment6,
@@ -299,6 +300,7 @@ namespace KailashEngine.Render.FX
             // Bind gBuffer Textures
             _tNormal_Depth.bind(_pLighting_SPOT.getSamplerUniform(0), 0);
             _tSpecular.bind(_pLighting_SPOT.getSamplerUniform(1), 1);
+            shadowDepthTexture.bind(_pLighting_SPOT.getSamplerUniform(2), 2);
 
             // Load light uniforms
             GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightPosition), l.spatial.position);
@@ -309,6 +311,7 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightSpotAngle), l.spot_angle);
             GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightSpotBlur), l.spot_blur);
 
+            GL.Uniform1(_pLighting_SPOT.getUniform("shadow_id"), l.sid);
 
             WorldDrawer.drawLightBounds(l, _pLighting_SPOT);
 
@@ -346,7 +349,7 @@ namespace KailashEngine.Render.FX
         // Passes
         //------------------------------------------------------
 
-        public void pass_DeferredShading(Scene scene)
+        public void pass_DeferredShading(Scene scene, fx_Shadow fx_Shadow)
         {
             //------------------------------------------------------
             // Clear Lighting Buffer from last frame
@@ -378,7 +381,7 @@ namespace KailashEngine.Render.FX
                     switch (l.type)
                     {
                         case Light.type_spot:
-                            pass_sLight(l);
+                            pass_sLight(l, fx_Shadow.tSpot);
                             break;
 
                         case Light.type_point:
