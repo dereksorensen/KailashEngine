@@ -90,6 +90,11 @@ namespace KailashEngine.Render.FX
                 _pLoader.path_glsl_common_helpers + "linearDepth.include"
 
             };
+            string[] culling_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "culling.include"
+
+            };
             string[] lighting_helpers = new string[]
             {
                 _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
@@ -100,7 +105,7 @@ namespace KailashEngine.Render.FX
             // Rendering Geometry into gBuffer
             _pGeometry = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", null),
+                new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", culling_helpers),
                 new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", null),
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "gBuffer_Geometry.geom", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Geometry.frag", geometry_helpers)

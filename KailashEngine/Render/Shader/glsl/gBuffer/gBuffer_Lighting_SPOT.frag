@@ -28,13 +28,21 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_look;
 };
 
+
+
 //------------------------------------------------------
 // Shadow Matrices - Spot
 //------------------------------------------------------
+struct ShadowData {
+  mat4 view;
+  mat4 perspective;
+  vec4 light_position;
+};
 layout(std140, binding = 3) uniform shadowMatrices
 {
-	mat4 mat[64];
+	ShadowData shadow_data[32];
 };
+
 
 uniform sampler2D sampler0;		// Normal & Depth
 uniform sampler2D sampler1;		// Specular
@@ -117,8 +125,8 @@ float vsm(vec3 depth)
 
 float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
 {
-	vec4 shadow_viewPosition = mat[int(shadow_id) * 2 + 1] * vec4(world_position, 1.0);
-	vec4 shadow_position = mat[int(shadow_id) * 2] * shadow_viewPosition;
+	vec4 shadow_viewPosition = shadow_data[shadow_id].view * vec4(world_position, 1.0);
+	vec4 shadow_position = shadow_data[shadow_id].perspective * shadow_viewPosition;
 	vec3 shadow_depth = shadow_position.xyz / shadow_position.w;
 	shadow_depth = shadow_depth * 0.5 + 0.5;
 

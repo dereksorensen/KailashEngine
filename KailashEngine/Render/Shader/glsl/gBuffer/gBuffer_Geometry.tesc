@@ -48,11 +48,6 @@ float screenSphereSize(vec4 e1, vec4 e2)
 	return (clamp(l / 15.0, 1.0, 64.0));
 }
 
-bool edgeInFrustum(vec4 p, vec4 q)
-{
-	return !( (p.x < -p.w && q.x < -q.w) || (p.x > p.w && q.x > q.w) 
-			|| (p.z < -p.w && q.z < -q.w) || (p.z > p.w && q.z > q.w) );
-}
 
 void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position)
 {
@@ -65,10 +60,7 @@ void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position)
 		vertex_position[i] = mvp * vec4(world_position[i], 1.0);
 	}
 
-	if (
-		edgeInFrustum(vertex_position[1], vertex_position[0]) || 
-		edgeInFrustum(vertex_position[2], vertex_position[0]) || 
-		edgeInFrustum(vertex_position[2], vertex_position[1]))
+	if (frustumCullTest(vertex_position))
 	{
 		if(enable_displacement_texture == 0)
 		{

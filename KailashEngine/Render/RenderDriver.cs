@@ -213,7 +213,10 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
-            _fxShadow.render(scene);
+            Debug.DebugHelper.time_function("Shadow", 1, () =>
+            {
+                _fxShadow.render(scene);
+            });
 
             _fxGBuffer.pass_DeferredShading(scene, _fxShadow);
 
@@ -274,7 +277,7 @@ namespace KailashEngine.Render
                 _fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 3, 0);
                 _fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tLighting_Diffuse, 0.25f, 1);
-                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+                _fxQuad.render_Texture(_fxGBuffer.tNormal_Depth, 0.25f, 0);
             }
 
         }

@@ -16,7 +16,7 @@ namespace KailashEngine.Render.FX
     class fx_Shadow : RenderEffect
     {
         // Propteries
-        private const int _num_spot_shadows = 3;
+        private const int _num_spot_shadows = 8;
 
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
@@ -50,9 +50,14 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            string[] culling_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "culling.include"
+
+            };
             _pSpot = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Spot.geom", null),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Spot.geom", culling_helpers),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", null)
             });
             _pSpot.enable_MeshLoading();

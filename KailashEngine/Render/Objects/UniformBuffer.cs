@@ -21,15 +21,18 @@ namespace KailashEngine.Render.Objects
         }
 
         private EngineHelper.size[] _ubo_stack;
+        private int[] _ubo_stack_offets;
 
         public UniformBuffer(BufferStorageFlags storage_flags, int index, EngineHelper.size[] ubo_stack)
         {
             // Calculate total UBO byte size based on ubo_stack items
             _ubo_stack = ubo_stack;
+            _ubo_stack_offets = new int[ubo_stack.Length];
             int size = 0;
-            foreach (EngineHelper.size e in _ubo_stack)
+            for(int i = 0; i < ubo_stack.Length; i++)
             {
-                size += (int)e;
+                _ubo_stack_offets[i] = size;
+                size += (int)ubo_stack[i];
             }
 
             load(storage_flags, index, size);
@@ -39,11 +42,36 @@ namespace KailashEngine.Render.Objects
         {
             // Calculate total UBO byte size based on ubo_stack items
             _ubo_stack = new EngineHelper.size[length];
+            _ubo_stack_offets = new int[length];
             int size = (int)ubo_item_size * length;
-
+            int size_increment = 0;
             for(int i = 0; i < length; i++)
             {
                 _ubo_stack[i] = ubo_item_size;
+                _ubo_stack_offets[i] = size_increment;
+                size_increment += (int)ubo_item_size;
+            }
+
+            load(storage_flags, index, size);
+        }
+
+        public UniformBuffer(BufferStorageFlags storage_flags, int index, EngineHelper.size[] ubo_sub_stack, int length)
+        {
+            // Calculate total UBO byte size based on ubo_stack items
+            int stack_length = ubo_sub_stack.Length * length;
+            _ubo_stack = new EngineHelper.size[stack_length];
+            _ubo_stack_offets = new int[stack_length];
+            int size = 0;
+
+            for (int i = 0; i < length; i++)
+            {           
+                for(int j = 0; j < ubo_sub_stack.Length; j ++)
+                {
+                    int stack_index = i * ubo_sub_stack.Length + j;
+                    _ubo_stack[stack_index] = ubo_sub_stack[j];
+                    _ubo_stack_offets[stack_index] = size;
+                    size += (int)ubo_sub_stack[j];
+                }
             }
 
             load(storage_flags, index, size);
@@ -76,11 +104,7 @@ namespace KailashEngine.Render.Objects
             where T : struct
         {
             // Calculate offest by adding the data length of ubo_stack up until component_index
-            int offset = 0;
-            for(int i = 0; i < component_index; i++)
-            {
-                offset += (int)_ubo_stack[i];
-            }
+            int offset = _ubo_stack_offets[component_index];
 
             // Get size based on ubo_stack item at this index
             int size = (int)_ubo_stack[component_index];

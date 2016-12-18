@@ -23,10 +23,8 @@ namespace KailashEngine.World.Lights
 
 
         private UniformBuffer _ubo_shadow_spot;
-        public UniformBuffer ubo_shadow_spot
-        {
-            get { return _ubo_shadow_spot; }
-        }
+        private UniformBuffer _ubo_light_positions;
+
 
         private Dictionary<int, Light> _lights;
         public Dictionary<int, Light> lights
@@ -43,18 +41,23 @@ namespace KailashEngine.World.Lights
         public LightManager()
         {
             _light_count = 0;
-            _max_shadows = 3;
+            _max_shadows = 6;
             _lights = new Dictionary<int, Light>();
 
 
-            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, 64);
+            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.vec4,
+            }, 32);
+            //_ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, 64);
         }
 
 
 
         public void addLight(Light light)
         {
-            light.lid = _light_count + 1;
+            light.lid = _light_count;
             light.enabled = true;
             _lights.Add(light.lid, light);
             _light_count++;
@@ -72,18 +75,18 @@ namespace KailashEngine.World.Lights
         public void updateUBO_Shadow(Matrix4 p)
         {
             _max_shadows = Math.Min(_max_shadows, _light_count);
-            int index_offset = 0;
             for (int i = 0; i < _max_shadows; i++)
             {
-                int index = i + index_offset;
+                int ubo_index = i * 3;
 
-                Matrix4 light_view_matrix_rot = Matrix4.Transpose(light_list[index].spatial.rotation_matrix);
-                Matrix4 light_view_matrix_pos = Matrix4.CreateTranslation(-light_list[index].spatial.position);
+                Matrix4 light_view_matrix_rot = Matrix4.Transpose(light_list[i].spatial.rotation_matrix);
+                Matrix4 light_view_matrix_pos = Matrix4.CreateTranslation(-light_list[i].spatial.position);
 
-                _ubo_shadow_spot.update(index * 2, light_list[index].spatial.perspective);
-                _ubo_shadow_spot.update(index * 2 + 1, light_view_matrix_pos * light_view_matrix_rot);
+                _ubo_shadow_spot.update(ubo_index, light_view_matrix_pos * light_view_matrix_rot);
+                _ubo_shadow_spot.update(ubo_index + 1, light_list[i].spatial.perspective);
+                _ubo_shadow_spot.update(ubo_index + 2, light_list[i].spatial.position);
 
-                light_list[index].sid = i;
+                light_list[i].sid = i;
             }
         }
     }

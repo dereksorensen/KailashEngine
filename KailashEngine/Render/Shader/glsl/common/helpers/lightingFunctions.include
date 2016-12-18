@@ -159,7 +159,7 @@ void calcLighting(
 	//------------------------------------------------------
 	// Angle of Inclination
 	//------------------------------------------------------
-	float angle_of_inc = dot(L,N);
+	float angle_of_inc = dot(L, N);
 	float max_inc = max(angle_of_inc, 0.0);
 
 	//------------------------------------------------------

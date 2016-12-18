@@ -49,7 +49,12 @@ layout(std140, binding = 2) uniform materialTextures
 //------------------------------------------------------
 // Shadow Matrices - Spot
 //------------------------------------------------------
+struct ShadowData {
+  mat4 view;
+  mat4 perspective;
+  vec3 light_position;
+};
 layout(std140, binding = 3) uniform shadowMatrices
 {
-	mat4 mat[64];
+	ShadowData shadow_data[32];
 };
