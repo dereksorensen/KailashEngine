@@ -59,6 +59,7 @@ namespace KailashEngine.Output
 
 
 
+
         public Resolution(float width, float height)
             : this ((int)width, (int)height)
         { }

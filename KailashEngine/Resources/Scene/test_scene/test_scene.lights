@@ -28,14 +28,4 @@ ang 0.8691740036010742
 blr 0.3862204849720001
 sha 0
 
-== == ==
-nam Point.006
-typ POINT
-ity 3.0
-col 1.0 1.0 1.0
-fal 29.049999237060547
-ang 0
-blr 0
-sha 0
-
-num 4
+num 3

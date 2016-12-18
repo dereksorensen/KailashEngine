@@ -547,6 +547,7 @@
     <None Include="Render\Shader\glsl\ats\precomputation\ats_IrradianceN.frag" />
     <None Include="Render\Shader\glsl\ats\precomputation\ats_Precompute.geom" />
     <None Include="Render\Shader\glsl\ats\precomputation\ats_Transmittance.frag" />
+    <None Include="Render\Shader\glsl\common\geometry.vert" />
     <None Include="Render\Shader\glsl\common\helpers\lightingFunctions.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />
@@ -590,6 +591,8 @@
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
     <None Include="Render\Shader\glsl\motion_blur\mb_Blur.frag" />
+    <None Include="Render\Shader\glsl\shadow\shadow_Spot.frag" />
+    <None Include="Render\Shader\glsl\shadow\shadow_Spot.geom" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.vert" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurGauss2.comp" />
@@ -619,7 +622,6 @@
     <Folder Include="Debug\Logs\" />
     <Folder Include="External\Cgen\Dependencies\nvorbis\" />
     <Folder Include="External\Spacescape\" />
-    <Folder Include="Render\Shader\glsl\shadow\" />
     <Folder Include="Render\Shader\glsl\special\helpers\" />
     <Folder Include="Render\Shader\glsl\test\" />
     <Folder Include="Resources\SaveData\" />

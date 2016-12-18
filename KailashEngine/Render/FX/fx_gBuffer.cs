@@ -33,8 +33,6 @@ namespace KailashEngine.Render.FX
         public FrameBuffer _fGBuffer;
 
         // Textures
-        
-
         private Texture _tDepthStencil;
         public Texture tDepthStencil
         {
@@ -100,9 +98,8 @@ namespace KailashEngine.Render.FX
             };
 
             // Rendering Geometry into gBuffer
-            _pGeometry = _pLoader.createProgram(new ShaderFile[]
+            _pGeometry = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Geometry.vert", null),
                 new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", null),
                 new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", null),
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "gBuffer_Geometry.geom", null),
@@ -260,7 +257,7 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pGeometry.getUniform("enable_Wireframe"), _enable_Wireframe ? 1 : 0);
             GL.Uniform2(_pGeometry.getUniform("render_size"), _resolution.dimensions);
 
-            scene.render(_pGeometry);
+            scene.render(BeginMode.Patches, _pGeometry);
         }
 
         //------------------------------------------------------
@@ -337,7 +334,6 @@ namespace KailashEngine.Render.FX
 
             // Load light uniforms
             GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightPosition), l.spatial.position);
-            GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightDirection), l.spatial.look);
             GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightColor), l.color);
             GL.Uniform1(_pLighting_POINT.getUniform(RenderHelper.uLightIntensity), l.intensity);
             GL.Uniform1(_pLighting_POINT.getUniform(RenderHelper.uLightFalloff), l.falloff);

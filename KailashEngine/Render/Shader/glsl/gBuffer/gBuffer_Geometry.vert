@@ -22,9 +22,8 @@ uniform int enable_skinning;
 uniform mat4[32] bone_matrices;
 
 
-void main()
+void geometry()
 {
-
 	vec4 v_position = vec4(position, 1.0);
 	vec4 v_normal = vec4(normal, 0.0);
 	vec4 v_tangent = vec4(tangent, 0.0);
@@ -45,13 +44,42 @@ void main()
 	// Positions
 	vec4 objectPosition = v_position;
 	v_worldPosition = (model * objectPosition).xyz;
-	v_previousWorldPosition = (model_previous * objectPosition).xyz;
+}
 
+void velocity()
+{
+	v_previousWorldPosition = (model_previous * vec4(position, 1.0)).xyz;
+}
+
+void texCoord()
+{
 	// Texture Coordinates
 	v_TexCoord = texCoord;
+}
 
+void normals()
+{	
 	// Put vertex normal in world space
 	v_Normal = normalize((model_normal * v_normal).xyz);
 	v_Tangent = normalize((model_normal * v_tangent).xyz);
+}
 
+
+void basicGeometry()
+{
+	geometry();
+	texCoord();
+}
+
+void fullGeometry()
+{
+	basicGeometry();
+	velocity();
+	normals();
+}
+
+
+void main()
+{
+	fullGeometry();
 }

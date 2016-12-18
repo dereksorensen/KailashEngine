@@ -369,7 +369,7 @@ namespace KailashEngine
 
             // Create Engine Objects
             _render_driver = new RenderDriver(
-                new ProgramLoader(_game.config.glsl_version, EngineHelper.path_glsl_base, EngineHelper.path_glsl_common, EngineHelper.path_glsl_common_helpers, EngineHelper.path_glsl_common_generic_vs),
+                new ProgramLoader(_game.config.glsl_version),
                 new StaticImageLoader(EngineHelper.path_resources_textures_static),
                 _game.display.resolution
             );
@@ -419,6 +419,7 @@ namespace KailashEngine
                             _game.player.camera.spatial.position,
                             _game.player.camera.spatial.look);
             _render_driver.handle_MouseState(_game.mouse.locked);
+            _game.scene.light_manager.updateUBO_Shadow(_game.player.camera.spatial.perspective);
 
             // Set camera's previous MVP matrix
             _game.player.camera.previous_view_matrix = _game.player.camera.spatial.model_view;

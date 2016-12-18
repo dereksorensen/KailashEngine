@@ -29,23 +29,13 @@ namespace KailashEngine.Render
             set { _path_glsl_common_helpers = value; }
         }
 
-        private string _path_glsl_common_generic_vs;
-        public string path_glsl_common_generic_vs
-        {
-            get { return _path_glsl_common_generic_vs; }
-            set { _path_glsl_common_generic_vs = value; }
-        }
 
-
-
-
-        public ProgramLoader(int glsl_version, string glsl_base_path, string glsl_common_path, string glsl_common_helpers_path, string glsl_common_generic_vs)
+        public ProgramLoader(int glsl_version)
         {
             _glsl_version = glsl_version;
-            _path_glsl_base = glsl_base_path;
-            _path_glsl_common = glsl_common_path;
-            _path_glsl_common_helpers = glsl_common_helpers_path;
-            _path_glsl_common_generic_vs = glsl_common_generic_vs;
+            _path_glsl_base = EngineHelper.path_glsl_base;
+            _path_glsl_common = EngineHelper.path_glsl_common;
+            _path_glsl_common_helpers = EngineHelper.path_glsl_common_helpers;
         }
 
         public Program createProgram(ShaderFile[] shader_pipeline)
@@ -71,7 +61,17 @@ namespace KailashEngine.Render
         {
             ShaderFile[] new_shader_pipline = new ShaderFile[shader_pipeline.Length + 1];
 
-            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, _path_glsl_common + _path_glsl_common_generic_vs, null);
+            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, _path_glsl_common + EngineHelper.path_glsl_common_generic_vs, null);
+            shader_pipeline.CopyTo(new_shader_pipline, 1);
+
+            return createProgram(_glsl_version, new_shader_pipline);
+        }
+
+        public Program createProgram_Geometry(ShaderFile[] shader_pipeline)
+        {
+            ShaderFile[] new_shader_pipline = new ShaderFile[shader_pipeline.Length + 1];
+
+            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, _path_glsl_common + EngineHelper.path_glsl_common_generic_geometry, null);
             shader_pipeline.CopyTo(new_shader_pipline, 1);
 
             return createProgram(_glsl_version, new_shader_pipline);

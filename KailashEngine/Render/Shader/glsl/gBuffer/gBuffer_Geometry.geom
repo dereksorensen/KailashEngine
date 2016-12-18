@@ -18,6 +18,7 @@ out vec3 g_worldPosition;
 out vec2 g_TexCoord;
 out vec4 g_currentPosition;
 out vec4 g_previousPosition;
+noperspective out vec3 g_wireframe_distance;
 
 
 //------------------------------------------------------
@@ -35,7 +36,6 @@ layout(std140, binding = 1) uniform cameraSpatials
 };
 
 
-noperspective out vec3 g_wireframe_distance;
 uniform vec2 render_size;
 
 

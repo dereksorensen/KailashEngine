@@ -213,6 +213,8 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
+            _fxShadow.render(scene);
+
             _fxGBuffer.pass_DeferredShading(scene);
 
             _fxSkyBox.render(_fxQuad, _fxGBuffer._fGBuffer, scene.circadian_timer.position);
@@ -269,8 +271,8 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
-                _fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 3);
-                _fxQuad.render_Texture(_fxMotionBlur.tFinal, 0.25f, 2);
+                _fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 3, 0);
+                _fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }

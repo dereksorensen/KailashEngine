@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 using KailashEngine.Render;
 using KailashEngine.Animation;
@@ -161,20 +162,20 @@ namespace KailashEngine.Client
         }
 
 
-        public void render(Program program)
+        public void render(BeginMode begin_mode, Program program)
         {
-            renderMeshes(program);
-            renderLightObjects(program);
+            renderMeshes(begin_mode, program);
+            renderLightObjects(begin_mode, program);
         }
 
-        public void renderMeshes(Program program)
+        public void renderMeshes(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawMeshes(_meshes, program, Matrix4.Identity, _animation_timer.seconds);
+            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _animation_timer.seconds);
         }
 
-        public void renderLightObjects(Program program)
+        public void renderLightObjects(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawLights(lights, program, Matrix4.Identity, false);
+            WorldDrawer.drawLights(begin_mode, lights, program, Matrix4.Identity, false);
         }
 
     }

@@ -57,7 +57,7 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
-        public static void drawMeshes(List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time)
+        public static void drawMeshes(BeginMode begin_mode, List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time)
         {
             foreach (UniqueMesh unique_mesh in meshes)
             {
@@ -154,7 +154,7 @@ namespace KailashEngine.World
                     trySetBindlessTextureUnit(program, submesh.material.parallax_image, RenderHelper.uParallaxTextureUnit, RenderHelper.uEnableParallaxTexture, submesh.material.parallax_image_unit);
 
 
-                    draw(submesh, BeginMode.Patches, "mesh");
+                    draw(submesh, begin_mode, "mesh");
 
                 }
             }
@@ -164,7 +164,7 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Light Drawing
         //------------------------------------------------------
-        public static void drawLights(List<Light> lights, Program program, Matrix4 transformation, bool display_light_bounds)
+        public static void drawLights(BeginMode begin_mode, List<Light> lights, Program program, Matrix4 transformation, bool display_light_bounds)
         {
             // Disable skinning
             GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
@@ -216,7 +216,7 @@ namespace KailashEngine.World
 
 
 
-                draw(light.unique_mesh.mesh.submeshes.ElementAt(0), BeginMode.Patches, "light");
+                draw(light.unique_mesh.mesh.submeshes.ElementAt(0), begin_mode, "light");
 
                 //------------------------------------------------------
                 // Display Light Bounds
@@ -235,7 +235,7 @@ namespace KailashEngine.World
                     temp_mat = Matrix4.Transpose(temp_mat);
                     GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
-                    draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), BeginMode.Patches, "light bounds");
+                    draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), begin_mode, "light bounds");
 
                     GL.Enable(EnableCap.CullFace);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);

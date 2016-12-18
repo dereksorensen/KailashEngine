@@ -263,10 +263,6 @@ namespace KailashEngine.Render.Objects
                     break;
                 case TextureTarget.Texture2DArray:
                     GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, (IntPtr)0);
-                    for (int slice = 0; slice < _depth; slice++)
-                    {
-                        GL.TexSubImage3D(_target, 0, 0, 0, slice, _width, _height, 1, _pf, _pt, data);
-                    }
                     break;
                 case TextureTarget.TextureCubeMap:
                     for (int face = 0; face < _depth; face++)

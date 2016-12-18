@@ -35,11 +35,9 @@ uniform sampler2D sampler1;		// Specular
 
 
 uniform vec3 light_position;
-uniform vec3 light_direction;
 uniform vec3 light_color;
 uniform float light_intensity;
 uniform float light_falloff;
-
 
 
 

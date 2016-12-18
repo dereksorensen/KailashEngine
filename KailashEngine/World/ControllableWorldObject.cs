@@ -66,15 +66,9 @@ namespace KailashEngine.World
         {
             _spatial.rotation_angles = new Vector3(x_angle, y_angle, z_angle);
 
-            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
-            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
-            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
-           
-            Quaternion current_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
-
+            Quaternion current_rotation = EngineHelper.createQuaternion(x_angle, y_angle, z_angle);
             current_rotation = Quaternion.Slerp(_previous_rotation, current_rotation, smooth_factor);
 
-            current_rotation.Normalize();
             _spatial.rotation_matrix = Matrix4.CreateFromQuaternion(current_rotation);
             _spatial.rotation_matrix = Matrix4.Transpose(_spatial.rotation_matrix);
 

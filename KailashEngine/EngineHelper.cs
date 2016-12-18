@@ -81,6 +81,7 @@ namespace KailashEngine
         public static string path_glsl_common { get { return "common/"; } }
         public static string path_glsl_common_helpers { get { return "common/helpers/"; } }
         public static string path_glsl_common_generic_vs { get { return "render_Texture2D.vert"; } }
+        public static string path_glsl_common_generic_geometry { get { return "geometry.vert"; } }
 
 
         //------------------------------------------------------
@@ -116,16 +117,11 @@ namespace KailashEngine
             return (float)(Math.Pow(src1 / src0, t) * src0);
         }
 
+
+
         public static Matrix4 rotate(float x_angle, float y_angle, float z_angle)
         {
-            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
-            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
-            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
-
-            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
-
-            zyx_rotation.Normalize();
-            return Matrix4.CreateFromQuaternion(zyx_rotation);
+            return Matrix4.CreateFromQuaternion(createQuaternion(x_angle, y_angle, z_angle));
         }
 
 
@@ -233,6 +229,17 @@ namespace KailashEngine
             return temp_scale * (temp_rotation * temp_translation);
         }
 
+        public static Quaternion createQuaternion(float x_angle, float y_angle, float z_angle)
+        {
+            Quaternion x_rotation = Quaternion.FromAxisAngle(Vector3.UnitX, MathHelper.DegreesToRadians(x_angle));
+            Quaternion y_rotation = Quaternion.FromAxisAngle(Vector3.UnitY, MathHelper.DegreesToRadians(y_angle));
+            Quaternion z_rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, MathHelper.DegreesToRadians(z_angle));
+
+            Quaternion zyx_rotation = Quaternion.Multiply(Quaternion.Multiply(z_rotation, y_rotation), x_rotation);
+
+            zyx_rotation.Normalize();
+            return zyx_rotation;
+        }
 
         //------------------------------------------------------
         // Data Type Converters
