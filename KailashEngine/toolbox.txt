@@ -51,5 +51,5 @@ layout(std140, binding = 2) uniform materialTextures
 //------------------------------------------------------
 layout(std140, binding = 3) uniform shadowMatrices
 {
-	mat4 mat[4];
+	mat4 mat[64];
 };

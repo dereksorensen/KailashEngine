@@ -35,5 +35,4 @@ void main()
 
 
 	color = depth_packed;
-	color = vec4(depth);
 }

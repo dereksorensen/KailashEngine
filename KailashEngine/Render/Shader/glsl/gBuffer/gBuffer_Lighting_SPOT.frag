@@ -33,7 +33,7 @@ layout(std140, binding = 1) uniform cameraSpatials
 //------------------------------------------------------
 layout(std140, binding = 3) uniform shadowMatrices
 {
-	mat4 mat[4];
+	mat4 mat[64];
 };
 
 uniform sampler2D sampler0;		// Normal & Depth
@@ -91,14 +91,14 @@ float linstep(float min, float max, float v)
 
 float vsm(vec3 depth)
 {
-	float bias = 0.0000002;
+	float bias = 0.0002;
 	float distance = depth.z;
 	
-	vec4 c = texture(sampler2, vec3(depth.xy * 0.5 + 0.5, shadow_id));	
+	vec4 c = texture(sampler2, vec3(depth.xy, shadow_id));	
 
 	vec2 moments;
 	moments.x = unpack2(c.xy);
-	return moments.x;
+
 
 	if(distance <= moments.x-bias)
 	{
@@ -112,31 +112,22 @@ float vsm(vec3 depth)
 	float d = distance - moments.x;
 	float p_max = linstep(0.2,1.0, variance / (variance + d*d));
 	return clamp(max(p,p_max), 0.0, 1.0);
-
 }
+
 
 float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
 {
-	//VSM
 	vec4 shadow_viewPosition = mat[int(shadow_id) * 2 + 1] * vec4(world_position, 1.0);
 	vec4 shadow_position = mat[int(shadow_id) * 2] * shadow_viewPosition;
 	vec3 shadow_depth = shadow_position.xyz / shadow_position.w;
 	shadow_depth = shadow_depth * 0.5 + 0.5;
 
-	float sdepth = texture(sampler2, vec3(shadow_depth.xy, shadow_id)).a;
 	float reconDepth = length(shadow_viewPosition.xyz);
 	
-	//shadow_depth.z = depth;
+	shadow_depth.z = reconDepth;
 
 	float visibility = 1.0;
-	//if(shadow_position.w > 0.0)
-	//{
-		if(sdepth < reconDepth - 0.1)
-		{
-			visibility = 0.0;
-		}
-	//}
-
+	visibility = vsm(shadow_depth);
 
 	return visibility;
 }

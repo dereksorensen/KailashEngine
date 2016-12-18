@@ -1,5 +1,5 @@
 ﻿
-layout(triangles, invocations = 2) in;
+layout(triangles, invocations = 3) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 
@@ -13,7 +13,7 @@ out vec3 g_viewPosition;
 //------------------------------------------------------
 layout(std140, binding = 3) uniform shadowMatrices
 {
-	mat4 mat[4];
+	mat4 mat[64];
 };
 
 

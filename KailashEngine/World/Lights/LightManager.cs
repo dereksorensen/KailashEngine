@@ -43,11 +43,11 @@ namespace KailashEngine.World.Lights
         public LightManager()
         {
             _light_count = 0;
-            _max_shadows = 2;
+            _max_shadows = 3;
             _lights = new Dictionary<int, Light>();
 
 
-            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, _max_shadows * 2);
+            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, 64);
         }
 
 
