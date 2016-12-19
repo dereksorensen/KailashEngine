@@ -17,6 +17,7 @@ namespace KailashEngine.Render.FX
     {
         // Propteries
         private const int _num_spot_shadows = 8;
+        private const int _max_mipmaps = 5;
 
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
@@ -74,10 +75,11 @@ namespace KailashEngine.Render.FX
             _tDepth_Spot.load();
 
             _tSpot = new Texture(TextureTarget.Texture2DArray,
-                _resolution_half.W, _resolution_half.H, _num_spot_shadows, 
-                false, false,
-                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
+                _resolution_half.W, _resolution_half.H, _num_spot_shadows,
+                true, false,
+                PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tSpot.setMaxMipMap(_max_mipmaps);
             _tSpot.load();
 
             _fHalfResolution_Spot = new FrameBuffer("Shadow - Spot");
@@ -108,7 +110,8 @@ namespace KailashEngine.Render.FX
         public void render(Scene scene)
         {
             GL.Enable(EnableCap.CullFace);
-            //GL.CullFace(CullFaceMode.Front);
+            GL.Enable(EnableCap.PolygonOffsetFill);
+            GL.PolygonOffset(0.5f, 1.0f);
 
             _fHalfResolution_Spot.bind(DrawBuffersEnum.ColorAttachment0);
 
@@ -123,7 +126,9 @@ namespace KailashEngine.Render.FX
 
             scene.renderMeshes(BeginMode.Triangles, _pSpot);
 
-            //GL.CullFace(CullFaceMode.Back);
+            _tSpot.generateMipMap();
+
+            GL.Disable(EnableCap.PolygonOffsetFill);
         }
 
 

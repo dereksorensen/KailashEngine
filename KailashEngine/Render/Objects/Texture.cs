@@ -195,11 +195,16 @@ namespace KailashEngine.Render.Objects
             return getMaxMipMap(_width, _height);
         }
 
+        public void setMaxMipMap(int max_mipmap_levels)
+        {
+            _max_mipmap_levels = Math.Min(getMaxMipMap(_width, _height), max_mipmap_levels);
+            _min_filter = TextureMinFilter.LinearMipmapLinear;
+        }
+
         public void generateMipMap()
         {
             GL.GenerateTextureMipmap(_id);
         }
-
 
 
         //------------------------------------------------------
@@ -233,6 +238,7 @@ namespace KailashEngine.Render.Objects
 
             if (_enable_mipmap)
             {
+                GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);
                 GL.TexParameter(_target, TextureParameterName.TextureMaxLevel, _max_mipmap_levels);
                 generateMipMap();
             }

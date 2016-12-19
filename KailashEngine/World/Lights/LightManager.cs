@@ -41,7 +41,7 @@ namespace KailashEngine.World.Lights
         public LightManager()
         {
             _light_count = 0;
-            _max_shadows = 6;
+            _max_shadows = 4;
             _lights = new Dictionary<int, Light>();
 
 
@@ -50,10 +50,11 @@ namespace KailashEngine.World.Lights
                 EngineHelper.size.mat4,
                 EngineHelper.size.vec4,
             }, 32);
-            //_ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, EngineHelper.size.mat4, 64);
         }
 
-
+        //------------------------------------------------------
+        // Build Lists
+        //------------------------------------------------------
 
         public void addLight(Light light)
         {
@@ -71,6 +72,10 @@ namespace KailashEngine.World.Lights
             }
         }
 
+
+        //------------------------------------------------------
+        // Updating
+        //------------------------------------------------------
 
         public void updateUBO_Shadow(Matrix4 p)
         {
