@@ -107,9 +107,9 @@ float unpack2(vec2 color)
 
 
 
-float light_size = 10.0;
+float light_size = 91.0;
 float PCF_NUM_SAMPLES = 16;
-float pcss_blur = 1.0;
+float pcss_blur = 100.0;
 
 float PenumbraSize(float zReceiver, float zBlocker) //Parallel plane estimation 
 { 
@@ -123,7 +123,7 @@ void FindBlocker(out float avgBlockerDepth,
 	//This uses similar triangles to compute what 
 	//area of the shadow map we should search 
 
-	vec2 searchWidth = textureSize(sampler2, 0).xy * (zReceiver - 1.0f) / zReceiver;
+	vec2 searchWidth = (light_size / textureSize(sampler2, 0).xy) * (zReceiver - 0.1f) / zReceiver;
 	
 
 
@@ -205,7 +205,7 @@ float PCSS ( vec3 coords )
  
 	// STEP 2: penumbra size
 	float filterRadiusUV = PenumbraSize(zReceiver, avgBlockerDepth);
-	filterRadiusUV = min(filterRadiusUV, 670.0);
+	filterRadiusUV = filterRadiusUV * (light_size) * 0.1 / coords.z; 
 
 	//return avgBlockerDepth * 13.0;
 

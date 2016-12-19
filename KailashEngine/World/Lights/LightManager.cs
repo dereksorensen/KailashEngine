@@ -41,7 +41,7 @@ namespace KailashEngine.World.Lights
         public LightManager()
         {
             _light_count = 0;
-            _max_shadows = 4;
+            _max_shadows = 5;
             _lights = new Dictionary<int, Light>();
 
 

@@ -17,7 +17,7 @@ namespace KailashEngine.Render.FX
     {
         // Propteries
         private const int _num_spot_shadows = 8;
-        private const int _max_mipmaps = 5;
+        private const int _max_mipmaps = 3;
 
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
