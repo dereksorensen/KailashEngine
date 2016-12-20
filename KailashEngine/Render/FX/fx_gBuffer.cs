@@ -377,24 +377,27 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-            foreach (Light l in scene.lights)
+            Debug.DebugHelper.time_function("Lighting", 2, () =>
             {
-                if (l.enabled)
+                foreach (Light l in scene.lights)
                 {
-                    pass_Stencil(l);
-
-                    switch (l.type)
+                    if (l.enabled)
                     {
-                        case Light.type_spot:
-                            pass_sLight(l, fx_Shadow.tSpot);
-                            break;
+                        pass_Stencil(l);
 
-                        case Light.type_point:
-                            pass_pLight(l);
-                            break;
+                        switch (l.type)
+                        {
+                            case Light.type_spot:
+                                pass_sLight(l, fx_Shadow.tSpot);
+                                break;
+
+                            case Light.type_point:
+                                pass_pLight(l);
+                                break;
+                        }
                     }
                 }
-            }
+            });
 
 
             GL.Disable(EnableCap.StencilTest);

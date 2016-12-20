@@ -17,7 +17,7 @@ namespace KailashEngine.Render.FX
     {
         // Propteries
         private const int _num_spot_shadows = 8;
-        private const int _max_mipmaps = 3;
+        private const int _max_mipmaps = 2;
 
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
@@ -76,7 +76,7 @@ namespace KailashEngine.Render.FX
 
             _tSpot = new Texture(TextureTarget.Texture2DArray,
                 _resolution_half.W, _resolution_half.H, _num_spot_shadows,
-                true, false,
+                true, true,
                 PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tSpot.setMaxMipMap(_max_mipmaps);

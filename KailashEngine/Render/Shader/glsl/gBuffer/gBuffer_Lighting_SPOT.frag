@@ -108,51 +108,18 @@ float unpack2(vec2 color)
 
 
 float light_size = 91.0;
-float PCF_NUM_SAMPLES = 16;
 float pcss_blur = 100.0;
 
-float PenumbraSize(float zReceiver, float zBlocker) //Parallel plane estimation 
-{ 
-	return ((zReceiver - zBlocker) * pcss_blur) / zBlocker; 
+
+vec2 getMoments(sampler2DArray shadow_depth_sampler, int shadow_depth_id, vec2 tex_coord, float mip_level)
+{
+	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec3(tex_coord, shadow_depth_id), max(1.0, mip_level));
+	vec2 moments;
+	moments.x = unpack2(moments_packed.xy);
+	moments.y = unpack2(moments_packed.zw);
+
+	return moments;
 }
- 
-void FindBlocker(out float avgBlockerDepth, 
-					out float numBlockers, 
-					vec2 uv, float zReceiver ) 
-{ 
-	//This uses similar triangles to compute what 
-	//area of the shadow map we should search 
-
-	vec2 searchWidth = (light_size / textureSize(sampler2, 0).xy) * (zReceiver - 0.1f) / zReceiver;
-	
-
-
-	float blockerSum = 0; 
-	numBlockers = 0; 
-
-	
-	for( int i = 0; i < PCF_NUM_SAMPLES; ++i ) 
-	{ 
-		vec2 shadowDepth = texture(sampler2, vec3(uv + (poissonDisk[i] * searchWidth), shadow_id)).xy;
-		float shadowMapDepth = unpack2(shadowDepth.xy);
-
-		if ( shadowMapDepth < zReceiver-0.0003)
-		{
-			blockerSum += shadowMapDepth; 
-			numBlockers++; 
-		} 
-	}
-
-	if ( numBlockers != 0 )
-	{
-		avgBlockerDepth = blockerSum / numBlockers; 
-	}
-
-}
-
-
-
-
 
 // Used to get rid of light bleed
 float linstep(float min, float max, float v)
@@ -160,83 +127,77 @@ float linstep(float min, float max, float v)
 	return clamp((v-min)/(max-min), 0.0, 1.0);
 }
 
-
-float vsm(vec3 depth, float blur_amount)
+float vsm(vec2 moments, float shadow_depth)
 {
 	float bias = 0.00001;
-	float distance = depth.z;
+	float distance = shadow_depth;
 	
-	vec4 c = textureLod(sampler2, vec3(depth.xy, shadow_id), max(0.0, blur_amount / 5.0));	
-
-	vec2 moments;
-	moments.x = unpack2(c.xy);
-
-
 	if(distance <= moments.x-bias)
 	{
 		return 1.0;
 	}
 
-	moments.y = unpack2(c.zw);
-
 	float p = smoothstep(distance - bias, distance, moments.x);
 	float variance = max(moments.y - moments.x*moments.x, -0.001);
 	float d = distance - moments.x;
-	float p_max = linstep(0.5,1.0, variance / (variance + d*d));
+	float p_max = linstep(0.2,1.0, variance / (variance + d*d));
 	return clamp(max(p,p_max), 0.0, 1.0);
 }
 
 
-float PCSS ( vec3 coords ) 
+// Based on http://www.derschmale.com/2014/07/24/faster-variance-soft-shadow-mapping-for-varying-penumbra-sizes/
+float getAverageOccluderDepth(float light_size, float shadow_map_size, vec3 uv_depth) 
+{
+    // calculate the mip level corresponding to the search area
+    // Really, mipLevel would be a passed in as a constant.
+    float mip_level = log2(int(light_size * shadow_map_size));
+
+	vec2 moments = getMoments(sampler2, shadow_id, uv_depth.xy, mip_level);
+	float average_depth = moments.x;
+    float probability = vsm(moments, uv_depth.z);
+
+    // prevent numerical issues
+    if (probability > .99) return 0.0;
+
+    // calculate the average occluder depth
+    return (average_depth - probability * uv_depth.z) / (1.0 - probability);
+}
+
+// Based on http://www.derschmale.com/2014/07/24/faster-variance-soft-shadow-mapping-for-varying-penumbra-sizes/
+float estimatePenumbraSize(float light_size, float shadow_map_size, vec3 uv_depth, float penumbra_falloff)
+{
+    // the search area covers twice the light size
+    float averageOccluderDepth = getAverageOccluderDepth(light_size, shadow_map_size, uv_depth);
+    float penumbra_size = light_size * (uv_depth.z - averageOccluderDepth) * penumbra_falloff;
+
+    // clamp to the maximum softness, which matches the search area
+    return min(penumbra_size, light_size);
+}
+
+
+float PCSS(vec3 uv_depth, float light_size, float penumbra_falloff) 
 { 
-	vec2 uv = coords.xy;
-	float zReceiver = coords.z; // Assumed to be eye-space z in this code
- 
-	// STEP 1: blocker search
-	float avgBlockerDepth = 0;
-	float numBlockers = 0;
-	FindBlocker( avgBlockerDepth, numBlockers, uv, zReceiver );
- 
-	if( numBlockers < 1 )
-	{
-		//There are no occluders so early out (this saves filtering) 
-		return 1.0f;
-	}
- 
-	// STEP 2: penumbra size
-	float filterRadiusUV = PenumbraSize(zReceiver, avgBlockerDepth);
-	filterRadiusUV = filterRadiusUV * (light_size) * 0.1 / coords.z; 
+	vec2 shadow_map_size = textureSize(sampler2, 0).xy;
+	float average_map_size = (shadow_map_size.x + shadow_map_size.y) / 2.0;
 
-	//return avgBlockerDepth * 13.0;
+	float penumbra_size = estimatePenumbraSize(light_size, average_map_size, uv_depth, penumbra_falloff);
 
-	// STEP 3: filtering
-	//return PCF_Filter(uv, zReceiver, filterRadiusUV );
-	return vsm(coords, filterRadiusUV);
-
-	//return texture(sampler3, uv);
+	return vsm(getMoments(sampler2, shadow_id, uv_depth.xy, penumbra_size), uv_depth.z);
 } 
-
-
-
-
-
-
 
 
 float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
 {
 	vec4 shadow_viewPosition = shadow_data[shadow_id].view * vec4(world_position, 1.0);
 	vec4 shadow_position = shadow_data[shadow_id].perspective * shadow_viewPosition;
-	vec3 shadow_depth = shadow_position.xyz / shadow_position.w;
-	shadow_depth = shadow_depth * 0.5 + 0.5;
-
-	float reconDepth = length(shadow_viewPosition.xyz);
+	vec3 shadow_uv_depth = shadow_position.xyz / shadow_position.w;
+	shadow_uv_depth = shadow_uv_depth * 0.5 + 0.5;
 	
-	shadow_depth.z = reconDepth;
+	shadow_uv_depth.z = length(shadow_viewPosition.xyz);
 
 	float visibility = 1.0;
-	//visibility = vsm(shadow_depth);
-	visibility = PCSS(shadow_depth);
+	//visibility = vsm(getMoments(sampler2, shadow_id, shadow_uv_depth.xy, 5.0), shadow_uv_depth.z);
+	visibility = PCSS(shadow_uv_depth, 10.0, 0.02);
 
 	return visibility;
 }
