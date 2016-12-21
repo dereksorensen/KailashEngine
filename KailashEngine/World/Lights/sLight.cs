@@ -13,6 +13,21 @@ namespace KailashEngine.World.Lights
     class sLight : Light
     {
 
+        public Matrix4 shadow_view_matrix
+        {
+            get
+            {
+                return Matrix4.CreateTranslation(-_spatial.position) * Matrix4.Transpose(_spatial.rotation_matrix);
+            }
+        }
+
+        public Matrix4 shadow_perspective_matrix
+        {
+            get
+            {
+                return _spatial.perspective;
+            }
+        }
 
 
         public sLight(string id,  Vector3 color, float intensity, float falloff, float spot_angle, float spot_blur, bool shadow, Mesh light_mesh, Matrix4 transformation)
@@ -45,6 +60,7 @@ namespace KailashEngine.World.Lights
 
             _spatial.setPerspective(MathHelper.RadiansToDegrees(_spot_angle * 2), 1.6f, 0.1f, 100.0f);
         }
+
 
     }
 }

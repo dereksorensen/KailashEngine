@@ -419,7 +419,8 @@ namespace KailashEngine
                             _game.player.camera.spatial.position,
                             _game.player.camera.spatial.look);
             _render_driver.handle_MouseState(_game.mouse.locked);
-            _game.scene.light_manager.updateUBO_Shadow(_game.player.camera.spatial.perspective);
+            _game.scene.light_manager.update();
+
 
             // Set camera's previous MVP matrix
             _game.player.camera.previous_view_matrix = _game.player.camera.spatial.model_view;

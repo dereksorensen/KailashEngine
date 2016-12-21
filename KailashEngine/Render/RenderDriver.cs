@@ -205,6 +205,8 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Pre-Processing
             //------------------------------------------------------
+            GL.Disable(EnableCap.DepthTest);
+
             _fxAtmosphericScattering.precompute(_fxQuad);
 
             _fxHDR.calcExposure(_fxFinal.tFinalScene);
@@ -213,6 +215,12 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Scene Processing
             //------------------------------------------------------
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+
             Debug.DebugHelper.time_function("Shadow", 1, () =>
             {
                 _fxShadow.render(scene);
@@ -244,6 +252,7 @@ namespace KailashEngine.Render
 
 
             //_fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
+
 
             //------------------------------------------------------
             // Render to Screen

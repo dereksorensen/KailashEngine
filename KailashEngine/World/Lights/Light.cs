@@ -41,19 +41,19 @@ namespace KailashEngine.World.Lights
         }
 
 
+        private bool _shadowed;
+        public bool shadowed
+        {
+            get { return _shadowed; }
+            set { _shadowed = value; }
+        }
+
 
         private string _type;
         public string type
         {
             get { return _type; }
             set { _type = value; }
-        }
-
-        private bool _shadow;
-        public bool shadow
-        {
-            get { return _shadow; }
-            set { _shadow = value; }
         }
 
         private Vector3 _color;
@@ -123,11 +123,10 @@ namespace KailashEngine.World.Lights
             _color = color;
             _intensity = intensity;
             _falloff = falloff;
-            _shadow = shadow;
+            _shadowed = shadow;
 
             _object_emission = _intensity;
         }
-
 
     }
 }

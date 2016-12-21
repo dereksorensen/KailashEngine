@@ -23,7 +23,6 @@ namespace KailashEngine.World.Lights
 
 
         private UniformBuffer _ubo_shadow_spot;
-        private UniformBuffer _ubo_light_positions;
 
 
         private Dictionary<int, Light> _lights;
@@ -32,18 +31,26 @@ namespace KailashEngine.World.Lights
             get { return _lights; }
         }
 
-        public List<Light> light_list
+        private List<Light> _lights_enabled;
+        public List<Light> lights_enabled
         {
-            get { return _lights.Values.ToList(); }
+            get { return _lights_enabled; }
+        }
+
+        private List<Light> _lights_shadowed;
+        public List<Light> lights_shadowed
+        {
+            get { return _lights_shadowed; }
         }
 
 
         public LightManager()
         {
             _light_count = 0;
-            _max_shadows = 5;
+            _max_shadows = 4;
             _lights = new Dictionary<int, Light>();
-
+            _lights_enabled = new List<Light>();
+            _lights_shadowed = new List<Light>();
 
             _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
@@ -62,6 +69,15 @@ namespace KailashEngine.World.Lights
             light.enabled = true;
             _lights.Add(light.lid, light);
             _light_count++;
+
+            if (light.enabled)
+            {
+                _lights_enabled.Add(light);
+                if(light.shadowed)
+                {
+                    _lights_shadowed.Add(light);
+                }
+            }
         }
 
         public void addLight(List<Light> lights)
@@ -76,23 +92,54 @@ namespace KailashEngine.World.Lights
         //------------------------------------------------------
         // Updating
         //------------------------------------------------------
-
-        public void updateUBO_Shadow(Matrix4 p)
+        private void updateLists()
         {
-            _max_shadows = Math.Min(_max_shadows, _light_count);
-            for (int i = 0; i < _max_shadows; i++)
+            _lights_enabled = _lights.Select(kp => kp.Value).Where(light => light.enabled).ToList();
+            _lights_shadowed = _lights_enabled.Where(light => light.shadowed).ToList();
+        }
+
+        private void updateUBO_Shadow_Spot(sLight light, int shadow_id)
+        {
+            int ubo_index = shadow_id * 3;
+
+            _ubo_shadow_spot.update(ubo_index, light.shadow_view_matrix);
+            _ubo_shadow_spot.update(ubo_index + 1, light.spatial.perspective);
+            _ubo_shadow_spot.update(ubo_index + 2, light.spatial.position);
+
+            light.sid = shadow_id;
+        }
+
+        private void updateUBO_Shadow_Point()
+        {
+
+        }
+
+        private void updateUBO_Shadow()
+        {
+            int max_shadows_spot = Math.Min(_max_shadows, _light_count);
+            int num_shadows_spot = 0;
+
+            foreach (Light light in _lights_shadowed)
             {
-                int ubo_index = i * 3;
+                switch(light.type)
+                {
+                    case Light.type_spot:
+                        if (num_shadows_spot >= max_shadows_spot) break;
+                        updateUBO_Shadow_Spot((sLight)light, num_shadows_spot);
+                        num_shadows_spot++;
+                        break;
+                    case Light.type_point:
 
-                Matrix4 light_view_matrix_rot = Matrix4.Transpose(light_list[i].spatial.rotation_matrix);
-                Matrix4 light_view_matrix_pos = Matrix4.CreateTranslation(-light_list[i].spatial.position);
-
-                _ubo_shadow_spot.update(ubo_index, light_view_matrix_pos * light_view_matrix_rot);
-                _ubo_shadow_spot.update(ubo_index + 1, light_list[i].spatial.perspective);
-                _ubo_shadow_spot.update(ubo_index + 2, light_list[i].spatial.position);
-
-                light_list[i].sid = i;
+                        break;
+                }
             }
+        }
+
+        public void update()
+        {
+            updateLists();
+            updateUBO_Shadow();
+            updateUBO_Shadow_Point();
         }
     }
 }

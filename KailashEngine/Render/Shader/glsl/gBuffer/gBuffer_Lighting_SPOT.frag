@@ -183,7 +183,22 @@ float PCSS(vec3 uv_depth, float light_size, float penumbra_falloff)
 	float penumbra_size = estimatePenumbraSize(light_size, average_map_size, uv_depth, penumbra_falloff);
 
 	return vsm(getMoments(sampler2, shadow_id, uv_depth.xy, penumbra_size), uv_depth.z);
-} 
+}
+
+
+float exponential(float exp_d, float compare)
+{
+	float bias = 0.00001;
+	
+	if(compare <= exp_d-bias)
+	{
+		return 1.0;
+	}
+
+	float c = 0.2;
+    float depth = exp(c * exp_d) * exp(-c * compare);
+    return clamp(depth, 0.0, 1.0);
+}
 
 
 float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
@@ -197,7 +212,8 @@ float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
 
 	float visibility = 1.0;
 	//visibility = vsm(getMoments(sampler2, shadow_id, shadow_uv_depth.xy, 5.0), shadow_uv_depth.z);
-	visibility = PCSS(shadow_uv_depth, 10.0, 0.02);
+	//visibility = PCSS(shadow_uv_depth, 10.0, 0.01);
+	visibility = exponential(getMoments(sampler2, shadow_id, shadow_uv_depth.xy, 3.0).x, shadow_uv_depth.z);
 
 	return visibility;
 }

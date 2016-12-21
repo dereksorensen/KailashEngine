@@ -16,7 +16,7 @@ namespace KailashEngine.Render.FX
     class fx_Shadow : RenderEffect
     {
         // Propteries
-        private const int _num_spot_shadows = 8;
+        private const int _num_spot_shadows = 4;
         private const int _max_mipmaps = 2;
 
         private const float _texture_scale = 0.5f;
@@ -62,7 +62,6 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", null)
             });
             _pSpot.enable_MeshLoading();
-            _pSpot.addUniform("max_shadows");
         }
 
         protected override void load_Buffers()
@@ -109,20 +108,17 @@ namespace KailashEngine.Render.FX
 
         public void render(Scene scene)
         {
-            GL.Enable(EnableCap.CullFace);
+
             GL.Enable(EnableCap.PolygonOffsetFill);
             GL.PolygonOffset(0.5f, 1.0f);
 
             _fHalfResolution_Spot.bind(DrawBuffersEnum.ColorAttachment0);
 
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _tSpot.width, _tSpot.height);
 
             _pSpot.bind();
-
-            GL.Uniform1(_pSpot.getUniform("max_shadows"), 1);
 
             scene.renderMeshes(BeginMode.Triangles, _pSpot);
 

@@ -62,7 +62,7 @@ namespace KailashEngine.Client
 
         public List<Light> lights
         {
-            get { return _light_manager.light_list; }
+            get { return _light_manager.lights_enabled; }
         }
 
 
@@ -94,14 +94,6 @@ namespace KailashEngine.Client
 
         public void toggleFlashlight(bool enabled)
         {
-            //if (enabled)
-            //{
-            //    _lights.Insert(0, _flashlight);
-            //}
-            //else
-            //{
-            //    _lights.RemoveAt(0);
-            //}
             _flashlight.enabled = enabled;
         }
 

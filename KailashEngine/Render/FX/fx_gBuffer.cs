@@ -254,8 +254,7 @@ namespace KailashEngine.Render.FX
                 DrawBuffersEnum.ColorAttachment3
             });
 
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
             
@@ -381,20 +380,17 @@ namespace KailashEngine.Render.FX
             {
                 foreach (Light l in scene.lights)
                 {
-                    if (l.enabled)
+                    pass_Stencil(l);
+
+                    switch (l.type)
                     {
-                        pass_Stencil(l);
+                        case Light.type_spot:
+                            pass_sLight(l, fx_Shadow.tSpot);
+                            break;
 
-                        switch (l.type)
-                        {
-                            case Light.type_spot:
-                                pass_sLight(l, fx_Shadow.tSpot);
-                                break;
-
-                            case Light.type_point:
-                                pass_pLight(l);
-                                break;
-                        }
+                        case Light.type_point:
+                            pass_pLight(l);
+                            break;
                     }
                 }
             });
