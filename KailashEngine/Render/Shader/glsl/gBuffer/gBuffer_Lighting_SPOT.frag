@@ -135,7 +135,7 @@ float vsm(vec2 moments, float shadow_depth, float min_variance)
 {
 	float bias = 0.00001;
 	float distance = shadow_depth;
-	float bleed_factor = 0.7;
+	float bleed_factor = 0.2;
 	
 	if(distance <= moments.x-bias)
 	{
@@ -261,10 +261,10 @@ float calcShadow(vec3 world_position, float depth, vec2 tex_coord)
 	shadow_uv_depth.z = length(shadow_viewPosition.xyz);
 
 	float visibility = 1.0;
-	//visibility = vsm(getMoments(sampler2, shadow_id, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z, 0.001);
+	//visibility = vsm(getMoments(sampler2, shadow_id, shadow_uv_depth.xy, 2.0), shadow_uv_depth.z, 0.001);
 	//visibility = esm(getMoments(sampler2, shadow_id, shadow_uv_depth.xy, 4.0).x, shadow_uv_depth.z, 0.5);
-	//visibility = PCSS(shadow_uv_depth, 10.0, 0.03);
-	visibility = evsm(shadow_uv_depth);
+	//visibility = evsm(shadow_uv_depth);
+	visibility = PCSS(shadow_uv_depth, 10.0, 0.03);
 
 	return visibility;
 }

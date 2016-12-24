@@ -37,17 +37,17 @@ vec2 warpDepth(float depth)
 void main()
 {
 	float depth = length(g_viewPosition);
-/*
+
 	vec2 depth_moments = computeMoments(depth);
 	//depth_moments.x = exp(depth);
 	vec4 depth_packed = vec4(pack2(depth_moments.x),pack2(depth_moments.y));
 
 	color = depth_packed;
-*/
-	
+
+/*	
 	depth = calcLinearDepth(depth, 0.1, 100.0);
 
 	vec2 warped_depth = warpDepth(depth);
 	color = vec4(warped_depth, warped_depth * warped_depth);
-
+*/
 }

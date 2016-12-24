@@ -419,7 +419,7 @@ namespace KailashEngine
                             _game.player.camera.spatial.position,
                             _game.player.camera.spatial.look);
             _render_driver.handle_MouseState(_game.mouse.locked);
-            _game.scene.light_manager.update();
+            _game.scene.light_manager.update(-_game.player.camera.spatial.position);
 
 
             // Set camera's previous MVP matrix
