@@ -17,7 +17,7 @@ namespace KailashEngine.Render.FX
     {
         // Propteries
         private const int _num_spot_shadows = 4;
-        private const int _max_mipmaps = 2;
+        private const int _max_mipmaps = 3;
 
         private const float _texture_scale = 0.5f;
         private Resolution _resolution_half;
@@ -54,12 +54,15 @@ namespace KailashEngine.Render.FX
             string[] culling_helpers = new string[]
             {
                 _pLoader.path_glsl_common_helpers + "culling.include"
-
+            };
+            string[] linear_depth_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "linearDepth.include"
             };
             _pSpot = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Spot.geom", culling_helpers),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", linear_depth_helpers)
             });
             _pSpot.enable_MeshLoading();
         }
