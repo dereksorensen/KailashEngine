@@ -99,7 +99,8 @@ namespace KailashEngine.Render.FX
             {
                 _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
                 _pLoader.path_glsl_common_helpers + "linearDepth.include",
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include"
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
+                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include"
             };
 
             // Rendering Geometry into gBuffer

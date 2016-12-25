@@ -98,7 +98,7 @@ namespace KailashEngine.World.Lights
             _lights_shadowed = _lights_enabled.Where(light => light.shadowed).ToList();
             _lights_shadowed.ForEach(light => light.sid = -1);
             // Get closest 4 shadow casters to the camera
-            _lights_shadowed = _lights_shadowed.OrderBy(light => (light.spatial.position - camera_position).Length).ToList().GetRange(0, 4);
+            _lights_shadowed = _lights_shadowed.OrderBy(light => (light.spatial.position - camera_position).Length).ToList().GetRange(0, _max_shadows);
         }
 
         private void updateUBO_Shadow_Spot(sLight light, int shadow_id)

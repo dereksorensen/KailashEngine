@@ -1,0 +1,163 @@
+﻿
+
+const vec2 poissonDisk[16] = vec2[16](
+	vec2( -0.94201624, -0.39906216 ),
+	vec2( 0.94558609, -0.76890725 ),
+	vec2( -0.094184101, -0.92938870 ),
+	vec2( 0.34495938, 0.29387760 ),
+	vec2( -0.91588581, 0.45771432 ),
+	vec2( -0.81544232, -0.87912464 ),
+	vec2( -0.38277543, 0.27676845 ),
+	vec2( 0.97484398, 0.75648379 ),
+	vec2( 0.44323325, -0.97511554 ),
+	vec2( 0.53742981, -0.47373420 ),
+	vec2( -0.26496911, -0.41893023 ),
+	vec2( 0.79197514, 0.19090188 ),
+	vec2( -0.24188840, 0.99706507 ),
+	vec2( -0.81409955, 0.91437590 ),
+	vec2( 0.19984126, 0.78641367 ),
+	vec2( 0.14383161, -0.14100790 ));
+
+
+
+//------------------------------------------------------
+// Helpers
+//------------------------------------------------------
+
+float unpack2(vec2 color)
+{
+	return color.x + (color.y / 255.0);
+}
+
+
+
+//------------------------------------------------------
+// VSM
+//------------------------------------------------------
+
+vec2 getMoments_2DArray(sampler2DArray shadow_depth_sampler, int shadow_layer_id, vec2 tex_coord, float mip_level)
+{
+	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec3(tex_coord, shadow_layer_id), max(0.5, mip_level));
+	vec2 moments;
+	moments.x = unpack2(moments_packed.xy);
+	moments.y = unpack2(moments_packed.zw);
+
+	return moments;
+}
+
+// Used to get rid of light bleed
+float linstep(float min, float max, float v)
+{
+	return clamp((v-min)/(max-min), 0.0, 1.0);
+}
+
+float vsm(vec2 moments, float shadow_depth, float min_variance)
+{
+	float bias = 0.00001;
+	float distance = shadow_depth;
+	float bleed_factor = 0.2;
+	
+	if(distance <= moments.x-bias)
+	{
+		return 1.0;
+	}
+
+	float p = smoothstep(distance - bias, distance, moments.x);
+	float variance = max(moments.y - moments.x*moments.x, min_variance);
+	float d = distance - moments.x;
+	float p_max = variance / (variance + d*d);
+	p_max = linstep(bleed_factor, 1.0, p_max);
+	return clamp(max(p,p_max), 0.0, 1.0);
+}
+
+//------------------------------------------------------
+// ESM
+//------------------------------------------------------
+
+float esm(float shadow_depth, float compare_depth, float bleed_factor)
+{
+	float bias = 0.1;
+	
+	/*
+	if(compare_depth <= shadow_depth-bias)
+	{
+		return 1.0;
+	}
+	*/
+
+	float c = bleed_factor;
+    float depth = exp(c * (shadow_depth)) * exp(-c * (compare_depth));
+    return clamp(depth, 0.0, 1.0);
+}
+
+
+
+
+//------------------------------------------------------
+// Variable Penumbra Shadow
+//------------------------------------------------------
+
+// Based on http://www.derschmale.com/2014/07/24/faster-variance-soft-shadow-mapping-for-varying-penumbra-sizes/
+float getAverageOccluderDepth(vec3 uv_depth, vec2 occluder_search_moments) 
+{
+	float average_depth = occluder_search_moments.x;
+    float probability = vsm(occluder_search_moments, uv_depth.z, 0.001);
+	//probability = esm(average_depth, uv_depth.z, 0.01);
+
+    // prevent numerical issues
+    if (probability > .99) return 0.0;
+
+    // calculate the average occluder depth
+    return (average_depth - probability * uv_depth.z) / (1.0 - probability);
+}
+
+// Based on http://www.derschmale.com/2014/07/24/faster-variance-soft-shadow-mapping-for-varying-penumbra-sizes/
+float estimatePenumbraSize(vec3 uv_depth, vec2 occluder_search_moments, float light_size, float penumbra_falloff)
+{
+    // the search area covers twice the light size
+    float averageOccluderDepth = getAverageOccluderDepth(uv_depth, occluder_search_moments);
+    float penumbra_size = light_size * (uv_depth.z - averageOccluderDepth) * penumbra_falloff;
+
+    // clamp to the maximum softness, which matches the search area
+    return min(penumbra_size, light_size);
+}
+
+
+float variablePenumbraShadow(sampler2DArray shadow_depth_sampler, int shadow_layer_id, vec3 uv_depth, float light_size, float penumbra_falloff) 
+{ 
+	vec2 shadow_map_size = textureSize(shadow_depth_sampler, 0).xy;
+	float average_map_size = (shadow_map_size.x + shadow_map_size.y) / 2.0;
+	float relative_light_size = (light_size * average_map_size);
+	float occluder_search_mip_level = log2(relative_light_size);
+	vec2 occluder_search_moments = getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, occluder_search_mip_level);
+
+	float penumbra_size = estimatePenumbraSize(uv_depth, occluder_search_moments, light_size, penumbra_falloff);
+
+	return vsm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, penumbra_size), uv_depth.z, 0.001);
+	//return esm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, penumbra_size).x, uv_depth.z, 0.5);
+}
+
+
+//------------------------------------------------------
+// Shadow Evaluator Functions
+//------------------------------------------------------
+
+float calcShadow_2DArray(
+	sampler2DArray shadow_depth_sampler, int shadow_layer_id, 
+	mat4 shadow_view_matrix, mat4 shadow_perspective_matrix, vec3 world_position, 
+	float light_size, float penumbra_falloff)
+{
+	vec4 shadow_viewPosition = shadow_view_matrix * vec4(world_position, 1.0);
+	vec4 shadow_position = shadow_perspective_matrix * shadow_viewPosition;
+	vec3 shadow_uv_depth = shadow_position.xyz / shadow_position.w;
+	shadow_uv_depth = shadow_uv_depth * 0.5 + 0.5;
+	
+	shadow_uv_depth.z = length(shadow_viewPosition.xyz);
+
+	float visibility = 1.0;
+	//visibility = vsm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z, 0.001);
+	//visibility = esm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
+	visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
+	
+	return visibility;
+}

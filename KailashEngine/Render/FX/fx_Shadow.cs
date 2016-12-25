@@ -55,20 +55,23 @@ namespace KailashEngine.Render.FX
             {
                 _pLoader.path_glsl_common_helpers + "culling.include"
             };
-            string[] linear_depth_helpers = new string[]
+            string[] spot_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "linearDepth.include"
+                _pLoader.path_glsl_common_helpers + "shadowMapping.include"
             };
             _pSpot = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Spot.geom", culling_helpers),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", linear_depth_helpers)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", spot_helpers)
             });
             _pSpot.enable_MeshLoading();
         }
 
         protected override void load_Buffers()
         {
+            //------------------------------------------------------
+            // Spot Light Buffers
+            //------------------------------------------------------
             _tDepth_Spot = new Texture(TextureTarget.Texture2DArray,
                 _resolution_half.W, _resolution_half.H, _num_spot_shadows,
                 false, false,
@@ -109,14 +112,12 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void render(Scene scene)
+        private void render_Spot(Scene scene)
         {
-
             GL.Enable(EnableCap.PolygonOffsetFill);
             GL.PolygonOffset(0.5f, 1.0f);
 
             _fHalfResolution_Spot.bind(DrawBuffersEnum.ColorAttachment0);
-
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _tSpot.width, _tSpot.height);
@@ -128,6 +129,12 @@ namespace KailashEngine.Render.FX
             _tSpot.generateMipMap();
 
             GL.Disable(EnableCap.PolygonOffsetFill);
+        }
+
+
+        public void render(Scene scene)
+        {
+            render_Spot(scene);
         }
 
 
