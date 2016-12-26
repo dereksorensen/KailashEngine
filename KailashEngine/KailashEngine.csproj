@@ -594,6 +594,8 @@
     <None Include="Render\Shader\glsl\lens\lens_BrightSpots.frag" />
     <None Include="Render\Shader\glsl\hdr\hdr_ScaleScene.frag" />
     <None Include="Render\Shader\glsl\motion_blur\mb_Blur.frag" />
+    <None Include="Render\Shader\glsl\shadow\shadow_Point.frag" />
+    <None Include="Render\Shader\glsl\shadow\shadow_Point.geom" />
     <None Include="Render\Shader\glsl\shadow\shadow_Spot.frag" />
     <None Include="Render\Shader\glsl\shadow\shadow_Spot.geom" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.vert" />

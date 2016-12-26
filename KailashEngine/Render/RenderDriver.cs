@@ -285,7 +285,7 @@ namespace KailashEngine.Render
 
                 //_fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 3, 0);
                 //_fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2, 1);
-                //_fxQuad.render_Texture(_fxGBuffer.tLighting_Diffuse, 0.25f, 1);
+                _fxQuad.render_Texture(_fxShadow.tPoint, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 

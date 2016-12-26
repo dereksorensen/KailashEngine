@@ -6,6 +6,7 @@ layout(triangle_strip, max_vertices = 3) out;
 in vec3 v_worldPosition[];
 
 out vec3 g_viewPosition;
+out vec4 g_clipPosition;
 
 //------------------------------------------------------
 // Shadow Matrices - Spot
@@ -43,7 +44,8 @@ void main()
 		for (int i = 0; i < 3; i++) 
 		{
 			g_viewPosition = viewPositions[i].xyz;
-			gl_Position = clipPositions[i];
+			g_clipPosition = clipPositions[i];
+			gl_Position = g_clipPosition;
 			gl_Layer = gl_InvocationID;
 
 			EmitVertex();

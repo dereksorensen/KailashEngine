@@ -18,11 +18,15 @@ namespace KailashEngine.World.Lights
         private int _max_shadows;
         public int  max_shadows
         {
-            get { return _max_shadows; }
+            get
+            {
+                return Math.Min(_lights_shadowed.Count, _max_shadows);
+            }
         }
 
 
         private UniformBuffer _ubo_shadow_spot;
+        private UniformBuffer _ubo_shadow_point;
 
 
         private Dictionary<int, Light> _lights;
@@ -53,6 +57,17 @@ namespace KailashEngine.World.Lights
             _lights_shadowed = new List<Light>();
 
             _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.vec4,
+            }, 32);
+
+            _ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 4, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.vec4,
@@ -98,7 +113,7 @@ namespace KailashEngine.World.Lights
             _lights_shadowed = _lights_enabled.Where(light => light.shadowed).ToList();
             _lights_shadowed.ForEach(light => light.sid = -1);
             // Get closest 4 shadow casters to the camera
-            _lights_shadowed = _lights_shadowed.OrderBy(light => (light.spatial.position - camera_position).Length).ToList().GetRange(0, _max_shadows);
+            _lights_shadowed = _lights_shadowed.OrderBy(light => (light.spatial.position - camera_position).Length).ToList().GetRange(0, max_shadows);
         }
 
         private void updateUBO_Shadow_Spot(sLight light, int shadow_id)
@@ -106,21 +121,30 @@ namespace KailashEngine.World.Lights
             int ubo_index = shadow_id * 3;
 
             _ubo_shadow_spot.update(ubo_index, light.shadow_view_matrix);
-            _ubo_shadow_spot.update(ubo_index + 1, light.spatial.perspective);
+            _ubo_shadow_spot.update(ubo_index + 1, light.shadow_view_matrix);
             _ubo_shadow_spot.update(ubo_index + 2, light.spatial.position);
 
             light.sid = shadow_id;
         }
 
-        private void updateUBO_Shadow_Point()
+        private void updateUBO_Shadow_Point(pLight light, int shadow_id)
         {
+            int ubo_index = shadow_id * 3;
 
+            _ubo_shadow_spot.update(ubo_index, light.shadow_view_matrices);
+            _ubo_shadow_spot.update(ubo_index + 6, light.spatial.perspective);
+            _ubo_shadow_spot.update(ubo_index + 7, light.spatial.position);
+
+            light.sid = shadow_id;
         }
 
         private void updateUBO_Shadow()
         {
-            int max_shadows_spot = Math.Min(_max_shadows, _light_count);
+            int max_shadows_spot = max_shadows;
             int num_shadows_spot = 0;
+
+            int max_shadows_point = max_shadows;
+            int num_shadows_point = 0;
 
             foreach (Light light in _lights_shadowed)
             {
@@ -132,7 +156,9 @@ namespace KailashEngine.World.Lights
                         num_shadows_spot++;
                         break;
                     case Light.type_point:
-
+                        if (num_shadows_point >= max_shadows_point) break;
+                        updateUBO_Shadow_Point((pLight)light, num_shadows_point);
+                        num_shadows_point++;
                         break;
                 }
             }

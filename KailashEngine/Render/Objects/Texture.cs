@@ -268,7 +268,7 @@ namespace KailashEngine.Render.Objects
                     GL.TexImage2D(_target, 0, _pif, _width, _height, 0, _pf, _pt, data);
                     break;
                 case TextureTarget.Texture2DArray:
-                    GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, (IntPtr)0);
+                    GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, data);
                     break;
                 case TextureTarget.TextureCubeMap:
                     for (int face = 0; face < _depth; face++)
@@ -276,9 +276,20 @@ namespace KailashEngine.Render.Objects
                         GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + face, 0, _pif, _width, _height, 0, _pf, _pt, data);
                     }
                     break;
+                case TextureTarget.TextureCubeMapArray:
+                    for (int layer = 0; layer < _depth; layer++)
+                    {
+                        for (int face = 0; face < 6; face++)
+                        {
+                            GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + face, layer, _pif, _width, _height, 0, _pf, _pt, data);
+                        }
+                    }
+                    break;
                 case TextureTarget.Texture3D:
                     GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, data);
                     break;
+                default:
+                    throw new Exception($"Load Texture: Unsupported Texture Target [ {_target.ToString()} ]");
             }
 
             setTextureParameters();
@@ -320,6 +331,8 @@ namespace KailashEngine.Render.Objects
                         GL.TexSubImage3D(_target, 0, 0, 0, slice, _width, _height, 1, _pf, _pt, data[slice]);
                     }
                     break;
+                default:
+                    throw new Exception($"Load Texture: Unsupported Texture Target [ {_target.ToString()} ]");
             }
 
             setTextureParameters();

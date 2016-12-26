@@ -100,7 +100,7 @@ void main()
 		visibility = calcShadow_2DArray(
 			sampler2, shadow_id, 
 			shadow_data[shadow_id].view, shadow_data[shadow_id].perspective, world_position, 
-			10.0, 0.02);
+			10.0, 0.03);
 	}
 
 	calcLighting(
@@ -111,10 +111,8 @@ void main()
 		specular_properties,
 		L, temp_diffuse, temp_specular);
 
-	float cone = calcSpotLightCone(L, light_spot_angle, light_spot_blur) * visibility;
+	visibility *= calcSpotLightCone(L, light_spot_angle, light_spot_blur);
 
-	diffuse = temp_diffuse * cone;
-	specular = temp_specular * cone;
-
-	//diffuse = vec4(world_position, 1.0);
+	diffuse = temp_diffuse * visibility;
+	specular = temp_specular * visibility;
 }

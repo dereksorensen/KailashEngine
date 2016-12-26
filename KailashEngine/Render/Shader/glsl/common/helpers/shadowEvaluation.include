@@ -51,11 +51,13 @@ float linstep(float min, float max, float v)
 	return clamp((v-min)/(max-min), 0.0, 1.0);
 }
 
-float vsm(vec2 moments, float shadow_depth, float min_variance)
+float vsm(vec2 moments, float shadow_depth)
 {
-	float bias = 0.00001;
-	float distance = shadow_depth;
+	float bias = 0.01;
+	float min_variance = 0.0001;
 	float bleed_factor = 0.2;
+
+	float distance = shadow_depth;
 	
 	if(distance <= moments.x-bias)
 	{
@@ -101,7 +103,7 @@ float esm(float shadow_depth, float compare_depth, float bleed_factor)
 float getAverageOccluderDepth(vec3 uv_depth, vec2 occluder_search_moments) 
 {
 	float average_depth = occluder_search_moments.x;
-    float probability = vsm(occluder_search_moments, uv_depth.z, 0.001);
+    float probability = vsm(occluder_search_moments, uv_depth.z);
 	//probability = esm(average_depth, uv_depth.z, 0.01);
 
     // prevent numerical issues
@@ -116,7 +118,7 @@ float estimatePenumbraSize(vec3 uv_depth, vec2 occluder_search_moments, float li
 {
     // the search area covers twice the light size
     float averageOccluderDepth = getAverageOccluderDepth(uv_depth, occluder_search_moments);
-    float penumbra_size = light_size * (uv_depth.z - averageOccluderDepth) * penumbra_falloff;
+    float penumbra_size = light_size * ((uv_depth.z - averageOccluderDepth)) * penumbra_falloff;
 
     // clamp to the maximum softness, which matches the search area
     return min(penumbra_size, light_size);
@@ -125,15 +127,12 @@ float estimatePenumbraSize(vec3 uv_depth, vec2 occluder_search_moments, float li
 
 float variablePenumbraShadow(sampler2DArray shadow_depth_sampler, int shadow_layer_id, vec3 uv_depth, float light_size, float penumbra_falloff) 
 { 
-	vec2 shadow_map_size = textureSize(shadow_depth_sampler, 0).xy;
-	float average_map_size = (shadow_map_size.x + shadow_map_size.y) / 2.0;
-	float relative_light_size = (light_size * average_map_size);
-	float occluder_search_mip_level = log2(relative_light_size);
+	float occluder_search_mip_level = log2(light_size);
 	vec2 occluder_search_moments = getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, occluder_search_mip_level);
 
 	float penumbra_size = estimatePenumbraSize(uv_depth, occluder_search_moments, light_size, penumbra_falloff);
 
-	return vsm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, penumbra_size), uv_depth.z, 0.001);
+	return vsm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, penumbra_size), uv_depth.z);
 	//return esm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, uv_depth.xy, penumbra_size).x, uv_depth.z, 0.5);
 }
 
@@ -148,14 +147,14 @@ float calcShadow_2DArray(
 	float light_size, float penumbra_falloff)
 {
 	vec4 shadow_viewPosition = shadow_view_matrix * vec4(world_position, 1.0);
-	vec4 shadow_position = shadow_perspective_matrix * shadow_viewPosition;
-	vec3 shadow_uv_depth = shadow_position.xyz / shadow_position.w;
+	vec4 shadow_clipPosition = shadow_perspective_matrix * shadow_viewPosition;
+	vec3 shadow_uv_depth = shadow_clipPosition.xyz / shadow_clipPosition.w;
 	shadow_uv_depth = shadow_uv_depth * 0.5 + 0.5;
-	
+		
 	shadow_uv_depth.z = length(shadow_viewPosition.xyz);
 
 	float visibility = 1.0;
-	//visibility = vsm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z, 0.001);
+	//visibility = vsm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z);
 	//visibility = esm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
 	visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
 	

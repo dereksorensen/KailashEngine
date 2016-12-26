@@ -20,7 +20,7 @@ namespace KailashEngine.Render.FX
         private const int _max_mipmaps = 2;
 
         private const float _texture_scale = 0.5f;
-        private Resolution _resolution_half;
+        private int _resolution_shadow;
 
         // Programs
         private Program _pSpot;
@@ -29,12 +29,12 @@ namespace KailashEngine.Render.FX
 
 
         // Frame Buffers
-        private FrameBuffer _fHalfResolution_Spot;
+        private FrameBuffer _fSpot;
+        private FrameBuffer _fPoint;
 
 
         // Textures
         private Texture _tDepth_Spot;
-
         private Texture _tSpot;
         public Texture tSpot
         {
@@ -42,11 +42,19 @@ namespace KailashEngine.Render.FX
         }
 
 
+        private Texture _tDepth_Point;
+        private Texture _tPoint;
+        public Texture tPoint
+        {
+            get { return _tPoint; }
+        }
+
+
 
         public fx_Shadow(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
             : base(pLoader, glsl_effect_path, full_resolution)
         {
-            _resolution_half = new Resolution(_resolution.W * _texture_scale, _resolution.H * _texture_scale);
+            _resolution_shadow = (int)(_resolution.W * _texture_scale);
         }
 
         protected override void load_Programs()
@@ -57,7 +65,8 @@ namespace KailashEngine.Render.FX
             };
             string[] spot_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "shadowMapping.include"
+                _pLoader.path_glsl_common_helpers + "shadowMapping.include",
+                _pLoader.path_glsl_common_helpers + "linearDepth.include"
             };
             _pSpot = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
@@ -65,6 +74,14 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", spot_helpers)
             });
             _pSpot.enable_MeshLoading();
+
+
+            _pPoint = _pLoader.createProgram_Geometry(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Point.geom", culling_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Point.frag", spot_helpers)
+            });
+            _pPoint.enable_MeshLoading();
         }
 
         protected override void load_Buffers()
@@ -73,26 +90,52 @@ namespace KailashEngine.Render.FX
             // Spot Light Buffers
             //------------------------------------------------------
             _tDepth_Spot = new Texture(TextureTarget.Texture2DArray,
-                _resolution_half.W, _resolution_half.H, _num_spot_shadows,
+                _resolution_shadow, _resolution_shadow, _num_spot_shadows,
                 false, false,
                 PixelInternalFormat.DepthComponent32f, PixelFormat.DepthComponent, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tDepth_Spot.load();
 
             _tSpot = new Texture(TextureTarget.Texture2DArray,
-                _resolution_half.W, _resolution_half.H, _num_spot_shadows,
+                _resolution_shadow, _resolution_shadow, _num_spot_shadows,
                 true, true,
                 PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tSpot.setMaxMipMap(_max_mipmaps);
             _tSpot.load();
 
-            _fHalfResolution_Spot = new FrameBuffer("Shadow - Spot");
-            _fHalfResolution_Spot.load(new Dictionary<FramebufferAttachment, Texture>()
+            _fSpot = new FrameBuffer("Shadow - Spot");
+            _fSpot.load(new Dictionary<FramebufferAttachment, Texture>()
             {
                 { FramebufferAttachment.DepthAttachment, _tDepth_Spot },
                 { FramebufferAttachment.ColorAttachment0, _tSpot },
             });
+
+
+            //------------------------------------------------------
+            // Point Light Buffers
+            //------------------------------------------------------
+            _tDepth_Point = new Texture(TextureTarget.TextureCubeMap,
+                _resolution_shadow, _resolution_shadow, _num_spot_shadows,
+                false, false,
+                PixelInternalFormat.DepthComponent32f, PixelFormat.DepthComponent, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tDepth_Point.load();
+
+            _tPoint = new Texture(TextureTarget.TextureCubeMap,
+                _resolution_shadow, _resolution_shadow, _num_spot_shadows,
+                true, true,
+                PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tPoint.load();
+
+            _fPoint = new FrameBuffer("Shadow - Point");
+            _fPoint.load(new Dictionary<FramebufferAttachment, Texture>()
+            {
+                { FramebufferAttachment.DepthAttachment, _tDepth_Point },
+                { FramebufferAttachment.ColorAttachment0, _tPoint },
+            });
+
         }
 
         public override void load()
@@ -117,7 +160,7 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.PolygonOffsetFill);
             GL.PolygonOffset(0.5f, 1.0f);
 
-            _fHalfResolution_Spot.bind(DrawBuffersEnum.ColorAttachment0);
+            _fSpot.bind(DrawBuffersEnum.ColorAttachment0);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, _tSpot.width, _tSpot.height);
@@ -131,10 +174,29 @@ namespace KailashEngine.Render.FX
             GL.Disable(EnableCap.PolygonOffsetFill);
         }
 
+        private void render_Point(Scene scene)
+        {
+            GL.Enable(EnableCap.PolygonOffsetFill);
+            GL.PolygonOffset(0.5f, 1.0f);
+
+            _fPoint.bind(DrawBuffersEnum.ColorAttachment0);
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, _tPoint.width, _tPoint.height);
+
+            _pPoint.bind();
+
+            scene.renderMeshes(BeginMode.Triangles, _pSpot);
+
+            _tPoint.generateMipMap();
+
+            GL.Disable(EnableCap.PolygonOffsetFill);
+        }
 
         public void render(Scene scene)
         {
-            render_Spot(scene);
+            //render_Spot(scene);
+            render_Point(scene);
         }
 
 
