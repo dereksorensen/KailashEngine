@@ -125,7 +125,7 @@ namespace KailashEngine.Render
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            GL.Enable(EnableCap.TextureCubeMapSeamless);
+            //GL.Enable(EnableCap.TextureCubeMapSeamless);
         }
 
         private void load_FX()

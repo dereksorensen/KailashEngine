@@ -116,27 +116,27 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Point Light Buffers
             //------------------------------------------------------
-            //_tDepth_Point = new Texture(TextureTarget.TextureCubeMapArray,
-            //    _resolution_shadow, _resolution_shadow, _num_point_shadows,
-            //    false, false,
-            //    PixelInternalFormat.DepthComponent32f, PixelFormat.DepthComponent, PixelType.Float,
-            //    TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            //_tDepth_Point.load();
+            _tDepth_Point = new Texture(TextureTarget.TextureCubeMapArray,
+                _resolution_shadow, _resolution_shadow, _num_point_shadows,
+                false, false,
+                PixelInternalFormat.DepthComponent32f, PixelFormat.DepthComponent, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tDepth_Point.load();
 
-            //_tPoint = new Texture(TextureTarget.TextureCubeMapArray,
-            //    _resolution_shadow, _resolution_shadow, _num_point_shadows,
-            //    true, true,
-            //    PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
-            //    TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            //_tPoint.setMaxMipMap(_max_mipmaps);
-            //_tPoint.load();
+            _tPoint = new Texture(TextureTarget.TextureCubeMapArray,
+                _resolution_shadow, _resolution_shadow, _num_point_shadows,
+                true, true,
+                PixelInternalFormat.Rgba32f, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tPoint.setMaxMipMap(_max_mipmaps);
+            _tPoint.load();
 
-            //_fPoint = new FrameBuffer("Shadow - Point");
-            //_fPoint.load(new Dictionary<FramebufferAttachment, Texture>()
-            //{
-            //    { FramebufferAttachment.DepthAttachment, _tDepth_Point },
-            //    { FramebufferAttachment.ColorAttachment0, _tPoint },
-            //});
+            _fPoint = new FrameBuffer("Shadow - Point");
+            _fPoint.load(new Dictionary<FramebufferAttachment, Texture>()
+            {
+                { FramebufferAttachment.DepthAttachment, _tDepth_Point },
+                { FramebufferAttachment.ColorAttachment0, _tPoint },
+            });
         }
 
         public override void load()
@@ -190,7 +190,7 @@ namespace KailashEngine.Render.FX
             //GL.PolygonOffset(0.5f, 1.0f);
 
             render_Spot(scene);
-            //render_Point(scene);
+            render_Point(scene);
 
             //GL.Disable(EnableCap.PolygonOffsetFill);
         }

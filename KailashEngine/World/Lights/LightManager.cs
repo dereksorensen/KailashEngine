@@ -62,16 +62,16 @@ namespace KailashEngine.World.Lights
                 EngineHelper.size.vec4,
             }, 32);
 
-            //_ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 4, new EngineHelper.size[] {
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.mat4,
-            //    EngineHelper.size.vec4,
-            //}, 32);
+            _ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 4, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.vec4,
+            }, 32);
         }
 
         //------------------------------------------------------
@@ -121,7 +121,7 @@ namespace KailashEngine.World.Lights
             int ubo_index = shadow_id * 3;
 
             _ubo_shadow_spot.update(ubo_index, light.shadow_view_matrix);
-            _ubo_shadow_spot.update(ubo_index + 1, light.shadow_view_matrix);
+            _ubo_shadow_spot.update(ubo_index + 1, light.shadow_perspective_matrix);
             _ubo_shadow_spot.update(ubo_index + 2, light.spatial.position);
 
             light.sid = shadow_id;
@@ -159,9 +159,9 @@ namespace KailashEngine.World.Lights
                         num_shadows_spot++;
                         break;
                     case Light.type_point:
-                        //if (num_shadows_point >= max_shadows_point) break;
-                        //updateUBO_Shadow_Point((pLight)light, num_shadows_point);
-                        //num_shadows_point++;
+                        if (num_shadows_point >= max_shadows_point) break;
+                        updateUBO_Shadow_Point((pLight)light, num_shadows_point);
+                        num_shadows_point++;
                         break;
                 }
             }
