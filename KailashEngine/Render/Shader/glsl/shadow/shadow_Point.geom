@@ -1,5 +1,5 @@
 ﻿
-layout(triangles, invocations = 6) in;
+layout(triangles, invocations = 12) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 
@@ -23,9 +23,12 @@ layout(std140, binding = 4) uniform shadowMatrices
 
 void main()
 {
-	mat4 view_matrix = shadow_data[0].view[gl_InvocationID];
-	mat4 perspective_matrix = shadow_data[0].perspective;
-	vec3 light_position = shadow_data[0].light_position.xyz;
+	int view_matrix_id = gl_InvocationID % 6;
+	int shadow_data_id = int(floor(gl_InvocationID / 6.0));
+	//shadow_data_id = 0;
+	mat4 view_matrix = shadow_data[shadow_data_id].view[view_matrix_id];
+	mat4 perspective_matrix = shadow_data[shadow_data_id].perspective;
+	vec3 light_position = shadow_data[shadow_data_id].light_position.xyz;
 	
 	vec3 N = normalize(cross(v_worldPosition[1] - v_worldPosition[0], v_worldPosition[2] - v_worldPosition[0]));
 

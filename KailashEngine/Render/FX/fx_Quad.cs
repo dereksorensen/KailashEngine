@@ -24,7 +24,7 @@ namespace KailashEngine.Render.FX
         private Program _pRenderTexture2DArray;
         private Program _pRenderTexture3D;
         private Program _pRenderTextureCube;
-
+        private Program _pRenderTextureCubeArray;
 
         public fx_Quad(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
             : base(pLoader, glsl_effect_path, full_resolution)
@@ -65,6 +65,14 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_TextureCube.frag", null)
             });
             _pRenderTextureCube.enable_Samplers(1);
+
+            _pRenderTextureCubeArray = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_TextureCube.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_TextureCubeArray.frag", null)
+            });
+            _pRenderTextureCubeArray.enable_Samplers(1);
+            _pRenderTextureCubeArray.addUniform("layer");
         }
 
         protected override void load_Buffers()
@@ -204,6 +212,14 @@ namespace KailashEngine.Render.FX
                     texture.bind(_pRenderTextureCube.getSamplerUniform(0), 0);
                     renderFullQuad();
                     return;
+                case TextureTarget.TextureCubeMapArray:
+                    _pRenderTextureCubeArray.bind();
+                    texture.bind(_pRenderTextureCubeArray.getSamplerUniform(0), 0);
+                    GL.Uniform1(_pRenderTextureCubeArray.getUniform("layer"), layer);
+                    renderFullQuad();
+                    return;
+                default:
+                    throw new Exception($"Render Texture: Unsupported Texture Target [ {texture.target.ToString()} ]");
             }
 
 

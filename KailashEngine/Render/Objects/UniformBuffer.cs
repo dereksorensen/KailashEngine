@@ -103,17 +103,21 @@ namespace KailashEngine.Render.Objects
         public void update<T>(int component_index, T data)
             where T : struct
         {
-            // Calculate offest by adding the data length of ubo_stack up until component_index
-            int offset = _ubo_stack_offets[component_index];
-
             // Get size based on ubo_stack item at this index
             int size = (int)_ubo_stack[component_index];
 
-            // Update UBO data
-            GL.NamedBufferSubData(_buffer_id, (IntPtr)offset, size, ref data);
+            update(component_index, size, data);
         }
 
+        public void update<T>(int component_index, int component_size, T data)
+            where T : struct
+        {
+            // Calculate offest by adding the data length of ubo_stack up until component_index
+            int offset = _ubo_stack_offets[component_index];
 
+            // Update UBO data
+            GL.NamedBufferSubData(_buffer_id, (IntPtr)offset, component_size, ref data);
+        }
 
     }
 }

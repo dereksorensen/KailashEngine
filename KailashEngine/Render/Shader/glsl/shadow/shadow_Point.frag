@@ -14,5 +14,4 @@ void main()
 	vec4 depth_packed = vec4(pack2(depth_moments.x),pack2(depth_moments.y));
 
 	color = depth_packed;
-	color = vec4(1.0);
 }

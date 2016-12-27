@@ -268,7 +268,7 @@ namespace KailashEngine.Render.Objects
                     GL.TexImage2D(_target, 0, _pif, _width, _height, 0, _pf, _pt, data);
                     break;
                 case TextureTarget.Texture2DArray:
-                    GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, data);
+                    GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, (IntPtr)0);
                     break;
                 case TextureTarget.TextureCubeMap:
                     for (int face = 0; face < _depth; face++)
@@ -277,13 +277,16 @@ namespace KailashEngine.Render.Objects
                     }
                     break;
                 case TextureTarget.TextureCubeMapArray:
-                    for (int layer = 0; layer < _depth; layer++)
-                    {
-                        for (int face = 0; face < 6; face++)
-                        {
-                            GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + face, layer, _pif, _width, _height, 0, _pf, _pt, data);
-                        }
-                    }
+                    //GL.TexImage3D(_target, 0, pif, _width, _depth, _depth * 6, 0, _pf, _pt, data);
+                    GL.TexStorage3D((TextureTarget3d)_target, _max_mipmap_levels + 1, (SizedInternalFormat)_pif, _width, _height, _depth * 6);
+                    //for (int layer = 0; layer < _depth; layer++)
+                    //{
+                    //    for (int face = 0; face < 6; face++)
+                    //    {
+                    //        GL.TexSubImage2D(TextureTarget.TextureCubeMapPositiveX + face, 0, 0, 0, _width, _height, _pf, _pt, data);
+                    //        //GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + face, layer, _pif, _width, _height, 0, _pf, _pt, data);
+                    //    }
+                    //}
                     break;
                 case TextureTarget.Texture3D:
                     GL.TexImage3D(_target, 0, _pif, _width, _height, _depth, 0, _pf, _pt, data);

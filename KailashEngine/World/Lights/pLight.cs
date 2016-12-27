@@ -13,27 +13,21 @@ namespace KailashEngine.World.Lights
     class pLight : Light
     {
 
-        public struct ViewMatrices
-        {
-            public Matrix4[] matrices;
-        }
 
-        private ViewMatrices _shadow_view_matrices;
-        public ViewMatrices shadow_view_matrices
+        private Matrix4[] _shadow_rotation_matrices;
+        public Matrix4[] shadow_view_matrices
         {
             get
             {
-
-                _shadow_view_matrices.matrices = new Matrix4[]
+                return new Matrix4[]
                 {
-                    EngineHelper.createMatrix(_spatial.position, new Vector3(180.0f, -90.0f, 0.0f), Vector3.One),
-                    EngineHelper.createMatrix(_spatial.position, new Vector3(180.0f, 90.0f, 0.0f), Vector3.One),
-                    EngineHelper.createMatrix(_spatial.position, new Vector3(-90.0f, 0.0f, 0.0f), Vector3.One),
-                    EngineHelper.createMatrix(_spatial.position, new Vector3(90.0f, 0.0f, 0.0f), Vector3.One),
-                    EngineHelper.createMatrix(_spatial.position, new Vector3(180.0f, 0.0f, 0.0f), Vector3.One),
-                    EngineHelper.createMatrix(_spatial.position, new Vector3(180.0f, 180.0f, 0.0f), Vector3.One)
+                    Matrix4.CreateTranslation(-_spatial.position) * _shadow_rotation_matrices[0],
+                    Matrix4.CreateTranslation(-_spatial.position) * _shadow_rotation_matrices[1],
+                    Matrix4.CreateTranslation(-_spatial.position) * _shadow_rotation_matrices[2],
+                    Matrix4.CreateTranslation(-_spatial.position) * _shadow_rotation_matrices[3],
+                    Matrix4.CreateTranslation(-_spatial.position) * _shadow_rotation_matrices[4],
+                    Matrix4.CreateTranslation(-_spatial.position) * _shadow_rotation_matrices[5]
                 };
-                return _shadow_view_matrices;
             }
         }
 
@@ -65,10 +59,17 @@ namespace KailashEngine.World.Lights
             transformation = Matrix4.CreateScale(scaler) * transformation.ClearScale();
             _bounding_unique_mesh = new UniqueMesh(id + "-bounds", light_mesh, transformation);
 
-
+            // Shadow Matrices
             _spatial.setPerspective(90.0f, 1.0f, 0.1f, 100.0f);
-            _shadow_view_matrices.matrices = new Matrix4[6];
+            _shadow_rotation_matrices = new Matrix4[]
+            {
+                EngineHelper.createRotationMatrix(180.0f, 90.0f, 0.0f),
+                EngineHelper.createRotationMatrix(180.0f, -90.0f, 0.0f),
+                EngineHelper.createRotationMatrix(-90.0f, 0.0f, 0.0f),
+                EngineHelper.createRotationMatrix(90.0f, 0.0f, 0.0f),
+                EngineHelper.createRotationMatrix(180.0f, 0.0f, 0.0f),
+                EngineHelper.createRotationMatrix(180.0f, -180.0f, 0.0f)
+            };
         }
-
     }
 }

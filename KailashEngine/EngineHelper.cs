@@ -241,6 +241,11 @@ namespace KailashEngine
             return zyx_rotation;
         }
 
+        public static Matrix4 createRotationMatrix(float x_angle, float y_angle, float z_angle)
+        {
+            return Matrix4.CreateFromQuaternion(createQuaternion(x_angle, y_angle, z_angle));
+        }
+
         //------------------------------------------------------
         // Data Type Converters
         //------------------------------------------------------

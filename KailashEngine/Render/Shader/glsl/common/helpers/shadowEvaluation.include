@@ -45,6 +45,16 @@ vec2 getMoments_2DArray(sampler2DArray shadow_depth_sampler, int shadow_layer_id
 	return moments;
 }
 
+vec2 getMoments_Point(samplerCubeArray shadow_depth_sampler, int shadow_layer_id, vec3 tex_coord, float mip_level)
+{
+	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec4(tex_coord, shadow_layer_id), max(0.5, mip_level));
+	vec2 moments;
+	moments.x = unpack2(moments_packed.xy);
+	moments.y = unpack2(moments_packed.zw);
+
+	return moments;
+}
+
 // Used to get rid of light bleed
 float linstep(float min, float max, float v)
 {
@@ -158,5 +168,23 @@ float calcShadow_2DArray(
 	//visibility = esm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
 	visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
 	
+	return visibility;
+}
+
+float calcShadow_Point(
+	samplerCubeArray shadow_depth_sampler, int shadow_layer_id, 
+	vec3 world_position, vec3 light_position, 
+	float light_size, float penumbra_falloff)
+{
+	vec3 shadow_uv = (world_position - light_position);
+	float shadow_depth = length(shadow_uv);
+
+	float visibility = 1.0;
+	visibility = vsm(getMoments_Point(shadow_depth_sampler, shadow_layer_id, shadow_uv, 1.0), shadow_depth);
+	//visibility = esm(getMoments_2DArray(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0).x, shadow_depth, 0.5);
+	//visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
+	
+
+
 	return visibility;
 }

@@ -29,16 +29,30 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_look;
 };
 
+//------------------------------------------------------
+// Shadow Matrices - Point
+//------------------------------------------------------
+struct ShadowData {
+  mat4 view[6];
+  mat4 perspective;
+  vec3 light_position;
+};
+layout(std140, binding = 4) uniform shadowMatrices
+{
+	ShadowData shadow_data[32];
+};
+
 
 uniform sampler2D sampler0;		// Normal & Depth
 uniform sampler2D sampler1;		// Specular
-
+uniform samplerCubeArray sampler2;		// Shadow Depth
 
 uniform vec3 light_position;
 uniform vec3 light_color;
 uniform float light_intensity;
 uniform float light_falloff;
 
+uniform int shadow_id;
 
 
 void main()
@@ -60,6 +74,14 @@ void main()
 	vec4 temp_diffuse;
 	vec4 temp_specular;
 
+	float visibility = 1.0;
+	if (shadow_id != -1)
+	{
+		visibility = calcShadow_Point(
+			sampler2, shadow_id, 
+			world_position, light_position,
+			10.0, 0.03);
+	}
 
 	calcLighting(
 		tex_coord, 
@@ -70,8 +92,8 @@ void main()
 		L, temp_diffuse, temp_specular);
 
 
-	diffuse = temp_diffuse;
-	specular = temp_specular;
+	diffuse = temp_diffuse * visibility;
+	specular = temp_specular * visibility;
 
 	//diffuse = vec4(world_position, 1.0);
 }

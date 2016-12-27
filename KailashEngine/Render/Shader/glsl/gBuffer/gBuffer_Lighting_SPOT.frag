@@ -28,8 +28,6 @@ layout(std140, binding = 1) uniform cameraSpatials
 	vec3 cam_look;
 };
 
-
-
 //------------------------------------------------------
 // Shadow Matrices - Spot
 //------------------------------------------------------

@@ -142,6 +142,7 @@ namespace KailashEngine.Render.FX
             _pLighting_POINT.addUniform(RenderHelper.uModel);
             _pLighting_POINT.enable_LightCalculation();
             _pLighting_POINT.enable_Samplers(3);
+            _pLighting_POINT.addUniform("shadow_id");
 
             // Accumulate Lighting
             _pAccumulation = _pLoader.createProgram_PostProcessing(new ShaderFile[]
@@ -322,7 +323,7 @@ namespace KailashEngine.Render.FX
 
         }
 
-        private void pass_pLight(Light l)
+        private void pass_pLight(Light l, Texture shadowDepthTexture)
         {
             _fGBuffer.bindAttachements(new DrawBuffersEnum[] {
                 DrawBuffersEnum.ColorAttachment6,
@@ -339,12 +340,15 @@ namespace KailashEngine.Render.FX
             // Bind gBuffer Textures
             _tNormal_Depth.bind(_pLighting_POINT.getSamplerUniform(0), 0);
             _tSpecular.bind(_pLighting_POINT.getSamplerUniform(1), 1);
+            shadowDepthTexture.bind(_pLighting_POINT.getSamplerUniform(2), 2);
 
             // Load light uniforms
             GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightPosition), l.spatial.position);
             GL.Uniform3(_pLighting_POINT.getUniform(RenderHelper.uLightColor), l.color);
             GL.Uniform1(_pLighting_POINT.getUniform(RenderHelper.uLightIntensity), l.intensity);
             GL.Uniform1(_pLighting_POINT.getUniform(RenderHelper.uLightFalloff), l.falloff);
+
+            GL.Uniform1(_pLighting_POINT.getUniform("shadow_id"), l.sid);
 
             WorldDrawer.drawLightBounds(l, _pLighting_POINT);
         }
@@ -390,7 +394,7 @@ namespace KailashEngine.Render.FX
                             break;
 
                         case Light.type_point:
-                            pass_pLight(l);
+                            pass_pLight(l, fx_Shadow.tPoint);
                             break;
                     }
                 }
