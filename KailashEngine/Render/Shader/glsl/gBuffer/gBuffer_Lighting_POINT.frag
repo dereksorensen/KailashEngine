@@ -77,7 +77,7 @@ void main()
 	float visibility = 1.0;
 	if (shadow_id != -1)
 	{
-		visibility = calcShadow_Point(
+		visibility = calcShadow(
 			sampler2, shadow_id, 
 			world_position, light_position,
 			10.0, 0.03);

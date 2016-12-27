@@ -6,7 +6,6 @@ layout(triangle_strip, max_vertices = 3) out;
 in vec3 v_worldPosition[];
 
 out vec3 g_viewPosition;
-out vec4 g_clipPosition;
 
 //------------------------------------------------------
 // Shadow Matrices - Point
@@ -23,9 +22,9 @@ layout(std140, binding = 4) uniform shadowMatrices
 
 void main()
 {
-	int view_matrix_id = gl_InvocationID % 6;
 	int shadow_data_id = int(floor(gl_InvocationID / 6.0));
-	//shadow_data_id = 0;
+	int view_matrix_id = gl_InvocationID % 6;
+
 	mat4 view_matrix = shadow_data[shadow_data_id].view[view_matrix_id];
 	mat4 perspective_matrix = shadow_data[shadow_data_id].perspective;
 	vec3 light_position = shadow_data[shadow_data_id].light_position.xyz;
@@ -47,8 +46,7 @@ void main()
 		for (int i = 0; i < 3; i++) 
 		{
 			g_viewPosition = viewPositions[i].xyz;
-			g_clipPosition = clipPositions[i];
-			gl_Position = g_clipPosition;
+			gl_Position = clipPositions[i];
 			gl_Layer = gl_InvocationID;
 
 			EmitVertex();

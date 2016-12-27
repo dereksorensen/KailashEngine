@@ -95,7 +95,7 @@ void main()
 	float visibility = 1.0;
 	if (shadow_id != -1)
 	{
-		visibility = calcShadow_2DArray(
+		visibility = calcShadow(
 			sampler2, shadow_id, 
 			shadow_data[shadow_id].view, shadow_data[shadow_id].perspective, world_position, 
 			10.0, 0.03);

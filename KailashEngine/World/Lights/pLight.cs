@@ -12,9 +12,15 @@ namespace KailashEngine.World.Lights
 {
     class pLight : Light
     {
-
-
-        private Matrix4[] _shadow_rotation_matrices;
+        private static Matrix4[] _shadow_rotation_matrices = new Matrix4[]
+            {
+                EngineHelper.createRotationMatrix(180.0f, 90.0f, 0.0f),
+                EngineHelper.createRotationMatrix(180.0f, -90.0f, 0.0f),
+                EngineHelper.createRotationMatrix(-90.0f, 0.0f, 0.0f),
+                EngineHelper.createRotationMatrix(90.0f, 0.0f, 0.0f),
+                EngineHelper.createRotationMatrix(180.0f, 0.0f, 0.0f),
+                EngineHelper.createRotationMatrix(180.0f, -180.0f, 0.0f)
+            };
         public Matrix4[] shadow_view_matrices
         {
             get
@@ -61,15 +67,6 @@ namespace KailashEngine.World.Lights
 
             // Shadow Matrices
             _spatial.setPerspective(90.0f, 1.0f, 0.1f, 100.0f);
-            _shadow_rotation_matrices = new Matrix4[]
-            {
-                EngineHelper.createRotationMatrix(180.0f, 90.0f, 0.0f),
-                EngineHelper.createRotationMatrix(180.0f, -90.0f, 0.0f),
-                EngineHelper.createRotationMatrix(-90.0f, 0.0f, 0.0f),
-                EngineHelper.createRotationMatrix(90.0f, 0.0f, 0.0f),
-                EngineHelper.createRotationMatrix(180.0f, 0.0f, 0.0f),
-                EngineHelper.createRotationMatrix(180.0f, -180.0f, 0.0f)
-            };
         }
     }
 }

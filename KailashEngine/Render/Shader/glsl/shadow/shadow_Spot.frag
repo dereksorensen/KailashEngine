@@ -3,8 +3,6 @@
 layout(location = 0) out vec4 color;
 
 in vec3 g_viewPosition;
-in vec4 g_clipPosition;
-
 
 void main()
 {

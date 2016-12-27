@@ -110,10 +110,9 @@ namespace KailashEngine.World.Lights
         private void updateLists(Vector3 camera_position)
         {
             _lights_enabled = _lights.Select(kp => kp.Value).Where(light => light.enabled).ToList();
-            _lights_shadowed = _lights_enabled.Where(light => light.shadowed).ToList();
-            _lights_shadowed.ForEach(light => light.sid = -1);
             // Get closest N shadow casters to the camera
-            _lights_shadowed = _lights_shadowed.OrderBy(light => (light.spatial.position - camera_position).Length).ToList().GetRange(0, max_shadows);
+            _lights_shadowed = _lights_enabled.Where(light => light.shadowed).OrderBy(light => (light.spatial.position - camera_position).Length).ToList();
+            _lights_shadowed.ForEach(light => light.sid = -1);
         }
 
         private void updateUBO_Shadow_Spot(sLight light, int shadow_id)
