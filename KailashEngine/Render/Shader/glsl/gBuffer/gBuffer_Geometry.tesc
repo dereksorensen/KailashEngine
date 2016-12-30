@@ -49,7 +49,7 @@ float screenSphereSize(vec4 e1, vec4 e2)
 }
 
 
-void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position)
+void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position, vec3 normal)
 {
 	float tessLevel = 1.0;
 
@@ -60,7 +60,9 @@ void controlTessellation(mat4 mvp, vec3[gl_MaxPatchVertices] world_position)
 		vertex_position[i] = mvp * vec4(world_position[i], 1.0);
 	}
 
-	if (frustumCullTest(vertex_position))
+	bool cull = frustumCullTest(vertex_position) && backfaceCullTest(world_position[gl_InvocationID], -cam_position, normal);
+
+	if (cull)
 	{
 		if(enable_displacement_texture == 0)
 		{
@@ -94,7 +96,7 @@ void main()
 	tc_Normal[gl_InvocationID] = v_Normal[gl_InvocationID];
 	tc_Tangent[gl_InvocationID] = v_Tangent[gl_InvocationID];
 
-	controlTessellation(perspective * view, v_worldPosition);
+	controlTessellation(perspective * view, v_worldPosition, v_Normal[gl_InvocationID]);
 
 }
 

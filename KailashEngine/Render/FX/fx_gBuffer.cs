@@ -372,7 +372,10 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Fill gBuffer with Scene
             //------------------------------------------------------
-            pass_Geometry(scene);
+            Debug.DebugHelper.time_function("geo", 3, () =>
+            {
+                pass_Geometry(scene);
+            });
 
             //------------------------------------------------------
             // Accumulate Lighting from Scene
