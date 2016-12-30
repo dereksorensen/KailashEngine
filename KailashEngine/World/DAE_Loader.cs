@@ -46,8 +46,10 @@ namespace KailashEngine.World
                     {
                         string id = i.ID;
                         string path = i.Init_From;
+                        path = path.Substring(1, path.Length - 1);
+                        path = EngineHelper.getPath_MaterialTextures(path);
 
-                        image_collection.Add(id, path.Substring(1, path.Length - 1));
+                        image_collection.Add(id, path);
                     }
                 }
                 else

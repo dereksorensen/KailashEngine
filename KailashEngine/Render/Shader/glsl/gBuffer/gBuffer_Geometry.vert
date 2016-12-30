@@ -44,11 +44,12 @@ void geometry()
 	// Positions
 	vec4 objectPosition = v_position;
 	v_worldPosition = (model * objectPosition).xyz;
+	v_previousWorldPosition = (model_previous * objectPosition).xyz;
 }
 
 void velocity()
 {
-	v_previousWorldPosition = (model_previous * vec4(position, 1.0)).xyz;
+	
 }
 
 void texCoord()

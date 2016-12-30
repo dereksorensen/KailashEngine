@@ -65,6 +65,7 @@ namespace KailashEngine.World
                 Matrix4 temp_mat = unique_mesh.transformation;
                 Matrix4 temp_mat_previous = unique_mesh.previous_transformation;
 
+                
                 //------------------------------------------------------
                 // Object Animation Matrix
                 //------------------------------------------------------
@@ -72,6 +73,7 @@ namespace KailashEngine.World
                 {
                     temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
                 }
+                
 
                 //------------------------------------------------------
                 // Physics Matrix
@@ -85,6 +87,7 @@ namespace KailashEngine.World
                         //unique_mesh.physics_object.body.ProceedToTransform(temp_transform);
                     }
                     temp_mat = Matrix4.CreateScale(temp_mat.ExtractScale()) * EngineHelper.bullet2otk(unique_mesh.physics_object.body.MotionState.WorldTransform);
+
                 }
 
                 //------------------------------------------------------

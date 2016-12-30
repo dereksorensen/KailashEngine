@@ -28,12 +28,30 @@ namespace KailashEngine
             while (!path_found)
             {
                 base_path = Path.GetFullPath(cur_search);
-                string[] dirs = base_path.Split('\\');
+                string[] dirs = base_path.Split(Path.DirectorySeparatorChar);
                 path_found = dirs[dirs.Length - 2] == search_path;
                 cur_search += "../";
             }
 
             return base_path;
+        }
+
+        private static string getPathAfter(string path, string search_path)
+        {
+            bool path_found = false;
+            string cur_search = Path.GetFullPath(path);
+            string[] cur_search_split = cur_search.Split(Path.DirectorySeparatorChar).Reverse().ToArray();
+            string path_after = "";
+
+            foreach(string path_segment in cur_search_split)
+            {
+                path_after = $"{path_segment}{Path.DirectorySeparatorChar}{path_after}";
+                path_found = path_after.Contains(search_path);
+                if (path_found) break;
+            }
+            if(Path.HasExtension(path)) path_after = path_after.Substring(0, path_after.Length - 1);
+
+            return path_after.Replace(search_path, "");
         }
 
 
@@ -44,8 +62,12 @@ namespace KailashEngine
 
         public static string getPath_MaterialTextures(string filepath)
         {
-            filepath = filepath.Replace("%20", " ").Replace("/", "\\");
-            filepath = filepath.Replace(path_resources_textures, "");
+            filepath = filepath.Replace("%20", " ").Replace('/', Path.DirectorySeparatorChar);
+
+            string[] filepath_split = path_resources_textures.Split(Path.DirectorySeparatorChar);
+            string resource_textures_directories = $"{filepath_split[filepath_split.Length - 2]}{Path.DirectorySeparatorChar}{filepath_split[filepath_split.Length - 1]}";
+
+            filepath = getPathAfter(filepath, resource_textures_directories);
             filepath = Path.GetFullPath(path_resources_textures + filepath);
             return filepath;
         }
