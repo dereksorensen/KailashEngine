@@ -165,7 +165,7 @@ namespace KailashEngine.Render.FX
 
             _pSpot.bind();
 
-            scene.renderMeshes(BeginMode.Triangles, _pSpot);
+            scene.renderMeshes_Basic(BeginMode.Triangles, _pSpot);
 
             _tSpot.generateMipMap();
         }
@@ -179,7 +179,7 @@ namespace KailashEngine.Render.FX
 
             _pPoint.bind();
 
-            scene.renderMeshes(BeginMode.Triangles, _pPoint);
+            scene.renderMeshes_Basic(BeginMode.Triangles, _pPoint);
 
             _tPoint.generateMipMap();
         }

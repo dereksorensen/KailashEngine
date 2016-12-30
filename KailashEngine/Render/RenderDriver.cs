@@ -244,7 +244,7 @@ namespace KailashEngine.Render
             _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, _fxFinal.fFinalScene, _fxFinal.tFinalScene, scene.circadian_timer.position);
 
 
-            _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
+            //_fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
@@ -266,7 +266,7 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Overlays
             //------------------------------------------------------
-            _fxCrosshair.render(scene.animation_timer.seconds);
+            _fxCrosshair.render(scene.current_animation_time);
 
 
 

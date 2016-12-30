@@ -49,6 +49,14 @@ namespace KailashEngine.Client
             get { return _circadian_timer; }
         }
 
+        private float _current_animation_time = 0.0f;
+        public float current_animation_time
+        {
+            get
+            {
+                return _current_animation_time;
+            }
+        }
 
 
         // Master Lists
@@ -138,6 +146,15 @@ namespace KailashEngine.Client
 
 
         //------------------------------------------------------
+        // Update Scene
+        //------------------------------------------------------
+        public void update(Vector3 camera_position)
+        {
+            _light_manager.update(camera_position);
+            _current_animation_time = _animation_timer.seconds;
+        }
+
+        //------------------------------------------------------
         // Render Scene
         //------------------------------------------------------
 
@@ -162,7 +179,12 @@ namespace KailashEngine.Client
 
         public void renderMeshes(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _animation_timer.seconds);
+            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, false);
+        }
+
+        public void renderMeshes_Basic(BeginMode begin_mode, Program program)
+        {
+            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, true);
         }
 
         public void renderLightObjects(BeginMode begin_mode, Program program)

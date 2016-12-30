@@ -150,6 +150,9 @@ namespace KailashEngine
                 case Key.F:
                     _game.scene.toggleFlashlight(_game.player.toggleFlashlight());
                     break;
+                case Key.O:
+                    Thread.Sleep(2000);
+                    break;
                 case Key.P:
                     _physics_driver.pause();
                     _game.scene.pauseAnimation();
@@ -409,17 +412,19 @@ namespace KailashEngine
 
             inputBuffer();
 
+            // Update Scene
+            _game.scene.update(-_game.player.camera.spatial.position);
+
             // Update Dynamic UBOs
             _render_driver.updateUBO_Camera(
-                            _game.player.camera.spatial.transformation,
-                            _game.player.camera.spatial.perspective,
-                            Matrix4.Invert(_game.player.camera.spatial.model_view.ClearTranslation() * _game.player.camera.spatial.perspective),
-                            _game.player.camera.previous_view_perspective,
-                            Matrix4.Invert(_game.player.camera.previous_view_matrix.ClearTranslation() * _game.player.camera.previous_perspective_matrix),
-                            _game.player.camera.spatial.position,
-                            _game.player.camera.spatial.look);
+                _game.player.camera.spatial.transformation,
+                _game.player.camera.spatial.perspective,
+                Matrix4.Invert(_game.player.camera.spatial.model_view.ClearTranslation() * _game.player.camera.spatial.perspective),
+                _game.player.camera.previous_view_perspective,
+                Matrix4.Invert(_game.player.camera.previous_view_matrix.ClearTranslation() * _game.player.camera.previous_perspective_matrix),
+                _game.player.camera.spatial.position,
+                _game.player.camera.spatial.look);
             _render_driver.handle_MouseState(_game.mouse.locked);
-            _game.scene.light_manager.update(-_game.player.camera.spatial.position);
 
 
             // Set camera's previous MVP matrix

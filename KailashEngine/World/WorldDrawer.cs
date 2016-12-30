@@ -57,14 +57,13 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
-        public static void drawMeshes(BeginMode begin_mode, List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time)
+        public static void drawMeshes(BeginMode begin_mode, List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time, bool basic)
         {
             foreach (UniqueMesh unique_mesh in meshes)
             {
 
                 Matrix4 temp_mat = unique_mesh.transformation;
                 Matrix4 temp_mat_previous = unique_mesh.previous_transformation;
-
                 
                 //------------------------------------------------------
                 // Object Animation Matrix
@@ -74,7 +73,6 @@ namespace KailashEngine.World
                     temp_mat = unique_mesh.animator.getKeyFrame(animation_time, -1);
                 }
                 
-
                 //------------------------------------------------------
                 // Physics Matrix
                 //------------------------------------------------------
@@ -87,7 +85,6 @@ namespace KailashEngine.World
                         //unique_mesh.physics_object.body.ProceedToTransform(temp_transform);
                     }
                     temp_mat = Matrix4.CreateScale(temp_mat.ExtractScale()) * EngineHelper.bullet2otk(unique_mesh.physics_object.body.MotionState.WorldTransform);
-
                 }
 
                 //------------------------------------------------------
@@ -97,7 +94,7 @@ namespace KailashEngine.World
 
                 // Handle previous frame's world matrix
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Previous), false, ref temp_mat_previous);
-                unique_mesh.previous_transformation = temp_mat;
+                if(!basic) unique_mesh.previous_transformation = temp_mat;
 
                 // Convert matrix for normals
                 try
@@ -128,34 +125,35 @@ namespace KailashEngine.World
                     GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
                 }
 
-
                 foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {
-                    //------------------------------------------------------
-                    // Set Material Properties
-                    //------------------------------------------------------
-                    
-                    GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
-                    GL.Uniform1(program.getUniform(RenderHelper.uEmission), submesh.material.emission);
-                    GL.Uniform3(program.getUniform(RenderHelper.uSpecularColor), submesh.material.specular_color);
-                    GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), submesh.material.specular_shininess);
-                    GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
+                    if (!basic)
+                    {
+                        //------------------------------------------------------
+                        // Set Material Properties
+                        //------------------------------------------------------
 
-                    // Diffuse
-                    trySetBindlessTextureUnit(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTextureUnit, RenderHelper.uEnableDiffuseTexture, submesh.material.diffuse_image_unit);
+                        GL.Uniform3(program.getUniform(RenderHelper.uDiffuseColor), submesh.material.diffuse_color);
+                        GL.Uniform1(program.getUniform(RenderHelper.uEmission), submesh.material.emission);
+                        GL.Uniform3(program.getUniform(RenderHelper.uSpecularColor), submesh.material.specular_color);
+                        GL.Uniform1(program.getUniform(RenderHelper.uSpecularShininess), submesh.material.specular_shininess);
+                        GL.Uniform1(program.getUniform(RenderHelper.uDisplacementStrength), submesh.material.displacement_strength);
 
-                    // Specular
-                    trySetBindlessTextureUnit(program, submesh.material.specular_image, RenderHelper.uSpecularTextureUnit, RenderHelper.uEnableSpecularTexture, submesh.material.specular_image_unit);
+                        // Diffuse
+                        trySetBindlessTextureUnit(program, submesh.material.diffuse_image, RenderHelper.uDiffuseTextureUnit, RenderHelper.uEnableDiffuseTexture, submesh.material.diffuse_image_unit);
 
-                    // Normal
-                    trySetBindlessTextureUnit(program, submesh.material.normal_image, RenderHelper.uNormalTextureUnit, RenderHelper.uEnableNormalTexture, submesh.material.normal_image_unit);
+                        // Specular
+                        trySetBindlessTextureUnit(program, submesh.material.specular_image, RenderHelper.uSpecularTextureUnit, RenderHelper.uEnableSpecularTexture, submesh.material.specular_image_unit);
 
-                    // Displacement
-                    trySetBindlessTextureUnit(program, submesh.material.displacement_image, RenderHelper.uDisplacementTextureUnit, RenderHelper.uEnableDisplacementTexture, submesh.material.displacement_image_unit);
+                        // Normal
+                        trySetBindlessTextureUnit(program, submesh.material.normal_image, RenderHelper.uNormalTextureUnit, RenderHelper.uEnableNormalTexture, submesh.material.normal_image_unit);
 
-                    // Parallax
-                    trySetBindlessTextureUnit(program, submesh.material.parallax_image, RenderHelper.uParallaxTextureUnit, RenderHelper.uEnableParallaxTexture, submesh.material.parallax_image_unit);
+                        // Displacement
+                        trySetBindlessTextureUnit(program, submesh.material.displacement_image, RenderHelper.uDisplacementTextureUnit, RenderHelper.uEnableDisplacementTexture, submesh.material.displacement_image_unit);
 
+                        // Parallax
+                        trySetBindlessTextureUnit(program, submesh.material.parallax_image, RenderHelper.uParallaxTextureUnit, RenderHelper.uEnableParallaxTexture, submesh.material.parallax_image_unit);
+                    }
 
                     draw(submesh, begin_mode, "mesh");
 
