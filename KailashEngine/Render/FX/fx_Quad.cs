@@ -132,6 +132,18 @@ namespace KailashEngine.Render.FX
             GL.BindVertexArray(0);
         }
 
+
+        public void renderBlend_Blend()
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            render();
+
+            GL.Disable(EnableCap.Blend);
+        }
+
         // Renders full quad instead of hacked triangles
         public void renderFullQuad()
         {
@@ -140,13 +152,13 @@ namespace KailashEngine.Render.FX
             GL.BindVertexArray(0);
         }
 
-        public void renderBlend()
+        public void renderFullQuad_Blend()
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-            render();
+            renderFullQuad();
 
             GL.Disable(EnableCap.Blend);
         }

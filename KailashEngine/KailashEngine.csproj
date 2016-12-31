@@ -586,7 +586,6 @@
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Stencil.vert" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Lighting_SPOT.frag" />
     <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.frag" />
-    <None Include="Render\Shader\glsl\gBuffer\gBuffer_Geometry.vert" />
     <None Include="Render\Shader\glsl\gBuffer\helpers\gBuffer_Functions.include" />
     <None Include="Render\Shader\glsl\hdr\hdr_AutoExposure.comp" />
     <None Include="Render\Shader\glsl\hdr\hdr_Luminosity.comp" />

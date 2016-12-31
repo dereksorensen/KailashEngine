@@ -233,7 +233,7 @@ namespace KailashEngine.Render.FX
 
             GL.UniformMatrix3(_pBlend.getUniform("lens_star_mod"), true, ref lens_star_mod);
 
-            quad.renderBlend();
+            quad.renderBlend_Blend();
         }
 
 

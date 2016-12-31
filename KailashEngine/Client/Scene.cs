@@ -92,7 +92,7 @@ namespace KailashEngine.Client
             _meshes = new List<UniqueMesh>();
 
             _animation_timer = new Timer();
-            _circadian_timer = new CircadianTimer(21.0f, 2.0f);
+            _circadian_timer = new CircadianTimer(6.0f, 2.0f);
         }
 
 

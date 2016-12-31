@@ -511,11 +511,10 @@ namespace KailashEngine.Render.FX
         //------------------------------------------------------
 
         public void render(
-            fx_Quad quad, 
-            Texture normal_texture, 
-            Texture diffuse_texture, 
-            Texture specular_texture, 
-            FrameBuffer scene_fbo, Texture scene_texture,
+            fx_Quad quad,
+            Texture normal_texture,
+            Texture diffuse_texture,
+            Texture specular_texture,
             Vector3 circadian_position)
         {
             //------------------------------------------------------
@@ -527,7 +526,6 @@ namespace KailashEngine.Render.FX
             GL.Viewport(0, 0, _resolution.W, _resolution.H);
             _pAtmoshpere.bind();
 
-
             _tTransmittance.bind(_pAtmoshpere.getUniform("transmittanceSampler"), 0);
             _tIrradiance.bind(_pAtmoshpere.getUniform("irradianceSampler"), 1);
             _tInscatter.bind(_pAtmoshpere.getUniform("inscatterSampler"), 2);
@@ -535,28 +533,12 @@ namespace KailashEngine.Render.FX
             normal_texture.bind(_pAtmoshpere.getSamplerUniform(0), 3);
             diffuse_texture.bind(_pAtmoshpere.getSamplerUniform(1), 4);
             specular_texture.bind(_pAtmoshpere.getSamplerUniform(2), 5);
-            scene_texture.bind(_pAtmoshpere.getSamplerUniform(3), 6);
 
-            Vector3 sun_position = Vector3.Cross(new Vector3(-0.5f, -0.5f, 0.5f), circadian_position); 
+            Vector3 sun_position = circadian_position; 
             sun_position = Vector3.Normalize(sun_position);
             GL.Uniform3(_pAtmoshpere.getUniform("sun_position"), sun_position);
 
-
             quad.renderFullQuad();
-
-
-            //------------------------------------------------------
-            // Blend with scene
-            //------------------------------------------------------
-
-            scene_fbo.bind(DrawBuffersEnum.ColorAttachment0);
-
-            _pBlend.bind();
-
-            _tAtmoshpere.bind(_pBlend.getSamplerUniform(0), 0);
-
-            quad.render();
-
         }
 
 

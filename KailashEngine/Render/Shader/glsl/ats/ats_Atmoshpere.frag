@@ -24,7 +24,6 @@ uniform sampler3D inscatterSampler;		//precomputed inscattered light (S table)
 uniform sampler2D sampler0;		// Normal
 uniform sampler2D sampler1;		// Diffuse
 uniform sampler2D sampler2;		// Specular
-uniform sampler2D sampler3;		// Scene
 
 uniform vec3 sun_position;
 
@@ -71,7 +70,7 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
         float nu = dot(v, s);
         float muS = dot(x, s) / r;
         float phaseR = phaseFunctionR(nu);
-        float phaseM = phaseFunctionM(nu);
+        float phaseM = phaseFunctionM(nu) * angleOfInc;		// Multiply by angelOfInc so you don't get Mei scattering through objects
 		vec4 inscatter = max(texture4D(inscatterSampler, r, mu, muS, nu), 0.0 );
 		occluder_a = (inSpace) ? vec3(0.0) : inscatter.rgb;
 
@@ -247,7 +246,6 @@ void main()
 	float object_id = diffuse_id.a;
 	vec3 diffuse = diffuse_id.rgb;
 
-	vec3 scene = texture(sampler3, v_TexCoord).rgb;
 
 	// Shift positions so ground y is at 0.0
 	vec3 world_position = calcWorldPosition(depth, view_ray, cam_position) + vec3(0.0, Rg, 0.0);
@@ -274,19 +272,7 @@ void main()
 	vec3 final = color_inscatter + color_ground + color_sun;
 
 
-	if(object_id == 2)
-	{
-		vec3 space = diffuse;
-		final += max((space) * mix(vec3(0.0),vec3(1.0),0.23-length(final)), 0.0);
-	}
-	else
-	{
-		final += scene;
-	}
-
-
-
-	color = vec4(final, 1.0);
+	color = vec4(final, dot(final, vec3(1.0)));
 
 	//color = vec4(E, 1.0);
 	//color = vec4(color_inscatter, 1.0);
