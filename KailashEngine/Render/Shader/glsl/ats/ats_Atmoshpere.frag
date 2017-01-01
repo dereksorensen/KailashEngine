@@ -176,7 +176,7 @@ bool inRange(float val, float max)
 
 bool splitTest(vec4 shadowCoord)
 {
-	return inRange(shadowCoord.x) && inRange(shadowCoord.y) && inRange(shadowCoord.z,shadowCoord.w);
+	return inRange(shadowCoord.x) && inRange(shadowCoord.y) && inRange(shadowCoord.z, shadowCoord.w);
 }
 
 
@@ -234,17 +234,14 @@ else if(splitTest(shadowCoord[3]))
 	visible_layer = vec3(1.0,0.1,0.3);
 	index = 3;
 }
-visible_layer = vec3(1.0);
+//visible_layer = vec3(1.0);
 
 
-float visibility = 1.0;
-//if (shadow_id != -1)
-//{
-	visibility = calcShadow(
+float visibility = calcShadow(
 		sampler3, index, 
 		shadow_data[0].view[index], shadow_data[0].perspective[index], world_position.xyz,
 		10.0, 0.03);
-//}
+
 
 
 		vec4 reflectance = vec4(diffuse, 1.0) * vec4(vec3(0.3), 1.0) * vec4(visible_layer, 1.0);

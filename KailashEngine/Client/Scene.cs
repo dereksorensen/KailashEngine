@@ -100,7 +100,7 @@ namespace KailashEngine.Client
             _meshes = new List<UniqueMesh>();
 
             _animation_timer = new Timer();
-            _circadian_timer = new CircadianTimer(6.0f, 2.0f);
+            _circadian_timer = new CircadianTimer(9.0f, 2.0f);
         }
 
 
@@ -130,12 +130,11 @@ namespace KailashEngine.Client
         {
             _sun = new dLight(
                 "sun",
-                new Vector3(1.0f), 100.0f,
                 true,
                 _circadian_timer.position,
                 new float[]
                 {
-                    near_plane, 10.0f, 50.0f, 100.0f, 1000.0f
+                    near_plane, 5.0f, 20.0f, 50.0f, 100.0f
                 });
 
             _light_manager.addLight(_sun);

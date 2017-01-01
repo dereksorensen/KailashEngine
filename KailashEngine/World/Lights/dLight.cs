@@ -32,8 +32,8 @@ namespace KailashEngine.World.Lights
 
 
 
-        public dLight(string id, Vector3 color, float intensity, bool shadow, Vector3 position, float[] cascade_splits)
-            : base(id, type_directional, color, intensity, 0.0f, shadow, null, Matrix4.Identity)
+        public dLight(string id, bool shadow, Vector3 position, float[] cascade_splits)
+            : base(id, type_directional, new Vector3(1.0f), 1.0f, 0.0f, shadow, null, Matrix4.Identity)
         {
             _spatial.position = position;
 
@@ -115,48 +115,49 @@ namespace KailashEngine.World.Lights
                 radius = (float)Math.Floor(radius * texture_width) / texture_width;
 
                 float texel_size = texture_width / (radius * 1.0f);
-                Vector3 light_position = Vector3.Zero;
+                Vector3 light_position = camera_spatial.position;
 
 
                 temp_lightDirection = Vector3.TransformVector(temp_lightDirection, Matrix4.CreateScale(texel_size));
-                temp_lightDirection.X = (float)Math.Round(temp_lightDirection.X);
-                temp_lightDirection.Y = (float)Math.Round(temp_lightDirection.Y);
-                temp_lightDirection.Z = (float)Math.Round(temp_lightDirection.Z);
+                temp_lightDirection.X = (float)Math.Floor(temp_lightDirection.X);
+                temp_lightDirection.Y = (float)Math.Floor(temp_lightDirection.Y);
+                temp_lightDirection.Z = (float)Math.Floor(temp_lightDirection.Z);
                 temp_lightDirection = Vector3.TransformVector(temp_lightDirection, Matrix4.CreateScale(1.0f / texel_size));
 
 
                 //================================================================================
 
-                //Vector3 fix = camera_spatial.position;
+                Vector3 fix = camera_spatial.position;
 
-                //texelSnap(
-                //    ref fix,
-                //    Matrix4.CreateScale(texel_size),
-                //    Matrix4.LookAt(light_position, temp_lightDirection, new Vector3(0, 1, 0)));
+                texelSnap(
+                    ref fix,
+                    Matrix4.CreateScale(texel_size),
+                    Matrix4.LookAt(light_position, temp_lightDirection, new Vector3(0, 1, 0)));
 
-                //fix = camera_spatial.position - fix;
+                fix = camera_spatial.position - fix;
                 //fix = Vector3.Transform(fix, Matrix4.CreateScale(((float)tWidth / (radius * 2.0f))));
 
 
                 //================================================================================
 
 
-                //texelSnap(
-                //    ref frustum_center,
-                //    Matrix4.CreateScale(texel_size),
-                //    Matrix4.LookAt(light_position, temp_lightDirection, new Vector3(0, 1, 0)));
+                texelSnap(
+                    ref frustum_center,
+                    Matrix4.CreateScale(texel_size),
+                    Matrix4.LookAt(light_position, temp_lightDirection, new Vector3(0, 1, 0)));
 
 
                 //================================================================================
 
 
-                //frustum_center += fix;
+                frustum_center += fix;
 
 
                 Vector3 eye = frustum_center + ((temp_lightDirection) * radius * 2.0f);
 
                 Matrix4 temp_view_matrix = Matrix4.LookAt(eye, frustum_center, new Vector3(0, 1, 0));
                 Matrix4 temp_ortho_matrix = Matrix4.CreateOrthographicOffCenter(-radius, radius, -radius, radius, -radius * 6.0f, radius * 6.0f);
+                //Matrix4 temp_ortho_matrix = Matrix4.CreateOrthographic(radius, radius, -radius * 6.0f, radius * 6.0f);
 
                 temp_view_matrices[cascade] = temp_view_matrix;
                 temp_ortho_matrices[cascade] = temp_ortho_matrix;
