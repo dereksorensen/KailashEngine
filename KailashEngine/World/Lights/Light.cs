@@ -15,7 +15,7 @@ namespace KailashEngine.World.Lights
 
         public const string type_spot = "SPOT";
         public const string type_point = "POINT";
-
+        public const string type_directional = "DIRECTIONAL";
 
         private int _lid;
         public int lid

@@ -128,7 +128,8 @@ namespace KailashEngine.Render.FX
             {
                 _path_glsl_effect + "helpers/ats_Functions.include",
                 _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
-                _pLoader.path_glsl_common_helpers + "lightingFunctions.include"
+                _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
+                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include"
             };
 
             //------------------------------------------------------
@@ -515,7 +516,8 @@ namespace KailashEngine.Render.FX
             Texture normal_texture,
             Texture diffuse_texture,
             Texture specular_texture,
-            Vector3 circadian_position)
+            Vector3 sun_position,
+            Texture shadowDepthTexture)
         {
             //------------------------------------------------------
             // Render Atmoshpere
@@ -533,8 +535,8 @@ namespace KailashEngine.Render.FX
             normal_texture.bind(_pAtmoshpere.getSamplerUniform(0), 3);
             diffuse_texture.bind(_pAtmoshpere.getSamplerUniform(1), 4);
             specular_texture.bind(_pAtmoshpere.getSamplerUniform(2), 5);
+            shadowDepthTexture.bind(_pAtmoshpere.getSamplerUniform(3), 6);
 
-            Vector3 sun_position = circadian_position; 
             sun_position = Vector3.Normalize(sun_position);
             GL.Uniform3(_pAtmoshpere.getUniform("sun_position"), sun_position);
 

@@ -35,6 +35,9 @@ float unpack2(vec2 color)
 // VSM
 //------------------------------------------------------
 
+const float min_mip_level = 0.5;
+const float max_mip_level = 3.6;
+
 vec2 unpackMoments(vec4 moments_packed)
 {
 	vec2 moments;
@@ -46,13 +49,13 @@ vec2 unpackMoments(vec4 moments_packed)
 
 vec2 getMoments(sampler2DArray shadow_depth_sampler, int shadow_layer_id, vec2 tex_coord, float mip_level)
 {
-	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec3(tex_coord, shadow_layer_id), clamp(mip_level, 0.5, 3.7));
+	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec3(tex_coord, shadow_layer_id), clamp(mip_level, min_mip_level, max_mip_level));
 	return unpackMoments(moments_packed);
 }
 
 vec2 getMoments(samplerCubeArray shadow_depth_sampler, int shadow_layer_id, vec3 tex_coord, float mip_level)
 {
-	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec4(tex_coord, shadow_layer_id), clamp(mip_level, 0.5, 3.7));
+	vec4 moments_packed =  textureLod(shadow_depth_sampler, vec4(tex_coord, shadow_layer_id), clamp(mip_level, min_mip_level, max_mip_level));
 	return unpackMoments(moments_packed);
 }
 
@@ -174,9 +177,9 @@ float calcShadow(
 	shadow_uv_depth.z = length(shadow_viewPosition.xyz);
 
 	float visibility = 1.0;
-	//visibility = vsm(getMoments(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z);
+	visibility = vsm(getMoments(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.5), shadow_uv_depth.z);
 	//visibility = esm(getMoments(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
-	visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
+	//visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
 	
 	return visibility;
 }

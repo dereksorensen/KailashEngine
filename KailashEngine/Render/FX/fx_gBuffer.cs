@@ -395,15 +395,14 @@ namespace KailashEngine.Render.FX
             {
                 foreach (Light l in scene.lights)
                 {
-                    pass_Stencil(l);
-
                     switch (l.type)
                     {
                         case Light.type_spot:
+                            pass_Stencil(l);
                             pass_sLight(l, fx_Shadow.tSpot);
                             break;
-
                         case Light.type_point:
+                            pass_Stencil(l);
                             pass_pLight(l, fx_Shadow.tPoint);
                             break;
                     }

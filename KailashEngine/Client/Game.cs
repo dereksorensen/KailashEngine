@@ -98,7 +98,7 @@ namespace KailashEngine.Client
             _player.controlAndWatch(_character_1, _camera_1);
             _player.getPhysical(physics_world);
 
-            _scene.load(physics_world);
+            _scene.load(physics_world, _config.near_far.X);
             _scene.toggleFlashlight(_player.enable_flashlight);
         }
 

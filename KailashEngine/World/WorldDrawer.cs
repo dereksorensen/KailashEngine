@@ -175,6 +175,8 @@ namespace KailashEngine.World
             //------------------------------------------------------
             foreach (Light light in lights)
             {
+                if (light.unique_mesh == null) continue;
+
                 // Load Mesh's pre-transformation Matrix
                 Matrix4 temp_mat = light.unique_mesh.transformation;
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);

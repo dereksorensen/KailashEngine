@@ -506,6 +506,7 @@
     <Compile Include="World\LightLoader.cs" />
     <Compile Include="World\Lights\Light.cs" />
     <Compile Include="World\Lights\LightManager.cs" />
+    <Compile Include="World\Lights\dLight.cs" />
     <Compile Include="World\Lights\pLight.cs" />
     <Compile Include="World\Lights\sLight.cs" />
     <Compile Include="World\Model\DAE_Bone.cs" />
@@ -596,6 +597,8 @@
     <None Include="Render\Shader\glsl\motion_blur\mb_Blur.frag" />
     <None Include="Render\Shader\glsl\shadow\shadow_Point.frag" />
     <None Include="Render\Shader\glsl\shadow\shadow_Point.geom" />
+    <None Include="Render\Shader\glsl\shadow\shadow_Directional.frag" />
+    <None Include="Render\Shader\glsl\shadow\shadow_Directional.geom" />
     <None Include="Render\Shader\glsl\shadow\shadow_Spot.frag" />
     <None Include="Render\Shader\glsl\shadow\shadow_Spot.geom" />
     <None Include="Render\Shader\glsl\skybox\skybox_Render.vert" />

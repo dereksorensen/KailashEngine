@@ -146,5 +146,14 @@ namespace KailashEngine.World
             _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov_degrees), aspect, near, far);
         }
 
+        public void setOrthographic(float left, float right, float bottom, float top, float near, float far)
+        {
+            _perspective = Matrix4.CreateOrthographicOffCenter(left, right, bottom, top, near, far);
+        }
+
+        public void setOrthographic(float width, float height, float near, float far)
+        {
+            _perspective = Matrix4.CreateOrthographic(width, height, near, far);
+        }
     }
 }

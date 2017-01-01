@@ -80,6 +80,14 @@ namespace KailashEngine.Client
             get { return _flashlight; }
         }
 
+        private dLight _sun;
+        public dLight sun
+        {
+            get { return _sun; }
+            set { _sun = value; }
+        }
+
+
 
         //------------------------------------------------------
         // Constructor
@@ -118,12 +126,26 @@ namespace KailashEngine.Client
             toggleFlashlight(true);
         }
 
+        private void load_SunLight(float near_plane)
+        {
+            _sun = new dLight(
+                "sun",
+                new Vector3(1.0f), 100.0f,
+                true,
+                _circadian_timer.position,
+                new float[]
+                {
+                    near_plane, 10.0f, 50.0f, 100.0f, 1000.0f
+                });
+
+            _light_manager.addLight(_sun);
+        }
 
         //------------------------------------------------------
         // Load Scene
         //------------------------------------------------------
 
-        public void load(PhysicsWorld physics_world)
+        public void load(PhysicsWorld physics_world, float near_plane)
         {
             _material_manager = new MaterialManager();
             _light_manager = new LightManager();
@@ -138,7 +160,7 @@ namespace KailashEngine.Client
 
 
             load_Flashlight();
-
+            load_SunLight(near_plane);
 
             _animation_timer.start();
             _circadian_timer.start();
@@ -148,6 +170,11 @@ namespace KailashEngine.Client
         //------------------------------------------------------
         // Update Scene
         //------------------------------------------------------
+        private void update_Sun()
+        {
+            //scene.sun.update_Cascades(_tDirectional.width, camera_spatial);
+        }
+
         public void update(Vector3 camera_position)
         {
             _light_manager.update(camera_position);

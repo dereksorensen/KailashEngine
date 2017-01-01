@@ -225,7 +225,7 @@ namespace KailashEngine.Render
 
             Debug.DebugHelper.time_function("Shadow", 1, () =>
             {
-                _fxShadow.render(scene);
+                _fxShadow.render(scene, camera_spatial_data);
             });
 
             _fxGBuffer.pass_DeferredShading(scene, _fxShadow);
@@ -239,7 +239,7 @@ namespace KailashEngine.Render
             GL.Disable(EnableCap.DepthTest);
 
 
-            _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, scene.circadian_timer.position);
+            _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, scene.circadian_timer.position, _fxShadow.tDirectional);
 
 
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxAtmosphericScattering.tAtmosphere, _fxFinal.fFinalScene);
@@ -286,10 +286,11 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
-                //_fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 3, 0);
-                //_fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2, 0);
-                _fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 1, 1);
-                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 3, 3);
+                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 2, 2);
+                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 1, 1);
+                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 0, 0);
+                //_fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 
         }
