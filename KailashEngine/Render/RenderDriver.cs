@@ -290,6 +290,7 @@ namespace KailashEngine.Render
                 _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 2, 2);
                 _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 1, 1);
                 _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 0, 0);
+                //_fxQuad.render_Texture(_fxGBuffer.tNormal_Depth, 0.25f, 1);
                 //_fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
             }
 

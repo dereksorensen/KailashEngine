@@ -162,27 +162,6 @@ vec3 inscatter(inout vec3 x, inout float t, vec3 v, vec3 s, float angleOfInc, ou
 //------------------------------------------------------
 // ground radiance at end of ray x+tv, when sun in direction s
 // attenuated bewteen ground and viewer (=R[L0]+R[L*])
-
-
-bool inRange(float val)
-{
-	return val >= 0.0 && val <= 1.0;
-}
-
-bool inRange(float val, float max)
-{
-	return val >= 0.0 && val <= max;
-}
-
-bool splitTest(vec4 shadowCoord)
-{
-	return inRange(shadowCoord.x) && inRange(shadowCoord.y) && inRange(shadowCoord.z, shadowCoord.w);
-}
-
-
-
-
-
 vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenuation, vec3 L, vec3 E, vec3 N, float angleOfInc, float object_id, vec3 diffuse)
 {
     vec3 result = vec3(0.0);
@@ -192,59 +171,23 @@ vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenu
         float r0 = length(x0);
 		vec3 n = x0 / r0;
 
-
-vec4 world_position = vec4(x - vec3(0.0, Rg, 0.0), 1.0);		
-vec4[4] shadowCoord = vec4[4](
-	shadow_data[0].perspective[0] * (shadow_data[0].view[0] * world_position),
-	shadow_data[0].perspective[1] * (shadow_data[0].view[1] * world_position),
-	shadow_data[0].perspective[2] * (shadow_data[0].view[2] * world_position),
-	shadow_data[0].perspective[3] * (shadow_data[0].view[3] * world_position)
-);
-
-shadowCoord[0].xyz /= shadowCoord[0].w;
-shadowCoord[1].xyz /= shadowCoord[1].w;
-shadowCoord[2].xyz /= shadowCoord[2].w;
-shadowCoord[3].xyz /= shadowCoord[3].w;
-
-shadowCoord[0].xyz = shadowCoord[0].xyz * 0.5 + 0.5;
-shadowCoord[1].xyz = shadowCoord[1].xyz * 0.5 + 0.5;
-shadowCoord[2].xyz = shadowCoord[2].xyz * 0.5 + 0.5;
-shadowCoord[3].xyz = shadowCoord[3].xyz * 0.5 + 0.5;
+		//------------------------------------------------------
+		// Shadow
+		//------------------------------------------------------
+		vec3 visible_csm_layer = vec3(1.0);
+		vec3 world_position = x - vec3(0.0, Rg, 0.0);		
+		float visibility = calcShadow(
+			sampler3, 0, 
+			shadow_data[0].view, shadow_data[0].perspective, world_position, 
+			10.0, 0.03,
+			visible_csm_layer);
+		visible_csm_layer = vec3(1.0);
 
 
-int index = 0;
-vec3 visible_layer = vec3(1.0);
-if(splitTest(shadowCoord[0]))
-{
-	visible_layer = vec3(1.0,0.1,0.1);
-	index = 0;
-}
-else if(splitTest(shadowCoord[1]))
-{
-	visible_layer = vec3(0.1,1.0,0.1);
-	index = 1;
-}
-else if(splitTest(shadowCoord[2]))
-{
-	visible_layer = vec3(0.1,0.1,1.0);
-	index = 2;
-}
-else if(splitTest(shadowCoord[3]))
-{
-	visible_layer = vec3(1.0,0.1,0.3);
-	index = 3;
-}
-//visible_layer = vec3(1.0);
-
-
-float visibility = calcShadow(
-		sampler3, index, 
-		shadow_data[0].view[index], shadow_data[0].perspective[index], world_position.xyz,
-		10.0, 0.03);
-
-
-
-		vec4 reflectance = vec4(diffuse, 1.0) * vec4(vec3(0.3), 1.0) * vec4(visible_layer, 1.0);
+		//------------------------------------------------------
+		// Lighting
+		//------------------------------------------------------
+		vec4 reflectance = vec4(diffuse, 1.0) * vec4(vec3(0.3), 1.0) * vec4(visible_csm_layer, 1.0);
 
 		// direct sun light (radiance) reaching x0
 		float muS = dot(n, s);
@@ -268,7 +211,7 @@ float visibility = calcShadow(
 
 			float gaussianTerm = wardSpecular(L, E, N, vec2(specular_shininess));
 			vec3 final_Specular = vec3(
-				sunLight *
+				(sunLight / MATH_PI) *
 				(gaussianTerm * angleOfInc) *
 				specular_color.rgb);
 
