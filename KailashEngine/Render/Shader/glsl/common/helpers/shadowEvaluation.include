@@ -239,10 +239,10 @@ float calcShadow(
 		shadow_perspective_matrices[3] * shadow_view_positions[3]
 	);
 
-	shadow_uv_depths[0].xyz = (shadow_uv_depths[0].xyz / shadow_uv_depths[0].w) * 0.5 + 0.5;
-	shadow_uv_depths[1].xyz = (shadow_uv_depths[1].xyz / shadow_uv_depths[1].w) * 0.5 + 0.5;
-	shadow_uv_depths[2].xyz = (shadow_uv_depths[2].xyz / shadow_uv_depths[2].w) * 0.5 + 0.5;
-	shadow_uv_depths[3].xyz = (shadow_uv_depths[3].xyz / shadow_uv_depths[3].w) * 0.5 + 0.5;
+	shadow_uv_depths[0] = (shadow_uv_depths[0] / shadow_uv_depths[0].w) * 0.5 + 0.5;
+	shadow_uv_depths[1] = (shadow_uv_depths[1] / shadow_uv_depths[1].w) * 0.5 + 0.5;
+	shadow_uv_depths[2] = (shadow_uv_depths[2] / shadow_uv_depths[2].w) * 0.5 + 0.5;
+	shadow_uv_depths[3] = (shadow_uv_depths[3] / shadow_uv_depths[3].w) * 0.5 + 0.5;
 
 
 	int cascade_index = 0;

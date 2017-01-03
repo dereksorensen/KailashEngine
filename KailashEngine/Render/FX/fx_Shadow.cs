@@ -229,7 +229,7 @@ namespace KailashEngine.Render.FX
         private void render_Directional(Scene scene, SpatialData camera_spatial)
         {
             scene.sun.spatial.position = scene.circadian_timer.position;
-            scene.sun.update_Cascades(_tDirectional.width, Vector3.Normalize(scene.circadian_timer.position), camera_spatial);
+            scene.sun.update_Cascades2(camera_spatial, Vector3.Normalize(scene.circadian_timer.position));
 
 
             _fDirectional.bind(DrawBuffersEnum.ColorAttachment0);

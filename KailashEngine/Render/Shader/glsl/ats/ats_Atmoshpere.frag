@@ -181,7 +181,7 @@ vec3 groundColor(vec3 x, float t, vec3 v, vec3 s, float r, float mu, vec3 attenu
 			shadow_data[0].view, shadow_data[0].perspective, world_position, 
 			10.0, 0.03,
 			visible_csm_layer);
-		visible_csm_layer = vec3(1.0);
+		//visible_csm_layer = vec3(1.0);
 
 
 		//------------------------------------------------------
