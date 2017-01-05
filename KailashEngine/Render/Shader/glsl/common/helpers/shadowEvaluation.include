@@ -42,8 +42,10 @@ bool inRange(float val, float max)
 
 bool splitTest(vec4 shadow_uv)
 {
-	return inRange(shadow_uv.x) && inRange(shadow_uv.y) && inRange(shadow_uv.z, shadow_uv.w);
+	return inRange(shadow_uv.x) && inRange(shadow_uv.y) && inRange(shadow_uv.z);
 }
+
+
 
 
 //------------------------------------------------------
@@ -218,6 +220,22 @@ float calcShadow(
 }
 
 // Directional Lights
+
+bool inRange2(float val, float test_n)
+{
+	return val >= 0.0+test_n && val <= 1.0-test_n;
+}
+
+float splitTestSub(vec4 shadow_uv, float merge)
+{
+	float merge_vec = 0.0;
+	if(!(inRange2(shadow_uv.x, merge) && inRange2(shadow_uv.y, merge)))
+	{
+		merge_vec = merge;
+	}	
+	return merge_vec;
+}
+
 float calcShadow(
 	sampler2DArray shadow_depth_sampler, int shadow_id, 
 	mat4[4] shadow_view_matrices, mat4[4] shadow_perspective_matrices, vec3 world_position, 
@@ -248,25 +266,50 @@ float calcShadow(
 	int cascade_index = 0;
 	visible_csm_layer = vec3(1.0);
 	float layer_color_intensity = 0.3;
+	vec3[4] layer_colors = vec3[4](
+		vec3(1.0,layer_color_intensity,layer_color_intensity),
+		vec3(layer_color_intensity,1.0,layer_color_intensity),
+		vec3(layer_color_intensity,layer_color_intensity,1.0),
+		vec3(1.0,1.0,layer_color_intensity)
+	);
 	if(splitTest(shadow_uv_depths[0]))
 	{
-		visible_csm_layer = vec3(1.0,layer_color_intensity,layer_color_intensity);
+		visible_csm_layer = layer_colors[0];
 		cascade_index = 0;
+		float merge = splitTestSub(shadow_uv_depths[0], 0.05);
+		if(merge > 0.0)
+		{
+			visible_csm_layer = mix(layer_colors[0], layer_colors[1], 0.5);
+		}
 	}
 	else if(splitTest(shadow_uv_depths[1]))
 	{
-		visible_csm_layer = vec3(layer_color_intensity,1.0,layer_color_intensity);
+		visible_csm_layer = layer_colors[1];
 		cascade_index = 1;
+		float merge = splitTestSub(shadow_uv_depths[1], 0.05);
+		if(merge > 0.0)
+		{
+			visible_csm_layer = mix(layer_colors[1], layer_colors[2], 0.5);
+		}
 	}
 	else if(splitTest(shadow_uv_depths[2]))
 	{
-		visible_csm_layer = vec3(layer_color_intensity,layer_color_intensity,1.0);
+		visible_csm_layer = layer_colors[2];
 		cascade_index = 2;
+		float merge = splitTestSub(shadow_uv_depths[2], 0.05);
+		if(merge > 0.0)
+		{
+			visible_csm_layer = mix(layer_colors[2], layer_colors[3], 0.5);
+		}
 	}
 	else if(splitTest(shadow_uv_depths[3]))
 	{
-		visible_csm_layer = vec3(1.0,1.0,layer_color_intensity);
+		visible_csm_layer = layer_colors[3];
 		cascade_index = 3;
+	}
+	else
+	{
+		return 1.0;
 	}
 
 
@@ -275,7 +318,7 @@ float calcShadow(
 
 
 	float visibility = 1.0;
-	visibility = vsm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, 0.0), shadow_uv_depth.z);
+	visibility = vsm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z);
 	//visibility = esm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
 	//visibility = variablePenumbraShadow(shadow_depth_sampler, cascade_index, shadow_uv_depth, light_size, penumbra_falloff);
 	
