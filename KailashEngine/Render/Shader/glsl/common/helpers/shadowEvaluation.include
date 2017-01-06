@@ -29,23 +29,6 @@ float unpack2(vec2 color)
 	return color.x + (color.y / 255.0);
 }
 
-// CSM Helpers
-bool inRange(float val)
-{
-	return val >= 0.0 && val <= 1.0;
-}
-
-bool inRange(float val, float max)
-{
-	return val >= 0.0 && val <= max;
-}
-
-bool splitTest(vec4 shadow_uv)
-{
-	return inRange(shadow_uv.x) && inRange(shadow_uv.y) && inRange(shadow_uv.z);
-}
-
-
 
 
 //------------------------------------------------------
@@ -221,19 +204,42 @@ float calcShadow(
 
 // Directional Lights
 
-bool inRange2(float val, float test_n)
+bool splitBorderTest(float val)
 {
-	return val >= 0.0+test_n && val <= 1.0-test_n;
+	return val >= 0.0 && val <= 1.0;
 }
 
-float splitTestSub(vec4 shadow_uv, float merge)
+bool splitBorderTest(vec4 shadow_uv)
 {
-	float merge_vec = 0.0;
-	if(!(inRange2(shadow_uv.x, merge) && inRange2(shadow_uv.y, merge)))
-	{
-		merge_vec = merge;
-	}	
-	return merge_vec;
+	return splitBorderTest(shadow_uv.x) && splitBorderTest(shadow_uv.y) && splitBorderTest(shadow_uv.z);
+}
+
+float getSplitBlendFactor(float val, float split_blend)
+{
+	int flipper = int(ceil(val - split_blend));
+	return clamp(1.0 - (abs(val - flipper) / split_blend), 0.0, 1.0);
+}
+ 
+// Blend all 4 sides of the cascade split with branching :>
+float splitBlendTest(vec4 shadow_uv, float split_blend)
+{
+	split_blend /= 2.0;
+	
+	float[2] blenders = float[2](
+		getSplitBlendFactor(shadow_uv.x, split_blend),
+		getSplitBlendFactor(shadow_uv.y, split_blend)
+	);
+
+	float blend_x = blenders[0];
+	float blend_x_inv = 1.0 - blend_x;
+	float blend_y = blenders[1];
+	float blend_y_inv = 1.0 - blend_y;
+
+	float corner_blending = (1.0 - (blend_x * blend_y * 2.0));
+	float side_blending = (blend_x * blend_y_inv + blend_y * blend_x_inv);
+
+	float final = 1.0 - (corner_blending - side_blending);
+	return clamp(final, 0.0, 1.0);
 }
 
 float calcShadow(
@@ -265,44 +271,46 @@ float calcShadow(
 
 	int cascade_index = 0;
 	visible_csm_layer = vec3(1.0);
-	float layer_color_intensity = 0.3;
+	float layer_color_intensity = 0.5;
 	vec3[4] layer_colors = vec3[4](
 		vec3(1.0,layer_color_intensity,layer_color_intensity),
 		vec3(layer_color_intensity,1.0,layer_color_intensity),
 		vec3(layer_color_intensity,layer_color_intensity,1.0),
 		vec3(1.0,1.0,layer_color_intensity)
 	);
-	if(splitTest(shadow_uv_depths[0]))
+	float split_blend = 0.5;
+	float blend_factor = 0.0;
+	if(splitBorderTest(shadow_uv_depths[0]))
 	{
 		visible_csm_layer = layer_colors[0];
 		cascade_index = 0;
-		float merge = splitTestSub(shadow_uv_depths[0], 0.05);
-		if(merge > 0.0)
+		blend_factor = splitBlendTest(shadow_uv_depths[0], split_blend);
+		if(blend_factor > 0.0)
 		{
-			visible_csm_layer = mix(layer_colors[0], layer_colors[1], 0.5);
+			visible_csm_layer = mix(layer_colors[0], layer_colors[1], blend_factor);
 		}
 	}
-	else if(splitTest(shadow_uv_depths[1]))
+	else if(splitBorderTest(shadow_uv_depths[1]))
 	{
 		visible_csm_layer = layer_colors[1];
 		cascade_index = 1;
-		float merge = splitTestSub(shadow_uv_depths[1], 0.05);
-		if(merge > 0.0)
+		blend_factor = splitBlendTest(shadow_uv_depths[1], split_blend);
+		if(blend_factor > 0.0)
 		{
-			visible_csm_layer = mix(layer_colors[1], layer_colors[2], 0.5);
+			visible_csm_layer = mix(layer_colors[1], layer_colors[2], blend_factor);
 		}
 	}
-	else if(splitTest(shadow_uv_depths[2]))
+	else if(splitBorderTest(shadow_uv_depths[2]))
 	{
 		visible_csm_layer = layer_colors[2];
 		cascade_index = 2;
-		float merge = splitTestSub(shadow_uv_depths[2], 0.05);
-		if(merge > 0.0)
+		blend_factor = splitBlendTest(shadow_uv_depths[2], split_blend);
+		if(blend_factor > 0.0)
 		{
-			visible_csm_layer = mix(layer_colors[2], layer_colors[3], 0.5);
+			visible_csm_layer = mix(layer_colors[2], layer_colors[3], blend_factor);
 		}
 	}
-	else if(splitTest(shadow_uv_depths[3]))
+	else if(splitBorderTest(shadow_uv_depths[3]))
 	{
 		visible_csm_layer = layer_colors[3];
 		cascade_index = 3;
@@ -318,9 +326,15 @@ float calcShadow(
 
 
 	float visibility = 1.0;
+
 	visibility = vsm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, 1.0), shadow_uv_depth.z);
 	//visibility = esm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
 	//visibility = variablePenumbraShadow(shadow_depth_sampler, cascade_index, shadow_uv_depth, light_size, penumbra_falloff);
 	
+	if(blend_factor > 0.0)
+	{
+		visibility = (visibility * (1.0 - blend_factor)) + (vsm(getMoments(shadow_depth_sampler, cascade_index + 1, shadow_uv_depths[cascade_index+1].xy, 1.0), length(shadow_view_positions[cascade_index+1].xyz)) * blend_factor);
+	}
+
 	return visibility;
 }
