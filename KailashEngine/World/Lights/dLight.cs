@@ -61,7 +61,7 @@ namespace KailashEngine.World.Lights
             Matrix4[] temp_view_matrices = new Matrix4[_num_cascades];
             Matrix4[] temp_ortho_matrices = new Matrix4[_num_cascades];
 
-            float cascade_backup_distance = 20.0f;
+            float cascade_backup_distance = 10.0f;
 
             for (int cascade = 0; cascade < _num_cascades; cascade++)
             {
