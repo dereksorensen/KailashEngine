@@ -56,12 +56,13 @@ namespace KailashEngine.World.Lights
             _shadow_ortho_matrices = new Matrix4[4];
         }
 
-        public void update_Cascades(SpatialData camera_spatial, Vector3 light_direction, float shadow_texture_width)
+        public void update_Cascades(SpatialData camera_spatial, Vector3 light_direction)
         {
             Matrix4[] temp_view_matrices = new Matrix4[_num_cascades];
             Matrix4[] temp_ortho_matrices = new Matrix4[_num_cascades];
 
-            float cascade_backup_distance = 10.0f;
+            float cascade_backup_distance = 20.0f;
+            float shadow_texture_width = 840.0f;
 
             for (int cascade = 0; cascade < _num_cascades; cascade++)
             {
@@ -102,15 +103,21 @@ namespace KailashEngine.World.Lights
                     frustum_center = frustum_center + frustum_corners[i];
                 }
                 frustum_center = frustum_center / 8.0f;
-                float radius = (frustum_corners[4] - frustum_corners[6]).Length;
 
+                float radius_max = 0.0f;
+                for(int i = 0; i < 8; i++)
+                {
+                    radius_max = (float)Math.Max((frustum_center - frustum_corners[i]).Length, radius_max);
+                }
+                radius_max *= 2.0f;
+                float radius = radius_max;
 
                 //------------------------------------------------------
                 // Trying to fix shimmering
                 //------------------------------------------------------
                 radius = (float)Math.Floor(radius * shadow_texture_width) / shadow_texture_width;
 
-                float scaler = shadow_texture_width / (radius * 50.0f);
+                float scaler = shadow_texture_width / (radius * (shadow_texture_width / 5.0f));
                 frustum_center *= scaler;
                 frustum_center.X = (float)Math.Floor(frustum_center.X);
                 frustum_center.Y = (float)Math.Floor(frustum_center.Y);

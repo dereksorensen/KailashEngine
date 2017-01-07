@@ -245,9 +245,10 @@ float splitBlendTest(vec4 shadow_uv, float split_blend)
 
 float evaluateCSMShadow(sampler2DArray shadow_depth_sampler, int cascade_index, vec3 shadow_uv_depth, float mip_level, float light_size, float penumbra_falloff)
 {
+	mip_level /= cascade_index;
 	return vsm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, mip_level), shadow_uv_depth.z);
-	return esm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, mip_level).x, shadow_uv_depth.z, 0.5);
-	return variablePenumbraShadow(shadow_depth_sampler, cascade_index, shadow_uv_depth, light_size, penumbra_falloff);
+	//return esm(getMoments(shadow_depth_sampler, cascade_index, shadow_uv_depth.xy, mip_level).x, shadow_uv_depth.z, 0.5);
+	//return variablePenumbraShadow(shadow_depth_sampler, cascade_index, shadow_uv_depth, light_size, penumbra_falloff);
 }
 
 float calcShadow(
@@ -343,6 +344,11 @@ float calcShadow(
 	{
 		visible_csm_layer = layer_colors[3];
 		cascade_index = 3;
+		blend_factor = splitBlendTest(shadow_uv_depths[3], split_blend);
+		if(blend_factor > 0.0)
+		{
+			visible_csm_layer = mix(layer_colors[3], vec3(1.0), blend_factor);
+		}
 	}
 	else
 	{
@@ -361,11 +367,15 @@ float calcShadow(
 
 	if(blend_factor > 0.0)
 	{
-		vec3 shadow_uv_depth = shadow_uv_depths[cascade_index + 1].xyz;		
-		shadow_uv_depth.z = length(shadow_view_positions[cascade_index + 1].xyz);
+		float next_level_blend = 1.0 * blend_factor;
+		if(!(cascade_index == 3))
+		{
+			vec3 shadow_uv_depth = shadow_uv_depths[cascade_index + 1].xyz;		
+			shadow_uv_depth.z = length(shadow_view_positions[cascade_index + 1].xyz);
+			next_level_blend = (evaluateCSMShadow(shadow_depth_sampler, cascade_index + 1, shadow_uv_depth, mip_level, light_size, penumbra_falloff) * blend_factor);
+		}
 
-		visibility = (visibility * (1.0 - blend_factor)) + 
-			(evaluateCSMShadow(shadow_depth_sampler, cascade_index + 1, shadow_uv_depth, mip_level, light_size, penumbra_falloff) * blend_factor);
+		visibility = (visibility * (1.0 - blend_factor)) + next_level_blend;
 	}
 
 	return visibility;

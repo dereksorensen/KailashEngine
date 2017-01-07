@@ -169,14 +169,17 @@ namespace KailashEngine.Client
         //------------------------------------------------------
         // Update Scene
         //------------------------------------------------------
-        private void update_Sun()
+        private void update_Sun(SpatialData camera_spatial)
         {
-            //scene.sun.update_Cascades(_tDirectional.width, camera_spatial);
+            _sun.spatial.position = _circadian_timer.position;
+            _sun.update_Cascades(camera_spatial, Vector3.Normalize(_circadian_timer.position));
         }
 
-        public void update(Vector3 camera_position)
+        public void update(SpatialData camera_spatial)
         {
-            _light_manager.update(camera_position);
+            update_Sun(camera_spatial);
+
+            _light_manager.update(-camera_spatial.position);
             _current_animation_time = _animation_timer.seconds;
         }
 

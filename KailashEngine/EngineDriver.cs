@@ -413,7 +413,7 @@ namespace KailashEngine
             inputBuffer();
 
             // Update Scene
-            _game.scene.update(-_game.player.camera.spatial.position);
+            _game.scene.update(_game.player.camera.spatial);
 
             // Update Dynamic UBOs
             _render_driver.updateUBO_Camera(
