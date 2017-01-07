@@ -46,27 +46,23 @@ layout(std140, binding = 2) uniform materialTextures
 	sampler2D tex[256];
 };
 
+
 uniform int enable_Wireframe;
 
 uniform int enable_diffuse_texture;
-uniform sampler2D diffuse_texture;
 uniform int diffuse_texture_unit;
 uniform vec3 diffuse_color;
 uniform float emission_strength;
 
 uniform int enable_specular_texture;
-uniform sampler2D specular_texture;
 uniform int specular_texture_unit;
 uniform vec3 specular_color;
 uniform float specular_shininess;
 
 uniform int enable_normal_texture;
-uniform sampler2D normal_texture;
 uniform int normal_texture_unit;
 
-
 uniform int enable_parallax_texture;
-uniform sampler2D parallax_texture;
 uniform int parallax_texture_unit;
 
 

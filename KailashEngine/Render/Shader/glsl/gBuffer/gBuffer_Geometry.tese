@@ -24,7 +24,6 @@ layout(std140, binding = 2) uniform materialTextures
 };
 
 
-uniform sampler2D displacement_texture;
 uniform int displacement_texture_unit;
 uniform int enable_displacement_texture;
 uniform float displacement_strength = 0.1;

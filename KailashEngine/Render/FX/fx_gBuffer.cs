@@ -97,6 +97,10 @@ namespace KailashEngine.Render.FX
                 _pLoader.path_glsl_common_helpers + "linearDepth.include"
 
             };
+            string[] geometry_extensions = new string[]
+            {
+                "#extension GL_ARB_bindless_texture : require"
+            };
             string[] culling_helpers = new string[]
             {
                 _pLoader.path_glsl_common_helpers + "culling.include"
@@ -114,9 +118,9 @@ namespace KailashEngine.Render.FX
             _pGeometry = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", culling_helpers),
-                new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", null),
+                new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", null, geometry_extensions),
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "gBuffer_Geometry.geom", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Geometry.frag", geometry_helpers)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Geometry.frag", geometry_helpers, geometry_extensions)
             });
             _pGeometry.enable_MeshLoading();
             _pGeometry.addUniform("enable_Wireframe");
@@ -379,10 +383,7 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Fill gBuffer with Scene
             //------------------------------------------------------
-            Debug.DebugHelper.time_function("geo", 3, () =>
-            {
-                pass_Geometry(scene);
-            });
+            pass_Geometry(scene);
 
             //------------------------------------------------------
             // Accumulate Lighting from Scene
@@ -391,23 +392,20 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-            Debug.DebugHelper.time_function("Lighting", 2, () =>
+            foreach (Light l in scene.lights)
             {
-                foreach (Light l in scene.lights)
+                switch (l.type)
                 {
-                    switch (l.type)
-                    {
-                        case Light.type_spot:
-                            pass_Stencil(l);
-                            pass_sLight(l, fx_Shadow.tSpot);
-                            break;
-                        case Light.type_point:
-                            pass_Stencil(l);
-                            pass_pLight(l, fx_Shadow.tPoint);
-                            break;
-                    }
+                    case Light.type_spot:
+                        pass_Stencil(l);
+                        pass_sLight(l, fx_Shadow.tSpot);
+                        break;
+                    case Light.type_point:
+                        pass_Stencil(l);
+                        pass_pLight(l, fx_Shadow.tPoint);
+                        break;
                 }
-            });
+            }
 
 
             GL.Disable(EnableCap.StencilTest);

@@ -298,7 +298,7 @@ float calcShadow(
 	//------------------------------------------------------
 	// Calc Split Blend Factors
 	//------------------------------------------------------
-	float split_blend = 0.5;
+	float split_blend = 0.25;
 	float blend_factor = 0.0;
 	float[4] split_blend_factors = float[4](
 		splitBlendTest(shadow_uv_depths[0], split_blend),

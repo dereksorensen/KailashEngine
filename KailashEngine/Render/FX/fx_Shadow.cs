@@ -243,7 +243,7 @@ namespace KailashEngine.Render.FX
         public void render(Scene scene, SpatialData camera_spatial)
         {
             //GL.Enable(EnableCap.PolygonOffsetFill);
-            //GL.PolygonOffset(0.5f, 1.0f);
+            //GL.PolygonOffset(0.5f, 0.2f);
 
             render_Spot(scene);
             render_Point(scene);

@@ -42,6 +42,12 @@ namespace KailashEngine.Render.Shader
             set { _dependancies = value; }
         }
 
+        private string[] _extensions;
+        public string[] extensions
+        {
+            get { return _extensions; }
+            set { _extensions = value; }
+        }
 
 
         public ShaderFile(ShaderType type, string filename, string[] dependancies)
@@ -51,6 +57,13 @@ namespace KailashEngine.Render.Shader
             _dependancies = dependancies;
         }
 
+        public ShaderFile(ShaderType type, string filename, string[] dependancies, string[] extensions)
+        {
+            _type = type;
+            _filename = filename;
+            _dependancies = dependancies;
+            _extensions = extensions;
+        }
 
         private string loadShaderFile(string filename)
         {
@@ -81,7 +94,7 @@ namespace KailashEngine.Render.Shader
 
             string shader_source = loadShaderFile(_filename);
 
-            int added_line_count = 4;
+            int added_line_count = 5;
 
             // Add any depenancies into the shader file
             if (!(_dependancies == null))
@@ -94,6 +107,17 @@ namespace KailashEngine.Render.Shader
                 }
             }
 
+            // Add any extensions to a variable and include below #version preprocessor
+            string combined_extensions = "\n";
+            if (!(_extensions == null))
+            {
+                foreach (string extension in _extensions)
+                {
+                    combined_extensions += extension + "\n";
+                    added_line_count += extension.Split('\n').Length;
+                }
+            }
+
             // Add glsl version and MATH_PI at top of shader file
             string MATH_PI = "#define MATH_PI 3.1415926535897932384626433832795";
             string MATH_HALF_PI = "#define MATH_HALF_PI 1.57079632679489661923132169163975";
@@ -101,7 +125,7 @@ namespace KailashEngine.Render.Shader
 
             shader_source = 
                 "#version " + glsl_version + "\n" +
-                "#extension GL_ARB_bindless_texture : require" + "\n" +
+                combined_extensions + "\n" +
                 MATH_PI + "\n" + 
                 MATH_HALF_PI + "\n" + 
                 MATH_2_PI + "\n" + 

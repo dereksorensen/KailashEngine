@@ -475,6 +475,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\FX\fx_DepthOfField.cs" />
     <Compile Include="Render\FX\fx_AtmosphericScattering.cs" />
+    <Compile Include="Render\FX\fx_VXGI.cs" />
     <Compile Include="Render\FX\fx_Shadow.cs" />
     <Compile Include="Render\FX\fx_MotionBlur.cs" />
     <Compile Include="Render\FX\fx_SkyBox.cs" />
@@ -608,6 +609,10 @@
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurGauss.frag" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_ConeTrace.frag" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_Voxelize.frag" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_Voxelize.geom" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_Voxelize.vert" />
     <None Include="Resources\Audio\cow.ogg" />
     <None Include="Resources\Audio\cow.wav.reapeaks" />
     <None Include="Resources\Audio\goat.wav.reapeaks" />

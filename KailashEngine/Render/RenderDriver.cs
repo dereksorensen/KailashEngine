@@ -35,6 +35,7 @@ namespace KailashEngine.Render
         private fx_Special _fxSpecial;
         private fx_Final _fxFinal;
         private fx_gBuffer _fxGBuffer;
+        private fx_VXGI _fxVXGI;
         private fx_Shadow _fxShadow;
         private fx_SkyBox _fxSkyBox;
         private fx_HDR _fxHDR;
@@ -79,6 +80,7 @@ namespace KailashEngine.Render
             _fxSpecial = createEffect<fx_Special>(pLoader, "special/");
             _fxFinal = createEffect<fx_Final>(pLoader, "final/");
             _fxGBuffer = createEffect<fx_gBuffer>(pLoader, tLoader, "gBuffer/");
+            _fxVXGI = createEffect<fx_VXGI>(pLoader, "vxgi/");
             _fxShadow = createEffect<fx_Shadow>(pLoader, "shadow/");
             _fxSkyBox = createEffect<fx_SkyBox>(pLoader, tLoader, "skybox/");
             _fxHDR = createEffect<fx_HDR>(pLoader, "hdr/");
@@ -223,10 +225,12 @@ namespace KailashEngine.Render
             GL.CullFace(CullFaceMode.Back);
 
 
-            Debug.DebugHelper.time_function("Shadow", 1, () =>
+            Debug.DebugHelper.time_function("Voxelization", 1, () =>
             {
-                _fxShadow.render(scene, camera_spatial_data);
+                _fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
             });
+
+            _fxShadow.render(scene, camera_spatial_data);
 
             _fxGBuffer.pass_DeferredShading(scene, _fxShadow);
 
@@ -239,13 +243,19 @@ namespace KailashEngine.Render
             GL.Disable(EnableCap.DepthTest);
 
 
+            Debug.DebugHelper.time_function("Cone Tracing", 2, () =>
+            {
+                _fxVXGI.coneTracing(_fxQuad, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tNormal_Depth, _fxGBuffer.tSpecular, camera_spatial_data);
+            });
+
+
             _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, scene.circadian_timer.position, _fxShadow.tDirectional);
 
 
             _fxGBuffer.pass_LightAccumulation(_fxQuad, _fxAtmosphericScattering.tAtmosphere, _fxFinal.fFinalScene);
 
 
-            _fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
+            //_fxDepthOfField.render(_fxQuad, _fxSpecial, _fxGBuffer.tNormal_Depth, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
 
 
             _fxHDR.scaleScene(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene);
@@ -254,7 +264,7 @@ namespace KailashEngine.Render
             _fxLens.render(_fxQuad, _fxSpecial, _fxFinal.tFinalScene, _fxFinal.fFinalScene, camera_spatial_data.rotation_matrix);
 
 
-            _fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
+            //_fxMotionBlur.render(_fxQuad, _fxFinal.fFinalScene, _fxFinal.tFinalScene, _fxGBuffer.tNormal_Depth, _fxGBuffer.tVelocity);
 
 
             //------------------------------------------------------
@@ -286,12 +296,16 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
-                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 3, 3);
-                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 2, 2);
-                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 1, 1);
-                _fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 0, 0);
-                //_fxQuad.render_Texture(_fxGBuffer.tNormal_Depth, 0.25f, 1);
-                //_fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+
+                _fxQuad.render_Texture(_fxVXGI.tConeTrace, 0.33f, 2);
+                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+
+
+                // CSM Cascades
+                //_fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 3, 3);
+                //_fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 2, 2);
+                //_fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 1, 1);
+                //_fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 0, 0);
             }
 
         }

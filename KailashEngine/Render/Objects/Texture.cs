@@ -350,6 +350,19 @@ namespace KailashEngine.Render.Objects
 
 
         //------------------------------------------------------
+        // Unloading
+        //------------------------------------------------------
+        public void clear()
+        {
+            Vector4 clear_value = Vector4.Zero;
+            for(int i =0; i < _max_mipmap_levels; i++)
+            {
+                GL.ClearTexImage(_id, i, _pf, _pt, ref clear_value);
+            }
+        }
+
+
+        //------------------------------------------------------
         // Binding
         //------------------------------------------------------
 
@@ -388,5 +401,6 @@ namespace KailashEngine.Render.Objects
         {
             GL.Arb.MakeTextureHandleNonResident(_handle);
         }
+
     }
 }
