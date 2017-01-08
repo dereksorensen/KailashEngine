@@ -1,10 +1,9 @@
 ﻿
 
-out vec4 color;
 
 
 //layout(binding = 7, r32ui) coherent volatile uniform uimage3D volumeTexture;
-layout(binding = 7, rgba8) uniform image3D volumeTexture;
+writeonly uniform image3D sampler0;
 //layout(binding = 6, r32ui) coherent volatile uniform uimage3D volumeTexture_normal;
 
 
@@ -112,7 +111,7 @@ void main()
 
 
 
-    ivec2 viewportSize = imageSize(volumeTexture).xy;
+    ivec2 viewportSize = imageSize(sampler0).xy;
     vec2 bboxMin = floor((g_BBox.xy * 0.5 + 0.5) * viewportSize);
 	vec2 bboxMax = ceil((g_BBox.zw * 0.5 + 0.5) * viewportSize);
 
@@ -138,16 +137,15 @@ void main()
 		}
 
 
-		vec3 fragmentColor = diffuse.xyz * emission_strength;
-
+		vec3 fragmentColor = diffuse.xyz;// * emission_strength;
 
 		fragmentColor = clamp(fragmentColor, 0.0, 1.0);
 
 
-		//imageAtomicRGBA8Avg(volumeTexture, ivec3(coords), vec4(fragmentColor,1.0));
-		//imageAtomicRGBA8Avg(volumeTexture_normal, ivec3(coords), vec4(normal.xyz * 0.5 + 0.5,1.0));
+		//imageAtomicRGBA8Avg(sampler0, ivec3(coords), vec4(fragmentColor,1.0));
+		//imageAtomicRGBA8Avg(sampler0, ivec3(coords), vec4(normal.xyz * 0.5 + 0.5,1.0));
 
-		imageStore(volumeTexture, ivec3(coords), vec4(fragmentColor,1.0));
+		imageStore(sampler0, ivec3(coords), vec4(fragmentColor,1.0));
 
     }
     else

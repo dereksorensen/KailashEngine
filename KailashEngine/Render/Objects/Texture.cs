@@ -354,8 +354,8 @@ namespace KailashEngine.Render.Objects
         //------------------------------------------------------
         public void clear()
         {
-            Vector4 clear_value = Vector4.Zero;
-            for(int i =0; i < _max_mipmap_levels; i++)
+            Vector4 clear_value = new Vector4(0.0f);
+            for(int i = 0; i < _max_mipmap_levels + 1; i++)
             {
                 GL.ClearTexImage(_id, i, _pf, _pt, ref clear_value);
             }
@@ -380,12 +380,23 @@ namespace KailashEngine.Render.Objects
 
         public void bindImageUnit(int texture_uniform, int index, TextureAccess access, int layer)
         {
+            bool layered = false;
+            switch (_target)
+            {
+                case TextureTarget.Texture2DArray:
+                case TextureTarget.TextureCubeMap:
+                case TextureTarget.TextureCubeMapArray:
+                case TextureTarget.Texture3D:
+                    layered = true;
+                    break;
+            }
+
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             GL.BindImageTexture(
                 index,
                 _id,
                 0,
-                false,
+                layered,
                 layer,
                 access,
                 (SizedInternalFormat)_pif);

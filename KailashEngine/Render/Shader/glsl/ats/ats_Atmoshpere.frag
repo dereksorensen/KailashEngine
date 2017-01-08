@@ -305,6 +305,6 @@ void main()
 
 	//color = vec4(E, 1.0);
 	//color = vec4(color_inscatter, 1.0);
-	//color = vec4(t);
+	//color = vec4(v_TexCoord, 0.0, 1.0);
 
 }

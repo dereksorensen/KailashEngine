@@ -44,9 +44,9 @@ void main()
 	}
 
 	// Positions
-	vec4 objectPosition = vx_volume_dimensions/vx_volume_scale * v_position;
-	objectPosition = vx_volume_position * (model * objectPosition);
+	vec4 objectPosition = vx_volume_position * model * vx_volume_dimensions/vx_volume_scale * v_position;
 	v_worldPosition = objectPosition.xyz;
+	gl_Position = objectPosition;
 
 	// Texture Coordinates
 	v_TexCoord = texCoord;

@@ -4,6 +4,7 @@
 out vec4 FragColor;
 
 in vec3 ray;
+in vec2 v_TexCoord;
 
 
 //------------------------------------------------------
@@ -104,7 +105,8 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 		{
 			count++;
 
-			vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
+			//vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
+			vec4 color = texture(sampler3, voxelPos/volumeDimensions.x);
 
 
 			float sampleWeight = (1.0 - accum.w);
@@ -283,19 +285,17 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 
 void main()
 {
-	vec2 tex_coord = textureSize(sampler0, 0).xy;
+	vec4 diffuse = texture(sampler0, v_TexCoord);
+	vec4 normal_depth = texture(sampler1, v_TexCoord);
+	float depth = normal_depth.a;
+	vec3 normal = normal_depth.rgb;
+	vec4 specularSettings = texture(sampler2, v_TexCoord);
 
-	
-	vec4 diffuse = texture(sampler0, tex_coord);
-	vec4 nd = texture(sampler1, tex_coord);
-	vec3 normal = normalize(nd.xyz);
-	vec4 specularSettings = texture(sampler2, tex_coord);
-
-	vec4 world_position = (vec4(calcWorldPosition(nd.a, ray, cam_position), 1.0) / vx_volume_scale) * 0.5 + 0.5;
+	vec4 world_position = vec4(calcWorldPosition(depth, ray, cam_position), 1.0);
 
 
+	vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
 
-	vec2 rayCoords = ray.xy;
   
     // Compute ray's origin and direction from pixel coordinate.
 	vec4 ndc0 = vec4(rayCoords, -1.0, 1.0);
@@ -308,7 +308,7 @@ void main()
 
 	vec3 rayDir = world1.xyz - world0.xyz;
 	vec3 rayOrigin = (world_position.xyz).xyz;
-	vec3 reflection = normalize(reflect(normalize(rayDir), normalize(nd.xyz)));
+	vec3 reflection = normalize(reflect(normalize(rayDir), normalize(normal)));
 
 	
 
@@ -331,14 +331,14 @@ void main()
 	else
 	{
 		final = rayCast(world0.xyz, rayDir, 500.0, vec3(vx_volume_dimensions), 0);
-		final = vec4(occlusion_diffuse);
+		//final = vec4(occlusion_diffuse);
 	} 
 		//final = rayCast(world0.xyz, rayDir, 500.0, vec3(vx_volume_dimensions), 0);
 
 
 
 	FragColor = final;
-	//FragColor = vec4(rayOrigin,1.0);
+	//FragColor = vec4(rayOrigin ,1.0);
 }
 
 

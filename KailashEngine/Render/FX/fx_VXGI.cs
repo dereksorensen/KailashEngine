@@ -19,8 +19,8 @@ namespace KailashEngine.Render.FX
     class fx_VXGI : RenderEffect
     {
         // Properties
-        private float _vx_volume_dimensions = 256;
-        private float _vx_volume_scale = 1.0f;
+        private float _vx_volume_dimensions = 256f;
+        private float _vx_volume_scale = 50.0f;
 
         // Programs
         private Program _pVoxelize;
@@ -30,14 +30,12 @@ namespace KailashEngine.Render.FX
         private FrameBuffer _fConeTrace;
 
         // Textures
-        private Texture _tVoxelVolume;
+        public Texture _tVoxelVolume;
 
         private Texture _tConeTrace;
-
         public Texture tConeTrace
         {
             get { return _tConeTrace; }
-            set { _tConeTrace = value; }
         }
 
 
@@ -75,10 +73,10 @@ namespace KailashEngine.Render.FX
             // Rendering Geometry into voxel volume
             _pConeTrace = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _pLoader.path_glsl_common + "render_TextureCube.vert", null),
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_ConeTrace.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ConeTrace.frag", cone_trace_helpers)
             });
-            _pConeTrace.enable_Samplers(6);
+            _pConeTrace.enable_Samplers(4);
             _pConeTrace.addUniform("vx_volume_dimensions");
             _pConeTrace.addUniform("vx_volume_scale");
             _pConeTrace.addUniform("vx_volume_position");
@@ -93,15 +91,16 @@ namespace KailashEngine.Render.FX
             _tVoxelVolume = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
                 true, true, 
-                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte, 
-                TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float, 
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume.load();
+
 
             _tConeTrace = new Texture(TextureTarget.Texture2D,
                 _resolution.H, _resolution.W, 0,
                 false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
-                TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tConeTrace.load();
 
             _fConeTrace = new FrameBuffer("VXGI - Cone Trace");
@@ -173,6 +172,8 @@ namespace KailashEngine.Render.FX
 
         public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
         {
+
+
             _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);
 
             GL.Viewport(0, 0, _tConeTrace.width, _tConeTrace.height);
@@ -192,7 +193,7 @@ namespace KailashEngine.Render.FX
                 Matrix4.CreateScale(_vx_volume_scale / _vx_volume_dimensions * scaler);
 
 
-            Matrix4 modelView2 = Matrix4.CreateTranslation(Vector3.Zero + camera_spatial.position);
+            Matrix4 modelView2 = Matrix4.CreateTranslation(Vector3.Zero);
             Matrix4 invMVP = Matrix4.Invert(temp_voxelViewShift * modelView2 * camera_spatial.model_view * camera_spatial.perspective);
             GL.UniformMatrix4(_pConeTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
 
