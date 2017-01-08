@@ -297,7 +297,7 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
 
-                _fxQuad.render_Texture(_fxVXGI.tConeTrace, 0.33f, 2);
+                _fxQuad.render_Texture(_fxVXGI.tConeTrace, 0.5f, 1);
                 //_fxQuad.render_Texture(_fxVXGI._tVoxelVolume, 0.33f, 1, 150);
                 //_fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 2);
                 //_fxQuad.render_Texture(_fxSkyBox.iSkyBox.texture, 0.25f, 1);

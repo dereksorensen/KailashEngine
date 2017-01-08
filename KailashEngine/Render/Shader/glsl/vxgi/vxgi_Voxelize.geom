@@ -121,6 +121,7 @@ void main()
 	// Conservtive Rasterization
 	expandTriangle(PixelDiagonal, screenPos);
 
+
     // Output triangle.
 	for(int i = 0; i < 3; i++)
 	{

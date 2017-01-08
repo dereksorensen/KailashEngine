@@ -22,16 +22,14 @@ layout(std140, binding = 1) uniform cameraSpatials
 };
 
 
-uniform sampler2D sampler0;		// Diffuse Texture
-uniform sampler2D sampler1;		// Normal Texture
-uniform sampler2D sampler2;		// Specular Texture
+uniform sampler2D sampler0;		// Normal Texture
+uniform sampler2D sampler1;		// Specular Texture
 
-uniform sampler3D sampler3;		// Voxel Volume
+uniform sampler3D sampler2;		// Voxel Volume
 
 
 uniform float vx_volume_dimensions;
 uniform float vx_volume_scale;
-uniform vec3 vx_volume_position;
 uniform mat4 vx_inv_view_perspective;
 
 
@@ -105,8 +103,7 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 		{
 			count++;
 
-			//vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
-			vec4 color = texture(sampler3, voxelPos/volumeDimensions.x);
+			vec4 color = textureLod(sampler2, voxelPos/volumeDimensions.x, displayMipLevel);
 
 
 			float sampleWeight = (1.0 - accum.w);
@@ -172,7 +169,7 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 			vec3 offset = dir * dist;
 			vec3 samplePos = origin + offset;
 
-			vec4 color = textureLod(sampler3, samplePos, sampleLOD);
+			vec4 color = textureLod(sampler2, samplePos, sampleLOD);
 
 
 			//accum.w = accum.w * (sampleLOD/2.0);
@@ -272,10 +269,10 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 	float intensity = 1.0;
 
 	float maxDist = 0.3;
-	float coneRatio = (1.0) / specular_settings.a;
+	float coneRatio = (0.0002) / specular_settings.a;
 	coneRatio = clamp(coneRatio, 0.1, 1.0);
 
-	vec3 shift = ((reflection / dot(reflection,normal)) / 256.0);
+	vec3 shift = ((reflection / dot(reflection,normal)) / 256.0) * 10000.0;
 	vec4 specular = coneTrace(rayOrigin, reflection, vec3(vx_volume_dimensions), maxDist, coneRatio) * intensity;
 	specular *= vec4(specular_settings.xyz,1.0);
 
@@ -285,13 +282,12 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 
 void main()
 {
-	vec4 diffuse = texture(sampler0, v_TexCoord);
-	vec4 normal_depth = texture(sampler1, v_TexCoord);
+	vec4 normal_depth = texture(sampler0, v_TexCoord);
 	float depth = normal_depth.a;
 	vec3 normal = normal_depth.rgb;
-	vec4 specularSettings = texture(sampler2, v_TexCoord);
+	vec4 specularSettings = texture(sampler1, v_TexCoord);
 
-	vec4 world_position = vec4(calcWorldPosition(depth, ray, cam_position), 1.0);
+	vec4 world_position = (vec4(calcWorldPosition(depth, ray, cam_position), 1.0) / vx_volume_scale) * 0.5 + 0.5;
 
 
 	vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
@@ -334,7 +330,6 @@ void main()
 		//final = vec4(occlusion_diffuse);
 	} 
 		//final = rayCast(world0.xyz, rayDir, 500.0, vec3(vx_volume_dimensions), 0);
-
 
 
 	FragColor = final;

@@ -150,7 +150,7 @@ void main()
     }
     else
     {
-        //discard;
+        discard;
     }
 
 }

@@ -126,6 +126,19 @@ namespace KailashEngine.Render.FX
 
         }
 
+        private Vector3 voxelSnap(Vector3 vector)
+        {
+            Vector3 temp_vector = vector;
+            float scaler = _vx_volume_dimensions / (_vx_volume_scale * 10.0f);
+            temp_vector *= scaler;
+            temp_vector.X = (float)Math.Floor(temp_vector.X);
+            temp_vector.Y = (float)Math.Floor(temp_vector.Y);
+            temp_vector.Z = (float)Math.Floor(temp_vector.Z);
+            temp_vector /= scaler;
+
+            return temp_vector;
+        }
+
 
         public void voxelizeScene(Scene scene, Vector3 camera_position)
         {
@@ -137,10 +150,11 @@ namespace KailashEngine.Render.FX
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthClamp);
 
-
             GL.Viewport(0, 0, _tVoxelVolume.width, _tVoxelVolume.height);
 
+
             _pVoxelize.bind();
+
 
 
             float radius = _vx_volume_dimensions;
@@ -150,16 +164,15 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pVoxelize.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
             GL.Uniform1(_pVoxelize.getUniform("vx_volume_scale"), _vx_volume_scale);
 
-            Matrix4 voxel_position = Matrix4.CreateTranslation(Vector3.Zero);
-            GL.UniformMatrix4(_pVoxelize.getUniform("vx_volume_position"), false, ref voxel_position);
+
+            Matrix4 voxel_volume_position = Matrix4.CreateTranslation(voxelSnap(camera_position));
+            GL.UniformMatrix4(_pVoxelize.getUniform("vx_volume_position"), false, ref voxel_volume_position);
 
 
             _tVoxelVolume.bindImageUnit(_pVoxelize.getSamplerUniform(0), 0, TextureAccess.WriteOnly);
 
 
-
             scene.renderMeshes(BeginMode.Triangles, _pVoxelize);
-
 
 
             GL.DepthMask(true);
@@ -172,7 +185,7 @@ namespace KailashEngine.Render.FX
 
         public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
         {
-
+            //_tVoxelVolume.generateMipMap();
 
             _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);
 
@@ -193,8 +206,8 @@ namespace KailashEngine.Render.FX
                 Matrix4.CreateScale(_vx_volume_scale / _vx_volume_dimensions * scaler);
 
 
-            Matrix4 modelView2 = Matrix4.CreateTranslation(Vector3.Zero);
-            Matrix4 invMVP = Matrix4.Invert(temp_voxelViewShift * modelView2 * camera_spatial.model_view * camera_spatial.perspective);
+            Matrix4 voxel_volume_position = Matrix4.CreateTranslation(voxelSnap(camera_spatial.position));
+            Matrix4 invMVP = Matrix4.Invert(temp_voxelViewShift * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
             GL.UniformMatrix4(_pConeTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
 
 
@@ -204,11 +217,11 @@ namespace KailashEngine.Render.FX
             GL.Uniform1(_pConeTrace.getUniform("maxMipLevels"), _tVoxelVolume.getMaxMipMap());
 
 
-            diffuse_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
-            normal_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
-            specular_texture.bind(_pConeTrace.getSamplerUniform(2), 2);
 
-            _tVoxelVolume.bind(_pConeTrace.getSamplerUniform(3), 3);
+            normal_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
+            specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
+
+            _tVoxelVolume.bind(_pConeTrace.getSamplerUniform(2), 2);
 
 
 
