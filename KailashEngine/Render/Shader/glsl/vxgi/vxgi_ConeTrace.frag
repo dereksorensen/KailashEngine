@@ -266,11 +266,21 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 	float coneRatio = (0.009) / specular_settings.a;
 	coneRatio = clamp(coneRatio, 0.1, 1.0);
 
-	vec3 shift = ((normal / dot(normal,normal)) / 200.0);
+	vec3 shift = ((normal) / (vx_volume_dimensions));
 	vec4 specular = coneTrace(rayOrigin + shift, reflection, vec3(vx_volume_dimensions), maxDist, coneRatio) * intensity;
 	specular *= vec4(specular_settings.xyz,1.0);
 
 	return specular;
+}
+
+vec3 voxelSnap(vec3 vector, float scale)
+{
+    vector *= scale;
+    vector.x = floor(vector.x);
+    vector.y = floor(vector.y);
+    vector.z = floor(vector.z);
+    vector /= scale;
+	return vector;
 }
 
 
@@ -282,18 +292,10 @@ void main()
 	vec4 specularSettings = texture(sampler1, v_TexCoord);
 
 
-	vec3 cpos = cam_position;
-	float scaler = vx_volume_dimensions / (vx_volume_scale * 10.0f);
-    cpos *= scaler;
-    cpos.x = floor(cpos.x);
-    cpos.y = floor(cpos.y);
-    cpos.z = floor(cpos.z);
-    cpos /= scaler;
+	vec3 cam_position_snapped = voxelSnap(cam_position, vx_volume_dimensions / (vx_volume_scale * 10.0f));
 
 	vec3 world_position = calcWorldPosition(depth, ray, cam_position);
-	world_position = ((world_position) / (vx_volume_scale)) * 0.5 + 0.5;
-
-
+	world_position = ((world_position + cam_position_snapped) / (vx_volume_scale)) * 0.5 + 0.5;
 
 	vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
 

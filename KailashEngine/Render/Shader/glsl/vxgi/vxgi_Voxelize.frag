@@ -141,7 +141,7 @@ void main()
 
 		vec3 fragmentColor = diffuse.xyz;// * emission_strength;
 
-		fragmentColor = clamp(fragmentColor, 0.0, 1.0);
+		//fragmentColor = clamp(fragmentColor, 0.0, 1.0);
 
 
 		//imageAtomicRGBA8Avg(sampler0, ivec3(coords), vec4(fragmentColor,1.0));

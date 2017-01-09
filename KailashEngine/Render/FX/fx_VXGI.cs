@@ -146,8 +146,8 @@ namespace KailashEngine.Render.FX
             temp_vector.Z = (float)Math.Floor(temp_vector.Z);
             temp_vector /= scaler;
 
-            //return temp_vector;
-            return Vector3.Zero;
+            return temp_vector;
+            //return Vector3.Zero;
         }
 
 
@@ -185,7 +185,7 @@ namespace KailashEngine.Render.FX
             _tVoxelVolume.bindImageUnit(_pVoxelize.getSamplerUniform(0), 0, TextureAccess.WriteOnly);
 
 
-            scene.renderMeshes(BeginMode.Triangles, _pVoxelize);
+            scene.render(BeginMode.Triangles, _pVoxelize);
 
 
             GL.DepthMask(true);
