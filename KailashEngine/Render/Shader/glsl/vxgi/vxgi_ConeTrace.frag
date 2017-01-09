@@ -30,6 +30,7 @@ uniform sampler3D sampler2;		// Voxel Volume
 
 uniform float vx_volume_dimensions;
 uniform float vx_volume_scale;
+uniform vec3 vx_volume_position;
 uniform mat4 vx_inv_view_perspective;
 
 
@@ -77,9 +78,6 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 	if (abs(rayDir.z) <= epsilon) rayDir.z = epsilon * sign(rayDir.z);
 
 
-	vec3 finalColor = vec3(0.0);
-
-
 	// Calculate inverse of ray direction once.
 	vec3 invRayDir = 1.0 / rayDir;
 
@@ -99,7 +97,7 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 
 
 		// Traverse through voxels until ray exits volume.
-		while (all(greaterThanEqual(voxelPos, vec3(0.0))) && all(lessThan(voxelPos, volumeDimensions)) && accum.a < 0.8)
+		while (all(greaterThanEqual(voxelPos, vec3(0.0))) && all(lessThan(voxelPos, volumeDimensions)) && accum.a < 1.0)
 		{
 			count++;
 
@@ -107,13 +105,11 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 
 
 			float sampleWeight = (1.0 - accum.w);
-			accum += vec4(color);
+			accum += vec4(color * sampleWeight);
 
 			/*
 			if (color.a > 0.0)
 			{
-				finalColor += color.xyz;
-				count /= 10.0;
 				return vec4(color);
 			}
 			*/
@@ -171,15 +167,13 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 
 			vec4 color = textureLod(sampler2, samplePos, sampleLOD);
 
-
-			//accum.w = accum.w * (sampleLOD/2.0);
+			accum.w = accum.w * (sampleLOD/2.0);
 			float sampleWeight = (1.0 - accum.w);
 			accum += vec4(color * sampleWeight);
 
 			dist += sampleDiameter;
 
 		}
-
 	}
 
 	float occlusion = accum.w;
@@ -268,12 +262,12 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 
 	float intensity = 1.0;
 
-	float maxDist = 0.3;
-	float coneRatio = (0.0002) / specular_settings.a;
+	float maxDist = 0.9;
+	float coneRatio = (0.009) / specular_settings.a;
 	coneRatio = clamp(coneRatio, 0.1, 1.0);
 
-	vec3 shift = ((reflection / dot(reflection,normal)) / 256.0) * 10000.0;
-	vec4 specular = coneTrace(rayOrigin, reflection, vec3(vx_volume_dimensions), maxDist, coneRatio) * intensity;
+	vec3 shift = ((normal / dot(normal,normal)) / 200.0);
+	vec4 specular = coneTrace(rayOrigin + shift, reflection, vec3(vx_volume_dimensions), maxDist, coneRatio) * intensity;
 	specular *= vec4(specular_settings.xyz,1.0);
 
 	return specular;
@@ -287,7 +281,18 @@ void main()
 	vec3 normal = normal_depth.rgb;
 	vec4 specularSettings = texture(sampler1, v_TexCoord);
 
-	vec4 world_position = (vec4(calcWorldPosition(depth, ray, cam_position), 1.0) / vx_volume_scale) * 0.5 + 0.5;
+
+	vec3 cpos = cam_position;
+	float scaler = vx_volume_dimensions / (vx_volume_scale * 10.0f);
+    cpos *= scaler;
+    cpos.x = floor(cpos.x);
+    cpos.y = floor(cpos.y);
+    cpos.z = floor(cpos.z);
+    cpos /= scaler;
+
+	vec3 world_position = calcWorldPosition(depth, ray, cam_position);
+	world_position = ((world_position) / (vx_volume_scale)) * 0.5 + 0.5;
+
 
 
 	vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
@@ -302,9 +307,9 @@ void main()
 	world1 /= world1.w;
 
 
-	vec3 rayDir = world1.xyz - world0.xyz;
-	vec3 rayOrigin = (world_position.xyz).xyz;
-	vec3 reflection = normalize(reflect(normalize(rayDir), normalize(normal)));
+	vec3 rayDir = normalize(world1.xyz - world0.xyz);
+	vec3 rayOrigin = world_position;
+	vec3 reflection = normalize(reflect(normalize(ray), normalize(normal)));
 
 	
 
@@ -333,7 +338,8 @@ void main()
 
 
 	FragColor = final;
-	//FragColor = vec4(rayOrigin ,1.0);
+	//FragColor = vec4(rayDir ,1.0);
+	//FragColor = vec4(occlusion_diffuse);
 }
 
 

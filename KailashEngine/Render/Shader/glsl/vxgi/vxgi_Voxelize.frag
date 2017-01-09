@@ -3,8 +3,9 @@
 
 
 //layout(binding = 7, r32ui) coherent volatile uniform uimage3D volumeTexture;
-writeonly uniform image3D sampler0;
 //layout(binding = 6, r32ui) coherent volatile uniform uimage3D volumeTexture_normal;
+
+writeonly uniform image3D sampler0;
 
 
 
@@ -26,6 +27,7 @@ layout(std140, binding = 2) uniform materialTextures
 {
 	sampler2D tex[256];
 };
+
 
 uniform int enable_diffuse_texture;
 uniform int diffuse_texture_unit;

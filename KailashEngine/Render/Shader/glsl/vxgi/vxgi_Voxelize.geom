@@ -64,7 +64,7 @@ void expandTriangle(float PixelDiagonal, inout vec4 screenPos[3])
 
 void main() 
 {
-	float PixelDiagonal = 1.0/float(vx_volume_dimensions);
+	float PixelDiagonal = 1.0 / vx_volume_dimensions;
 	
     // Calculate swizzle matrix based on eye space normal's dominant direction.
     vec3 eyeSpaceV1 = normalize(gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz);
@@ -119,7 +119,7 @@ void main()
 
 
 	// Conservtive Rasterization
-	expandTriangle(PixelDiagonal, screenPos);
+	//expandTriangle(PixelDiagonal, screenPos);
 
 
     // Output triangle.
