@@ -295,33 +295,30 @@ void main()
 	vec3 cam_position_snapped = voxelSnap(cam_position, vx_volume_dimensions / (vx_volume_scale * 10.0f));
 
 	vec3 world_position = calcWorldPosition(depth, ray, cam_position);
-	world_position = ((world_position + cam_position_snapped) / (vx_volume_scale)) * 0.5 + 0.5;
+	vec3 world_position_biased = ((world_position + cam_position_snapped) / (vx_volume_scale)) * 0.5 + 0.5;
 
 	vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
 
   
     // Compute ray's origin and direction from pixel coordinate.
 	vec4 ndc0 = vec4(rayCoords, -1.0, 1.0);
-	vec4 ndc1 = vec4(rayCoords, -0.5, 1.0);
 	vec4 world0 = vx_inv_view_perspective * ndc0;
-	vec4 world1 = vx_inv_view_perspective * ndc1;
 	world0 /= world0.w;
-	world1 /= world1.w;
 
 
-	vec3 rayDir = normalize(world1.xyz - world0.xyz);
-	vec3 rayOrigin = world_position;
+
+	vec3 rayOrigin = world_position_biased;
 	vec3 reflection = normalize(reflect(normalize(ray), normalize(normal)));
 
 	
 
 	vec4 final = vec4(0.0);
 
-		vec4 indirect_diffuse = ct_diffuse(rayOrigin, normal);
-		vec4 indirect_specular = ct_specular(rayOrigin, reflection, normal, specularSettings);
+	vec4 indirect_diffuse = ct_diffuse(rayOrigin, normal);
+	vec4 indirect_specular = ct_specular(rayOrigin, reflection, normal, specularSettings);
 
-		float occlusion_diffuse = 1.0 - indirect_diffuse.a;
-		float occlusion_specular = 1.0 - indirect_specular.a;
+	float occlusion_diffuse = 1.0 - indirect_diffuse.a;
+	float occlusion_specular = 1.0 - indirect_specular.a;
 
 	if (displayVoxels == 0)
 	{
@@ -333,14 +330,12 @@ void main()
 	}
 	else
 	{
-		final = rayCast(world0.xyz, rayDir, 500.0, vec3(vx_volume_dimensions), 0);
+		final = rayCast(world0.xyz, ray, 500.0, vec3(vx_volume_dimensions), 0);
 		//final = vec4(occlusion_diffuse);
-	} 
-		//final = rayCast(world0.xyz, rayDir, 500.0, vec3(vx_volume_dimensions), 0);
-
+	}
 
 	FragColor = final;
-	//FragColor = vec4(rayDir ,1.0);
+	//FragColor = vec4(ray ,1.0);
 	//FragColor = vec4(occlusion_diffuse);
 }
 
