@@ -140,7 +140,6 @@ void main()
 
 
 		vec3 fragmentColor = diffuse.xyz;// * emission_strength;
-
 		//fragmentColor = clamp(fragmentColor, 0.0, 1.0);
 
 

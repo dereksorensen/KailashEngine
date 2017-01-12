@@ -116,6 +116,35 @@ vec3 calcRimLighting(vec3 N, vec3 E, float light_intensity)
 //------------------------------------------------------
 // Lighting Calculation
 //------------------------------------------------------
+float calcSpotLightCone(vec3 L, vec3 light_direction, float outer_angle, float blur_amount)
+{
+	// Amount to blur the edge of the cone
+	float spot_blur = blur_amount * (outer_angle / MATH_HALF_PI);
+
+	// Add tiny bit to outer angle so it's rounded
+	float spotAngle_outer = outer_angle - 0.01;
+	float spotAngle_inner = spotAngle_outer + spot_blur;
+
+	float spotAngle = acos(dot(light_direction,-L));
+
+	float spotAngleDifference = spotAngle_inner - spotAngle_outer;
+	float spotLightBlur = (-spotAngle + spotAngle_outer) / spotAngleDifference;
+
+	return clamp(spotLightBlur,0.0,1.0);
+}
+
+float calcAttenuation(float light_intensity, float light_falloff, float light_distance_2)
+{
+	float light_falloff_2 = light_falloff * light_falloff;
+
+	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
+	attenuation *= attenuation;
+	attenuation *= attenuation;
+	attenuation *= light_intensity;
+	return attenuation;
+}
+
+
 void calcLighting(
 	vec2 tex_coord, 
 	vec3 world_position, vec3 world_normal, 
@@ -148,12 +177,7 @@ void calcLighting(
 	//------------------------------------------------------
 	// Attenuation
 	//------------------------------------------------------
-	float light_falloff_2 = light_falloff * light_falloff;
-
-	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
-	attenuation *= attenuation;
-	attenuation *= attenuation;
-	attenuation *= light_intensity;
+	float attenuation = calcAttenuation(light_intensity, light_falloff, light_distance_2);
 
 
 	//------------------------------------------------------

@@ -57,24 +57,6 @@ uniform float light_spot_blur;
 uniform int shadow_id;
 
 
-float calcSpotLightCone(vec3 L, float outer_angle, float blur_amount)
-{
-	// Amount to blur the edge of the cone
-	float spot_blur = blur_amount * (outer_angle / MATH_HALF_PI);
-
-	// Add tiny bit to outer angle so it's rounded
-	float spotAngle_outer = outer_angle - 0.01;
-	float spotAngle_inner = spotAngle_outer + spot_blur;
-
-	float spotAngle = acos(dot(light_direction,-L));
-
-	float spotAngleDifference = spotAngle_inner - spotAngle_outer;
-	float spotLightBlur = (-spotAngle + spotAngle_outer) / spotAngleDifference;
-
-	return clamp(spotLightBlur,0.0,1.0);
-}
-
-
 void main()
 {
 	// Calculate Texture Coordinates
@@ -109,7 +91,7 @@ void main()
 		specular_properties,
 		L, temp_diffuse, temp_specular);
 
-	visibility *= calcSpotLightCone(L, light_spot_angle, light_spot_blur);
+	visibility *= calcSpotLightCone(L, light_direction, light_spot_angle, light_spot_blur);
 
 	diffuse = temp_diffuse * visibility;
 	specular = temp_specular * visibility;
