@@ -412,6 +412,19 @@ namespace KailashEngine
 
             inputBuffer();
 
+
+
+
+            // Flashlight stuff
+
+            Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
+
+            _game.scene.flashlight.unique_mesh.transformation = Matrix4.Invert(_game.player.character.spatial.transformation);
+            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Invert(_game.player.character.spatial.transformation);
+            _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
+            _game.scene.flashlight.spatial.rotation_matrix = Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
+
+
             // Update Scene
             _game.scene.update(_game.player.camera.spatial);
 
@@ -432,14 +445,6 @@ namespace KailashEngine
             _game.player.camera.previous_perspective_matrix = _game.player.camera.spatial.perspective;
 
 
-            // Flashlight stuff
-
-            Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
-
-            _game.scene.flashlight.unique_mesh.transformation = Matrix4.Invert(_game.player.character.spatial.transformation);
-            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Invert(_game.player.character.spatial.transformation);
-            _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
-            _game.scene.flashlight.spatial.rotation_matrix = Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
             
 
 

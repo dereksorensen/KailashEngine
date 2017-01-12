@@ -1,0 +1,145 @@
+﻿
+layout (local_size_x = 16, local_size_y = 16) in;
+
+
+
+//------------------------------------------------------
+// Camera Spatials
+//------------------------------------------------------
+layout(std140, binding = 1) uniform cameraSpatials
+{
+	mat4 view;
+	mat4 perspective;
+	mat4 inv_view_perspective;
+	mat4 previous_view_persepctive;
+	mat4 inv_previous_view_persepctive;
+	vec3 cam_position;
+	vec3 cam_look;
+};
+
+
+//------------------------------------------------------
+// Shadow Matrices - Spot
+//------------------------------------------------------
+struct ShadowData {
+  mat4 view;
+  mat4 perspective;
+  vec4 light_position;
+};
+layout(std140, binding = 3) uniform shadowMatrices
+{
+	ShadowData shadow_data[32];
+};
+
+
+
+
+writeonly uniform image3D sampler0;		// Voxel Volume
+uniform sampler2DArray sampler1;		// Shadow Depth
+writeonly uniform image2D sampler2;		// Test Texture
+uniform sampler3D sampler3;		// Voxel Volume
+
+
+uniform vec2 texture_size;
+
+uniform float vx_volume_dimensions;
+uniform float vx_volume_scale;
+uniform vec3 vx_volume_position;
+
+uniform vec3 light_position;
+uniform vec3 light_direction;
+uniform vec3 light_color;
+uniform float light_intensity;
+uniform float light_falloff;
+uniform float light_spot_angle;
+uniform float light_spot_blur;
+
+uniform int light_shadow_id;
+
+uniform mat4 light_inv_view_perspective;
+
+void main() 
+{
+	ivec2 i_TexCoord = ivec2(gl_GlobalInvocationID.xy);
+	vec2 t_TexCoord = i_TexCoord / texture_size;
+
+	vec2 depth_packed = texture(sampler1, vec3(t_TexCoord, 0.0)).xy;
+	float depth = unpack2(depth_packed);
+
+
+	vec3 view_ray = normalize((light_inv_view_perspective * vec4(t_TexCoord * 2.0 - 1.0, 1.0, 1.0)).xyz);
+
+
+	vec3 world_position = calcWorldPosition(depth, view_ray, -shadow_data[light_shadow_id].light_position.xyz);
+
+
+	vec4 sPosition =  vec4((world_position - vx_volume_position), 1.0);
+	vec3 volumeTC = ((sPosition.xyz / vx_volume_scale) * 0.5 + 0.5) * vx_volume_dimensions;
+
+	vec3 diffuse = texelFetch(sampler3, ivec3(volumeTC), 0).xyz;
+
+
+	//------------------------------------------------------
+	// Lighting
+	//------------------------------------------------------
+
+	// Light to Object Vector
+	vec3 light_to_object = (shadow_data[light_shadow_id].light_position.xyz - world_position);
+
+	// Light to Object Distance Squared
+	float light_distance_2 = dot(light_to_object, light_to_object);
+
+	// Light to Object Distance
+	float light_distance = sqrt(light_distance_2);
+
+	// Light to Object Direction
+	vec3 L = light_to_object / light_distance;
+
+
+	float attenuation = calcAttenuation(light_intensity, light_falloff, light_distance_2);
+
+
+	vec3 voxel_color = diffuse * attenuation;
+	voxel_color = voxel_color * calcSpotLightCone(L, light_direction, light_spot_angle, light_spot_blur);
+
+
+	imageStore(sampler2, i_TexCoord, vec4(world_position, 1.0));
+	imageStore(sampler0, ivec3(volumeTC), vec4(voxel_color, 1.0));
+
+/*
+	vec3 L = vec3(0.0);
+	float atten = calcAttenuation(100.0/lightIntensity, wPosition.xyz, L) * lightIntensity;
+
+
+	float depth = ld;
+	float outerAngle = 0.85;
+	float blur = 5.0;
+
+
+	vec4 mod = lightColor * spotLightCone(L, lightDirection, depth, outerAngle, blur) * atten;
+
+
+	vec4 diffuse;
+
+
+	//Objects Texture
+	diffuse = vec4(diffuseColor,1.0);
+	if(enable_DiffuseMap == 1)
+	{
+		vec4 diffuseTexture = (texture(diffuseTexture, v_TexCoord));
+		diffuse = diffuseTexture;
+	}
+	else if (enable_DiffuseMap == 2)
+	{
+		vec4 diffuseTexture = (texture(diffuseTexture, v_TexCoord)) *  vec4(diffuseColor,1.0);
+		diffuse = diffuseTexture;
+	}
+
+	vec4 sPosition =  vec4(wPosition.xyz - voxelVolumePosition, 1.0);
+	vec3 volumeTC = ((sPosition.xyz / voxelScale) * 0.5 + 0.5) * voxelDimensions;
+
+
+	imageStore(volumeTexture, ivec3(volumeTC), vec4((diffuse * mod).xyz,1.0));	
+*/
+
+}

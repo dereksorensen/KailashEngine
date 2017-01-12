@@ -203,8 +203,8 @@ mat4 rotationMatrix(vec3 axis, float angle)
 vec4 diffuseCone(float numCones, float angle, vec3 rayOrigin, vec3 normal)
 {
 	float PI = 3.14159265359;
-	float maxDist = 0.15;
-	float coneRatio = 0.5;
+	float maxDist = 0.55;
+	float coneRatio = 0.7;
 	float shiftAmount = 200.0;
 
 	float count = 0;
@@ -250,7 +250,7 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 	sum = diffuseCone(5, 50, rayOrigin, normal);
 	sum += diffuseCone(3, 25, rayOrigin, normal);
 
-	sum /= vec4(2.0);
+	sum /= vec4(1.0);
 
 	//float occlusion = sum.a * sum.a;
 
@@ -263,7 +263,7 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 	float intensity = 1.0;
 
 	float maxDist = 0.9;
-	float coneRatio = (0.009) / specular_settings.a;
+	float coneRatio = (0.001) / specular_settings.a;
 	coneRatio = clamp(coneRatio, 0.1, 1.0);
 
 	vec3 shift = ((normal) / (vx_volume_dimensions));
@@ -335,7 +335,7 @@ void main()
 	}
 
 	FragColor = final;
-	//FragColor = vec4(ray ,1.0);
+	//FragColor = vec4(v_TexCoord, 0.0 ,1.0);
 	//FragColor = vec4(occlusion_diffuse);
 }
 

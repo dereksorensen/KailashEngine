@@ -160,7 +160,7 @@ namespace KailashEngine.Render.FX
             {
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Accumulation.frag", null)
             });
-            _pAccumulation.enable_Samplers(4);
+            _pAccumulation.enable_Samplers(5);
         }
 
         protected override void load_Buffers()
@@ -415,7 +415,7 @@ namespace KailashEngine.Render.FX
             //GL.Disable(EnableCap.DepthTest);
         }
 
-        public void pass_LightAccumulation(fx_Quad quad, Texture atmoshpere_texture, FrameBuffer fFinalScene)
+        public void pass_LightAccumulation(fx_Quad quad, Texture atmoshpere_texture, Texture indirect_texture, FrameBuffer fFinalScene)
         {
             fFinalScene.bind(DrawBuffersEnum.ColorAttachment0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -424,10 +424,11 @@ namespace KailashEngine.Render.FX
 
             _pAccumulation.bind();
 
-            _tLighting_Diffuse.bind(_pAccumulation.getSamplerUniform(0), 0);
-            _tLighting_Specular.bind(_pAccumulation.getSamplerUniform(1), 1);
-            atmoshpere_texture.bind(_pAccumulation.getSamplerUniform(2), 2);
-            _tDiffuse_ID.bind(_pAccumulation.getSamplerUniform(3), 3);
+            _tDiffuse_ID.bind(_pAccumulation.getSamplerUniform(0), 0);
+            _tLighting_Diffuse.bind(_pAccumulation.getSamplerUniform(1), 1);
+            _tLighting_Specular.bind(_pAccumulation.getSamplerUniform(2), 2);
+            atmoshpere_texture.bind(_pAccumulation.getSamplerUniform(3), 3);
+            indirect_texture.bind(_pAccumulation.getSamplerUniform(4), 4);
 
             quad.render();
         }

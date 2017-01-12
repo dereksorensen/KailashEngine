@@ -13,6 +13,7 @@ using KailashEngine.Render.Shader;
 using KailashEngine.Render.Objects;
 using KailashEngine.Output;
 using KailashEngine.World;
+using KailashEngine.World.Lights;
 
 namespace KailashEngine.Render.FX
 {
@@ -26,12 +27,14 @@ namespace KailashEngine.Render.FX
         // Programs
         private Program _pVoxelize;
         private Program _pConeTrace;
+        private Program _pInjection_SPOT;
 
         // Frame Buffers
         private FrameBuffer _fConeTrace;
 
         // Textures
         public Texture _tVoxelVolume;
+        public Texture _tVoxelVolume_Diffuse;
 
         private Texture _tConeTrace;
         public Texture tConeTrace
@@ -39,6 +42,7 @@ namespace KailashEngine.Render.FX
             get { return _tConeTrace; }
         }
 
+        public Texture _tTemp;
 
 
         public fx_VXGI(ProgramLoader pLoader, string glsl_effect_path, Resolution full_resolution)
@@ -61,6 +65,12 @@ namespace KailashEngine.Render.FX
             {
                 _pLoader.path_glsl_common_helpers + "positionFromDepth.include"
             };
+            string[] injection_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
+                _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
+                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include"
+            };
 
             // Rendering Geometry into voxel volume
             _pVoxelize = _pLoader.createProgram(new ShaderFile[]
@@ -70,14 +80,14 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_Voxelize.frag", null, geometry_extensions)
             });
             _pVoxelize.enable_MeshLoading();
-            _pVoxelize.enable_Samplers(1);
+            _pVoxelize.enable_Samplers(2);
             _pVoxelize.addUniform("vx_volume_dimensions");
             _pVoxelize.addUniform("vx_volume_scale");
             _pVoxelize.addUniform("vx_volume_position");
             _pVoxelize.addUniform("vx_projection");
 
 
-            // Rendering Geometry into voxel volume
+            // Cone Trace through voxel volume
             _pConeTrace = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_ConeTrace.vert", null),
@@ -91,6 +101,21 @@ namespace KailashEngine.Render.FX
             _pConeTrace.addUniform("displayVoxels");
             _pConeTrace.addUniform("displayMipLevel");
             _pConeTrace.addUniform("maxMipLevels");
+
+            // Light Injection
+            _pInjection_SPOT = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection_SPOT.comp", injection_helpers)
+            });
+            _pInjection_SPOT.enable_Samplers(4);
+            _pInjection_SPOT.enable_LightCalculation();
+            _pInjection_SPOT.addUniform("texture_size");
+            _pInjection_SPOT.addUniform("light_inv_view_perspective");
+            _pInjection_SPOT.addUniform("light_shadow_id");
+            _pInjection_SPOT.addUniform("vx_volume_dimensions");
+            _pInjection_SPOT.addUniform("vx_volume_scale");
+            _pInjection_SPOT.addUniform("vx_volume_position");
+
         }
 
         protected override void load_Buffers()
@@ -102,6 +127,12 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume.load();
 
+            _tVoxelVolume_Diffuse = new Texture(TextureTarget.Texture3D,
+                (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
+                false, false,
+                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tVoxelVolume_Diffuse.load();
 
             _tConeTrace = new Texture(TextureTarget.Texture2D,
                 _resolution.H, _resolution.W, 0,
@@ -115,6 +146,13 @@ namespace KailashEngine.Render.FX
             {
                 { FramebufferAttachment.ColorAttachment0, _tConeTrace }
             });
+
+            _tTemp = new Texture(TextureTarget.Texture2D,
+                _resolution.H / 2, _resolution.W / 2, 0,
+                false, false,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tTemp.load();
         }
 
         public override void load()
@@ -154,7 +192,7 @@ namespace KailashEngine.Render.FX
         public void voxelizeScene(Scene scene, Vector3 camera_position)
         {
             _tVoxelVolume.clear();
-
+            _tVoxelVolume_Diffuse.clear();
 
 
             GL.ColorMask(false, false, false, false);
@@ -183,6 +221,7 @@ namespace KailashEngine.Render.FX
 
 
             _tVoxelVolume.bindImageUnit(_pVoxelize.getSamplerUniform(0), 0, TextureAccess.WriteOnly);
+            _tVoxelVolume_Diffuse.bindImageUnit(_pVoxelize.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
 
             scene.render(BeginMode.Triangles, _pVoxelize);
@@ -239,6 +278,69 @@ namespace KailashEngine.Render.FX
 
                 quad.renderFullQuad();
             });
+        }
+
+
+        public void lightInjection(Scene scene, fx_Shadow shadow, SpatialData camera_spatial)
+        {
+            int workgroup_size = 16;
+
+            _pInjection_SPOT.bind();
+
+
+            foreach (Light light in scene.light_manager.lights_shadowed)
+            {
+                switch (light.type)
+                {
+                    case Light.type_spot:
+
+                        sLight temp_sLight = (sLight)light;
+
+
+                        GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightPosition), light.spatial.position);
+                        GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
+                        GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightColor), light.color);
+                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightIntensity), light.intensity);
+                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightFalloff), light.falloff);
+                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotAngle), light.spot_angle);
+                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
+
+
+                        GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), light.sid);
+
+                        Matrix4 ivp = Matrix4.Invert(temp_sLight.shadow_view_matrix.ClearTranslation() * temp_sLight.shadow_perspective_matrix);
+                        GL.UniformMatrix4(_pInjection_SPOT.getUniform("light_inv_view_perspective"), false, ref ivp);
+
+                        GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), _tTemp.dimensions.Xy);
+
+
+                        _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.WriteOnly);
+                        shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
+                        _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(2), 2, TextureAccess.WriteOnly);
+                        _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(3), 3);
+
+
+                        GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+                        GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
+                        GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
+
+
+                        GL.DispatchCompute((int)(_tTemp.width / workgroup_size), (int)(_tTemp.height / workgroup_size), 1);
+
+
+                        break;
+                    case Light.type_point:
+
+                        break;
+                    case Light.type_directional:
+
+                        break;
+                }
+            }
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
         }
 
     }

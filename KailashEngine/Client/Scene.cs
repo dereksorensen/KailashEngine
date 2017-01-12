@@ -119,7 +119,7 @@ namespace KailashEngine.Client
             _flashlight = new sLight(
                 "flashlight",
                 new Vector3(1.0f), 2.0f, 40.0f, MathHelper.DegreesToRadians(70.0f), 0.1f,
-                false,
+                true,
                 _world_loader.sLight_mesh, Matrix4.Identity);
 
             _light_manager.addLight(_flashlight);
