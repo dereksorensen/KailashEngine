@@ -21,7 +21,7 @@ namespace KailashEngine.Render.FX
     {
         // Properties
         private float _vx_volume_dimensions = 128.0f;
-        private float _vx_volume_scale = 50.0f;
+        private float _vx_volume_scale = 30.0f;
         private Matrix4 _vx_shift_matrix;
 
         // Programs
@@ -148,7 +148,7 @@ namespace KailashEngine.Render.FX
             });
 
             _tTemp = new Texture(TextureTarget.Texture2D,
-                _resolution.H / 2, _resolution.W / 2, 0,
+                128 * 2, 128 *2 , 0,
                 false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);

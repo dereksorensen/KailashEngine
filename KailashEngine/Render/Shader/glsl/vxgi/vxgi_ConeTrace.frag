@@ -97,12 +97,11 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 
 
 		// Traverse through voxels until ray exits volume.
-		while (all(greaterThanEqual(voxelPos, vec3(0.0))) && all(lessThan(voxelPos, volumeDimensions)) && accum.a < 1.0)
+		while (all(greaterThanEqual(voxelPos, vec3(0.0))) && all(lessThan(voxelPos, volumeDimensions)) && accum.a < 0.5)
 		{
 			count++;
 
 			vec4 color = textureLod(sampler2, voxelPos/volumeDimensions.x, displayMipLevel);
-
 
 			float sampleWeight = (1.0 - accum.w);
 			accum += vec4(color * sampleWeight);
@@ -155,19 +154,19 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 	{	
 
 		// Traverse through voxels until ray exits volume
-		while (dist <= maxDist && accum.w < 1.0)
+		while (dist <= maxDist && accum.w < 0.7)
 		{
 
 			float sampleDiameter = max(minDiameter, coneRatio * dist);
 			float sampleLOD = log2(sampleDiameter * minVoxelDiameterInv);
-			//sampleLOD = clamp(sampleLOD, 0.0, float(maxMipLevels));
+			sampleLOD = clamp(sampleLOD, 0.0, float(maxMipLevels));
 
 			vec3 offset = dir * dist;
 			vec3 samplePos = origin + offset;
 
 			vec4 color = textureLod(sampler2, samplePos, sampleLOD);
 
-			accum.w = accum.w * (sampleLOD/2.0);
+			//accum.w = accum.w * (sampleLOD/2.0);
 			float sampleWeight = (1.0 - accum.w);
 			accum += vec4(color * sampleWeight);
 
@@ -176,7 +175,7 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 		}
 	}
 
-	float occlusion = accum.w;
+	float occlusion = clamp(accum.w, 0.0, 1.0);
 
 
 	return vec4(accum.xyz, occlusion);
@@ -204,7 +203,7 @@ vec4 diffuseCone(float numCones, float angle, vec3 rayOrigin, vec3 normal)
 {
 	float PI = 3.14159265359;
 	float maxDist = 0.55;
-	float coneRatio = 0.7;
+	float coneRatio = 0.6;
 	float shiftAmount = 200.0;
 
 	float count = 0;
@@ -229,15 +228,11 @@ vec4 diffuseCone(float numCones, float angle, vec3 rayOrigin, vec3 normal)
 		vec3 ref2 = (rotationMatrix(normal, ang * PI / 180.0) * (rot1 * vec4(normal, 0.0))).xyz;
 		ref2 = normalize(ref2);
 
-		vec3 shift = ((ref2 / dot(ref2,normal)) / shiftAmount);
+		vec3 shift = ((normal / dot(ref2,normal)) / vx_volume_dimensions);
 		sum += coneTrace(rayOrigin + shift, ref2, vec3(vx_volume_dimensions), maxDist, coneRatio);
 	}
 
-	count++;
-	vec3 shift = ((normal / dot(normal,normal)) / shiftAmount);
-	sum += coneTrace(rayOrigin + shift, normal, vec3(vx_volume_dimensions), maxDist, coneRatio) * 1.414;
-
-	return sum * (0.707 / count);
+	return sum * (1.0 / count);
 }
 
 
@@ -247,8 +242,12 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 
 	vec4 sum = vec4(0.0);
 
-	sum = diffuseCone(5, 50, rayOrigin, normal);
-	sum += diffuseCone(3, 25, rayOrigin, normal);
+
+	vec3 shift = ((normal / dot(normal,normal)) / vx_volume_dimensions);
+	sum = coneTrace(rayOrigin + shift, normal, vec3(vx_volume_dimensions), 0.6, 0.6) * 1.0;
+	sum += diffuseCone(7, 75, rayOrigin, normal);
+	sum += diffuseCone(5, 45, rayOrigin, normal);
+	sum += diffuseCone(3, 20, rayOrigin, normal);
 
 	sum /= vec4(1.0);
 
@@ -263,7 +262,7 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 	float intensity = 1.0;
 
 	float maxDist = 0.9;
-	float coneRatio = (0.001) / specular_settings.a;
+	float coneRatio = (0.005) / specular_settings.a;
 	coneRatio = clamp(coneRatio, 0.1, 1.0);
 
 	vec3 shift = ((normal) / (vx_volume_dimensions));

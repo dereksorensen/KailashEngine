@@ -51,7 +51,7 @@ namespace KailashEngine.Render
             Resolution resolution)
         {
             _resolution = resolution;
-            _enable_debug_views = true;
+            _enable_debug_views = false;
 
             // Render UBOs
             _ubo_game_config = new UniformBuffer(BufferStorageFlags.DynamicStorageBit, 0, new EngineHelper.size[]
