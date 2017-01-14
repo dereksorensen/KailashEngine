@@ -24,8 +24,9 @@ layout(std140, binding = 1) uniform cameraSpatials
 
 uniform sampler2D sampler0;		// Normal Texture
 uniform sampler2D sampler1;		// Specular Texture
+uniform sampler2D sampler2;		// Diffuse Texture
 
-uniform sampler3D sampler2;		// Voxel Volume
+uniform sampler3D sampler3;		// Voxel Volume
 
 
 uniform float vx_volume_dimensions;
@@ -101,7 +102,7 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 		{
 			count++;
 
-			vec4 color = textureLod(sampler2, voxelPos/volumeDimensions.x, displayMipLevel);
+			vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
 
 			float sampleWeight = (1.0 - accum.w);
 			accum += vec4(color * sampleWeight);
@@ -164,7 +165,7 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 			vec3 offset = dir * dist;
 			vec3 samplePos = origin + offset;
 
-			vec4 color = textureLod(sampler2, samplePos, sampleLOD);
+			vec4 color = textureLod(sampler3, samplePos, sampleLOD);
 
 			//accum.w = accum.w * (sampleLOD/2.0);
 			float sampleWeight = (1.0 - accum.w);
@@ -258,7 +259,7 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 	float intensity = 1.0;
 
 	float maxDist = 0.9;
-	float coneRatio = (0.005) / specular_settings.a;
+	float coneRatio = specular_settings.a;
 	coneRatio = clamp(coneRatio, 0.1, 1.0);
 
 	vec3 shift = ((normal) / (vx_volume_dimensions));
@@ -277,7 +278,7 @@ void main()
 	float depth = normal_depth.a;
 	vec3 normal = normal_depth.rgb;
 	vec4 specularSettings = texture(sampler1, v_TexCoord);
-
+	vec4 diffuse = vec4(texture(sampler2, v_TexCoord).rgb, 1.0);
 
 	vec3 cam_position_snapped = voxelSnap(cam_position, vx_volume_dimensions / (vx_volume_scale * 10.0f));
 
@@ -302,7 +303,7 @@ void main()
 	{
 
 		// Mix with diffuse
-		final = (indirect_diffuse * 1.0);
+		final = (indirect_diffuse * diffuse);
 		final += indirect_specular;
 		final = vec4((final).xyz,occlusion_diffuse);
 	}

@@ -36,10 +36,15 @@ namespace KailashEngine.Render.FX
         public Texture _tVoxelVolume;
         public Texture _tVoxelVolume_Diffuse;
 
-        private Texture _tConeTrace;
-        public Texture tConeTrace
+        private Texture _tConeTrace_Diffuse;
+        public Texture tConeTrace_Diffuse
         {
-            get { return _tConeTrace; }
+            get { return _tConeTrace_Diffuse; }
+        }
+        private Texture _tConeTrace_Specular;
+        public Texture tConeTrace_Specular
+        {
+            get { return _tConeTrace_Specular; }
         }
 
         public Texture _tTemp;
@@ -122,6 +127,9 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Buffers()
         {
+            //------------------------------------------------------
+            // Voxel Volumes
+            //------------------------------------------------------
             _tVoxelVolume = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
                 true, true,
@@ -136,18 +144,24 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume_Diffuse.load();
 
-            _tConeTrace = new Texture(TextureTarget.Texture2D,
+            //------------------------------------------------------
+            // Cone Traced Lighting
+            //------------------------------------------------------
+            _tConeTrace_Diffuse = new Texture(TextureTarget.Texture2D,
                 _resolution.H, _resolution.W, 0,
                 false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tConeTrace.load();
+            _tConeTrace_Diffuse.load();
+
 
             _fConeTrace = new FrameBuffer("VXGI - Cone Trace");
             _fConeTrace.load(new Dictionary<FramebufferAttachment, Texture>()
             {
-                { FramebufferAttachment.ColorAttachment0, _tConeTrace }
+                { FramebufferAttachment.ColorAttachment0, _tConeTrace_Diffuse }
             });
+
+
 
             _tTemp = new Texture(TextureTarget.Texture2D,
                 128 * 1, 128 * 1 , 0,
@@ -255,7 +269,7 @@ namespace KailashEngine.Render.FX
             {
                 _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);
 
-                GL.Viewport(0, 0, _tConeTrace.width, _tConeTrace.height);
+                GL.Viewport(0, 0, _tConeTrace_Diffuse.width, _tConeTrace_Diffuse.height);
 
                 _pConeTrace.bind();
 
@@ -278,8 +292,9 @@ namespace KailashEngine.Render.FX
 
                 normal_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
                 specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
+                diffuse_texture.bind(_pConeTrace.getSamplerUniform(2), 2);
 
-                _tVoxelVolume.bind(_pConeTrace.getSamplerUniform(2), 2);
+                _tVoxelVolume.bind(_pConeTrace.getSamplerUniform(3), 3);
 
 
 

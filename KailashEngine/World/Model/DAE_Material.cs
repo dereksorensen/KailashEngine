@@ -52,7 +52,7 @@ namespace KailashEngine.World.Model
             }
 
             // EMISSION
-            _emission = effect.Profile_COMMON[0].Technique.Phong.Eission.Color.Value()[0];
+            _emission = effect.Profile_COMMON[0].Technique.Phong.Eission.Color.Value()[0] * 5.0f;
 
 
             //------------------------------------------------------

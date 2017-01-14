@@ -25,7 +25,7 @@ void main()
 	int material_id = int(diffuse_id.a);
 	vec3 diffuse = diffuse_id.rgb;
 
-	vec3 final = (((lighting + ambient + lighting_indirect.xyz) * diffuse) + lighting_specular);
+	vec3 final = (((lighting + ambient) * diffuse) + lighting_specular) + lighting_indirect.xyz;
 	final *= lighting_indirect.w;
 
 	// Normal Objects
