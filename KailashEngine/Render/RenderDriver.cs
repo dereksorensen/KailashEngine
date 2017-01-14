@@ -225,10 +225,8 @@ namespace KailashEngine.Render
             GL.CullFace(CullFaceMode.Back);
 
 
-            Debug.DebugHelper.time_function("Voxelization", 1, () =>
-            {
-                _fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
-            });
+            _fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
+
 
             _fxShadow.render(scene, camera_spatial_data);
 

@@ -63,13 +63,15 @@ namespace KailashEngine.Render.FX
             };
             string[] cone_trace_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include"
+                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
+                _pLoader.path_glsl_common_helpers + "voxelFunctions.include"
             };
             string[] injection_helpers = new string[]
             {
                 _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
                 _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
-                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include"
+                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include",
+                _pLoader.path_glsl_common_helpers + "voxelFunctions.include"
             };
 
             // Rendering Geometry into voxel volume
@@ -123,7 +125,7 @@ namespace KailashEngine.Render.FX
             _tVoxelVolume = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
                 true, true,
-                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume.load();
 
@@ -148,7 +150,7 @@ namespace KailashEngine.Render.FX
             });
 
             _tTemp = new Texture(TextureTarget.Texture2D,
-                128 * 2, 128 *2 , 0,
+                128 * 1, 128 * 1 , 0,
                 false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -191,8 +193,11 @@ namespace KailashEngine.Render.FX
 
         public void voxelizeScene(Scene scene, Vector3 camera_position)
         {
+            Debug.DebugHelper.time_function("Voxel Clearing", 1, () =>
+            {
             _tVoxelVolume.clear();
             _tVoxelVolume_Diffuse.clear();
+
 
 
             GL.ColorMask(false, false, false, false);
@@ -232,6 +237,8 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthClamp);
+
+            });
         }
 
 
@@ -306,7 +313,8 @@ namespace KailashEngine.Render.FX
                         GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
 
 
-                        GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), light.sid);
+
+                        GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), temp_sLight.sid);
 
                         Matrix4 ivp = Matrix4.Invert(temp_sLight.shadow_view_matrix.ClearTranslation() * temp_sLight.shadow_perspective_matrix);
                         GL.UniformMatrix4(_pInjection_SPOT.getUniform("light_inv_view_perspective"), false, ref ivp);
@@ -314,7 +322,7 @@ namespace KailashEngine.Render.FX
                         GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), _tTemp.dimensions.Xy);
 
 
-                        _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.WriteOnly);
+                        _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
                         shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
                         _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(2), 2, TextureAccess.WriteOnly);
                         _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(3), 3);

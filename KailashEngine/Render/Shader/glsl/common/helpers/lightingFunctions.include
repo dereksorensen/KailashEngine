@@ -133,8 +133,20 @@ float calcSpotLightCone(vec3 L, vec3 light_direction, float outer_angle, float b
 	return clamp(spotLightBlur,0.0,1.0);
 }
 
-float calcAttenuation(float light_intensity, float light_falloff, float light_distance_2)
+float calcAttenuation(float light_intensity, float light_falloff, vec3 light_position, vec3 world_position, out vec3 L)
 {
+	// Light to Object Vector
+	vec3 light_to_object = (light_position - world_position);
+
+	// Light to Object Distance Squared
+	float light_distance_2 = dot(light_to_object, light_to_object);
+
+	// Light to Object Distance
+	float light_distance = sqrt(light_distance_2);
+
+	// Light to Object Direction
+	L = light_to_object / light_distance;
+
 	float light_falloff_2 = light_falloff * light_falloff;
 
 	float attenuation = max(1.0 - light_distance_2 / light_falloff_2, 0.0);
@@ -161,23 +173,13 @@ void calcLighting(
 	vec3 N = normalize(world_normal);
 	// View Direction
 	vec3 E = normalize(-cam_position - world_position);
-
-	// Light to Object Vector
-	vec3 light_to_object = (light_position - world_position);
-
-	// Light to Object Distance Squared
-	float light_distance_2 = dot(light_to_object, light_to_object);
-
-	// Light to Object Distance
-	float light_distance = sqrt(light_distance_2);
-
 	// Light to Object Direction
-	L = light_to_object / light_distance;
+	L = vec3(0.0);
 
 	//------------------------------------------------------
 	// Attenuation
 	//------------------------------------------------------
-	float attenuation = calcAttenuation(light_intensity, light_falloff, light_distance_2);
+	float attenuation = calcAttenuation(light_intensity, light_falloff, light_position, world_position, L);
 
 
 	//------------------------------------------------------

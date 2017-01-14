@@ -26,7 +26,7 @@ void main()
 	vec3 diffuse = diffuse_id.rgb;
 
 	vec3 final = (((lighting + ambient + lighting_indirect.xyz) * diffuse) + lighting_specular);
-	//final *= lighting_indirect.w;
+	final *= lighting_indirect.w;
 
 	// Normal Objects
 	// Light Emitters

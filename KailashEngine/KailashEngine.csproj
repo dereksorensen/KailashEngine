@@ -557,6 +557,7 @@
     <None Include="Render\Shader\glsl\common\helpers\interpolation.include" />
     <None Include="Render\Shader\glsl\common\helpers\shadowEvaluation.include" />
     <None Include="Render\Shader\glsl\common\helpers\shadowMapping.include" />
+    <None Include="Render\Shader\glsl\common\helpers\voxelFunctions.include" />
     <None Include="Render\Shader\glsl\common\render_Texture1D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2DArray.frag" />
     <None Include="Render\Shader\glsl\common\render_TextureCubeArray.frag" />

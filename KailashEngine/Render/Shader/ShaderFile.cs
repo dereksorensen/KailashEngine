@@ -94,7 +94,7 @@ namespace KailashEngine.Render.Shader
 
             string shader_source = loadShaderFile(_filename);
 
-            int added_line_count = 5;
+            int added_line_count = 4;
 
             // Add any depenancies into the shader file
             if (!(_dependancies == null))
@@ -137,7 +137,7 @@ namespace KailashEngine.Render.Shader
                 GL.CompileShader(shader_id);
 
 
-                int max_error_length = 512;
+                int max_error_length = 2048;
                 StringBuilder error_text = new StringBuilder("", max_error_length);
                 int error_length;
                 GL.GetShaderInfoLog(shader_id, max_error_length, out error_length, error_text);

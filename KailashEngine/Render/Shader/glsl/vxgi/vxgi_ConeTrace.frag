@@ -97,7 +97,7 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 
 
 		// Traverse through voxels until ray exits volume.
-		while (all(greaterThanEqual(voxelPos, vec3(0.0))) && all(lessThan(voxelPos, volumeDimensions)) && accum.a < 0.5)
+		while (all(greaterThanEqual(voxelPos, vec3(0.0))) && all(lessThan(voxelPos, volumeDimensions)) && accum.a < 0.999)
 		{
 			count++;
 
@@ -154,7 +154,7 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 	{	
 
 		// Traverse through voxels until ray exits volume
-		while (dist <= maxDist && accum.w < 0.7)
+		while (dist <= maxDist && accum.w < 0.999)
 		{
 
 			float sampleDiameter = max(minDiameter, coneRatio * dist);
@@ -175,7 +175,7 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 		}
 	}
 
-	float occlusion = clamp(accum.w, 0.0, 1.0);
+	float occlusion = accum.w;
 
 
 	return vec4(accum.xyz, occlusion);
@@ -201,10 +201,8 @@ mat4 rotationMatrix(vec3 axis, float angle)
 
 vec4 diffuseCone(float numCones, float angle, vec3 rayOrigin, vec3 normal)
 {
-	float PI = 3.14159265359;
 	float maxDist = 0.55;
-	float coneRatio = 0.6;
-	float shiftAmount = 200.0;
+	float coneRatio = 0.7;
 
 	float count = 0;
 	vec4 sum = vec4(0.0);
@@ -213,7 +211,7 @@ vec4 diffuseCone(float numCones, float angle, vec3 rayOrigin, vec3 normal)
 
 
 	vec3 rotAngle = normalize(  cross(vec3(0.0,1.0,0.0), normal)  );
-	mat4 rot1 = rotationMatrix(rotAngle, angle1 * PI / 180.0);
+	mat4 rot1 = rotationMatrix(rotAngle, angle1 * MATH_PI / 180.0);
 	vec3 ref1 = (rot1 * vec4(normal, 0.0)).xyz;
 	ref1 = normalize(ref1);
 
@@ -225,7 +223,7 @@ vec4 diffuseCone(float numCones, float angle, vec3 rayOrigin, vec3 normal)
 	{
 		count++;
 
-		vec3 ref2 = (rotationMatrix(normal, ang * PI / 180.0) * (rot1 * vec4(normal, 0.0))).xyz;
+		vec3 ref2 = (rotationMatrix(normal, ang * MATH_PI / 180.0) * (rot1 * vec4(normal, 0.0))).xyz;
 		ref2 = normalize(ref2);
 
 		vec3 shift = ((normal / dot(ref2,normal)) / vx_volume_dimensions);
@@ -244,14 +242,12 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 
 
 	vec3 shift = ((normal / dot(normal,normal)) / vx_volume_dimensions);
-	sum = coneTrace(rayOrigin + shift, normal, vec3(vx_volume_dimensions), 0.6, 0.6) * 1.0;
-	sum += diffuseCone(7, 75, rayOrigin, normal);
-	sum += diffuseCone(5, 45, rayOrigin, normal);
-	sum += diffuseCone(3, 20, rayOrigin, normal);
+	sum = coneTrace(rayOrigin + shift, normal, vec3(vx_volume_dimensions), 0.6, 0.6);
+	//sum += diffuseCone(7, 75, rayOrigin, normal);
+	sum += diffuseCone(5, 65, rayOrigin, normal);
+	sum += diffuseCone(3, 25, rayOrigin, normal);
 
-	sum /= vec4(1.0);
-
-	//float occlusion = sum.a * sum.a;
+	sum.a /= 3.0;
 
 	return sum;	
 }
@@ -272,15 +268,7 @@ vec4 ct_specular(vec3 rayOrigin, vec3 reflection, vec3 normal, vec4 specular_set
 	return specular;
 }
 
-vec3 voxelSnap(vec3 vector, float scale)
-{
-    vector *= scale;
-    vector.x = floor(vector.x);
-    vector.y = floor(vector.y);
-    vector.z = floor(vector.z);
-    vector /= scale;
-	return vector;
-}
+
 
 
 void main()
@@ -296,28 +284,19 @@ void main()
 	vec3 world_position = calcWorldPosition(depth, ray, cam_position);
 	vec3 world_position_biased = ((world_position + cam_position_snapped) / (vx_volume_scale)) * 0.5 + 0.5;
 
-	vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
-
-  
-    // Compute ray's origin and direction from pixel coordinate.
-	vec4 ndc0 = vec4(rayCoords, -1.0, 1.0);
-	vec4 world0 = vx_inv_view_perspective * ndc0;
-	world0 /= world0.w;
-
-
 
 	vec3 rayOrigin = world_position_biased;
-	vec3 reflection = normalize(reflect(normalize(ray), normalize(normal)));
+	vec3 reflection = normalize(reflect(ray, normal));
 
 	
-
 	vec4 final = vec4(0.0);
+
 
 	vec4 indirect_diffuse = ct_diffuse(rayOrigin, normal);
 	vec4 indirect_specular = ct_specular(rayOrigin, reflection, normal, specularSettings);
 
-	float occlusion_diffuse = 1.0 - indirect_diffuse.a;
-	float occlusion_specular = 1.0 - indirect_specular.a;
+	float occlusion_diffuse = clamp(1.0 - indirect_diffuse.a, 0.0, 1.0);
+	float occlusion_specular = clamp(1.0 - indirect_specular.a, 0.0, 1.0);
 
 	if (displayVoxels == 0)
 	{
@@ -329,13 +308,21 @@ void main()
 	}
 	else
 	{
-		final = rayCast(world0.xyz, ray, 500.0, vec3(vx_volume_dimensions), 0);
+		// Compute ray's origin and direction from pixel coordinate.
+		vec2 rayCoords = v_TexCoord * 2.0 - 1.0;
+
+		vec4 ndc0 = vec4(rayCoords, -1.0, 1.0);
+		vec4 world0 = vx_inv_view_perspective * ndc0;
+		world0 /= world0.w;
+
+
+		final = rayCast(world0.xyz, ray, vx_volume_dimensions, vec3(vx_volume_dimensions), 0);
 		//final = vec4(occlusion_diffuse);
 	}
 
 	FragColor = final;
 	//FragColor = vec4(v_TexCoord, 0.0 ,1.0);
-	//FragColor = vec4(occlusion_diffuse);
+	//FragColor = vec4(occlusion_specular);
 }
 
 

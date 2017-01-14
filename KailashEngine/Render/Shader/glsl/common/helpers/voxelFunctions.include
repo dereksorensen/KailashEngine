@@ -1,0 +1,45 @@
+﻿
+//------------------------------------------------------
+// Atomic Average
+//------------------------------------------------------
+// Based on https://rauwendaal.net/2013/05/
+void imageAtomicAverageRGBA8(layout(r32ui) coherent volatile uimage3D imgUI, ivec3 coords, vec4 val)
+{
+	val.rgb *= 255.0f;
+	uint nextUint = packUnorm4x8(vec4(val.xyz,1.0f/255.0f));
+	uint prevUint = 0;
+	uint currUint;
+
+	vec4 currVec4;
+
+	vec3 average;
+	uint count;
+
+	while((currUint = imageAtomicCompSwap(imgUI, coords, prevUint, nextUint)) != prevUint)
+	{
+		prevUint = currUint;
+		currVec4 = unpackUnorm4x8(currUint);
+
+		average = currVec4.rgb;
+		count   = uint(currVec4.a*255.0f);
+
+		//Compute the running average
+		average = (average*count + val.xyz) / (count+1);
+
+		//Pack new average and incremented count back into a uint
+		nextUint = packUnorm4x8(vec4(average, (count+1)/255.0f));
+	}
+}
+
+//------------------------------------------------------
+// Snap to Voxel
+//------------------------------------------------------
+vec3 voxelSnap(vec3 vector, float scale)
+{
+    vector *= scale;
+    vector.x = floor(vector.x);
+    vector.y = floor(vector.y);
+    vector.z = floor(vector.z);
+    vector /= scale;
+	return vector;
+}

@@ -170,7 +170,7 @@ namespace KailashEngine.Render
             GL.LinkProgram(_pID);
 
 
-            int max_error_length = 512;
+            int max_error_length = 2048;
             StringBuilder error_text = new StringBuilder("", max_error_length);
             int error_length;
             GL.GetProgramInfoLog(_pID, max_error_length, out error_length, error_text);
