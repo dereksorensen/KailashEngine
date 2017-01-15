@@ -176,9 +176,9 @@ float calcShadow(
 	shadow_uv_depth.z = length(shadow_viewPosition.xyz);
 
 	float visibility = 1.0;
-	visibility = vsm(getMoments(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 0.0), shadow_uv_depth.z);
+	//visibility = vsm(getMoments(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 0.0), shadow_uv_depth.z);
 	//visibility = esm(getMoments(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth.xy, 1.0).x, shadow_uv_depth.z, 0.5);
-	//visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
+	visibility = variablePenumbraShadow(shadow_depth_sampler, shadow_layer_id, shadow_uv_depth, light_size, penumbra_falloff);
 	
 	return visibility;
 }
