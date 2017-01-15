@@ -29,6 +29,14 @@ namespace KailashEngine.World.Lights
             }
         }
 
+        public Matrix4 viewray_matrix
+        {
+            get
+            {
+                return Matrix4.Invert(shadow_view_matrix.ClearTranslation() * shadow_perspective_matrix);
+            }
+        }
+
 
         public sLight(string id,  Vector3 color, float intensity, float falloff, float spot_angle, float spot_blur, bool shadow, Mesh light_mesh, Matrix4 transformation)
             : base(id, type_spot, color, intensity, falloff, shadow, light_mesh, transformation)

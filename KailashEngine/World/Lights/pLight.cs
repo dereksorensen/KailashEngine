@@ -37,7 +37,6 @@ namespace KailashEngine.World.Lights
             }
         }
 
-
         public Matrix4 shadow_perspective_matrix
         {
             get
@@ -45,6 +44,8 @@ namespace KailashEngine.World.Lights
                 return _spatial.perspective;
             }
         }
+
+
 
         public pLight(string id, Vector3 color, float intensity, float falloff, bool shadow, Mesh light_mesh, Matrix4 transformation)
             : base(id, type_point, color, intensity, falloff, shadow, light_mesh, transformation)

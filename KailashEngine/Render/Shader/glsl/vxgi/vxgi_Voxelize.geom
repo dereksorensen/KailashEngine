@@ -15,7 +15,6 @@ out vec3 g_Normal;
 out vec3 g_Tangent;
 
 out vec4 g_BBox;
-out vec3 g_Color;
 out mat3 g_SwizzleMatrix;
 out float g_dir;
 
@@ -97,8 +96,6 @@ void main()
 	// Unswizzle fragments in frag shader
     g_SwizzleMatrix = swizzleMatrix;
 
-    // Color code each triangle by which plane it projects to: (Red = x-axis, Green = y-axis, Blue = z-axis).
-    g_Color = swizzleMatrix * vec3(0.0, 0.0, 1.0);
 
     // Calculate screen coordinates for triangle.
 	vec4 screenPos[3];
@@ -119,7 +116,7 @@ void main()
 
 
 	// Conservtive Rasterization
-	//expandTriangle(PixelDiagonal, screenPos);
+	expandTriangle(PixelDiagonal, screenPos);
 
 
     // Output triangle.

@@ -28,6 +28,7 @@ namespace KailashEngine.Render.FX
         private Program _pVoxelize;
         private Program _pConeTrace;
         private Program _pInjection_SPOT;
+        private Program _pResetAlpha;
 
         // Frame Buffers
         private FrameBuffer _fConeTrace;
@@ -117,12 +118,17 @@ namespace KailashEngine.Render.FX
             _pInjection_SPOT.enable_Samplers(4);
             _pInjection_SPOT.enable_LightCalculation();
             _pInjection_SPOT.addUniform("texture_size");
-            _pInjection_SPOT.addUniform("light_inv_view_perspective");
             _pInjection_SPOT.addUniform("light_shadow_id");
             _pInjection_SPOT.addUniform("vx_volume_dimensions");
             _pInjection_SPOT.addUniform("vx_volume_scale");
             _pInjection_SPOT.addUniform("vx_volume_position");
 
+            // Reset Alpha
+            _pResetAlpha = _pLoader.createProgram_PostProcessing(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ResetAlpha.frag", null)
+            });
+            _pResetAlpha.enable_Samplers(2);
         }
 
         protected override void load_Buffers()
@@ -164,7 +170,7 @@ namespace KailashEngine.Render.FX
 
 
             _tTemp = new Texture(TextureTarget.Texture2D,
-                128 * 1, 128 * 1 , 0,
+                (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, 0,
                 false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -188,12 +194,10 @@ namespace KailashEngine.Render.FX
         }
 
 
-
-
         private Vector3 voxelSnap(Vector3 vector)
         {
             Vector3 temp_vector = vector;
-            float scaler = (_vx_volume_dimensions)/ (_vx_volume_scale * 10.0f);
+            float scaler = (_vx_volume_dimensions) / (_vx_volume_scale * 10.0f);
             temp_vector *= scaler;
             temp_vector.X = (float)Math.Floor(temp_vector.X);
             temp_vector.Y = (float)Math.Floor(temp_vector.Y);
@@ -207,8 +211,6 @@ namespace KailashEngine.Render.FX
 
         public void voxelizeScene(Scene scene, Vector3 camera_position)
         {
-            Debug.DebugHelper.time_function("Voxel Clearing", 1, () =>
-            {
             _tVoxelVolume.clear();
             _tVoxelVolume_Diffuse.clear();
 
@@ -252,7 +254,6 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthClamp);
 
-            });
         }
 
 
@@ -303,11 +304,28 @@ namespace KailashEngine.Render.FX
         }
 
 
+        public void resetVoxelAlpha(fx_Quad quad)
+        {
+            GL.Viewport(0, 0, _tVoxelVolume.width, _tVoxelVolume.height);
+
+            _pResetAlpha.bind();
+
+            _tVoxelVolume_Diffuse.bind(_pResetAlpha.getSamplerUniform(0), 0);
+            _tVoxelVolume.bindImageUnit(_pResetAlpha.getSamplerUniform(1), 1, TextureAccess.ReadWrite);
+
+            quad.render3D((int)_vx_volume_dimensions);
+        }
+
+
         public void lightInjection(Scene scene, fx_Shadow shadow, SpatialData camera_spatial)
         {
-            int workgroup_size = 16;
+            int workgroup_size = 32;
+            int texture_size = (int)_vx_volume_dimensions;
 
-            _pInjection_SPOT.bind();
+
+            _tTemp.clear();
+
+            Light[] lights_spot = scene.light_manager.lights_shadows_spot;
 
 
             foreach (Light light in scene.light_manager.lights_shadowed)
@@ -315,9 +333,9 @@ namespace KailashEngine.Render.FX
                 switch (light.type)
                 {
                     case Light.type_spot:
+                        _pInjection_SPOT.bind();
 
                         sLight temp_sLight = (sLight)light;
-
 
                         GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightPosition), light.spatial.position);
                         GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
@@ -327,29 +345,20 @@ namespace KailashEngine.Render.FX
                         GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotAngle), light.spot_angle);
                         GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
 
-
-
                         GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), temp_sLight.sid);
 
-                        Matrix4 ivp = Matrix4.Invert(temp_sLight.shadow_view_matrix.ClearTranslation() * temp_sLight.shadow_perspective_matrix);
-                        GL.UniformMatrix4(_pInjection_SPOT.getUniform("light_inv_view_perspective"), false, ref ivp);
-
-                        GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), _tTemp.dimensions.Xy);
-
-
-                        _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
-                        shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
-                        _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(2), 2, TextureAccess.WriteOnly);
-                        _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(3), 3);
-
+                        GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), new Vector2(texture_size));
 
                         GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
                         GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
                         GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
 
+                        _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
+                        _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
+                        shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(2), 2);
+                        _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
 
-                        GL.DispatchCompute((int)(_tTemp.width / workgroup_size), (int)(_tTemp.height / workgroup_size), 1);
-
+                        GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
 
                         break;
                     case Light.type_point:

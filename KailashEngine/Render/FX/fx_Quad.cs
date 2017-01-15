@@ -163,6 +163,13 @@ namespace KailashEngine.Render.FX
             GL.Disable(EnableCap.Blend);
         }
 
+        public void render3D(int depth)
+        {
+            GL.BindVertexArray(_vao);
+            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 3, depth);
+            GL.BindVertexArray(0);
+        }
+
 
         //------------------------------------------------------
         // Render Textures

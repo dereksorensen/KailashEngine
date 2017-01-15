@@ -1,21 +1,5 @@
 ﻿
-layout (local_size_x = 16, local_size_y = 16) in;
-
-
-
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
+layout (local_size_x = 32, local_size_y = 32) in;
 
 
 //------------------------------------------------------
@@ -24,7 +8,8 @@ layout(std140, binding = 1) uniform cameraSpatials
 struct ShadowData {
   mat4 view;
   mat4 perspective;
-  vec4 light_position;
+  mat4 viewray;
+  vec3 light_position;
 };
 layout(std140, binding = 3) uniform shadowMatrices
 {
@@ -32,12 +17,11 @@ layout(std140, binding = 3) uniform shadowMatrices
 };
 
 
+layout(binding = 0, r32ui) coherent volatile uniform uimage3D sampler0;		// Voxel Volume
+uniform sampler3D sampler1;		// Voxel Volume - Diffuse
 
-layout(binding = 0, r32ui) coherent volatile uniform uimage3D sampler0;
-//layout(binding = 0, rgba8) uniform image3D sampler0;		// Voxel Volume
-uniform sampler2DArray sampler1;		// Shadow Depth
-writeonly uniform image2D sampler2;		// Test Texture
-uniform sampler3D sampler3;		// Voxel Volume
+uniform sampler2DArray sampler2;		// Shadow Depth
+writeonly uniform image2D sampler3;		// Test Texture
 
 
 uniform vec2 texture_size;
@@ -56,12 +40,6 @@ uniform float light_spot_blur;
 
 uniform int light_shadow_id;
 
-uniform mat4 light_inv_view_perspective;
-
-
-
-
-
 
 void main() 
 {
@@ -71,20 +49,19 @@ void main()
 	ivec2 i_TexCoord = ivec2(gl_GlobalInvocationID.xy);
 	vec2 t_TexCoord = i_TexCoord / texture_size;
 
-	vec2 depth_packed = texture(sampler1, vec3(t_TexCoord, light_shadow_id)).xy;
+	vec2 depth_packed = texture(sampler2, vec3(t_TexCoord, light_shadow_id)).xy;
 	float depth = unpack2(depth_packed);
 
+	vec3 world_position = vec3(0.0);
+	vec3 volume_TexCoord = calcVoxelTexCoord(
+		t_TexCoord, depth,
+		-light_position, shadow_data[light_shadow_id].viewray,
+		vx_volume_position, vx_volume_dimensions, vx_volume_scale,
+		world_position);
 
-	vec3 view_ray = normalize((light_inv_view_perspective * vec4(t_TexCoord * 2.0 - 1.0, 1.0, 1.0)).xyz);
 
-
-	vec3 world_position = calcWorldPosition(depth, view_ray, -shadow_data[light_shadow_id].light_position.xyz);
-
-
-	vec4 sPosition =  vec4((world_position - vx_volume_position), 1.0);
-	vec3 volumeTC = ((sPosition.xyz / vx_volume_scale) * 0.5 + 0.5) * vx_volume_dimensions;
-
-	vec4 diffuse = texelFetch(sampler3, ivec3(volumeTC), 0);
+	// Albedo Diffuse
+	vec4 diffuse = texelFetch(sampler1, ivec3(volume_TexCoord), 0);
 
 
 	//------------------------------------------------------
@@ -96,12 +73,13 @@ void main()
 
 	float attenuation = calcAttenuation(light_intensity, light_falloff, light_position, world_position, L);
 
-	vec3 voxel_color = diffuse.xyz * attenuation;
+	vec3 voxel_color = light_color * diffuse.xyz * attenuation;
 	voxel_color = voxel_color * calcSpotLightCone(L, light_direction, light_spot_angle, light_spot_blur);
 
 	vec4 final = vec4(voxel_color, floor(diffuse.a) * 1.0);
 
-
+	// Debugging
+	imageStore(sampler3, i_TexCoord, vec4(world_position, 1.0));
 	if(dot(voxel_color,voxel_color) > 0)
 	{
 
@@ -109,9 +87,9 @@ void main()
 		// Store in Voxel Volume
 		//------------------------------------------------------
 
-		//imageStore(sampler2, i_TexCoord, vec4(world_position, 1.0));
-		//imageStore(sampler0, ivec3(volumeTC), final);
-		imageAtomicAverageRGBA8(sampler0, ivec3(volumeTC), final);
+
+		//imageStore(sampler0, ivec3(volume_TexCoord), final);
+		imageAtomicAverageRGBA8(sampler0, ivec3(volume_TexCoord), final);
 
 	}
 

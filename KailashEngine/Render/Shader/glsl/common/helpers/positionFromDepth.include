@@ -1,5 +1,18 @@
 ﻿
 
+//------------------------------------------------------
+// Calculate View Ray
+//------------------------------------------------------
+
+vec3 calcLightViewRay(vec2 screen_tex_coord, mat4 viewray_matrix)
+{
+	return normalize((viewray_matrix * vec4(screen_tex_coord * 2.0 - 1.0, 1.0, 1.0)).xyz);
+}
+
+
+//------------------------------------------------------
+// Calculate Position
+//------------------------------------------------------
 
 vec3 calcWorldPosition(float depth, vec3 view_ray, vec3 cam_position)
 {
@@ -13,3 +26,19 @@ vec3 calcViewPosition(float depth, vec3 view_ray, vec3 cam_position, mat4 view_m
 	return (view_matrix * vec4(world_position, 1.0)).xyz;
 }
 
+//------------------------------------------------------
+// Calculate TexCoords
+//------------------------------------------------------
+
+vec3 calcVoxelTexCoord(
+	vec2 sceen_TexCoord, float depth,
+	vec3 origin_position, mat4 viewray_matrix,
+	vec3 voxel_volume_position, float voxel_volume_dimensions, float voxel_volume_scale,
+	out vec3 world_position)
+{	
+	vec3 view_ray = calcLightViewRay(sceen_TexCoord, viewray_matrix);
+	world_position = calcWorldPosition(depth, view_ray, origin_position);
+
+	vec3 world_to_voxel =  world_position - voxel_volume_position;
+	return ((world_to_voxel / voxel_volume_scale) * 0.5 + 0.5) * voxel_volume_dimensions;
+}

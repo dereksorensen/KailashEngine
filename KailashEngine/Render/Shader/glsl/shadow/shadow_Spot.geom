@@ -13,12 +13,14 @@ out vec3 g_viewPosition;
 struct ShadowData {
   mat4 view;
   mat4 perspective;
-  vec4 light_position;
+  mat4 viewray;
+  vec3 light_position;
 };
 layout(std140, binding = 3) uniform shadowMatrices
 {
 	ShadowData shadow_data[32];
 };
+
 
 void main()
 {

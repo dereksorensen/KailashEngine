@@ -34,7 +34,8 @@ layout(std140, binding = 1) uniform cameraSpatials
 struct ShadowData {
   mat4 view;
   mat4 perspective;
-  vec4 light_position;
+  mat4 viewray;
+  vec3 light_position;
 };
 layout(std140, binding = 3) uniform shadowMatrices
 {

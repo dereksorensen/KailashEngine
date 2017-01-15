@@ -47,6 +47,29 @@ namespace KailashEngine.World.Lights
             get { return _lights_shadowed; }
         }
 
+        public Light[] lights_shadows_spot
+        {
+            get
+            {
+                return _lights_shadowed.Where(l => l.type == Light.type_spot).ToArray();
+            }
+        }
+        public Light[] lights_shadows_point
+        {
+            get
+            {
+                return _lights_shadowed.Where(l => l.type == Light.type_point).ToArray();
+            }
+        }
+        public Light[] lights_shadows_directional
+        {
+            get
+            {
+                return _lights_shadowed.Where(l => l.type == Light.type_directional).ToArray();
+            }
+        }
+
+
 
         public LightManager()
         {
@@ -57,6 +80,7 @@ namespace KailashEngine.World.Lights
             _lights_shadowed = new List<Light>();
 
             _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.vec4,
@@ -130,11 +154,12 @@ namespace KailashEngine.World.Lights
 
         private void updateUBO_Shadow_Spot(sLight light, int shadow_id)
         {
-            int ubo_index = shadow_id * 3;
+            int ubo_index = shadow_id * 4;
 
             _ubo_shadow_spot.update(ubo_index, light.shadow_view_matrix);
             _ubo_shadow_spot.update(ubo_index + 1, light.shadow_perspective_matrix);
-            _ubo_shadow_spot.update(ubo_index + 2, light.spatial.position);
+            _ubo_shadow_spot.update(ubo_index + 2, light.viewray_matrix);
+            _ubo_shadow_spot.update(ubo_index + 3, light.spatial.position);
 
             light.sid = shadow_id;
         }
