@@ -79,6 +79,12 @@ namespace KailashEngine.Render.FX
                 _pLoader.path_glsl_common_helpers + "shadowEvaluation.include",
                 _pLoader.path_glsl_common_helpers + "voxelFunctions.include"
             };
+            string[] spot_injection_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_ubo + "shadowMatrices_Spot.ubo"
+            };
+            spot_injection_helpers = spot_injection_helpers.Concat(injection_helpers).ToArray();
+
 
             // Rendering Geometry into voxel volume
             _pVoxelize = _pLoader.createProgram(new ShaderFile[]
@@ -113,7 +119,7 @@ namespace KailashEngine.Render.FX
             // Light Injection
             _pInjection_SPOT = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection_SPOT.comp", injection_helpers)
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection_SPOT.comp", spot_injection_helpers)
             });
             _pInjection_SPOT.enable_Samplers(4);
             _pInjection_SPOT.enable_LightCalculation();

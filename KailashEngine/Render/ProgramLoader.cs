@@ -15,27 +15,27 @@ namespace KailashEngine.Render
         private int _glsl_version;
         private string _path_glsl_base;
 
-        private string _path_glsl_common;
+
         public string path_glsl_common
         {
-            get { return _path_glsl_common; }
-            set { _path_glsl_common = value; }
+            get { return EngineHelper.path_glsl_common; }
         }
 
-        private string _path_glsl_common_helpers;
+
         public string path_glsl_common_helpers
         {
-            get { return _path_glsl_common_helpers; }
-            set { _path_glsl_common_helpers = value; }
+            get { return EngineHelper.path_glsl_common_helpers; }
         }
 
+        public string path_glsl_common_ubo
+        {
+            get { return EngineHelper.path_glsl_common_ubo; }
+        }
 
         public ProgramLoader(int glsl_version)
         {
             _glsl_version = glsl_version;
             _path_glsl_base = EngineHelper.path_glsl_base;
-            _path_glsl_common = EngineHelper.path_glsl_common;
-            _path_glsl_common_helpers = EngineHelper.path_glsl_common_helpers;
         }
 
         public Program createProgram(ShaderFile[] shader_pipeline)
@@ -61,7 +61,7 @@ namespace KailashEngine.Render
         {
             ShaderFile[] new_shader_pipline = new ShaderFile[shader_pipeline.Length + 1];
 
-            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, _path_glsl_common + EngineHelper.path_glsl_common_generic_vs, null);
+            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, path_glsl_common + EngineHelper.path_glsl_common_generic_vs, null);
             shader_pipeline.CopyTo(new_shader_pipline, 1);
 
             return createProgram(_glsl_version, new_shader_pipline);
@@ -71,7 +71,7 @@ namespace KailashEngine.Render
         {
             ShaderFile[] new_shader_pipline = new ShaderFile[shader_pipeline.Length + 1];
 
-            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, _path_glsl_common + EngineHelper.path_glsl_common_generic_geometry, null);
+            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, path_glsl_common + EngineHelper.path_glsl_common_generic_geometry, null);
             shader_pipeline.CopyTo(new_shader_pipline, 1);
 
             return createProgram(_glsl_version, new_shader_pipline);

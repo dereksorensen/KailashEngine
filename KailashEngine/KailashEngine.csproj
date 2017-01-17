@@ -566,6 +566,12 @@
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\common\render_TextureCube.frag" />
+    <None Include="Render\Shader\glsl\common\ubo\shadowMatrices_Point.ubo" />
+    <None Include="Render\Shader\glsl\common\ubo\shadowMatrices_Directional.ubo" />
+    <None Include="Render\Shader\glsl\common\ubo\shadowMatrices_Spot.ubo" />
+    <None Include="Render\Shader\glsl\common\ubo\bindlessTextures_Materials.ubo" />
+    <None Include="Render\Shader\glsl\common\ubo\gameConfig.ubo" />
+    <None Include="Render\Shader\glsl\common\ubo\cameraSpatials.ubo" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.frag" />
     <None Include="Render\Shader\glsl\crosshair\crosshair_Render.vert" />
     <None Include="Render\Shader\glsl\dof\dof_Bokeh_Render.frag" />

@@ -102,6 +102,7 @@ namespace KailashEngine
         public static string path_glsl_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Render/Shader/glsl/"); } }
         public static string path_glsl_common { get { return "common/"; } }
         public static string path_glsl_common_helpers { get { return "common/helpers/"; } }
+        public static string path_glsl_common_ubo { get { return "common/ubo/"; } }
         public static string path_glsl_common_generic_vs { get { return "render_Texture2D.vert"; } }
         public static string path_glsl_common_generic_geometry { get { return "geometry.vert"; } }
 

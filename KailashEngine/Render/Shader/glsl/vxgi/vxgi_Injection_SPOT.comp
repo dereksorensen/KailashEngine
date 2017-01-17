@@ -2,21 +2,6 @@
 layout (local_size_x = 32, local_size_y = 32) in;
 
 
-//------------------------------------------------------
-// Shadow Matrices - Spot
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view;
-  mat4 perspective;
-  mat4 viewray;
-  vec3 light_position;
-};
-layout(std140, binding = 3) uniform shadowMatrices
-{
-	ShadowData shadow_data[32];
-};
-
-
 layout(binding = 0, r32ui) coherent volatile uniform uimage3D sampler0;		// Voxel Volume
 uniform sampler3D sampler1;		// Voxel Volume - Diffuse
 
