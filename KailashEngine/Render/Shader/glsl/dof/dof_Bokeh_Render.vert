@@ -15,7 +15,6 @@ uniform float max_blur;
 
 void main()
 {
-
 	// Load bokeh data
 	vec4 bokeh_properties = imageLoad(sampler3, gl_InstanceID);
 	vec4 bokeh_color = imageLoad(sampler4, gl_InstanceID);
@@ -25,16 +24,16 @@ void main()
 	float coc = bokeh_properties.w;	
 
 	// Bokeh Position
-	vec2 point_position = 2.0*(bokeh_properties.xy-vec2(0.5));
+	vec2 point_position = bokeh_properties.xy * 2.0 - 1.0;
 	gl_Position = vec4(point_position, 0.0, 1.0);
 	
 	// Bokeh Size
-	float max_bokeh_size = max_blur / 6.0;
-	float bokeh_size = min(coc * max_bokeh_size, max_bokeh_size);
+	float max_bokeh_size = max_blur;
+	float bokeh_size = min(coc * max_bokeh_size, max_bokeh_size) / MATH_2_PI;
 
 	// Bokeh Color
 	float coc_area = bokeh_size * bokeh_size * MATH_PI;
-	float falloff = pow(1.0/coc_area, 0.47);
+	float falloff = pow(1.0 / coc_area, 0.55) / MATH_PI;
 	vec4 color_mod = bokeh_color * falloff;
 
 	v_bokehColor = color_mod;

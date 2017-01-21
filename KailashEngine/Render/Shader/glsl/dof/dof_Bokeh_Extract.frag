@@ -66,7 +66,6 @@ void main()
 		imageStore(sampler3, current, vec4(v_TexCoord.x, v_TexCoord.y, depth, coc));
 		imageStore(sampler4, current, vec4(scene,1.0));
 
-		color = scene / max(coc*5.0, 1.0);
-		//color = vec3(0.0);
+		color = scene / max(coc * MATH_PI, 1.0);
 	}
 }

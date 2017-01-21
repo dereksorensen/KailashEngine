@@ -239,7 +239,7 @@ vec3 poissonBlur()
 
 void main()
 {
-	//color = gaussBlur();
-	color = boxBlur();
+	color = gaussBlur();
+	//color = boxBlur();
 	//color = poissonBlur();
 }

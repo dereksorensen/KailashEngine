@@ -385,10 +385,12 @@ namespace KailashEngine
             _render_driver.load();        
             _debug_window.load();
 
+
             // Load static UBOs
             _render_driver.updateUBO_GameConfig(
                 _game.config.near_far_full,
                 _game.config.fps_target);
+
 
             // Load Sound System
             SoundSystem.Instance.Initialize();

@@ -25,9 +25,9 @@ void main()
 	weight = clamp(weight + coc, 0.0, 1.0);
 
 	
-	float Attenuation = 2.5;
-	float att = clamp(length(2.0*(g_TexCoord-vec2(0.5))),0.0,1.0);
-	att = 1.0 - pow(att,Attenuation);
+	float attenuation = 4.5;
+	float att = clamp(length(g_TexCoord * 2.0 - 1.0),0.0,1.0);
+	att = 1.0 - pow(att, attenuation);
 	
 
 	color = shape.xyz * g_bokehColor.xyz * weight * att;

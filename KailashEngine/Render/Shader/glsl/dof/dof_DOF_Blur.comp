@@ -40,8 +40,8 @@ void gaussian()
 		return;
 	}
 
-	float coc = texture(sampler2, texCoord / texture_size).r / 4.0;
-	coc = min(coc * max_blur, max_blur / 4.0);
+	float coc = texture(sampler2, texCoord / texture_size).r / 2.0;
+	coc = min(coc * max_blur, max_blur / 2.0);
 	int num_samples = int(ceil(coc));
 
 	if(num_samples <= 0)
@@ -142,6 +142,6 @@ void box()
 
 void main() 
 {
-	//gaussian();
-	box();
+	gaussian();
+	//box();
 }

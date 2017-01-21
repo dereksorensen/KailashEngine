@@ -35,8 +35,8 @@ vec4 motion_blur()
 
 	vec4 final = scene;
 	vec2 texelSize = 1.0 / vec2(textureSize(sampler1, 0));
-	float velocityScaler = fps_scaler / 120.0;
-	int MAX_SAMPLES = 8;
+	float velocityScaler = fps_scaler / 100.0;
+	int MAX_SAMPLES = 16;
 	
 
 	vec2 velocity = texture(sampler1, v_TexCoord).xy * velocityScaler;

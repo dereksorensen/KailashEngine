@@ -225,13 +225,13 @@ namespace KailashEngine.Render
             GL.CullFace(CullFaceMode.Back);
 
 
-            _fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
+            //_fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
 
 
             _fxShadow.render(scene, camera_spatial_data);
 
 
-            _fxVXGI.lightInjection(scene, _fxShadow, camera_spatial_data);
+            //_fxVXGI.lightInjection(scene, _fxShadow, camera_spatial_data);
 
 
             _fxGBuffer.pass_DeferredShading(scene, _fxShadow);
@@ -246,7 +246,7 @@ namespace KailashEngine.Render
             GL.Disable(EnableCap.DepthTest);
 
 
-            _fxVXGI.coneTracing(_fxQuad, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tNormal_Depth, _fxGBuffer.tSpecular, camera_spatial_data);
+            //_fxVXGI.coneTracing(_fxQuad, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tNormal_Depth, _fxGBuffer.tSpecular, camera_spatial_data);
 
 
             _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, scene.circadian_timer.position, _fxShadow.tDirectional);
@@ -300,7 +300,7 @@ namespace KailashEngine.Render
                 _fxQuad.render_Texture(_fxVXGI.tConeTrace_Diffuse, 0.5f, 1);
                 //_fxQuad.render_Texture(_fxVXGI._tVoxelVolume, 0.33f, 1, 150);
                 //_fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 2);
-                _fxQuad.render_Texture(_fxVXGI._tTemp, 0.25f, 1);
+                _fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 
 

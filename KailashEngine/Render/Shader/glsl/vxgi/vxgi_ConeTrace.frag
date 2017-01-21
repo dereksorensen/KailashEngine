@@ -297,8 +297,8 @@ void main()
 	vec4 indirect_diffuse = ct_diffuse(rayOrigin, normal);
 	vec4 indirect_specular = ct_specular(rayOrigin, reflection, normal, specularSettings);
 
-	float occlusion_diffuse = clamp(1.0 - indirect_diffuse.a, 0.0, 1.0);
-	float occlusion_specular = clamp(1.0 - indirect_specular.a, 0.0, 1.0);
+	float occlusion_diffuse = clamp(indirect_diffuse.a, 0.0, 1.0);
+	float occlusion_specular = clamp(indirect_specular.a, 0.0, 1.0);
 
 	if (displayVoxels == 0)
 	{

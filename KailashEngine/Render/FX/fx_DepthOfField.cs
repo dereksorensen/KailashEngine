@@ -176,14 +176,14 @@ namespace KailashEngine.Render.FX
             _pBokeh_Render.addUniform("texture_size");
             _pBokeh_Render.addUniform("max_blur");
 
-            _pDOF_Blur = _pLoader.createProgram_PostProcessing(new ShaderFile[]
-            {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "dof_DOF_Blur.frag", null)
-            });
-            //_pDOF_Blur = _pLoader.createProgram(new ShaderFile[]
+            //_pDOF_Blur = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             //{
-            //    new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "dof_DOF_Blur.comp", null)
+            //    new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "dof_DOF_Blur.frag", null)
             //});
+            _pDOF_Blur = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "dof_DOF_Blur.comp", null)
+            });
             _pDOF_Blur.enable_Samplers(3);
             _pDOF_Blur.addUniform("texture_size");
             _pDOF_Blur.addUniform("max_blur");
@@ -559,83 +559,71 @@ namespace KailashEngine.Render.FX
             Vector2 horizontal_texture_size = new Vector2(1.0f / _tDOF_Scene.width, 0f / _tDOF_Scene.height);
             Vector2 vertical_texture_size = new Vector2(0f / _tDOF_Scene.width, 1.0f / _tDOF_Scene.height);
 
-            //------------------------------------------------------
-            // Horizontal
-            //------------------------------------------------------
-            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
+            ////------------------------------------------------------
+            //// Horizontal
+            ////------------------------------------------------------
+            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
+            ////GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
 
-            _tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
-
-            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), horizontal_texture_size);
-
-            quad.render();
-
-
-            //------------------------------------------------------
-            // Vertical
-            //------------------------------------------------------
-            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
-
-            _tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
-
-            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), vertical_texture_size);
-
-            quad.render();
-
-
-            //GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), _tDOF_Scene.dimensions.Xy);
-            //_tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(2), 2);
-
-            //////------------------------------------------------------
-            ////// Horizontal - 1
-            //////------------------------------------------------------
-            //GL.Uniform1(_pDOF_Blur.getUniform("direction_selector"), 0);
             //_tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            //_tDOF_Scene_2.bindImageUnit(_pDOF_Blur.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+            //_tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
 
+            //GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), horizontal_texture_size);
 
-            //GL.Uniform1(_pDOF_Blur.getUniform("counter"), 0);
-            //GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
-
-            //GL.Uniform1(_pDOF_Blur.getUniform("counter"), 1);
-            //GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
-
-            ////GL.Uniform1(_pDOF_Blur.getUniform("counter"), 2);
-            ////GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
-
-            ////GL.Uniform1(_pDOF_Blur.getUniform("counter"), 3);
-            ////GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
-
-            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            //quad.render();
 
 
             ////------------------------------------------------------
             //// Vertical
             ////------------------------------------------------------
-            //GL.Uniform1(_pDOF_Blur.getUniform("direction_selector"), 1);
+            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
+            ////GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
+
             //_tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            //_tDOF_Scene.bindImageUnit(_pDOF_Blur.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+            //_tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
 
-            //GL.Uniform1(_pDOF_Blur.getUniform("counter"), 0);
-            //GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
+            //GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), vertical_texture_size);
 
-            //GL.Uniform1(_pDOF_Blur.getUniform("counter"), 1);
-            //GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
+            //quad.render();
 
-            ////GL.Uniform1(_pDOF_Blur.getUniform("counter"), 2);
-            ////GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
 
-            ////GL.Uniform1(_pDOF_Blur.getUniform("counter"), 3);
-            ////GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
+            GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), _tDOF_Scene.dimensions.Xy);
+            _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(2), 2);
 
-            //GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            ////------------------------------------------------------
+            //// Horizontal - 1
+            ////------------------------------------------------------
+            GL.Uniform1(_pDOF_Blur.getUniform("direction_selector"), 0);
+            _tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
+            _tDOF_Scene_2.bindImageUnit(_pDOF_Blur.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 0);
+            GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
+
+            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 1);
+            GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
+            //------------------------------------------------------
+            // Vertical
+            //------------------------------------------------------
+            GL.Uniform1(_pDOF_Blur.getUniform("direction_selector"), 1);
+            _tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
+            _tDOF_Scene.bindImageUnit(_pDOF_Blur.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 0);
+            GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
+
+            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 1);
+            GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
         }
 
         private void blendDOF(fx_Quad quad, fx_Special special, FrameBuffer scene_fbo, Texture scene_texture)
@@ -671,7 +659,10 @@ namespace KailashEngine.Render.FX
             //printBokehCount();
             genBokeh(depth_texture);
 
-            genDOF(quad);
+            Debug.DebugHelper.time_function("timing", 1, () =>
+            {
+                genDOF(quad);
+            });
             blendDOF(quad, special, scene_fbo, scene_texture);
         }
     }

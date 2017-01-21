@@ -42,11 +42,7 @@ namespace KailashEngine.Render.FX
         {
             get { return _tConeTrace_Diffuse; }
         }
-        private Texture _tConeTrace_Specular;
-        public Texture tConeTrace_Specular
-        {
-            get { return _tConeTrace_Specular; }
-        }
+
 
         public Texture _tTemp;
 
