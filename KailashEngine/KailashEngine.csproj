@@ -551,6 +551,7 @@
     <None Include="Render\Shader\glsl\ats\precomputation\ats_Transmittance.frag" />
     <None Include="Render\Shader\glsl\common\geometry.vert" />
     <None Include="Render\Shader\glsl\common\helpers\culling.include" />
+    <None Include="Render\Shader\glsl\common\helpers\fxaa.include" />
     <None Include="Render\Shader\glsl\common\helpers\lightingFunctions.include" />
     <None Include="Render\Shader\glsl\common\helpers\linearDepth.include" />
     <None Include="Render\Shader\glsl\common\helpers\positionFromDepth.include" />

@@ -556,8 +556,8 @@ namespace KailashEngine.Render.FX
             _pDOF_Blur.bind();
             GL.Uniform1(_pDOF_Blur.getUniform("max_blur"), _max_blur);
 
-            Vector2 horizontal_texture_size = new Vector2(1.0f / _tDOF_Scene.width, 0f / _tDOF_Scene.height);
-            Vector2 vertical_texture_size = new Vector2(0f / _tDOF_Scene.width, 1.0f / _tDOF_Scene.height);
+            //Vector2 horizontal_texture_size = new Vector2(1.0f / _tDOF_Scene.width, 0f / _tDOF_Scene.height);
+            //Vector2 vertical_texture_size = new Vector2(0f / _tDOF_Scene.width, 1.0f / _tDOF_Scene.height);
 
             ////------------------------------------------------------
             //// Horizontal

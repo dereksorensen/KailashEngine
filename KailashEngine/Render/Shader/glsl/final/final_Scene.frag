@@ -36,17 +36,12 @@ vec3 Uncharted2Tonemap(vec3 x)
 
 void main()
 {
-
-
-
-
-
-
 	
-	vec4 tex = texture(sampler0, v_TexCoord);
+	//vec3 scene = texture(sampler0, v_TexCoord).xyz;
+	vec3 scene = fxaa(sampler0, v_TexCoord);
 
 
-	vec3 final = Uncharted2Tonemap(2.0*tex.xyz);
+	vec3 final = Uncharted2Tonemap(2.0 * scene);
 	
 	float W = 11.2;
 	vec3 whiteScale = 1.0f/Uncharted2Tonemap(vec3(W));

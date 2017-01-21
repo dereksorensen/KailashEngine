@@ -47,10 +47,15 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            string[] final_helpers = new string[]
+            {
+                _pLoader.path_glsl_common_helpers + "fxaa.include"
+            };
+
             // Render to screen and apply tone mapping and gamma correction
             _pFinalScene = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "final_Scene.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "final_Scene.frag", final_helpers)
             });
             _pFinalScene.enable_Samplers(1);
         }

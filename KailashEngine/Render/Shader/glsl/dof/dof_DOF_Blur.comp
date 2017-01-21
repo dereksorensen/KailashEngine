@@ -7,7 +7,7 @@ writeonly uniform image2D sampler1;		// Destination Texture
 uniform sampler2D sampler2;				// COC
 
 
-shared vec3 cache[gl_WorkGroupSize.x];
+shared vec4 cache[gl_WorkGroupSize.x];
 
 
 uniform int counter;
@@ -29,7 +29,8 @@ void gaussian()
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
 	float texture_size_early_out = texture_size[direction_selector];
 
-	cache[id] = texture(sampler0, texCoord / texture_size).xyz;
+	// Store scene in xyz and coc in w
+	cache[id] = vec4(texture(sampler0, texCoord / texture_size).xyz, texture(sampler2, texCoord / texture_size).r);
 	
 	barrier();
 	memoryBarrierShared();
@@ -40,13 +41,13 @@ void gaussian()
 		return;
 	}
 
-	float coc = texture(sampler2, texCoord / texture_size).r / 2.0;
+	float coc = cache[id].a / 2.0;
 	coc = min(coc * max_blur, max_blur / 2.0);
 	int num_samples = int(ceil(coc));
 
 	if(num_samples <= 0)
 	{
-		imageStore(sampler1, texCoord, vec4(cache[id],1.0));
+		imageStore(sampler1, texCoord, vec4(cache[id].xyz,1.0));
 		return;
 	}
 	
@@ -58,7 +59,7 @@ void gaussian()
 	guass_increment.y = exp(-0.5 / SIGMA_2);
 	guass_increment.z = guass_increment.y * guass_increment.y;
 	
-	vec3 final = cache[id] * guass_increment.x;
+	vec3 final = cache[id].xyz * guass_increment.x;
 
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
@@ -70,8 +71,8 @@ void gaussian()
 		ivec2 samplerCoord = ivec2(id + index, id - index);
 
 		final += (
-			(cache[samplerCoord.x] * guass_increment.x) + 
-			(cache[samplerCoord.y] * guass_increment.x)
+			(cache[samplerCoord.x].xyz * guass_increment.x) + 
+			(cache[samplerCoord.y].xyz * guass_increment.x)
 		);
 
 
@@ -96,7 +97,7 @@ void box()
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
 	float texture_size_early_out = texture_size[direction_selector];
 
-	cache[id] = texture(sampler0, texCoord / texture_size).xyz;
+	cache[id] = vec4(texture(sampler0, texCoord / texture_size).xyz, texture(sampler2, texCoord / texture_size).a);
 	
 	barrier();
 	memoryBarrierShared();
@@ -107,18 +108,18 @@ void box()
 		return;
 	}
 
-	float coc = texture(sampler2, texCoord / texture_size).r / 20;
+	float coc = cache[id].a / 20;
 	coc = min(coc * max_blur, max_blur / 1.0);
 	int num_samples = int(ceil(coc));
 
 	if(num_samples <= 0)
 	{
-		imageStore(sampler1, texCoord, vec4(cache[id],1.0));
+		imageStore(sampler1, texCoord, vec4(cache[id].xyz,1.0));
 		return;
 	}
 	
 	
-	vec3 final = cache[id];
+	vec3 final = cache[id].xyz;
 
 
 	for (int i = 1; i < num_samples; i++)
@@ -127,8 +128,8 @@ void box()
 		ivec2 samplerCoord = ivec2(id + index, id - index);
 
 		final += (
-			(cache[samplerCoord.x]) + 
-			(cache[samplerCoord.y])
+			(cache[samplerCoord.x].xyz) + 
+			(cache[samplerCoord.y].xyz)
 		);
 
 	}

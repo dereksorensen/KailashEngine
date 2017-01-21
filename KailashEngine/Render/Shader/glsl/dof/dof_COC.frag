@@ -33,6 +33,7 @@ float calculateCOC(float depth, float current_focus_distance)
 
 	float xd = abs(depth - current_focus_distance);
 	float xdd = (depth < current_focus_distance) ? (current_focus_distance - xd) : (current_focus_distance + xd);
+	//xdd = current_focus_distance + xd;
 	float b = blur_coef * (xd / xdd);
 
 	return b * PPM;
@@ -62,7 +63,7 @@ void main()
 	
 
 	// Black out scene behind the current focus distance giving you the foreground only
-	if(depth >= focus_distance[0].y)
+	if(depth > focus_distance[0].y)
 	{
 		coc_foreground = 0.0;
 	}
