@@ -61,17 +61,24 @@ namespace KailashEngine.Render.FX
             get { return _tCOC; }
         }
 
+        private Texture _tCOC_Foreground_Blurred;
+        public Texture tCOC_Foreground_Blurred
+        {
+            get { return _tCOC_Foreground_Blurred; }
+        }
+
         private Texture _tCOC_Foreground;
         public Texture tCOC_Foreground
         {
             get { return _tCOC_Foreground; }
         }
 
-        private Texture _tCOC_Foreground_2;
-        public Texture tCOC_Foreground_2
+        private Texture _tCOC_Foreground_Final;
+        public Texture tCOC_Foreground_Final
         {
-            get { return _tCOC_Foreground_2; }
+            get { return _tCOC_Foreground_Final; }
         }
+
 
         private Texture _tCOC_Final;
         public Texture tCOC_Final
@@ -218,6 +225,13 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC.load();
 
+            _tCOC_Foreground_Blurred = new Texture(TextureTarget.Texture2D,
+                _resolution_half.W, _resolution_half.H, 0,
+                false, false,
+                PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tCOC_Foreground_Blurred.load();
+
             _tCOC_Foreground = new Texture(TextureTarget.Texture2D,
                 _resolution_half.W, _resolution_half.H, 0,
                 false, false,
@@ -225,12 +239,12 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Foreground.load();
 
-            _tCOC_Foreground_2 = new Texture(TextureTarget.Texture2D,
+            _tCOC_Foreground_Final = new Texture(TextureTarget.Texture2D,
                 _resolution_half.W, _resolution_half.H, 0,
                 false, false,
                 PixelInternalFormat.R32f, PixelFormat.Red, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tCOC_Foreground_2.load();
+            _tCOC_Foreground_Final.load();
 
 
             _tCOC_Final = new Texture(TextureTarget.Texture2D,
@@ -294,11 +308,12 @@ namespace KailashEngine.Render.FX
             _fHalfResolution.load(new Dictionary<FramebufferAttachment, Texture>()
             {
                 { FramebufferAttachment.ColorAttachment0, _tCOC },
-                { FramebufferAttachment.ColorAttachment1, _tCOC_Foreground },
-                { FramebufferAttachment.ColorAttachment2, _tCOC_Foreground_2 },
-                { FramebufferAttachment.ColorAttachment3, _tBokeh_Points },
-                { FramebufferAttachment.ColorAttachment4, _tDOF_Scene },
-                { FramebufferAttachment.ColorAttachment5, _tDOF_Scene_2 }
+                { FramebufferAttachment.ColorAttachment1, _tCOC_Foreground_Blurred },
+                { FramebufferAttachment.ColorAttachment2, _tCOC_Foreground },
+                { FramebufferAttachment.ColorAttachment3, _tCOC_Foreground_Final },
+                { FramebufferAttachment.ColorAttachment4, _tBokeh_Points },
+                { FramebufferAttachment.ColorAttachment5, _tDOF_Scene },
+                { FramebufferAttachment.ColorAttachment6, _tDOF_Scene_2 }
             });
 
             _fFullResoution = new FrameBuffer("DOF - Full Resolution");
@@ -424,28 +439,29 @@ namespace KailashEngine.Render.FX
 
             quad.render();
 
-            //special.blur_MovingAverage(19, _tCOC_Foreground);
-            special.blur_Gauss(quad, 75, _tCOC_Foreground, _fHalfResolution, DrawBuffersEnum.ColorAttachment1);
+            special.blur_Gauss(quad, 60, _tCOC_Foreground_Blurred, _fHalfResolution, DrawBuffersEnum.ColorAttachment1);
+
 
             //------------------------------------------------------
             // Fix COC
             //------------------------------------------------------
 
-            //_fDepthOfField.bind(new DrawBuffersEnum[]
-            //{
-            //    DrawBuffersEnum.ColorAttachment0,
-            //});
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.Viewport(0, 0, _tCOC.width, _tCOC.height);
+            _fHalfResolution.bind(new DrawBuffersEnum[]
+            {
+                DrawBuffersEnum.ColorAttachment3,
+            });
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, _tCOC.width, _tCOC.height);
 
-            //_pCOC.bind();
+            _pCOC_Fix.bind();
 
-            //_tCOC_Foreground.bind(_pCOC_Fix.getSamplerUniform(0), 0);
-            //_tCOC_Foreground_2.bind(_pCOC_Fix.getSamplerUniform(1), 1);
+            _tCOC_Foreground.bind(_pCOC_Fix.getSamplerUniform(0), 0);
+            _tCOC_Foreground_Blurred.bind(_pCOC_Fix.getSamplerUniform(1), 1);
 
-            //quad.render();
+            quad.render();
 
-            //special.blur_MovingAverage(3, _tCOC);
+            special.blur_Gauss(quad, 10, _tCOC_Foreground_Final, _fHalfResolution, DrawBuffersEnum.ColorAttachment3);
+
 
             //------------------------------------------------------
             // Combine COC
@@ -460,8 +476,7 @@ namespace KailashEngine.Render.FX
             _pCOC_Combine.bind();
 
             _tCOC.bind(_pCOC_Combine.getSamplerUniform(0), 0);
-            _tCOC_Foreground_2.bind(_pCOC_Combine.getSamplerUniform(1), 1);
-            _tCOC_Foreground.bind(_pCOC_Combine.getSamplerUniform(2), 2);
+            _tCOC_Foreground_Final.bind(_pCOC_Combine.getSamplerUniform(1), 1);
 
             quad.render();
 
@@ -499,7 +514,7 @@ namespace KailashEngine.Render.FX
 
         private void extractBokeh(fx_Quad quad, Texture depth_texture, Texture scene_texture)
         {
-            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
+            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
@@ -522,7 +537,7 @@ namespace KailashEngine.Render.FX
 
         private void genBokeh(Texture depth_texture)
         {
-            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment3);
+            _fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, _tBokeh_Points.width, _tBokeh_Points.height);
 
@@ -562,7 +577,7 @@ namespace KailashEngine.Render.FX
             ////------------------------------------------------------
             //// Horizontal
             ////------------------------------------------------------
-            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
+            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment6);
             ////GL.Clear(ClearBufferMask.ColorBufferBit);
             //GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
@@ -578,7 +593,7 @@ namespace KailashEngine.Render.FX
             ////------------------------------------------------------
             //// Vertical
             ////------------------------------------------------------
-            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment4);
+            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
             ////GL.Clear(ClearBufferMask.ColorBufferBit);
             //GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
 
