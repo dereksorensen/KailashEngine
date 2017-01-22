@@ -267,7 +267,6 @@ namespace KailashEngine.Render.FX
             });
 
 
-
             Debug.DebugHelper.time_function("Cone Tracing", 3, () =>
             {
                 _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);

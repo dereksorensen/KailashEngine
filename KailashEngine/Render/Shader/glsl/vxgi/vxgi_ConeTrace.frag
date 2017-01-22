@@ -247,9 +247,10 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 
 	vec3 shift = ((normal / dot(normal,normal)) / vx_volume_dimensions);
 	sum = coneTrace(rayOrigin, shift, normal, vec3(vx_volume_dimensions), 0.6, 0.6);
-	sum += diffuseCone(5, 55, rayOrigin, normal);
+	sum += diffuseCone(7, 70, rayOrigin, normal);
+	sum += diffuseCone(3, 30, rayOrigin, normal);
 
-	sum.a /= 2.0;
+	sum.a /= 3.0;
 
 	return sum;	
 }

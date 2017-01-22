@@ -225,13 +225,13 @@ namespace KailashEngine.Render
             GL.CullFace(CullFaceMode.Back);
 
 
-            //_fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
+            _fxVXGI.voxelizeScene(scene, camera_spatial_data.position);
 
 
             _fxShadow.render(scene, camera_spatial_data);
 
 
-            //_fxVXGI.lightInjection(scene, _fxShadow, camera_spatial_data);
+            _fxVXGI.lightInjection(scene, _fxShadow, camera_spatial_data);
 
 
             _fxGBuffer.pass_DeferredShading(scene, _fxShadow);
@@ -246,7 +246,7 @@ namespace KailashEngine.Render
             GL.Disable(EnableCap.DepthTest);
 
 
-            //_fxVXGI.coneTracing(_fxQuad, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tNormal_Depth, _fxGBuffer.tSpecular, camera_spatial_data);
+            _fxVXGI.coneTracing(_fxQuad, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tNormal_Depth, _fxGBuffer.tSpecular, camera_spatial_data);
 
 
             _fxAtmosphericScattering.render(_fxQuad, _fxGBuffer.tNormal_Depth, _fxGBuffer.tDiffuse_ID, _fxGBuffer.tSpecular, scene.circadian_timer.position, _fxShadow.tDirectional);

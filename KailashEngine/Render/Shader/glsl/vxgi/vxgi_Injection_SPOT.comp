@@ -2,7 +2,8 @@
 layout (local_size_x = 32, local_size_y = 32) in;
 
 
-layout(binding = 0, r32ui) coherent volatile uniform uimage3D sampler0;		// Voxel Volume
+layout(r32ui) coherent volatile uniform uimage3D sampler0;		// Voxel Volume
+//writeonly uniform image3D sampler0;		// Voxel Volume
 uniform sampler3D sampler1;		// Voxel Volume - Diffuse
 
 uniform sampler2DArray sampler2;		// Shadow Depth

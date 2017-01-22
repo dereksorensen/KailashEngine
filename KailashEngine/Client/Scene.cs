@@ -154,7 +154,7 @@ namespace KailashEngine.Client
             // Load Scenes
             _world_loader.addWorldToScene(new string[]
             {
-                "test_scene"
+                "sponza"
             }, _meshes, _light_manager);
 
 

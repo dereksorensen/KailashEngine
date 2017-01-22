@@ -665,7 +665,7 @@ namespace KailashEngine.Render.FX
         {
             autoFocus(depth_texture);
 
-            ////printFocusDistance();
+            //printFocusDistance();
             genCOC(quad, special, depth_texture);
 
             resetBokeh();
@@ -673,10 +673,7 @@ namespace KailashEngine.Render.FX
             //printBokehCount();
             genBokeh(depth_texture);
 
-            Debug.DebugHelper.time_function("timing", 1, () =>
-            {
-                genDOF(quad);
-            });
+            genDOF(quad);
             blendDOF(quad, special, scene_fbo, scene_texture);
         }
     }
