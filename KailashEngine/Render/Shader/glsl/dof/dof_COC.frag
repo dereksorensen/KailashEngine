@@ -32,7 +32,6 @@ float calculateCOC(float depth, float current_focus_distance)
 	blur_coef = blur_coef;
 
 	float xd = (depth - current_focus_distance);
-	//float xdd = (depth < current_focus_distance) ? (current_focus_distance - xd) : (current_focus_distance + xd);
 	float xdd = current_focus_distance + xd;
 	float b = blur_coef * (xd / xdd);
 
@@ -66,6 +65,10 @@ void main()
 	if(depth > focus_distance[0].y)
 	{
 		coc_foreground = 0.0;
+	}
+	else
+	{
+		coc_all = 0.0;
 	}
 
 	coc_foreground_2 = coc_foreground;

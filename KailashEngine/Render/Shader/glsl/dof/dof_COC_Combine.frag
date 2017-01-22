@@ -14,6 +14,6 @@ void main()
 	float coc_background = texture(sampler0, v_TexCoord).r;
 	float coc_foreground = texture(sampler1, v_TexCoord).r;
 
-	coc_final = max(coc_foreground, coc_background);
+	coc_final = coc_foreground + coc_background;
 }
 
