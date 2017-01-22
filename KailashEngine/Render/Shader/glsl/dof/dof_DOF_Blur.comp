@@ -30,7 +30,9 @@ void gaussian()
 	float texture_size_early_out = texture_size[direction_selector];
 
 	// Store scene in xyz and coc in w
-	cache[id] = vec4(texture(sampler0, texCoord / texture_size).xyz, texture(sampler2, texCoord / texture_size).r);
+	vec3 scene = texture(sampler0, texCoord / texture_size).xyz;
+	float coc = texture(sampler2, texCoord / texture_size).r;
+	cache[id] = vec4(scene, coc);
 	
 	barrier();
 	memoryBarrierShared();
@@ -41,9 +43,8 @@ void gaussian()
 		return;
 	}
 
-	float coc = cache[id].a;
-	coc = min(coc * max_blur / 2.0, max_blur / 2.0);
-	int num_samples = int(ceil(coc));
+	float blur_amount = min(coc * max_blur / 2.0, max_blur / 2.0);
+	int num_samples = int(ceil(blur_amount));
 
 	if(num_samples <= 0)
 	{
@@ -58,27 +59,32 @@ void gaussian()
 	guass_increment.x = 1.0 / (sqrt(MATH_2_PI) * SIGMA);
 	guass_increment.y = exp(-0.5 / SIGMA_2);
 	guass_increment.z = guass_increment.y * guass_increment.y;
-	
-	vec3 final = cache[id].xyz * guass_increment.x;
 
+	
+	vec3 final = scene * guass_increment.x;
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
-
 
 	for (int i = 1; i < num_samples; i++)
 	{
 		int index = i;
 		ivec2 samplerCoord = ivec2(id + index, id - index);
 
-		final += (
-			(cache[samplerCoord.x].xyz * guass_increment.x) + 
-			(cache[samplerCoord.y].xyz * guass_increment.x)
-		);
+		float coc_left = cache[samplerCoord.x].a;
+		float coc_right = cache[samplerCoord.y].a;
 
+		vec3 scene_left = cache[samplerCoord.x].xyz;
+		vec3 scene_right = cache[samplerCoord.y].xyz;
 
-		increment_sum += 2.0 * guass_increment.x;
+		float coc_weight = clamp(blur_amount + 1.0f - abs(float(i)),0,1);
+		float weight_left = clamp(coc_left, 0.0, 1.0);
+		float weight_right = clamp(coc_right, 0.0, 1.0);
+
+		final += scene_left * guass_increment.x * weight_left / coc_weight;
+		final += scene_right * guass_increment.x * weight_right / coc_weight;
+
+		increment_sum += 2.0 * guass_increment.x * (weight_left + weight_right) / (2.0 * coc_weight);
 		guass_increment.xy *= guass_increment.yz;
-
 	}
 
 	final /= increment_sum;

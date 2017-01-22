@@ -246,7 +246,6 @@ namespace KailashEngine.Render.FX
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tCOC_Foreground_Final.load();
 
-
             _tCOC_Final = new Texture(TextureTarget.Texture2D,
                 _resolution.W, _resolution.H, 0,
                 false, false,

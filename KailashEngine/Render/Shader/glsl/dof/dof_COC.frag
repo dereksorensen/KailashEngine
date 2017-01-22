@@ -1,6 +1,6 @@
 ﻿
 
-layout(location = 0) out float coc_all;
+layout(location = 0) out float coc_background;
 layout(location = 1) out float coc_foreground;
 layout(location = 2) out float coc_foreground_2;
 
@@ -57,7 +57,7 @@ void main()
 	//coc = calculateCOC(depth, focus_distance[0].y, 10.0);
 
 
-	coc_all = coc;
+	coc_background = coc;
 	coc_foreground = coc;
 	
 
@@ -68,7 +68,7 @@ void main()
 	}
 	else
 	{
-		coc_all = 0.0;
+		coc_background = 0.0;
 	}
 
 	coc_foreground_2 = coc_foreground;
