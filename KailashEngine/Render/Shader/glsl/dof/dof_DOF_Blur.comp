@@ -76,14 +76,20 @@ void gaussian()
 		vec3 scene_left = cache[samplerCoord.x].xyz;
 		vec3 scene_right = cache[samplerCoord.y].xyz;
 
-		float coc_weight = clamp(blur_amount + 1.0f - abs(float(i)),0,1);
+		float coc_weight = clamp(float(num_samples) + 1.0 - float(i), 0, 1) * 2.0;
 		float weight_left = clamp(coc_left, 0.0, 1.0);
 		float weight_right = clamp(coc_right, 0.0, 1.0);
 
-		final += scene_left * guass_increment.x * weight_left / coc_weight;
-		final += scene_right * guass_increment.x * weight_right / coc_weight;
+		/*
+		final += scene_left * guass_increment.x * (weight_left / coc_weight);
+		final += scene_right * guass_increment.x * (weight_right / coc_weight);
+		*/
 
-		increment_sum += 2.0 * guass_increment.x * (weight_left + weight_right) / (2.0 * coc_weight);
+		final += (scene_left * guass_increment.x) + (scene_right * guass_increment.x);
+
+		float weight_total = (weight_left + weight_right) / (2.0 * coc_weight);
+
+		increment_sum += 2.0 * guass_increment.x;// * weight_total;
 		guass_increment.xy *= guass_increment.yz;
 	}
 
