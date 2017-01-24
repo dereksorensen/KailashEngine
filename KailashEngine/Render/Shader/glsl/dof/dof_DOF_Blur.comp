@@ -6,9 +6,7 @@ uniform sampler2D sampler0;				// Source Texture
 writeonly uniform image2D sampler1;		// Destination Texture
 uniform sampler2D sampler2;				// COC
 
-
 shared vec4 cache[gl_WorkGroupSize.x];
-
 
 uniform int counter;
 uniform int direction_selector;
@@ -31,7 +29,7 @@ void gaussian()
 
 	// Store scene in xyz and coc in w
 	vec3 scene = texture(sampler0, texCoord / texture_size).xyz;
-	float coc = texture(sampler2, texCoord / texture_size).r;
+	float coc = texture(sampler2, texCoord / texture_size).x;
 	cache[id] = vec4(scene, coc);
 	
 	barrier();
@@ -70,26 +68,22 @@ void gaussian()
 		int index = i;
 		ivec2 samplerCoord = ivec2(id + index, id - index);
 
-		float coc_left = cache[samplerCoord.x].a;
-		float coc_right = cache[samplerCoord.y].a;
+		float coc_left = abs(cache[samplerCoord.x].a);
+		float coc_right = abs(cache[samplerCoord.y].a);
 
-		vec3 scene_left = cache[samplerCoord.x].xyz;
-		vec3 scene_right = cache[samplerCoord.y].xyz;
-
-		float coc_weight = clamp(float(num_samples) + 1.0 - float(i), 0, 1) * 2.0;
+		float coc_weight = clamp(float(num_samples) + 1.0 - float(i), 0, 1);
 		float weight_left = clamp(coc_left, 0.0, 1.0);
 		float weight_right = clamp(coc_right, 0.0, 1.0);
 
-		/*
+		vec3 scene_left = cache[samplerCoord.x].xyz;
+		vec3 scene_right = cache[samplerCoord.y].xyz;
+		
 		final += scene_left * guass_increment.x * (weight_left / coc_weight);
 		final += scene_right * guass_increment.x * (weight_right / coc_weight);
-		*/
-
-		final += (scene_left * guass_increment.x) + (scene_right * guass_increment.x);
 
 		float weight_total = (weight_left + weight_right) / (2.0 * coc_weight);
 
-		increment_sum += 2.0 * guass_increment.x;// * weight_total;
+		increment_sum += (2.0 * guass_increment.x) * weight_total;
 		guass_increment.xy *= guass_increment.yz;
 	}
 

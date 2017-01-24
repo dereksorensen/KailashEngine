@@ -66,10 +66,7 @@ void main()
 	{
 		coc_foreground = 0.0;
 	}
-	else
-	{
-		coc_background = 0.0;
-	}
+
 
 	coc_foreground_2 = coc_foreground;
 }

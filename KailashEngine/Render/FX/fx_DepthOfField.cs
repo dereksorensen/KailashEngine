@@ -564,7 +564,7 @@ namespace KailashEngine.Render.FX
         //------------------------------------------------------
         // Depth Of Field
         //------------------------------------------------------
-        private void genDOF(fx_Quad quad)
+        private void genDOF(fx_Quad quad, Texture depth_texture)
         {
 
             _pDOF_Blur.bind();
@@ -673,7 +673,7 @@ namespace KailashEngine.Render.FX
             //printBokehCount();
             genBokeh(depth_texture);
 
-            genDOF(quad);
+            genDOF(quad, depth_texture);
             blendDOF(quad, special, scene_fbo, scene_texture);
         }
     }
