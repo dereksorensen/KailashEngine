@@ -17,8 +17,8 @@ namespace KailashEngine.Render.FX
     {
 
         // Programs
+        private Program _pDilate;
         private Program _pBlur;
-        private Program _pBlend;
 
         // Frame Buffers
         private FrameBuffer _fMotionBlur;
@@ -37,6 +37,16 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            _pDilate = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "mb_Dilate.comp", null)
+            });
+            _pDilate.enable_Samplers(3);
+            _pDilate.addUniform("texture_size");
+            _pDilate.addUniform("max_blur");
+            _pDilate.addUniform("counter");
+            _pDilate.addUniform("direction_selector");
+
 
             _pBlur = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
@@ -82,8 +92,14 @@ namespace KailashEngine.Render.FX
 
         }
 
+        private void dilateVelocity(fx_Quad quad, fx_Special special, Texture velocity_texture)
+        {
+            special.blur_Gauss(quad, 200, velocity_texture, 0.5f);
 
-        public void render(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, Texture velocity_texture)
+
+        }
+
+        private void motionBlur(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, Texture velocity_texture, float fps)
         {
 
 
@@ -92,7 +108,7 @@ namespace KailashEngine.Render.FX
             _pBlur.bind();
 
 
-            GL.Uniform1(_pBlur.getUniform("fps_scaler"), 60.0f);
+            GL.Uniform1(_pBlur.getUniform("fps_scaler"), fps);
 
 
             // Velocity Texture
@@ -144,8 +160,19 @@ namespace KailashEngine.Render.FX
             //_tFinal.bind(_pBlur.getSamplerUniform(0), 0);
 
             //quad.render();
+        }
 
 
+        public void render(fx_Quad quad, fx_Special special, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, Texture velocity_texture, float fps)
+        {
+            Debug.DebugHelper.time_function("mb-dilate", 1, () =>
+            {
+                dilateVelocity(quad, special, velocity_texture);
+            });
+            Debug.DebugHelper.time_function("mb-blur", 2, () =>
+            {
+                motionBlur(quad, scene_fbo, scene_texture, depth_texture, velocity_texture, fps);
+            });
         }
 
 

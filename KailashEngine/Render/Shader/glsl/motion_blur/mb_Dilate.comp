@@ -8,18 +8,20 @@ uniform sampler2D sampler2;				// COC
 
 shared vec4 cache[gl_WorkGroupSize.x];
 
+uniform int counter;
 uniform int direction_selector;
 uniform vec2 texture_size;
 
 uniform float max_blur;
 
+int fragmentation = 2;
+
+
 void gaussian() 
 {
 	uint id = gl_LocalInvocationID.x;
-	uint fragmentation = gl_NumWorkGroups.y;
-	uint current_fragment = gl_WorkGroupID.y;
 
-	ivec2 texCoord = ivec2(id * fragmentation + current_fragment, gl_WorkGroupID.x);
+	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
 
 	// Swizzle with uniform so we don't have to branch
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
@@ -44,7 +46,7 @@ void gaussian()
 
 	if(num_samples <= 0)
 	{
-		imageStore(sampler1, texCoord, vec4(scene, 1.0));
+		imageStore(sampler1, texCoord, vec4(cache[id].xyz,1.0));
 		return;
 	}
 	
@@ -94,10 +96,8 @@ void gaussian()
 void box()
 {
 	uint id = gl_LocalInvocationID.x;
-	uint fragmentation = gl_NumWorkGroups.y;
-	uint current_fragment = gl_WorkGroupID.y;
 
-	ivec2 texCoord = ivec2(id * fragmentation + current_fragment, gl_WorkGroupID.x);
+	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
 
 	// Swizzle with uniform so we don't have to branch
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);

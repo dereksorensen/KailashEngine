@@ -408,6 +408,7 @@ namespace KailashEngine
             
         }
 
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _fps = (float)(1.0d / e.Time);
@@ -450,7 +451,7 @@ namespace KailashEngine
             
 
 
-            _render_driver.render(_game.scene, _game.player.camera.spatial);
+            _render_driver.render(_game.scene, _game.player.camera.spatial, _fps);
 
 
             _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;
@@ -458,6 +459,7 @@ namespace KailashEngine
 
 
             SoundSystem.Instance.Update(e.Time, _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);
+
 
             _debug_window.render(_fps);
 

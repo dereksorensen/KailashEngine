@@ -1,37 +1,36 @@
 ﻿
-layout (local_size_x = 512) in;
+layout (local_size_x = 512, local_size_y = 1) in;
 
 
 uniform sampler2D sampler0;				// Source Texture
 writeonly uniform image2D sampler1;		// Destination Texture
 
+// vec4 for better memory alignment
+shared vec4 cache[gl_WorkGroupSize.x];
 
-shared vec3 cache[gl_WorkGroupSize.x*2];
 
-
-uniform int counter;
 uniform int direction_selector;
 uniform int blur_amount;
 uniform vec2 texture_size;
 
-const int fragmentation = 2;
-
-void gauss1()
+void gaussian()
 {
 	uint id = gl_LocalInvocationID.x;
+	uint fragmentation = gl_NumWorkGroups.y;
+	uint current_fragment = gl_WorkGroupID.y;
 
-	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
+	ivec2 texCoord = ivec2(id * fragmentation + current_fragment, gl_WorkGroupID.x);
 
 	// Swizzle with uniform so we don't have to branch
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
 	float texture_size_early_out = texture_size[direction_selector];
 
-	cache[id] = texelFetch(sampler0, texCoord, 0).xyz;
-	cache[id] = texelFetch(sampler0, texCoord, 0).xyz;
+	// Store scene in xyz and coc in w
+	vec3 scene = texelFetch(sampler0, texCoord, 0).xyz;
+	cache[id] = vec4(scene, 1.0);
 	
 	barrier();
 	memoryBarrierShared();
-
 
 	if(id > texture_size_early_out / fragmentation)
 	{
@@ -39,8 +38,7 @@ void gauss1()
 		return;
 	}
 
-	
-	float SIGMA = float(blur_amount) / 9.7;
+	float SIGMA = float(blur_amount) / 18.7;
 	float SIGMA_2 = SIGMA * SIGMA;
 
 	vec3 guass_increment;
@@ -48,19 +46,22 @@ void gauss1()
 	guass_increment.y = exp(-0.5 / SIGMA_2);
 	guass_increment.z = guass_increment.y * guass_increment.y;
 	
-	vec3 final = cache[id] * guass_increment.x;
-
+	vec3 final = scene * guass_increment.x;
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
 
 	for (int i = 1; i < blur_amount; i++)
 	{
 		int index = i;
+		ivec2 samplerCoord = ivec2(id + index, id - index);
 
-		final += cache[id + index] * guass_increment.x;
-		final += cache[id - index] * guass_increment.x;
+		vec3 scene_left = cache[samplerCoord.x].xyz;
+		vec3 scene_right = cache[samplerCoord.y].xyz;
+		
+		final += scene_left * guass_increment.x;
+		final += scene_right * guass_increment.x;
 
-		increment_sum += 2.0 * guass_increment.x;
+		increment_sum += (2.0 * guass_increment.x);
 		guass_increment.xy *= guass_increment.yz;
 	}
 
@@ -72,6 +73,5 @@ void gauss1()
 
 void main() 
 {
-
-	gauss1();
+	gaussian();
 }

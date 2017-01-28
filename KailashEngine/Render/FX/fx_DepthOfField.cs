@@ -194,7 +194,6 @@ namespace KailashEngine.Render.FX
             _pDOF_Blur.enable_Samplers(3);
             _pDOF_Blur.addUniform("texture_size");
             _pDOF_Blur.addUniform("max_blur");
-            _pDOF_Blur.addUniform("counter");
             _pDOF_Blur.addUniform("direction_selector");
 
             _pDOF_Blend = _pLoader.createProgram_PostProcessing(new ShaderFile[]
@@ -570,58 +569,22 @@ namespace KailashEngine.Render.FX
             _pDOF_Blur.bind();
             GL.Uniform1(_pDOF_Blur.getUniform("max_blur"), _max_blur);
 
-            //Vector2 horizontal_texture_size = new Vector2(1.0f / _tDOF_Scene.width, 0f / _tDOF_Scene.height);
-            //Vector2 vertical_texture_size = new Vector2(0f / _tDOF_Scene.width, 1.0f / _tDOF_Scene.height);
-
-            ////------------------------------------------------------
-            //// Horizontal
-            ////------------------------------------------------------
-            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment6);
-            ////GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
-
-
-            //_tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            //_tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
-
-            //GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), horizontal_texture_size);
-
-            //quad.render();
-
-
-            ////------------------------------------------------------
-            //// Vertical
-            ////------------------------------------------------------
-            //_fHalfResolution.bind(DrawBuffersEnum.ColorAttachment5);
-            ////GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.Viewport(0, 0, _tDOF_Scene.width, _tDOF_Scene.height);
-
-            //_tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
-            //_tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(1), 1);
-
-            //GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), vertical_texture_size);
-
-            //quad.render();
-
 
             GL.Uniform2(_pDOF_Blur.getUniform("texture_size"), _tDOF_Scene.dimensions.Xy);
             _tCOC_Final.bind(_pDOF_Blur.getSamplerUniform(2), 2);
 
-            ////------------------------------------------------------
-            //// Horizontal - 1
-            ////------------------------------------------------------
+            int fragmentation = 2;
+
+            //------------------------------------------------------
+            // Horizontal
+            //------------------------------------------------------
             GL.Uniform1(_pDOF_Blur.getUniform("direction_selector"), 0);
             _tDOF_Scene.bind(_pDOF_Blur.getSamplerUniform(0), 0);
             _tDOF_Scene_2.bindImageUnit(_pDOF_Blur.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 0);
-            GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
-
-            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 1);
-            GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, 1, 1);
+            GL.DispatchCompute((int)_tDOF_Scene.dimensions.Y, fragmentation, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-
 
             //------------------------------------------------------
             // Vertical
@@ -630,11 +593,7 @@ namespace KailashEngine.Render.FX
             _tDOF_Scene_2.bind(_pDOF_Blur.getSamplerUniform(0), 0);
             _tDOF_Scene.bindImageUnit(_pDOF_Blur.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 0);
-            GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
-
-            GL.Uniform1(_pDOF_Blur.getUniform("counter"), 1);
-            GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, 1, 1);
+            GL.DispatchCompute((int)_tDOF_Scene.dimensions.X, fragmentation, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
