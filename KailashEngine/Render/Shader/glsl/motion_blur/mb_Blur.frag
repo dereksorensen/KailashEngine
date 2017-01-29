@@ -11,7 +11,7 @@ uniform sampler2D sampler2;		// Depth Texture
 uniform float fps_scaler;
 
 
-
+// From: http://graphics.cs.williams.edu/papers/MotionBlurI3D12/McGuire12Blur.pdf
 float cone(vec2 X, vec2 Y, vec2 V)
 {
 	return clamp(1.0 - length(X-Y)/length(V), 0.0, 1.0);

@@ -247,7 +247,8 @@ namespace KailashEngine.Render.FX
             _tVoxelVolume_Diffuse.bindImageUnit(_pVoxelize.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
 
-            scene.render(BeginMode.Triangles, _pVoxelize);
+            scene.renderMeshes_WithMaterials(BeginMode.Triangles, _pVoxelize);
+            scene.renderLightObjects(BeginMode.Triangles, _pVoxelize);
 
 
             GL.DepthMask(true);

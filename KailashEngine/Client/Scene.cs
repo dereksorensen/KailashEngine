@@ -208,12 +208,17 @@ namespace KailashEngine.Client
 
         public void renderMeshes(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, false);
+            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, 10);
+        }
+
+        public void renderMeshes_WithMaterials(BeginMode begin_mode, Program program)
+        {
+            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, 1);
         }
 
         public void renderMeshes_Basic(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, true);
+            WorldDrawer.drawMeshes(begin_mode, _meshes, program, Matrix4.Identity, _current_animation_time, 0);
         }
 
         public void renderLightObjects(BeginMode begin_mode, Program program)

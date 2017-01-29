@@ -24,16 +24,15 @@ void gaussian()
 
 	// Swizzle with uniform so we don't have to branch
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
-	float texture_size_early_out = texture_size[direction_selector];
+	float texture_size_early_out = texture_size[direction_selector] / fragmentation;
 
-	// Store scene in xyz and coc in w
-	vec2 scene = texture(sampler0, texCoord / texture_size).xy;
-	cache[id] = scene;
+	vec2 velocity = texture(sampler0, texCoord / texture_size).xy;
+	cache[id] = velocity;
 	
 	barrier();
 	memoryBarrierShared();
 
-	if(id > texture_size_early_out / fragmentation)
+	if(id > texture_size_early_out)
 	{
 		imageStore(sampler1, texCoord, vec4(0.0));
 		return;
@@ -47,20 +46,20 @@ void gaussian()
 	guass_increment.y = exp(-0.5 / SIGMA_2);
 	guass_increment.z = guass_increment.y * guass_increment.y;
 	
-	vec2 final = scene * guass_increment.x;
+	vec2 final = velocity * guass_increment.x;
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
 
 	for (int i = 1; i < blur_amount; i++)
 	{
 		int index = i;
-		ivec2 samplerCoord = ivec2(id + index, id - index);
+		ivec2 samplerCoord = ivec2(id - index, id + index);
 
-		vec2 scene_left = cache[samplerCoord.x].xy;
-		vec2 scene_right = cache[samplerCoord.y].xy;
-		
-		final += scene_left * guass_increment.x;
-		final += scene_right * guass_increment.x;
+		vec2 velocity_left = cache[samplerCoord.x].xy;
+		vec2 velocity_right = cache[samplerCoord.y].xy;
+
+		final += velocity_left * guass_increment.x;
+		final += velocity_right * guass_increment.x;
 
 		increment_sum += (2.0 * guass_increment.x);
 		guass_increment.xy *= guass_increment.yz;

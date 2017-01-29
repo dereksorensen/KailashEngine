@@ -26,6 +26,7 @@ namespace KailashEngine
         // Engine Objects
         private RenderDriver _render_driver;
         private float _fps;
+        private bool _sleeping;
 
         // Physics Objects
         private PhysicsDriver _physics_driver;
@@ -52,6 +53,8 @@ namespace KailashEngine
                 GraphicsContextFlags.Default)
         {
             _game = game;
+
+            _sleeping = false;
 
             // Display Settings
             VSync = VSyncMode.On;
@@ -404,8 +407,6 @@ namespace KailashEngine
         {
             // this is called every frame, put game logic here
             _physics_driver.update((float)e.Time, _game.config.fps_target, _fps);
-
-            
         }
 
 

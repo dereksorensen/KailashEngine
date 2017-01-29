@@ -133,16 +133,30 @@ namespace KailashEngine.Render.Objects
             get { return _wrap_mode; }
         }
 
+        private Vector4 _border_color;
+        public Vector4 border_color
+        {
+            get { return _border_color; }
+        }
+
 
         //------------------------------------------------------
         // Constructor
         //------------------------------------------------------
 
-        public Texture(TextureTarget target, 
+        public Texture(TextureTarget target,
             int width, int height, int depth,
             bool enable_mipmap, bool enable_aniso,
             PixelInternalFormat pif, PixelFormat pf, PixelType pt,
             TextureMinFilter min_filter, TextureMagFilter mag_filter, TextureWrapMode wrap_mode)
+            : this(target, width, height, depth, enable_mipmap, enable_aniso,  pif, pf, pt, min_filter, mag_filter, wrap_mode, Vector4.Zero)
+        { }
+
+        public Texture(TextureTarget target,
+            int width, int height, int depth,
+            bool enable_mipmap, bool enable_aniso,
+            PixelInternalFormat pif, PixelFormat pf, PixelType pt,
+            TextureMinFilter min_filter, TextureMagFilter mag_filter, TextureWrapMode wrap_mode, Vector4 border_color)
         {
             // Set texture configuration
             _target = target;
@@ -161,6 +175,8 @@ namespace KailashEngine.Render.Objects
             _min_filter = min_filter;
             _mag_filter = mag_filter;
             _wrap_mode = wrap_mode;
+
+            _border_color = border_color;
 
             if(_enable_mipmap)
             {
@@ -235,6 +251,13 @@ namespace KailashEngine.Render.Objects
                 TextureParameterName.TextureWrapR,
                 (float)_wrap_mode);
 
+            if(_border_color != Vector4.Zero)
+            {
+                GL.TexParameter(
+                    _target,
+                    TextureParameterName.TextureBorderColor,
+                    EngineHelper.createArray(_border_color));
+            }
 
             if (_enable_mipmap)
             {

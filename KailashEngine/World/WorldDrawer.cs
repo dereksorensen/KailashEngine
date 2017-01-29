@@ -57,7 +57,14 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Mesh Drawing
         //------------------------------------------------------
-        public static void drawMeshes(BeginMode begin_mode, List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time, bool basic)
+        /*
+         * Draw Modes:
+         * 0 = Basic
+         * 1 = 0 + With Materials
+         * 2 = 1 + Record Previous Model Matrix
+         * 
+         */
+        public static void drawMeshes(BeginMode begin_mode, List<UniqueMesh> meshes, Program program, Matrix4 transformation, float animation_time, int draw_mode)
         {
             foreach (UniqueMesh unique_mesh in meshes)
             {
@@ -94,7 +101,7 @@ namespace KailashEngine.World
 
                 // Handle previous frame's world matrix
                 GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Previous), false, ref temp_mat_previous);
-                if(!basic) unique_mesh.previous_transformation = temp_mat;
+                if(draw_mode > 1) unique_mesh.previous_transformation = temp_mat;
 
                 // Convert matrix for normals
                 try
@@ -127,7 +134,7 @@ namespace KailashEngine.World
 
                 foreach (Mesh submesh in unique_mesh.mesh.submeshes)
                 {
-                    if (!basic)
+                    if (draw_mode > 0)
                     {
                         //------------------------------------------------------
                         // Set Material Properties
