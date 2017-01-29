@@ -1,36 +1,34 @@
 ﻿
-layout (local_size_x = 512) in;
+layout (local_size_x = 512, local_size_y = 1) in;
 
 
 uniform sampler2D sampler0;				// Source Texture
 writeonly uniform image2D sampler1;		// Destination Texture
-uniform sampler2D sampler2;				// COC
 
-shared vec4 cache[gl_WorkGroupSize.x];
 
-uniform int counter;
+shared vec2 cache[gl_WorkGroupSize.x];
+
+
 uniform int direction_selector;
+uniform int blur_amount;
 uniform vec2 texture_size;
-
-uniform float max_blur;
-
-int fragmentation = 2;
 
 
 void gaussian() 
 {
 	uint id = gl_LocalInvocationID.x;
+	uint fragmentation = gl_NumWorkGroups.y;
+	uint current_fragment = gl_WorkGroupID.y;
 
-	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
+	ivec2 texCoord = ivec2(id * fragmentation + current_fragment, gl_WorkGroupID.x);
 
 	// Swizzle with uniform so we don't have to branch
 	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
 	float texture_size_early_out = texture_size[direction_selector];
 
 	// Store scene in xyz and coc in w
-	vec3 scene = texture(sampler0, texCoord / texture_size).xyz;
-	float coc = texture(sampler2, texCoord / texture_size).x;
-	cache[id] = vec4(scene, coc);
+	vec2 scene = texture(sampler0, texCoord / texture_size).xy;
+	cache[id] = scene;
 	
 	barrier();
 	memoryBarrierShared();
@@ -41,114 +39,38 @@ void gaussian()
 		return;
 	}
 
-	float blur_amount = min(coc * max_blur / 2.0, max_blur / 2.0);
-	int num_samples = int(ceil(blur_amount));
-
-	if(num_samples <= 0)
-	{
-		imageStore(sampler1, texCoord, vec4(cache[id].xyz,1.0));
-		return;
-	}
-	
-	float SIGMA = float(num_samples) / 18.7;
+	float SIGMA = float(blur_amount) / 18.7;
 	float SIGMA_2 = SIGMA * SIGMA;
 
 	vec3 guass_increment;
 	guass_increment.x = 1.0 / (sqrt(MATH_2_PI) * SIGMA);
 	guass_increment.y = exp(-0.5 / SIGMA_2);
 	guass_increment.z = guass_increment.y * guass_increment.y;
-
 	
-	vec3 final = scene * guass_increment.x;
+	vec2 final = scene * guass_increment.x;
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
 
-	for (int i = 1; i < num_samples; i++)
+	for (int i = 1; i < blur_amount; i++)
 	{
 		int index = i;
 		ivec2 samplerCoord = ivec2(id + index, id - index);
 
-		float coc_left = abs(cache[samplerCoord.x].a);
-		float coc_right = abs(cache[samplerCoord.y].a);
-
-		float coc_weight = clamp(float(num_samples) + 1.0 - float(i), 0, 1);
-		float weight_left = clamp(coc_left, 0.0, 1.0);
-		float weight_right = clamp(coc_right, 0.0, 1.0);
-
-		vec3 scene_left = cache[samplerCoord.x].xyz;
-		vec3 scene_right = cache[samplerCoord.y].xyz;
+		vec2 scene_left = cache[samplerCoord.x].xy;
+		vec2 scene_right = cache[samplerCoord.y].xy;
 		
-		final += scene_left * guass_increment.x * (weight_left / coc_weight);
-		final += scene_right * guass_increment.x * (weight_right / coc_weight);
+		final += scene_left * guass_increment.x;
+		final += scene_right * guass_increment.x;
 
-		float weight_total = (weight_left + weight_right) / (2.0 * coc_weight);
-
-		increment_sum += (2.0 * guass_increment.x) * weight_total;
+		increment_sum += (2.0 * guass_increment.x);
 		guass_increment.xy *= guass_increment.yz;
 	}
 
 	final /= increment_sum;
 
-	imageStore(sampler1, texCoord, vec4(final, 1.0));
-
+	imageStore(sampler1, texCoord, vec4(final, vec2(0.0)));
 }
-
-void box()
-{
-	uint id = gl_LocalInvocationID.x;
-
-	ivec2 texCoord = ivec2(id * fragmentation + counter, gl_WorkGroupID.x);
-
-	// Swizzle with uniform so we don't have to branch
-	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
-	float texture_size_early_out = texture_size[direction_selector];
-
-	cache[id] = vec4(texture(sampler0, texCoord / texture_size).xyz, texture(sampler2, texCoord / texture_size).a);
-	
-	barrier();
-	memoryBarrierShared();
-
-	if(id > texture_size_early_out / fragmentation)
-	{
-		imageStore(sampler1, texCoord, vec4(0.0));
-		return;
-	}
-
-	float coc = cache[id].a / 20;
-	coc = min(coc * max_blur, max_blur / 1.0);
-	int num_samples = int(ceil(coc));
-
-	if(num_samples <= 0)
-	{
-		imageStore(sampler1, texCoord, vec4(cache[id].xyz,1.0));
-		return;
-	}
-	
-	
-	vec3 final = cache[id].xyz;
-
-
-	for (int i = 1; i < num_samples; i++)
-	{
-		int index = i;
-		ivec2 samplerCoord = ivec2(id + index, id - index);
-
-		final += (
-			(cache[samplerCoord.x].xyz) + 
-			(cache[samplerCoord.y].xyz)
-		);
-
-	}
-
-	final /= num_samples;
-
-	imageStore(sampler1, texCoord, vec4(final, 1.0));
-
-}
-
-
 void main() 
 {
 	gaussian();
-	//box();
 }

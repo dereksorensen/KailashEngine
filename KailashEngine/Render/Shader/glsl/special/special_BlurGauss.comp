@@ -13,6 +13,7 @@ uniform int direction_selector;
 uniform int blur_amount;
 uniform vec2 texture_size;
 
+
 void gaussian()
 {
 	uint id = gl_LocalInvocationID.x;
@@ -26,8 +27,8 @@ void gaussian()
 	float texture_size_early_out = texture_size[direction_selector];
 
 	// Store scene in xyz and coc in w
-	vec3 scene = texelFetch(sampler0, texCoord, 0).xyz;
-	cache[id] = vec4(scene, 1.0);
+	vec4 scene = texture(sampler0, texCoord / vec2(textureSize(sampler0, 0).xy));
+	cache[id] = scene;
 	
 	barrier();
 	memoryBarrierShared();
@@ -46,7 +47,7 @@ void gaussian()
 	guass_increment.y = exp(-0.5 / SIGMA_2);
 	guass_increment.z = guass_increment.y * guass_increment.y;
 	
-	vec3 final = scene * guass_increment.x;
+	vec4 final = scene * guass_increment.x;
 	float increment_sum = guass_increment.x;
 	guass_increment.xy *= guass_increment.yz;
 
@@ -55,8 +56,8 @@ void gaussian()
 		int index = i;
 		ivec2 samplerCoord = ivec2(id + index, id - index);
 
-		vec3 scene_left = cache[samplerCoord.x].xyz;
-		vec3 scene_right = cache[samplerCoord.y].xyz;
+		vec4 scene_left = cache[samplerCoord.x];
+		vec4 scene_right = cache[samplerCoord.y];
 		
 		final += scene_left * guass_increment.x;
 		final += scene_right * guass_increment.x;
@@ -67,7 +68,7 @@ void gaussian()
 
 	final /= increment_sum;
 
-	imageStore(sampler1, texCoord, vec4(final, 1.0));
+	imageStore(sampler1, texCoord, final);
 }
 
 

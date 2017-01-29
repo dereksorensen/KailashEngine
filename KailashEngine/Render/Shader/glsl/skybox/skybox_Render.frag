@@ -25,7 +25,11 @@ void main()
 
 	diffuse_id = vec4(skybox, 2);
 	normal_depth = vec4(vec3(0.0), near_far.y);
-	velocity = (current_worldPosition.xy / current_worldPosition.w - previous_worldPosition.xy / previous_worldPosition.w);
+
+	vec2 a = (current_worldPosition.xy / current_worldPosition.w);
+	vec2 b = (previous_worldPosition.xy / previous_worldPosition.w);
+	vec2 V = (a - b);
+	velocity = V;
 
 	gl_FragDepth = 1.0;
 }

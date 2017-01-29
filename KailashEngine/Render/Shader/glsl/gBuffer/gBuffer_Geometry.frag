@@ -142,8 +142,8 @@ void main()
 	// Velocity Mapping
 	//------------------------------------------------------
 
-	vec2 a = (g_currentPosition.xy / g_currentPosition.w);// * 0.5 + 0.5;
-	vec2 b = (g_previousPosition.xy / g_previousPosition.w);// * 0.5 + 0.5;
+	vec2 a = (g_currentPosition.xy / g_currentPosition.w);
+	vec2 b = (g_previousPosition.xy / g_previousPosition.w);
 	vec2 V = (a - b);
 	velocity = V;
 

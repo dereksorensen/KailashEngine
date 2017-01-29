@@ -16,9 +16,6 @@ namespace KailashEngine.Render.FX
     class fx_DepthOfField : RenderEffect
     {
         // Properties
-        private const float _texture_scale = 0.5f;
-        private Resolution _resolution_half;
-
         private const float _max_blur = 150.0f;
         private const float _focus_length = 10.0f;
         private const float _fStop = 0.15f;
@@ -119,7 +116,6 @@ namespace KailashEngine.Render.FX
         public fx_DepthOfField(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name, Resolution full_resolution)
             : base(pLoader, tLoader, resource_folder_name, full_resolution)
         {
-            _resolution_half = new Resolution(_resolution.W * _texture_scale, _resolution.H * _texture_scale);
             _PPM = (float)Math.Sqrt((_resolution_half.W_2) + (_resolution_half.H_2)) / _sensor_width;
         }
 

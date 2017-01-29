@@ -21,13 +21,25 @@ namespace KailashEngine.Render.FX
         private Program _pBlur;
 
         // Frame Buffers
-        private FrameBuffer _fMotionBlur;
+        private FrameBuffer _fFullResolution;
 
         // Textures
         private Texture _tFinal;
         public Texture tFinal
         {
             get { return _tFinal; }
+        }
+
+        private Texture _tVelocity_1;
+        public Texture tVelocity_1
+        {
+            get { return _tVelocity_1; }
+        }
+
+        private Texture _tVelocity_2;
+        public Texture tVelocity_2
+        {
+            get { return _tVelocity_2; }
         }
 
 
@@ -41,10 +53,9 @@ namespace KailashEngine.Render.FX
             {
                 new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "mb_Dilate.comp", null)
             });
-            _pDilate.enable_Samplers(3);
+            _pDilate.enable_Samplers(2);
+            _pDilate.addUniform("blur_amount");
             _pDilate.addUniform("texture_size");
-            _pDilate.addUniform("max_blur");
-            _pDilate.addUniform("counter");
             _pDilate.addUniform("direction_selector");
 
 
@@ -60,19 +71,35 @@ namespace KailashEngine.Render.FX
         protected override void load_Buffers()
         {
 
+            _tVelocity_1 = new Texture(TextureTarget.Texture2D,
+                _resolution_half.W, _resolution_half.H, 0, 
+                false, false,
+                PixelInternalFormat.Rg16f, PixelFormat.Rg, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tVelocity_1.load();
+
+            _tVelocity_2 = new Texture(TextureTarget.Texture2D,
+                _tVelocity_1.width, _tVelocity_1.height, 0,
+                false, false,
+                PixelInternalFormat.Rg16f, PixelFormat.Rg, PixelType.Float,
+                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tVelocity_2.load();
+
+
             _tFinal = new Texture(TextureTarget.Texture2D,
-                _resolution.W, _resolution.H,
-                0, false, false,
+                _resolution.W, _resolution.H, 0, 
+                false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tFinal.load();
 
 
-            _fMotionBlur = new FrameBuffer("Motion Blur");
-            _fMotionBlur.load(new Dictionary<FramebufferAttachment, Texture>()
+            _fFullResolution = new FrameBuffer("Motion Blur");
+            _fFullResolution.load(new Dictionary<FramebufferAttachment, Texture>()
             {
                 { FramebufferAttachment.ColorAttachment0, _tFinal },
             });
+
 
         }
 
@@ -94,12 +121,43 @@ namespace KailashEngine.Render.FX
 
         private void dilateVelocity(fx_Quad quad, fx_Special special, Texture velocity_texture)
         {
-            special.blur_Gauss(quad, 200, velocity_texture, 0.5f);
+
+            int blur_amount = 150;
+
+
+            _pDilate.bind();
+            GL.Uniform1(_pDilate.getUniform("blur_amount"), blur_amount);
+            GL.Uniform2(_pDilate.getUniform("texture_size"), _tVelocity_1.dimensions.Xy);
+
+            int fragmentation = 2;
+
+            //------------------------------------------------------
+            // Horizontal
+            //------------------------------------------------------
+            GL.Uniform1(_pDilate.getUniform("direction_selector"), 0);
+            velocity_texture.bind(_pDilate.getSamplerUniform(0), 0);
+            _tVelocity_2.bindImageUnit(_pDilate.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((int)_tVelocity_1.dimensions.Y, fragmentation, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
+            //------------------------------------------------------
+            // Vertical
+            //------------------------------------------------------
+            GL.Uniform1(_pDilate.getUniform("direction_selector"), 1);
+            _tVelocity_2.bind(_pDilate.getSamplerUniform(0), 0);
+            _tVelocity_1.bindImageUnit(_pDilate.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
+
+            GL.DispatchCompute((int)_tVelocity_1.dimensions.X, fragmentation, 1);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
 
         }
 
-        private void motionBlur(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, Texture velocity_texture, float fps)
+        private void motionBlur(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, float fps)
         {
 
 
@@ -112,7 +170,7 @@ namespace KailashEngine.Render.FX
 
 
             // Velocity Texture
-            velocity_texture.bind(_pBlur.getSamplerUniform(1), 1);
+            _tVelocity_1.bind(_pBlur.getSamplerUniform(1), 1);
 
             // Depth Texture
             depth_texture.bind(_pBlur.getSamplerUniform(2), 2);
@@ -121,7 +179,7 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Pass 1
             //------------------------------------------------------
-            _fMotionBlur.bind(DrawBuffersEnum.ColorAttachment0);
+            _fFullResolution.bind(DrawBuffersEnum.ColorAttachment0);
 
             // Source Texture
             scene_texture.bind(_pBlur.getSamplerUniform(0), 0);
@@ -171,7 +229,7 @@ namespace KailashEngine.Render.FX
             });
             Debug.DebugHelper.time_function("mb-blur", 2, () =>
             {
-                motionBlur(quad, scene_fbo, scene_texture, depth_texture, velocity_texture, fps);
+                motionBlur(quad, scene_fbo, scene_texture, depth_texture, fps);
             });
         }
 

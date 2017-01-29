@@ -126,7 +126,7 @@ namespace KailashEngine.Render.FX
             scene_texture.bindImageUnit(_pLuminosity.getSamplerUniform(0), 0, TextureAccess.ReadOnly);
             _tLuminosity.bindImageUnit(_pLuminosity.getSamplerUniform(1), 1, TextureAccess.WriteOnly);
 
-            GL.DispatchCompute(_resolution.W / wg_size, _resolution.H / wg_size, 1);
+            GL.DispatchCompute(scene_texture.width / wg_size, scene_texture.height / wg_size, 1);
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
             _tLuminosity.generateMipMap();
@@ -181,7 +181,7 @@ namespace KailashEngine.Render.FX
 
         public void scaleScene(fx_Quad quad, FrameBuffer scene_fbo, Texture scene_texture)
         {
-            //Copy scene texture to temporary texture so we can read and write to main scene texture
+            // Copy scene texture to temporary texture so we can read and write to main scene texture
             GL.CopyImageSubData(scene_texture.id, ImageTarget.Texture2D, 0, 0, 0, 0,
                                 _tTempScene.id, ImageTarget.Texture2D, 0, 0, 0, 0,
                                 _resolution.W, _resolution.H, 1);
