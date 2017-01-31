@@ -34,8 +34,15 @@ namespace KailashEngine.Render.FX
         private FrameBuffer _fConeTrace;
 
         // Textures
-        public Texture _tVoxelVolume;
-        public Texture _tVoxelVolume_Diffuse;
+        private Texture _tVoxelVolume
+        {
+            get
+            {
+                return _tVoxelVolumes[0];
+            }
+        }
+        private Texture[] _tVoxelVolumes;
+        private Texture _tVoxelVolume_Diffuse;
 
         private Texture _tConeTrace_Diffuse;
         public Texture tConeTrace_Diffuse
@@ -138,12 +145,24 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Voxel Volumes
             //------------------------------------------------------
-            _tVoxelVolume = new Texture(TextureTarget.Texture3D,
-                (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
-                true, true,
-                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
-                TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            _tVoxelVolume.load();
+            //_tVoxelVolume = new Texture(TextureTarget.Texture3D,
+            //    (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
+            //    true, true,
+            //    PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
+            //    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            //_tVoxelVolume.load();
+
+            _tVoxelVolumes = new Texture[6];
+            for(int i = 0; i < 6; i++)
+            {
+                _tVoxelVolumes[i] = new Texture(TextureTarget.Texture3D,
+                    (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
+                    true, true,
+                    PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
+                    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+                _tVoxelVolumes[i].load();
+            }
+
 
             _tVoxelVolume_Diffuse = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
@@ -169,8 +188,6 @@ namespace KailashEngine.Render.FX
                 { FramebufferAttachment.ColorAttachment0, _tConeTrace_Diffuse }
             });
 
-
-
             _tTemp = new Texture(TextureTarget.Texture2D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, 0,
                 false, false,
@@ -195,6 +212,9 @@ namespace KailashEngine.Render.FX
 
         }
 
+        //------------------------------------------------------
+        // Helpers
+        //------------------------------------------------------
 
         private Vector3 voxelSnap(Vector3 vector)
         {
@@ -211,11 +231,52 @@ namespace KailashEngine.Render.FX
         }
 
 
+        private void clearVoxelVolumes()
+        {
+            //_tVoxelVolume.clear();
+            for (int i = 0; i < 6; i++)
+            {
+                _tVoxelVolumes[i].clear();
+            }
+            _tVoxelVolume_Diffuse.clear();
+        }
+
+
+        private void resetVoxelAlpha(fx_Quad quad)
+        {
+            GL.Viewport(0, 0, _tVoxelVolume.width, _tVoxelVolume.height);
+
+            _pResetAlpha.bind();
+
+            _tVoxelVolume_Diffuse.bind(_pResetAlpha.getSamplerUniform(0), 0);
+            _tVoxelVolume.bindImageUnit(_pResetAlpha.getSamplerUniform(1), 1, TextureAccess.ReadWrite);
+
+            quad.render3D((int)_vx_volume_dimensions);
+
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+        }
+
+
+        private void copyToVoxelVolumes()
+        {
+            for (int i = 1; i < _tVoxelVolumes.Length; i++)
+            {
+                GL.CopyImageSubData(_tVoxelVolumes[0].id, ImageTarget.Texture3D, 0, 0, 0, 0, 
+                    _tVoxelVolumes[i].id, ImageTarget.Texture3D, 0, 0, 0, 0,
+                    _tVoxelVolumes[0].width, _tVoxelVolumes[0].height, _tVoxelVolumes[0].depth);
+            }
+        }
+
+
+        //------------------------------------------------------
+        // Main Functions
+        //------------------------------------------------------
+
+
         public void voxelizeScene(Scene scene, Vector3 camera_position)
         {
-            _tVoxelVolume.clear();
-            _tVoxelVolume_Diffuse.clear();
 
+            clearVoxelVolumes();
 
 
             GL.ColorMask(false, false, false, false);
@@ -303,19 +364,6 @@ namespace KailashEngine.Render.FX
 
                 quad.renderFullQuad();
             });
-        }
-
-
-        public void resetVoxelAlpha(fx_Quad quad)
-        {
-            GL.Viewport(0, 0, _tVoxelVolume.width, _tVoxelVolume.height);
-
-            _pResetAlpha.bind();
-
-            _tVoxelVolume_Diffuse.bind(_pResetAlpha.getSamplerUniform(0), 0);
-            _tVoxelVolume.bindImageUnit(_pResetAlpha.getSamplerUniform(1), 1, TextureAccess.ReadWrite);
-
-            quad.render3D((int)_vx_volume_dimensions);
         }
 
 

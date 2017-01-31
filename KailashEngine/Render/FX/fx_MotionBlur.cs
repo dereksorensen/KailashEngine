@@ -223,14 +223,8 @@ namespace KailashEngine.Render.FX
 
         public void render(fx_Quad quad, fx_Special special, FrameBuffer scene_fbo, Texture scene_texture, Texture depth_texture, Texture velocity_texture, float fps)
         {
-            Debug.DebugHelper.time_function("mb-dilate", 1, () =>
-            {
-                dilateVelocity(quad, special, velocity_texture);
-            });
-            Debug.DebugHelper.time_function("mb-blur", 2, () =>
-            {
-                motionBlur(quad, scene_fbo, scene_texture, depth_texture, fps);
-            });
+            dilateVelocity(quad, special, velocity_texture);
+            motionBlur(quad, scene_fbo, scene_texture, depth_texture, fps);
         }
 
 
