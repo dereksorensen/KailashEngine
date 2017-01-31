@@ -398,10 +398,15 @@ namespace KailashEngine.Render.Objects
 
         public void bindImageUnit(int texture_uniform, int index, TextureAccess access)
         {
-            bindImageUnit(texture_uniform, index, access, 0);
+            bindImageUnit(texture_uniform, index, access, 0, 0);
         }
 
-        public void bindImageUnit(int texture_uniform, int index, TextureAccess access, int layer)
+        public void bindImageUnit(int texture_uniform, int index, TextureAccess access, int level)
+        {
+            bindImageUnit(texture_uniform, index, access, level, 0);
+        }
+
+        public void bindImageUnit(int texture_uniform, int index, TextureAccess access, int level, int layer)
         {
             bool layered = false;
             switch (_target)
@@ -418,7 +423,7 @@ namespace KailashEngine.Render.Objects
             GL.BindImageTexture(
                 index,
                 _id,
-                0,
+                level,
                 layered,
                 layer,
                 access,

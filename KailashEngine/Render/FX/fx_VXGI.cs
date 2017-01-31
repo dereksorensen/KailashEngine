@@ -29,6 +29,7 @@ namespace KailashEngine.Render.FX
         private Program _pConeTrace;
         private Program _pInjection_SPOT;
         private Program _pResetAlpha;
+        private Program _pMipMap;
 
         // Frame Buffers
         private FrameBuffer _fConeTrace;
@@ -110,7 +111,7 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_ConeTrace.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ConeTrace.frag", cone_trace_helpers)
             });
-            _pConeTrace.enable_Samplers(4);
+            _pConeTrace.enable_Samplers(9);
             _pConeTrace.addUniform("vx_volume_dimensions");
             _pConeTrace.addUniform("vx_volume_scale");
             _pConeTrace.addUniform("vx_volume_position");
@@ -138,6 +139,16 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ResetAlpha.frag", null)
             });
             _pResetAlpha.enable_Samplers(2);
+
+            // MipMap
+            _pMipMap = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_MipMap.comp", null)
+            });
+            _pMipMap.enable_Samplers(2);
+            _pMipMap.addUniform("source_mip_level");
+            _pMipMap.addUniform("direction");
+
         }
 
         protected override void load_Buffers()
@@ -257,13 +268,47 @@ namespace KailashEngine.Render.FX
         }
 
 
-        private void copyToVoxelVolumes()
+        private void copyVoxelVolumes(fx_Quad quad)
         {
             for (int i = 1; i < _tVoxelVolumes.Length; i++)
             {
-                GL.CopyImageSubData(_tVoxelVolumes[0].id, ImageTarget.Texture3D, 0, 0, 0, 0, 
+                GL.CopyImageSubData(
+                    _tVoxelVolumes[0].id, ImageTarget.Texture3D, 0, 0, 0, 0,
                     _tVoxelVolumes[i].id, ImageTarget.Texture3D, 0, 0, 0, 0,
                     _tVoxelVolumes[0].width, _tVoxelVolumes[0].height, _tVoxelVolumes[0].depth);
+            }
+        }
+
+
+        private void mipMap()
+        {
+            //_tVoxelVolume.generateMipMap();
+
+
+            _pMipMap.bind();
+
+            int[] workGroupSize = new int[3];
+            GL.GetProgram(_pMipMap.pID, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
+            if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
+
+            for (int direction = 0; direction < _tVoxelVolumes.Length; direction++)
+            {
+                for (int mip_level = 1; mip_level < _tVoxelVolume.getMaxMipMap(); mip_level++)
+                {
+                    GL.Uniform1(_pMipMap.getUniform("direction"), direction);
+                    GL.Uniform1(_pMipMap.getUniform("source_mip_level"), mip_level - 1);
+
+                    _tVoxelVolumes[direction].bind(_pMipMap.getSamplerUniform(0), 0);
+
+                    _tVoxelVolumes[direction].bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
+
+                    GL.DispatchCompute(
+                        ((_tVoxelVolume.width >> mip_level) + workGroupSize[0] - 1) / workGroupSize[0],
+                        ((_tVoxelVolume.width >> mip_level) + workGroupSize[1] - 1) / workGroupSize[1],
+                        ((_tVoxelVolume.width >> mip_level) + workGroupSize[2] - 1) / workGroupSize[2]);
+
+                    GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+                }
             }
         }
 
@@ -323,9 +368,14 @@ namespace KailashEngine.Render.FX
 
         public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
         {
+            Debug.DebugHelper.time_function("Copying", 1, () =>
+            {
+                copyVoxelVolumes(quad);
+            });
+
             Debug.DebugHelper.time_function("Mip Mapping", 2, () =>
             {
-                _tVoxelVolume.generateMipMap();
+                mipMap();
             });
 
 
@@ -353,13 +403,16 @@ namespace KailashEngine.Render.FX
                 GL.Uniform1(_pConeTrace.getUniform("maxMipLevels"), _tVoxelVolume.getMaxMipMap());
 
 
-
                 normal_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
                 specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
                 diffuse_texture.bind(_pConeTrace.getSamplerUniform(2), 2);
 
-                _tVoxelVolume.bind(_pConeTrace.getSamplerUniform(3), 3);
-
+                _tVoxelVolumes[0].bind(_pConeTrace.getSamplerUniform(3), 3);
+                _tVoxelVolumes[1].bind(_pConeTrace.getSamplerUniform(4), 4);
+                _tVoxelVolumes[2].bind(_pConeTrace.getSamplerUniform(5), 5);
+                _tVoxelVolumes[3].bind(_pConeTrace.getSamplerUniform(6), 6);
+                _tVoxelVolumes[4].bind(_pConeTrace.getSamplerUniform(7), 7);
+                _tVoxelVolumes[5].bind(_pConeTrace.getSamplerUniform(8), 8);
 
 
                 quad.renderFullQuad();

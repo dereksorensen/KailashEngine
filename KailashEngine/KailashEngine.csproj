@@ -620,6 +620,8 @@
     <None Include="Render\Shader\glsl\vxgi\vxgi_ConeTrace.vert" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_ConeTrace.frag" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_Injection_SPOT.comp" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_CopyVolume.frag" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_MipMap.comp" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_ResetAlpha.frag" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_Voxelize.frag" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_Voxelize.geom" />

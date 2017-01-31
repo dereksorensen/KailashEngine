@@ -297,12 +297,12 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
 
-                //_fxQuad.render_Texture(_fxVXGI.tConeTrace_Diffuse, 0.5f, 1);
+                _fxQuad.render_Texture(_fxVXGI.tConeTrace_Diffuse, 0.5f, 1);
                 //_fxQuad.render_Texture(_fxVXGI._tVoxelVolume, 0.33f, 1, 150);
                 //_fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 2);
-                _fxQuad.render_Texture(_fxMotionBlur.tVelocity_2, 0.25f, 3);
-                _fxQuad.render_Texture(_fxMotionBlur.tVelocity_1, 0.25f, 2);
-                _fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
+                //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_2, 0.25f, 3);
+                //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_1, 0.25f, 2);
+                //_fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 
 

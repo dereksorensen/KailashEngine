@@ -26,7 +26,12 @@ uniform sampler2D sampler0;		// Normal Texture
 uniform sampler2D sampler1;		// Specular Texture
 uniform sampler2D sampler2;		// Diffuse Texture
 
-uniform sampler3D sampler3;		// Voxel Volume
+uniform sampler3D sampler3;		// Voxel Volume +x
+uniform sampler3D sampler4;		// Voxel Volume -x
+uniform sampler3D sampler5;		// Voxel Volume +y
+uniform sampler3D sampler6;		// Voxel Volume -y
+uniform sampler3D sampler7;		// Voxel Volume +z
+uniform sampler3D sampler8;		// Voxel Volume -z
 
 
 uniform float vx_volume_dimensions;
@@ -39,6 +44,22 @@ uniform int displayVoxels;
 uniform int displayMipLevel;
 uniform int maxMipLevels;
 
+
+vec4 sampleVox(vec3 pos, vec3 dir, float lod)
+{
+	vec4 sampleX = dir.x < 0.0 ? textureLod(sampler4, pos-vec3(1,0,0)/vx_volume_dimensions, lod) : textureLod(sampler3, pos+vec3(1,0,0)/vx_volume_dimensions, lod);
+	vec4 sampleY = dir.y < 0.0 ? textureLod(sampler6, pos-vec3(0,1,0)/vx_volume_dimensions, lod) : textureLod(sampler5, pos+vec3(0,1,0)/vx_volume_dimensions, lod);
+	vec4 sampleZ = dir.z < 0.0 ? textureLod(sampler8, pos-vec3(0,0,1)/vx_volume_dimensions, lod) : textureLod(sampler7, pos+vec3(0,0,1)/vx_volume_dimensions, lod);
+	
+	vec3 wts = abs(dir);
+
+	float invSampleMag = 1.0/(wts.x + wts.y + wts.z + 0.0001);
+	wts *= invSampleMag;
+
+	vec4 filtered = (sampleX*wts.x + sampleY*wts.y + sampleZ*wts.z);
+
+	return filtered;
+}
 
 
 vec3 RayAABBTest(vec3 rayOrigin, vec3 rayDir, vec3 aabbMin, vec3 aabbMax)
@@ -102,7 +123,8 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 		{
 			count++;
 
-			vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
+			//vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
+			vec4 color = sampleVox(voxelPos/volumeDimensions.x, -dir, displayMipLevel);
 
 			float sampleWeight = (1.0 - accum.w);
 			accum += vec4(color * sampleWeight);
@@ -169,7 +191,8 @@ vec4 coneTrace(vec3 origin, vec3 origin_shift, vec3 dir, vec3 volumeDimensions, 
 			vec3 offset = dir * dist;
 			vec3 samplePos = origin_snapped + offset;
 
-			vec4 color = textureLod(sampler3, samplePos, sampleLOD);
+			//vec4 color = textureLod(sampler3, samplePos, sampleLOD);
+			vec4 color = sampleVox(samplePos, -dir, sampleLOD);
 
 			//accum.w = accum.w * (sampleLOD/2.0);
 			float sampleWeight = (1.0 - accum.w);
