@@ -123,8 +123,8 @@ vec4 rayCast(vec3 origin, vec3 dir, float attenuation, vec3 volumeDimensions, in
 		{
 			count++;
 
-			//vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
-			vec4 color = sampleVox(voxelPos/volumeDimensions.x, -dir, displayMipLevel);
+			vec4 color = textureLod(sampler3, voxelPos/volumeDimensions.x, displayMipLevel);
+			//vec4 color = sampleVox(voxelPos/volumeDimensions.x, -dir, displayMipLevel);
 
 			float sampleWeight = (1.0 - accum.w);
 			accum += vec4(color * sampleWeight);
@@ -184,15 +184,14 @@ vec4 coneTrace(vec3 origin, vec3 origin_shift, vec3 dir, vec3 volumeDimensions, 
 			float sampleLOD = log2(sampleDiameter * minVoxelDiameterInv);
 			sampleLOD = clamp(sampleLOD, 0.0, float(maxMipLevels));
 
-			vec3 cam_position_snapped = voxelSnap(cam_position, vx_volume_dimensions / (vx_volume_scale * 10.0 * pow(2.0, 0)));
-			vec3 origin_snapped = ((origin + cam_position_snapped) / (vx_volume_scale)) * 0.5 + 0.5;
+			vec3 origin_snapped = origin;
 			origin_snapped += origin_shift;
 			
 			vec3 offset = dir * dist;
 			vec3 samplePos = origin_snapped + offset;
 
-			//vec4 color = textureLod(sampler3, samplePos, sampleLOD);
-			vec4 color = sampleVox(samplePos, -dir, sampleLOD);
+			vec4 color = textureLod(sampler3, samplePos, sampleLOD);
+			//vec4 color = sampleVox(samplePos, -dir, sampleLOD);
 
 			//accum.w = accum.w * (sampleLOD/2.0);
 			float sampleWeight = (1.0 - accum.w);
@@ -308,10 +307,10 @@ void main()
 	vec3 cam_position_snapped = voxelSnap(cam_position, vx_volume_dimensions / (vx_volume_scale * 10.0f));
 
 	vec3 world_position = calcWorldPosition(depth, ray, cam_position);
-	vec3 world_position_biased = ((world_position + cam_position_snapped) / (vx_volume_scale)) * 0.5 + 0.5;
+	vec3 world_position_biased = ((world_position - vx_volume_position) / (vx_volume_scale)) * 0.5 + 0.5;
 
 
-	vec3 rayOrigin = world_position;
+	vec3 rayOrigin = world_position_biased;
 	vec3 reflection = normalize(reflect(ray, normal));
 
 	

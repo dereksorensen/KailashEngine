@@ -230,7 +230,7 @@ namespace KailashEngine.Render.FX
         private Vector3 voxelSnap(Vector3 vector)
         {
             Vector3 temp_vector = vector;
-            float scaler = (_vx_volume_dimensions) / (_vx_volume_scale * 10.0f);
+            float scaler = (_vx_volume_dimensions) / (_vx_volume_scale * (float)Math.Pow(2.0f, _tVoxelVolume.getMaxMipMap()/1.0f));
             temp_vector *= scaler;
             temp_vector.X = (float)Math.Floor(temp_vector.X);
             temp_vector.Y = (float)Math.Floor(temp_vector.Y);
@@ -282,34 +282,34 @@ namespace KailashEngine.Render.FX
 
         private void mipMap()
         {
-            //_tVoxelVolume.generateMipMap();
+            _tVoxelVolume.generateMipMap();
 
 
-            _pMipMap.bind();
+            //_pMipMap.bind();
 
-            int[] workGroupSize = new int[3];
-            GL.GetProgram(_pMipMap.pID, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
-            if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
+            //int[] workGroupSize = new int[3];
+            //GL.GetProgram(_pMipMap.pID, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
+            //if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
 
-            for (int direction = 0; direction < _tVoxelVolumes.Length; direction++)
-            {
-                for (int mip_level = 1; mip_level < _tVoxelVolume.getMaxMipMap(); mip_level++)
-                {
-                    GL.Uniform1(_pMipMap.getUniform("direction"), direction);
-                    GL.Uniform1(_pMipMap.getUniform("source_mip_level"), mip_level - 1);
+            //for (int direction = 0; direction < _tVoxelVolumes.Length; direction++)
+            //{
+            //    for (int mip_level = 1; mip_level < _tVoxelVolume.getMaxMipMap(); mip_level++)
+            //    {
+            //        GL.Uniform1(_pMipMap.getUniform("direction"), direction);
+            //        GL.Uniform1(_pMipMap.getUniform("source_mip_level"), mip_level - 1);
 
-                    _tVoxelVolumes[direction].bind(_pMipMap.getSamplerUniform(0), 0);
+            //        _tVoxelVolumes[direction].bind(_pMipMap.getSamplerUniform(0), 0);
 
-                    _tVoxelVolumes[direction].bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
+            //        _tVoxelVolumes[direction].bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
 
-                    GL.DispatchCompute(
-                        ((_tVoxelVolume.width >> mip_level) + workGroupSize[0] - 1) / workGroupSize[0],
-                        ((_tVoxelVolume.width >> mip_level) + workGroupSize[1] - 1) / workGroupSize[1],
-                        ((_tVoxelVolume.width >> mip_level) + workGroupSize[2] - 1) / workGroupSize[2]);
+            //        GL.DispatchCompute(
+            //            ((_tVoxelVolume.width >> mip_level) + workGroupSize[0] - 1) / workGroupSize[0],
+            //            ((_tVoxelVolume.width >> mip_level) + workGroupSize[1] - 1) / workGroupSize[1],
+            //            ((_tVoxelVolume.width >> mip_level) + workGroupSize[2] - 1) / workGroupSize[2]);
 
-                    GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-                }
-            }
+            //        GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            //    }
+            //}
         }
 
 
@@ -366,58 +366,6 @@ namespace KailashEngine.Render.FX
         }
 
 
-        public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
-        {
-            Debug.DebugHelper.time_function("Copying", 1, () =>
-            {
-                copyVoxelVolumes(quad);
-            });
-
-            Debug.DebugHelper.time_function("Mip Mapping", 2, () =>
-            {
-                mipMap();
-            });
-
-
-            Debug.DebugHelper.time_function("Cone Tracing", 3, () =>
-            {
-                _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);
-
-                GL.Viewport(0, 0, _tConeTrace_Diffuse.width, _tConeTrace_Diffuse.height);
-
-                _pConeTrace.bind();
-
-                GL.Uniform1(_pConeTrace.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
-                GL.Uniform1(_pConeTrace.getUniform("vx_volume_scale"), _vx_volume_scale);
-
-
-                Matrix4 voxel_volume_position = Matrix4.CreateTranslation(-voxelSnap(camera_spatial.position));
-                GL.Uniform3(_pConeTrace.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
-
-                Matrix4 invMVP = Matrix4.Invert(_vx_shift_matrix * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
-                GL.UniformMatrix4(_pConeTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
-
-
-                GL.Uniform1(_pConeTrace.getUniform("displayVoxels"), 0);
-                GL.Uniform1(_pConeTrace.getUniform("displayMipLevel"), 0);
-                GL.Uniform1(_pConeTrace.getUniform("maxMipLevels"), _tVoxelVolume.getMaxMipMap());
-
-
-                normal_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
-                specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
-                diffuse_texture.bind(_pConeTrace.getSamplerUniform(2), 2);
-
-                _tVoxelVolumes[0].bind(_pConeTrace.getSamplerUniform(3), 3);
-                _tVoxelVolumes[1].bind(_pConeTrace.getSamplerUniform(4), 4);
-                _tVoxelVolumes[2].bind(_pConeTrace.getSamplerUniform(5), 5);
-                _tVoxelVolumes[3].bind(_pConeTrace.getSamplerUniform(6), 6);
-                _tVoxelVolumes[4].bind(_pConeTrace.getSamplerUniform(7), 7);
-                _tVoxelVolumes[5].bind(_pConeTrace.getSamplerUniform(8), 8);
-
-
-                quad.renderFullQuad();
-            });
-        }
 
 
         public void lightInjection(Scene scene, fx_Shadow shadow, SpatialData camera_spatial)
@@ -477,6 +425,62 @@ namespace KailashEngine.Render.FX
 
 
         }
+
+
+
+        public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
+        {
+            //Debug.DebugHelper.time_function("Copying", 1, () =>
+            //{
+            //    copyVoxelVolumes(quad);
+            //});
+
+            Debug.DebugHelper.time_function("Mip Mapping", 2, () =>
+            {
+                mipMap();
+            });
+
+
+            Debug.DebugHelper.time_function("Cone Tracing", 3, () =>
+            {
+                _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);
+
+                GL.Viewport(0, 0, _tConeTrace_Diffuse.width, _tConeTrace_Diffuse.height);
+
+                _pConeTrace.bind();
+
+                GL.Uniform1(_pConeTrace.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+                GL.Uniform1(_pConeTrace.getUniform("vx_volume_scale"), _vx_volume_scale);
+
+                Vector3 vx_position_snapped = -voxelSnap(camera_spatial.position);
+                Matrix4 voxel_volume_position = Matrix4.CreateTranslation(vx_position_snapped);
+                GL.Uniform3(_pConeTrace.getUniform("vx_volume_position"), vx_position_snapped);
+
+                Matrix4 invMVP = Matrix4.Invert(_vx_shift_matrix * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
+                GL.UniformMatrix4(_pConeTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
+
+
+                GL.Uniform1(_pConeTrace.getUniform("displayVoxels"), 0);
+                GL.Uniform1(_pConeTrace.getUniform("displayMipLevel"), 2);
+                GL.Uniform1(_pConeTrace.getUniform("maxMipLevels"), _tVoxelVolume.getMaxMipMap());
+
+
+                normal_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
+                specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
+                diffuse_texture.bind(_pConeTrace.getSamplerUniform(2), 2);
+
+                _tVoxelVolumes[0].bind(_pConeTrace.getSamplerUniform(3), 3);
+                _tVoxelVolumes[1].bind(_pConeTrace.getSamplerUniform(4), 4);
+                _tVoxelVolumes[2].bind(_pConeTrace.getSamplerUniform(5), 5);
+                _tVoxelVolumes[3].bind(_pConeTrace.getSamplerUniform(6), 6);
+                _tVoxelVolumes[4].bind(_pConeTrace.getSamplerUniform(7), 7);
+                _tVoxelVolumes[5].bind(_pConeTrace.getSamplerUniform(8), 8);
+
+
+                quad.renderFullQuad();
+            });
+        }
+
 
     }
 }
