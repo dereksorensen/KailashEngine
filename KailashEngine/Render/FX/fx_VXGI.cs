@@ -35,14 +35,7 @@ namespace KailashEngine.Render.FX
         private FrameBuffer _fConeTrace;
 
         // Textures
-        private Texture _tVoxelVolume
-        {
-            get
-            {
-                return _tVoxelVolumes[0];
-            }
-        }
-        private Texture[] _tVoxelVolumes;
+        private Texture _tVoxelVolume;
         private Texture _tVoxelVolume_Diffuse;
 
         private Texture _tConeTrace_Diffuse;
@@ -156,24 +149,12 @@ namespace KailashEngine.Render.FX
             //------------------------------------------------------
             // Voxel Volumes
             //------------------------------------------------------
-            //_tVoxelVolume = new Texture(TextureTarget.Texture3D,
-            //    (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
-            //    true, true,
-            //    PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
-            //    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-            //_tVoxelVolume.load();
-
-            _tVoxelVolumes = new Texture[6];
-            for(int i = 0; i < 6; i++)
-            {
-                _tVoxelVolumes[i] = new Texture(TextureTarget.Texture3D,
-                    (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
-                    true, true,
-                    PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
-                    TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
-                _tVoxelVolumes[i].load();
-            }
-
+            _tVoxelVolume = new Texture(TextureTarget.Texture3D,
+                (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
+                true, true,
+                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
+                TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
+            _tVoxelVolume.load();
 
             _tVoxelVolume_Diffuse = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
@@ -244,11 +225,11 @@ namespace KailashEngine.Render.FX
 
         private void clearVoxelVolumes()
         {
-            //_tVoxelVolume.clear();
-            for (int i = 0; i < 6; i++)
-            {
-                _tVoxelVolumes[i].clear();
-            }
+            _tVoxelVolume.clear();
+            //for (int i = 0; i < 6; i++)
+            //{
+            //    _tVoxelVolumes[i].clear();
+            //}
             _tVoxelVolume_Diffuse.clear();
         }
 
@@ -270,13 +251,13 @@ namespace KailashEngine.Render.FX
 
         private void copyVoxelVolumes(fx_Quad quad)
         {
-            for (int i = 1; i < _tVoxelVolumes.Length; i++)
-            {
-                GL.CopyImageSubData(
-                    _tVoxelVolumes[0].id, ImageTarget.Texture3D, 0, 0, 0, 0,
-                    _tVoxelVolumes[i].id, ImageTarget.Texture3D, 0, 0, 0, 0,
-                    _tVoxelVolumes[0].width, _tVoxelVolumes[0].height, _tVoxelVolumes[0].depth);
-            }
+            //for (int i = 1; i < _tVoxelVolumes.Length; i++)
+            //{
+            //    GL.CopyImageSubData(
+            //        _tVoxelVolumes[0].id, ImageTarget.Texture3D, 0, 0, 0, 0,
+            //        _tVoxelVolumes[i].id, ImageTarget.Texture3D, 0, 0, 0, 0,
+            //        _tVoxelVolumes[0].width, _tVoxelVolumes[0].height, _tVoxelVolumes[0].depth);
+            //}
         }
 
 
@@ -473,12 +454,7 @@ namespace KailashEngine.Render.FX
                 specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
                 diffuse_texture.bind(_pConeTrace.getSamplerUniform(2), 2);
 
-                _tVoxelVolumes[0].bind(_pConeTrace.getSamplerUniform(3), 3);
-                _tVoxelVolumes[1].bind(_pConeTrace.getSamplerUniform(4), 4);
-                _tVoxelVolumes[2].bind(_pConeTrace.getSamplerUniform(5), 5);
-                _tVoxelVolumes[3].bind(_pConeTrace.getSamplerUniform(6), 6);
-                _tVoxelVolumes[4].bind(_pConeTrace.getSamplerUniform(7), 7);
-                _tVoxelVolumes[5].bind(_pConeTrace.getSamplerUniform(8), 8);
+                _tVoxelVolume.bind(_pConeTrace.getSamplerUniform(3), 3);
 
 
                 quad.renderFullQuad();
