@@ -186,7 +186,7 @@ namespace KailashEngine.Render.FX
             // Cone Traced Lighting
             //------------------------------------------------------
             _tConeTrace_Diffuse = new Texture(TextureTarget.Texture2D,
-                _resolution.H, _resolution.W, 0,
+                _resolution.W, _resolution.H, 0,
                 false, false,
                 PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
@@ -370,59 +370,63 @@ namespace KailashEngine.Render.FX
 
         public void lightInjection(Scene scene, fx_Shadow shadow, SpatialData camera_spatial)
         {
-            int workgroup_size = 32;
-            int texture_size = (int)_vx_volume_dimensions;
-
-
-            _tTemp.clear();
-
-            Light[] lights_spot = scene.light_manager.lights_shadows_spot;
-
-
-            foreach (Light light in scene.light_manager.lights_shadowed)
+            Debug.DebugHelper.time_function("injection", 3, () =>
             {
-                switch (light.type)
+
+                int workgroup_size = 32;
+                int texture_size = (int)_vx_volume_dimensions;
+
+
+                _tTemp.clear();
+
+                Light[] lights_spot = scene.light_manager.lights_shadows_spot;
+
+
+                foreach (Light light in scene.light_manager.lights_shadowed)
                 {
-                    case Light.type_spot:
-                        _pInjection_SPOT.bind();
+                    switch (light.type)
+                    {
+                        case Light.type_spot:
+                            _pInjection_SPOT.bind();
 
-                        sLight temp_sLight = (sLight)light;
+                            sLight temp_sLight = (sLight)light;
 
-                        GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightPosition), light.spatial.position);
-                        GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
-                        GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightColor), light.color);
-                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightIntensity), light.intensity);
-                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightFalloff), light.falloff);
-                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotAngle), light.spot_angle);
-                        GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
+                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightPosition), light.spatial.position);
+                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
+                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightColor), light.color);
+                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightIntensity), light.intensity);
+                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightFalloff), light.falloff);
+                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotAngle), light.spot_angle);
+                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
 
-                        GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), temp_sLight.sid);
+                            GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), temp_sLight.sid);
 
-                        GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), new Vector2(texture_size));
+                            GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), new Vector2(texture_size));
 
-                        GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
-                        GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
-                        GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
+                            GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+                            GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
+                            GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
 
-                        _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
-                        _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
-                        shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(2), 2);
-                        _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+                            _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
+                            _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
+                            shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(2), 2);
+                            _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
 
-                        GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
+                            GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
 
-                        break;
-                    case Light.type_point:
+                            break;
+                        case Light.type_point:
 
-                        break;
-                    case Light.type_directional:
+                            break;
+                        case Light.type_directional:
 
-                        break;
+                            break;
+                    }
                 }
-            }
 
-            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+                GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
+            });
 
         }
 
@@ -435,13 +439,13 @@ namespace KailashEngine.Render.FX
             //    copyVoxelVolumes(quad);
             //});
 
-            Debug.DebugHelper.time_function("Mip Mapping", 2, () =>
+            Debug.DebugHelper.time_function("Mip Mapping", 1, () =>
             {
                 mipMap();
             });
 
 
-            Debug.DebugHelper.time_function("Cone Tracing", 3, () =>
+            Debug.DebugHelper.time_function("Cone Tracing", 2, () =>
             {
                 _fConeTrace.bind(DrawBuffersEnum.ColorAttachment0);
 

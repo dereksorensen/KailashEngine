@@ -169,38 +169,38 @@ vec4 coneTrace(vec3 origin, vec3 origin_shift, vec3 dir, vec3 volumeDimensions, 
 
 	vec4 accum = vec4(0.0);
 
-	// Perform AABB test with volume.
-	//vec3 rayOrigin = origin * volumeDimensions.x;
-	
-	//vec3 result = RayAABBTest(rayOrigin, dir, vec3(0.0), volumeDimensions);
-	//if (result.x != 0.0)
-	//{	
 
-		// Traverse through voxels until ray exits volume
-		while (dist <= maxDist && accum.w < 0.999)
-		{
+	if ((origin + origin_shift).x < 0.0 ||
+		(origin + origin_shift).y < 0.0 ||
+		(origin + origin_shift).z < 0.0 ||
+		(origin + origin_shift).x > 1.0 ||
+		(origin + origin_shift).y > 1.0 ||
+		(origin + origin_shift).z > 1.0) return vec4(0.0, 1.0, 0.0, 0.0);
 
-			float sampleDiameter = max(minDiameter, coneRatio * dist);
-			float sampleLOD = log2(sampleDiameter * minVoxelDiameterInv);
-			sampleLOD = clamp(sampleLOD, 0.0, float(maxMipLevels));
 
-			vec3 origin_snapped = origin;
-			origin_snapped += origin_shift;
+	// Traverse through voxels until ray exits volume
+	while (dist <= maxDist && accum.w < 0.999)
+	{
+		float sampleDiameter = max(minDiameter, coneRatio * dist);
+		float sampleLOD = log2(sampleDiameter * minVoxelDiameterInv);
+		sampleLOD = clamp(sampleLOD, 0.0, float(maxMipLevels));
+
+		vec3 origin_snapped = origin;
+		origin_snapped += origin_shift;
 			
-			vec3 offset = dir * dist;
-			vec3 samplePos = origin_snapped + offset;
+		vec3 offset = dir * dist;
+		vec3 samplePos = origin_snapped + offset;
 
-			vec4 color = textureLod(sampler3, samplePos, sampleLOD);
-			//vec4 color = sampleVox(samplePos, -dir, sampleLOD);
+		vec4 color = textureLod(sampler3, samplePos, sampleLOD);
+		//vec4 color = sampleVox(samplePos, -dir, sampleLOD);
 
-			//accum.w = accum.w * (sampleLOD/2.0);
-			float sampleWeight = (1.0 - accum.w);
-			accum += vec4(color * sampleWeight);
+		//accum.w = accum.w * (sampleLOD/2.0);
+		float sampleWeight = (1.0 - accum.w);
+		accum += vec4(color * sampleWeight);
 
-			dist += sampleDiameter;
+		dist += sampleDiameter;
+	}
 
-		}
-	//}
 
 	float occlusion = accum.w;
 
@@ -322,6 +322,7 @@ void main()
 
 	float occlusion_diffuse = clamp(indirect_diffuse.a, 0.0, 1.0);
 	float occlusion_specular = clamp(indirect_specular.a, 0.0, 1.0);
+
 
 	if (displayVoxels == 0)
 	{
