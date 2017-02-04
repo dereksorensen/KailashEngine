@@ -20,12 +20,15 @@ namespace KailashEngine.Render.FX
     class fx_VXGI : RenderEffect
     {
         // Properties
+        private bool _debug_display_voxels = false;
+        private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
         private float _vx_volume_scale = 30.0f;
         private Matrix4 _vx_shift_matrix;
 
         // Programs
         private Program _pVoxelize;
+        private Program _pRayTrace;
         private Program _pConeTrace;
         private Program _pInjection_SPOT;
         private Program _pResetAlpha;
@@ -101,17 +104,25 @@ namespace KailashEngine.Render.FX
             // Cone Trace through voxel volume
             _pConeTrace = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_ConeTrace.vert", null),
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Trace.vert", null),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ConeTrace.frag", cone_trace_helpers)
             });
-            _pConeTrace.enable_Samplers(9);
+            _pConeTrace.enable_Samplers(4);
             _pConeTrace.addUniform("vx_volume_dimensions");
             _pConeTrace.addUniform("vx_volume_scale");
             _pConeTrace.addUniform("vx_volume_position");
-            _pConeTrace.addUniform("vx_inv_view_perspective");
-            _pConeTrace.addUniform("displayVoxels");
-            _pConeTrace.addUniform("displayMipLevel");
             _pConeTrace.addUniform("maxMipLevels");
+
+            // Cone Trace through voxel volume
+            _pRayTrace = _pLoader.createProgram(new ShaderFile[]
+            {
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Trace.vert", null),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_RayTrace.frag", cone_trace_helpers)
+            });
+            _pRayTrace.enable_Samplers(1);
+            _pRayTrace.addUniform("vx_volume_dimensions");
+            _pRayTrace.addUniform("vx_inv_view_perspective");
+            _pRayTrace.addUniform("displayMipLevel");
 
             // Light Injection
             _pInjection_SPOT = _pLoader.createProgram(new ShaderFile[]
@@ -226,10 +237,6 @@ namespace KailashEngine.Render.FX
         private void clearVoxelVolumes()
         {
             _tVoxelVolume.clear();
-            //for (int i = 0; i < 6; i++)
-            //{
-            //    _tVoxelVolumes[i].clear();
-            //}
             _tVoxelVolume_Diffuse.clear();
         }
 
@@ -246,18 +253,6 @@ namespace KailashEngine.Render.FX
             quad.render3D((int)_vx_volume_dimensions);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-        }
-
-
-        private void copyVoxelVolumes(fx_Quad quad)
-        {
-            //for (int i = 1; i < _tVoxelVolumes.Length; i++)
-            //{
-            //    GL.CopyImageSubData(
-            //        _tVoxelVolumes[0].id, ImageTarget.Texture3D, 0, 0, 0, 0,
-            //        _tVoxelVolumes[i].id, ImageTarget.Texture3D, 0, 0, 0, 0,
-            //        _tVoxelVolumes[0].width, _tVoxelVolumes[0].height, _tVoxelVolumes[0].depth);
-            //}
         }
 
 
@@ -415,10 +410,6 @@ namespace KailashEngine.Render.FX
 
         public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
         {
-            //Debug.DebugHelper.time_function("Copying", 1, () =>
-            //{
-            //    copyVoxelVolumes(quad);
-            //});
 
             Debug.DebugHelper.time_function("Mip Mapping", 1, () =>
             {
@@ -441,14 +432,7 @@ namespace KailashEngine.Render.FX
                 Matrix4 voxel_volume_position = Matrix4.CreateTranslation(vx_position_snapped);
                 GL.Uniform3(_pConeTrace.getUniform("vx_volume_position"), vx_position_snapped);
 
-                Matrix4 invMVP = Matrix4.Invert(_vx_shift_matrix * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
-                GL.UniformMatrix4(_pConeTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
-
-
-                GL.Uniform1(_pConeTrace.getUniform("displayVoxels"), 0);
-                GL.Uniform1(_pConeTrace.getUniform("displayMipLevel"), 2);
                 GL.Uniform1(_pConeTrace.getUniform("maxMipLevels"), _tVoxelVolume.getMaxMipMap());
-
 
                 normal_texture.bind(_pConeTrace.getSamplerUniform(0), 0);
                 specular_texture.bind(_pConeTrace.getSamplerUniform(1), 1);
@@ -459,6 +443,41 @@ namespace KailashEngine.Render.FX
 
                 quad.renderFullQuad();
             });
+        }
+
+
+        public void rayTracing(fx_Quad quad, SpatialData camera_spatial)
+        {
+            if (_debug_display_voxels)
+            {
+
+                mipMap();
+
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+                GL.Clear(ClearBufferMask.ColorBufferBit);
+
+                GL.Viewport(0, 0, _resolution.W, _resolution.H);
+
+
+                _pRayTrace.bind();
+
+                GL.Uniform1(_pRayTrace.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+
+                Vector3 vx_position_snapped = -voxelSnap(camera_spatial.position);
+                Matrix4 voxel_volume_position = Matrix4.CreateTranslation(vx_position_snapped);
+
+                Matrix4 invMVP = Matrix4.Invert(_vx_shift_matrix * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
+                GL.UniformMatrix4(_pRayTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
+
+                GL.Uniform1(_pRayTrace.getUniform("displayMipLevel"), _debug_display_voxels_mip_level);
+
+
+                _tVoxelVolume.bind(_pRayTrace.getSamplerUniform(0), 0);
+
+
+                quad.renderFullQuad();
+
+            }
         }
 
 

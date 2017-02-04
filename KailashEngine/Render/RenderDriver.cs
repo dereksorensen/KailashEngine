@@ -274,12 +274,6 @@ namespace KailashEngine.Render
 
 
 
-            //------------------------------------------------------
-            // Overlays
-            //------------------------------------------------------
-            _fxCrosshair.render(scene.current_animation_time);
-
-
 
             //Debug.DebugHelper.time_function("Blur Test", 3, () =>
             //{
@@ -291,6 +285,10 @@ namespace KailashEngine.Render
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
+
+            _fxVXGI.rayTracing(_fxQuad, camera_spatial_data);
+
+
             if (_enable_debug_views)
             {
                 //_fxQuad.render_Texture(_fxDepthOfField.tDOF_Scene, 1f, 0);
@@ -312,6 +310,13 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 1, 1);
                 //_fxQuad.render_Texture(_fxShadow.tDirectional, 0.25f, 0, 0);
             }
+
+
+
+            //------------------------------------------------------
+            // Overlays
+            //------------------------------------------------------
+            _fxCrosshair.render(scene.current_animation_time);
 
         }
 

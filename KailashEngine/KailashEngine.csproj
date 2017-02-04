@@ -617,10 +617,10 @@
     <None Include="Render\Shader\glsl\special\special_BlurStreak.frag" />
     <None Include="Render\Shader\glsl\special\special_BlurMovingAverage.comp" />
     <None Include="Render\Shader\glsl\special\special_BlurGauss.frag" />
-    <None Include="Render\Shader\glsl\vxgi\vxgi_ConeTrace.vert" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_RayTrace.frag" />
+    <None Include="Render\Shader\glsl\vxgi\vxgi_Trace.vert" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_ConeTrace.frag" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_Injection_SPOT.comp" />
-    <None Include="Render\Shader\glsl\vxgi\vxgi_CopyVolume.frag" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_MipMap.comp" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_ResetAlpha.frag" />
     <None Include="Render\Shader\glsl\vxgi\vxgi_Voxelize.frag" />
