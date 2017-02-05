@@ -23,7 +23,7 @@ namespace KailashEngine.Render.FX
         private bool _debug_display_voxels = false;
         private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
-        private float _vx_volume_scale = 30.0f;
+        private float _vx_volume_scale = 40.0f;
         private Matrix4 _vx_shift_matrix;
 
         // Programs
@@ -299,7 +299,6 @@ namespace KailashEngine.Render.FX
 
             clearVoxelVolumes();
 
-
             GL.ColorMask(false, false, false, false);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
@@ -330,7 +329,7 @@ namespace KailashEngine.Render.FX
 
 
             scene.renderMeshes_WithMaterials(BeginMode.Triangles, _pVoxelize);
-            scene.renderLightObjects(BeginMode.Triangles, _pVoxelize);
+            //scene.renderLightObjects(BeginMode.Triangles, _pVoxelize);
 
 
             GL.DepthMask(true);
@@ -342,15 +341,13 @@ namespace KailashEngine.Render.FX
         }
 
 
-
-
         public void lightInjection(Scene scene, fx_Shadow shadow, SpatialData camera_spatial)
         {
             Debug.DebugHelper.time_function("injection", 3, () =>
             {
 
                 int workgroup_size = 32;
-                int texture_size = (int)_vx_volume_dimensions;
+                int texture_size = (int)_vx_volume_dimensions * 4;
 
 
                 _tTemp.clear();
@@ -405,7 +402,6 @@ namespace KailashEngine.Render.FX
             });
 
         }
-
 
 
         public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)

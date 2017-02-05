@@ -216,6 +216,7 @@ void calcLighting(
 	//------------------------------------------------------
 	// Add it all together
 	//------------------------------------------------------
+
 	diffuse_out = attenuation * diffuse;
 	specular_out = attenuation * specular;
 
