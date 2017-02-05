@@ -77,7 +77,7 @@ namespace KailashEngine.Physics
                 trimesh.AddTriangle(vertex0, vertex1, vertex2);
             }
 
-            CollisionShape concaveShape = new BvhTriangleMeshShape(trimesh, true);
+            CollisionShape concaveShape = new BvhTriangleMeshShape(trimesh, true, true);
 
             return concaveShape;
         }

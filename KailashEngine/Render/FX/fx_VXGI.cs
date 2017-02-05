@@ -352,7 +352,7 @@ namespace KailashEngine.Render.FX
 
                 _tTemp.clear();
 
-                Light[] lights_spot = scene.light_manager.lights_shadows_spot;
+                Light[] lights_spot = scene.light_manager.lights_shadowed_spot;
 
 
                 foreach (Light light in scene.light_manager.lights_shadowed)

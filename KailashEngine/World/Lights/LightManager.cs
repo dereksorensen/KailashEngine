@@ -15,14 +15,6 @@ namespace KailashEngine.World.Lights
 
         private int _light_count;
 
-        private int _max_shadows;
-        public int  max_shadows
-        {
-            get
-            {
-                return Math.Min(_lights_shadowed.Count, _max_shadows);
-            }
-        }
 
         private UniformBuffer _ubo_shadow_spot;
         private UniformBuffer _ubo_shadow_point;
@@ -47,21 +39,21 @@ namespace KailashEngine.World.Lights
             get { return _lights_shadowed; }
         }
 
-        public Light[] lights_shadows_spot
+        public Light[] lights_shadowed_spot
         {
             get
             {
                 return _lights_shadowed.Where(l => l.type == Light.type_spot).ToArray();
             }
         }
-        public Light[] lights_shadows_point
+        public Light[] lights_shadowed_point
         {
             get
             {
                 return _lights_shadowed.Where(l => l.type == Light.type_point).ToArray();
             }
         }
-        public Light[] lights_shadows_directional
+        public Light[] lights_shadowed_directional
         {
             get
             {
@@ -74,7 +66,6 @@ namespace KailashEngine.World.Lights
         public LightManager()
         {
             _light_count = 0;
-            _max_shadows = 5;
             _lights = new Dictionary<int, Light>();
             _lights_enabled = new List<Light>();
             _lights_shadowed = new List<Light>();
