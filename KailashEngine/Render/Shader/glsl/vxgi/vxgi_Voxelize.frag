@@ -1,9 +1,8 @@
 ﻿
 
 
-
-//layout(binding = 7, r32ui) coherent volatile uniform uimage3D volumeTexture;
-//layout(binding = 6, r32ui) coherent volatile uniform uimage3D volumeTexture_normal;
+//layout(r32ui) uniform uimage3D sampler0;		// Voxel Volume
+//layout(r32ui) coherent volatile uniform uimage3D sampler1;		// Voxel Volume - Diffuse
 
 writeonly uniform image3D sampler0;		// Voxel Volume
 writeonly uniform image3D sampler1;		// Voxel Volume - Diffuse
@@ -85,6 +84,9 @@ void main()
 
 		imageStore(sampler0, ivec3(coords), vec4(fragmentColor,1.0));
 		imageStore(sampler1, ivec3(coords), vec4(diffuse.xyz,1.0));
+		
+		//imageAtomicAverageRGBA8(sampler0, ivec3(coords), vec4(fragmentColor,1.0));
+		//imageAtomicAverageRGBA8(sampler1, ivec3(coords), vec4(diffuse.xyz,1.0));
 
     }
     else

@@ -2,8 +2,8 @@
 layout (local_size_x = 32, local_size_y = 32) in;
 
 
-layout(r32ui) coherent volatile uniform uimage3D sampler0;		// Voxel Volume
-//writeonly uniform image3D sampler0;		// Voxel Volume
+//layout(r32ui) coherent volatile uniform uimage3D sampler0;		// Voxel Volume
+layout(rgba8) uniform image3D sampler0;		// Voxel Volume
 uniform sampler3D sampler1;		// Voxel Volume - Diffuse
 
 uniform sampler2DArray sampler2;		// Shadow Depth
@@ -62,7 +62,7 @@ void main()
 	vec3 voxel_color = light_color * diffuse.xyz * attenuation;
 	voxel_color = voxel_color * calcSpotLightCone(L, light_direction, light_spot_angle, light_spot_blur);
 
-	vec4 final = vec4(voxel_color, floor(diffuse.a) * 1.0);
+	vec4 final = vec4(voxel_color, ceil(diffuse.a) * 1.0);
 
 	// Debugging
 	imageStore(sampler3, i_TexCoord, vec4(world_position, 1.0));
@@ -72,10 +72,14 @@ void main()
 		//------------------------------------------------------
 		// Store in Voxel Volume
 		//------------------------------------------------------
+		
+		vec4 current_color = imageLoad(sampler0, ivec3(volume_TexCoord));
+		final.rgb = current_color.rgb + final.rgb;
+		final.a = max(current_color.a, final.a);
 
+		imageStore(sampler0, ivec3(volume_TexCoord), final);
 
-		//imageStore(sampler0, ivec3(volume_TexCoord), final);
-		imageAtomicAverageRGBA8(sampler0, ivec3(volume_TexCoord), final);
+		//imageAtomicAverageRGBA8(sampler0, ivec3(volume_TexCoord), final);
 
 	}
 

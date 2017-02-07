@@ -23,7 +23,7 @@ namespace KailashEngine.Render.FX
         private bool _debug_display_voxels = false;
         private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
-        private float _vx_volume_scale = 40.0f;
+        private float _vx_volume_scale = 30.0f;
         private Matrix4 _vx_shift_matrix;
 
         // Programs
@@ -91,7 +91,7 @@ namespace KailashEngine.Render.FX
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Voxelize.vert", null),
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "vxgi_Voxelize.geom", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_Voxelize.frag", null, geometry_extensions)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_Voxelize.frag", injection_helpers, geometry_extensions)
             });
             _pVoxelize.enable_MeshLoading();
             _pVoxelize.enable_Samplers(2);

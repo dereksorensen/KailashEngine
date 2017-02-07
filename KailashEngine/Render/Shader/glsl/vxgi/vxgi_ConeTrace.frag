@@ -58,7 +58,6 @@ vec4 coneTrace(vec3 origin, vec3 dir, vec3 volumeDimensions, float maxDist, floa
 
 		vec4 color = textureLod(sampler3, samplePos, sampleLOD);
 
-		//accum.w = accum.w * (sampleLOD/2.0);
 		float sampleWeight = (1.0 - accum.w);
 		accum += vec4(color * sampleWeight);
 
@@ -131,7 +130,7 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 	sum = coneTrace(rayOrigin, normal, vec3(vx_volume_dimensions), 0.6, 0.7);
 	sum += diffuseCone(7, 70, rayOrigin, normal);
 	sum += diffuseCone(3, 30, rayOrigin, normal);
-
+	
 	sum.a /= 3.0;
 
 	return sum;	
