@@ -11,6 +11,62 @@ namespace KailashEngine
 {
     static class EngineHelper
     {
+
+        //------------------------------------------------------
+        // Constants
+        //------------------------------------------------------
+        public enum size : int
+        {
+            ui = sizeof(uint),
+            ui64 = sizeof(ulong),
+            i = sizeof(int),
+            i64 = sizeof(long),
+            f = sizeof(float),
+            vec2 = sizeof(float) * 2,
+            vec3 = sizeof(float) * 3,
+            vec4 = sizeof(float) * 4,
+            mat2 = sizeof(float) * 4,
+            mat3 = sizeof(float) * 9,
+            mat4 = sizeof(float) * 16,
+        }
+
+        // Resource Paths
+        public static string path_resources_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Resources/"); } }
+        public static string path_resources_audio { get { return Path.GetFullPath(path_resources_base + "Audio/"); } }
+        public static string path_resources_save_data { get { return Path.GetFullPath(path_resources_base + "SaveData/"); } }
+        public static string path_resources_scene { get { return Path.GetFullPath(path_resources_base + "Scene/"); } }
+        public static string path_resources_textures { get { return Path.GetFullPath(path_resources_base + "Textures/"); } }
+        public static string path_resources_textures_static { get { return Path.GetFullPath(path_resources_textures + "_static/"); } }
+
+        // Shader Paths
+        public static string path_glsl_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Render/Shader/glsl/"); } }
+        public static string path_glsl_common { get { return "common/"; } }
+        public static string path_glsl_common_helpers { get { return path_glsl_common + "helpers/"; } }
+        public static string path_glsl_common_ubo { get { return path_glsl_common + "ubo/"; } }
+
+        // Common Shader File Paths
+        public static string path_glsl_common_generic_vs { get { return path_glsl_common + "render_Texture2D.vert"; } }
+        public static string path_glsl_common_generic_geometry { get { return path_glsl_common + "geometry.vert"; } }
+
+        // Common Shader Helper File Paths
+        public static string path_glsl_common_helper_linearDepth { get { return path_glsl_common_helpers + "linearDepth.include"; } }
+        public static string path_glsl_common_helper_positionFromDepth { get { return path_glsl_common_helpers + "positionFromDepth.include"; } }
+        public static string path_glsl_common_helper_culling { get { return path_glsl_common_helpers + "culling.include"; } }
+        public static string path_glsl_common_helper_interpolation { get { return path_glsl_common_helpers + "interpolation.include"; } }
+        public static string path_glsl_common_helper_fxaa { get { return path_glsl_common_helpers + "fxaa.include"; } }
+        public static string path_glsl_common_helper_lightingFunctions { get { return path_glsl_common_helpers + "shadowEvaluation.include"; } }
+        public static string path_glsl_common_helper_shadowMapping { get { return path_glsl_common_helpers + "shadowMapping.include"; } }
+        public static string path_glsl_common_helper_voxelFunctions { get { return path_glsl_common_helpers + "voxelFunctions.include"; } }
+
+        // Common UBO File Paths
+        public static string path_glsl_common_ubo_gameConfig { get { return path_glsl_common_ubo + "gameConfig.ubo"; } }
+        public static string path_glsl_common_ubo_cameraSpatials { get { return path_glsl_common_ubo + "cameraSpatials.ubo"; } }
+        public static string path_glsl_common_ubo_bindlessTextures_Materials { get { return path_glsl_common_ubo + "bindlessTextures_Materials.ubo"; } }
+        public static string path_glsl_common_ubo_shadowMatrices_Spot { get { return path_glsl_common_ubo + "shadowMatrices_Spot.ubo"; } }
+        public static string path_glsl_common_ubo_shadowMatrices_Point { get { return path_glsl_common_ubo + "shadowMatrices_Point.ubo"; } }
+        public static string path_glsl_common_ubo_shadowMatrices_Directional { get { return path_glsl_common_ubo + "shadowMatrices_Directional.ubo"; } }
+
+
         //------------------------------------------------------
         // Project Helpers
         //------------------------------------------------------
@@ -71,40 +127,6 @@ namespace KailashEngine
             filepath = Path.GetFullPath(path_resources_textures + filepath);
             return filepath;
         }
-
-
-
-        //------------------------------------------------------
-        // Constants
-        //------------------------------------------------------
-        public enum size : int
-        {
-            ui = sizeof(uint),
-            ui64 = sizeof(ulong),
-            i = sizeof(int),
-            i64 = sizeof(long),
-            f = sizeof(float),
-            vec2 = sizeof(float) * 2,
-            vec3 = sizeof(float) * 3,
-            vec4 = sizeof(float) * 4,
-            mat2 = sizeof(float) * 4,
-            mat3 = sizeof(float) * 9,
-            mat4 = sizeof(float) * 16,
-        }
-
-        public static string path_resources_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Resources/"); } }
-        public static string path_resources_audio { get { return Path.GetFullPath(path_resources_base + "Audio/"); } }
-        public static string path_resources_save_data { get { return Path.GetFullPath(path_resources_base + "SaveData/"); } }
-        public static string path_resources_scene { get { return Path.GetFullPath(path_resources_base + "Scene/"); } }
-        public static string path_resources_textures { get { return Path.GetFullPath(path_resources_base + "Textures/"); } }
-        public static string path_resources_textures_static { get { return Path.GetFullPath(path_resources_textures + "_static/"); } }
-
-        public static string path_glsl_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Render/Shader/glsl/"); } }
-        public static string path_glsl_common { get { return "common/"; } }
-        public static string path_glsl_common_helpers { get { return "common/helpers/"; } }
-        public static string path_glsl_common_ubo { get { return "common/ubo/"; } }
-        public static string path_glsl_common_generic_vs { get { return "render_Texture2D.vert"; } }
-        public static string path_glsl_common_generic_geometry { get { return "geometry.vert"; } }
 
 
         //------------------------------------------------------

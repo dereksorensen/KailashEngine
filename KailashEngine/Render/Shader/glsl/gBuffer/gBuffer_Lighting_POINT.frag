@@ -1,19 +1,9 @@
 ﻿
-
 layout(location = 0) out vec4 diffuse;
 layout(location = 1) out vec4 specular;
 
 in vec3 v_viewRay;
 
-
-//------------------------------------------------------
-// Game Config
-//------------------------------------------------------
-layout(std140, binding = 0) uniform gameConfig
-{
-	vec4 near_far;
-	float target_fps;
-};
 
 //------------------------------------------------------
 // Camera Spatials

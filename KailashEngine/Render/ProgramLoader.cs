@@ -16,12 +16,6 @@ namespace KailashEngine.Render
         private string _path_glsl_base;
 
 
-        public string path_glsl_common
-        {
-            get { return EngineHelper.path_glsl_common; }
-        }
-
-
         public string path_glsl_common_helpers
         {
             get { return EngineHelper.path_glsl_common_helpers; }
@@ -61,7 +55,7 @@ namespace KailashEngine.Render
         {
             ShaderFile[] new_shader_pipline = new ShaderFile[shader_pipeline.Length + 1];
 
-            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, path_glsl_common + EngineHelper.path_glsl_common_generic_vs, null);
+            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, EngineHelper.path_glsl_common_generic_vs, null);
             shader_pipeline.CopyTo(new_shader_pipline, 1);
 
             return createProgram(_glsl_version, new_shader_pipline);
@@ -71,7 +65,7 @@ namespace KailashEngine.Render
         {
             ShaderFile[] new_shader_pipline = new ShaderFile[shader_pipeline.Length + 1];
 
-            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, path_glsl_common + EngineHelper.path_glsl_common_generic_geometry, null);
+            new_shader_pipline[0] = new ShaderFile(OpenTK.Graphics.OpenGL.ShaderType.VertexShader, EngineHelper.path_glsl_common_generic_geometry, null);
             shader_pipeline.CopyTo(new_shader_pipline, 1);
 
             return createProgram(_glsl_version, new_shader_pipline);

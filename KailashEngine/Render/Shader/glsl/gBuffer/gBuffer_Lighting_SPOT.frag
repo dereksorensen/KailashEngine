@@ -6,15 +6,6 @@ in vec3 v_viewRay;
 
 
 //------------------------------------------------------
-// Game Config
-//------------------------------------------------------
-layout(std140, binding = 0) uniform gameConfig
-{
-	vec4 near_far;
-	float target_fps;
-};
-
-//------------------------------------------------------
 // Camera Spatials
 //------------------------------------------------------
 layout(std140, binding = 1) uniform cameraSpatials

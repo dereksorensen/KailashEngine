@@ -15,14 +15,6 @@ in vec4 g_currentPosition;
 in vec4 g_previousPosition;
 noperspective in vec3 g_wireframe_distance;
 
-//------------------------------------------------------
-// Game Config
-//------------------------------------------------------
-layout(std140, binding = 0) uniform gameConfig
-{
-	vec4 near_far;
-	float target_fps;
-};
 
 //------------------------------------------------------
 // Camera Spatials
