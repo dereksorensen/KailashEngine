@@ -50,7 +50,7 @@ namespace KailashEngine.Render.FX
         {
             string[] autoexposure_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "interpolation.include"
+                EngineHelper.path_glsl_common_helper_interpolation
             };
 
             _pLuminosity = _pLoader.createProgram(new ShaderFile[]{

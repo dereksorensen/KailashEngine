@@ -69,19 +69,19 @@ namespace KailashEngine.Render.FX
             };
             string[] cone_trace_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
-                _pLoader.path_glsl_common_helpers + "voxelFunctions.include"
+                EngineHelper.path_glsl_common_helper_positionFromDepth,
+                EngineHelper.path_glsl_common_helper_voxelFunctions
             };
             string[] injection_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
-                _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
-                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include",
-                _pLoader.path_glsl_common_helpers + "voxelFunctions.include"
+                EngineHelper.path_glsl_common_helper_positionFromDepth,
+                EngineHelper.path_glsl_common_helper_lightingFunctions,
+                EngineHelper.path_glsl_common_helper_shadowEvaluation,
+                EngineHelper.path_glsl_common_helper_voxelFunctions
             };
             string[] spot_injection_helpers = new string[]
             {
-                _pLoader.path_glsl_common_ubo + "shadowMatrices_Spot.ubo"
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot
             };
             spot_injection_helpers = spot_injection_helpers.Concat(injection_helpers).ToArray();
 

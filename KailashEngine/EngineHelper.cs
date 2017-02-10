@@ -54,7 +54,8 @@ namespace KailashEngine
         public static string path_glsl_common_helper_culling { get { return path_glsl_common_helpers + "culling.include"; } }
         public static string path_glsl_common_helper_interpolation { get { return path_glsl_common_helpers + "interpolation.include"; } }
         public static string path_glsl_common_helper_fxaa { get { return path_glsl_common_helpers + "fxaa.include"; } }
-        public static string path_glsl_common_helper_lightingFunctions { get { return path_glsl_common_helpers + "shadowEvaluation.include"; } }
+        public static string path_glsl_common_helper_lightingFunctions { get { return path_glsl_common_helpers + "lightingFunctions.include"; } }
+        public static string path_glsl_common_helper_shadowEvaluation { get { return path_glsl_common_helpers + "shadowEvaluation.include"; } }
         public static string path_glsl_common_helper_shadowMapping { get { return path_glsl_common_helpers + "shadowMapping.include"; } }
         public static string path_glsl_common_helper_voxelFunctions { get { return path_glsl_common_helpers + "voxelFunctions.include"; } }
 
@@ -65,6 +66,9 @@ namespace KailashEngine
         public static string path_glsl_common_ubo_shadowMatrices_Spot { get { return path_glsl_common_ubo + "shadowMatrices_Spot.ubo"; } }
         public static string path_glsl_common_ubo_shadowMatrices_Point { get { return path_glsl_common_ubo + "shadowMatrices_Point.ubo"; } }
         public static string path_glsl_common_ubo_shadowMatrices_Directional { get { return path_glsl_common_ubo + "shadowMatrices_Directional.ubo"; } }
+
+        // Common Shader Extensions
+        public static string path_glsl_common_ext_bindlessTextures { get { return "#extension GL_ARB_bindless_texture : require"; } }
 
 
         //------------------------------------------------------

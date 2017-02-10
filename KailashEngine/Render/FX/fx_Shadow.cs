@@ -72,12 +72,12 @@ namespace KailashEngine.Render.FX
         {
             string[] culling_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "culling.include"
+                EngineHelper.path_glsl_common_helper_culling
             };
             string[] spot_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "shadowMapping.include",
-                _pLoader.path_glsl_common_helpers + "linearDepth.include"
+                EngineHelper.path_glsl_common_helper_shadowMapping,
+                EngineHelper.path_glsl_common_helper_linearDepth
             };
 
             _pSpot = _pLoader.createProgram_Geometry(new ShaderFile[]

@@ -123,8 +123,7 @@ namespace KailashEngine.Render.FX
         {
             string[] autofocus_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "interpolation.include"
-
+                EngineHelper.path_glsl_common_helper_interpolation
             };
             _pAutoFocus = _pLoader.createProgram(new ShaderFile[]
             {

@@ -49,7 +49,7 @@ namespace KailashEngine.Render.FX
         {
             string[] final_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "fxaa.include"
+                EngineHelper.path_glsl_common_helper_fxaa
             };
 
             // Render to screen and apply tone mapping and gamma correction

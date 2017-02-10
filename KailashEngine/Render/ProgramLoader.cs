@@ -16,21 +16,15 @@ namespace KailashEngine.Render
         private string _path_glsl_base;
 
 
-        public string path_glsl_common_helpers
-        {
-            get { return EngineHelper.path_glsl_common_helpers; }
-        }
-
-        public string path_glsl_common_ubo
-        {
-            get { return EngineHelper.path_glsl_common_ubo; }
-        }
-
         public ProgramLoader(int glsl_version)
         {
             _glsl_version = glsl_version;
             _path_glsl_base = EngineHelper.path_glsl_base;
         }
+
+        //------------------------------------------------------
+        // Loaders
+        //------------------------------------------------------
 
         public Program createProgram(ShaderFile[] shader_pipeline)
         {

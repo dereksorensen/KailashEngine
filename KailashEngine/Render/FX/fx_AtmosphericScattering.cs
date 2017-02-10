@@ -127,9 +127,9 @@ namespace KailashEngine.Render.FX
             string[] ats_atmposhere_helpers = new string[]
             {
                 _path_glsl_effect + "helpers/ats_Functions.include",
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
-                _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
-                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include"
+                EngineHelper.path_glsl_common_helper_positionFromDepth,
+                EngineHelper.path_glsl_common_helper_lightingFunctions,
+                EngineHelper.path_glsl_common_helper_shadowEvaluation
             };
 
             //------------------------------------------------------

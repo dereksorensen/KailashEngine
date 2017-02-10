@@ -169,7 +169,7 @@ namespace KailashEngine.Physics
         {
             if (!_physics_world.paused)
             {
-                _physics_world.world.StepSimulation(frame_time, (int)(Math.Max(target_fps / current_fps, 1)));
+                _physics_world.world.StepSimulation(frame_time, (int)(Math.Max(current_fps / target_fps, 1)));
                 //character.UpdateAction(_physics_world.world, frame_time);
             }
         }

@@ -49,6 +49,11 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            string[] blur_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_gameConfig
+            };
+
             _pDilate = _pLoader.createProgram(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "mb_Dilate.comp", null)
@@ -61,7 +66,7 @@ namespace KailashEngine.Render.FX
 
             _pBlur = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "mb_Blur.frag", null)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "mb_Blur.frag", blur_helpers)
             });
             _pBlur.enable_Samplers(3);
             _pBlur.addUniform("fps_scaler");

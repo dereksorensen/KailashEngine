@@ -94,24 +94,24 @@ namespace KailashEngine.Render.FX
             string[] geometry_helpers = new string[]
             {
                 _path_glsl_effect + "helpers/gBuffer_Functions.include",
-                _pLoader.path_glsl_common_helpers + "linearDepth.include"
+                EngineHelper.path_glsl_common_helper_linearDepth
 
             };
             string[] geometry_extensions = new string[]
             {
-                "#extension GL_ARB_bindless_texture : require"
+                EngineHelper.path_glsl_common_ext_bindlessTextures
             };
             string[] culling_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "culling.include"
+                EngineHelper.path_glsl_common_helper_culling
 
             };
             string[] lighting_helpers = new string[]
             {
-                _pLoader.path_glsl_common_helpers + "lightingFunctions.include",
-                _pLoader.path_glsl_common_helpers + "positionFromDepth.include",
-                _pLoader.path_glsl_common_helpers + "shadowEvaluation.include",
-                _pLoader.path_glsl_common_helpers + "linearDepth.include"
+                EngineHelper.path_glsl_common_helper_lightingFunctions,
+                EngineHelper.path_glsl_common_helper_positionFromDepth,
+                EngineHelper.path_glsl_common_helper_shadowEvaluation,
+                EngineHelper.path_glsl_common_helper_linearDepth
             };
 
             // Rendering Geometry into gBuffer
