@@ -352,10 +352,11 @@ namespace KailashEngine.Render.FX
 
             // Load light uniforms
             GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightPosition), l.spatial.position);
-            GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightDirection), l.spatial.look);
             GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightColor), l.color);
             GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightIntensity), l.intensity);
             GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightFalloff), l.falloff);
+            // Spot light specific properties
+            GL.Uniform3(_pLighting_SPOT.getUniform(RenderHelper.uLightDirection), l.spatial.look);
             GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightSpotAngle), l.spot_angle);
             GL.Uniform1(_pLighting_SPOT.getUniform(RenderHelper.uLightSpotBlur), l.spot_blur);
 

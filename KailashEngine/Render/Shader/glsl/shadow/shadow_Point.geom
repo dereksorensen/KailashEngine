@@ -1,5 +1,5 @@
 ﻿
-layout(triangles, invocations = 12) in;
+//layout(triangles, invocations = 12) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 

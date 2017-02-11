@@ -409,7 +409,6 @@ namespace KailashEngine
             _physics_driver.update((float)e.Time, _game.config.fps_target, _fps);
         }
 
-
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _fps = (float)(1.0d / e.Time);

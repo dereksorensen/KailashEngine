@@ -12,6 +12,9 @@ namespace KailashEngine.World.Lights
 {
     class LightManager
     {
+        private int _max_shadows_spot = 4;
+        private int _max_shadows_point = 2;
+        private int _max_shadows_directional = 1;
 
         private int _light_count;
 
@@ -138,7 +141,7 @@ namespace KailashEngine.World.Lights
         private void updateLists(Vector3 camera_position)
         {
             _lights_enabled = _lights.Select(kp => kp.Value).Where(light => light.enabled).ToList();
-            // Get closest N shadow casters to the camera
+            // Sort shadow casters by closest to the camera
             _lights_shadowed = _lights_enabled.Where(light => light.shadowed).OrderBy(light => (light.spatial.position - camera_position).Length).ToList();
             _lights_shadowed.ForEach(light => light.sid = -1);
         }
@@ -185,13 +188,8 @@ namespace KailashEngine.World.Lights
 
         private void updateUBO_Shadow()
         {
-            int max_shadows_spot = 4;
             int num_shadows_spot = 0;
-
-            int max_shadows_point = 2;
             int num_shadows_point = 0;
-
-            int max_shadows_directional = 1;
             int num_shadows_directional = 0;
 
             foreach (Light light in _lights_shadowed)
@@ -199,17 +197,17 @@ namespace KailashEngine.World.Lights
                 switch(light.type)
                 {
                     case Light.type_spot:
-                        if (num_shadows_spot >= max_shadows_spot) break;
+                        if (num_shadows_spot >= _max_shadows_spot) break;
                         updateUBO_Shadow_Spot((sLight)light, num_shadows_spot);
                         num_shadows_spot++;
                         break;
                     case Light.type_point:
-                        if (num_shadows_point >= max_shadows_point) break;
+                        if (num_shadows_point >= _max_shadows_point) break;
                         updateUBO_Shadow_Point((pLight)light, num_shadows_point);
                         num_shadows_point++;
                         break;
                     case Light.type_directional:
-                        if (num_shadows_directional >= max_shadows_directional) break;
+                        if (num_shadows_directional >= _max_shadows_directional) break;
                         updateUBO_Shadow_Directional((dLight)light, num_shadows_directional);
                         num_shadows_directional++;
                         break;

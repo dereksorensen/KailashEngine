@@ -4,7 +4,7 @@
 struct ShadowData {
   mat4 view[4];
   mat4 perspective[4];
-  vec3 light_position;
+  vec4 light_position;
 };
 layout(std140, binding = 5) uniform shadowMatrices
 {

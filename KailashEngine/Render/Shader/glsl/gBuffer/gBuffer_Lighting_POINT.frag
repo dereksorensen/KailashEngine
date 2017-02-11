@@ -19,7 +19,6 @@ uniform int shadow_id;
 
 void main()
 {
-	
 	//Calculate Texture Coordinates
 	vec2 Resolution = textureSize(sampler0, 0);
 	vec2 tex_coord = gl_FragCoord.xy / Resolution;
@@ -30,7 +29,6 @@ void main()
 	vec3 world_position = calcWorldPosition(depth, v_viewRay, cam_position);
 
 	vec4 specular_properties = texture(sampler1, tex_coord);
-	//specular_properties.a = 1.0;
 
 	vec3 L;
 	vec4 temp_diffuse;
@@ -56,6 +54,4 @@ void main()
 
 	diffuse = temp_diffuse * visibility;
 	specular = temp_specular * visibility;
-
-	//diffuse = vec4(world_position, 1.0);
 }

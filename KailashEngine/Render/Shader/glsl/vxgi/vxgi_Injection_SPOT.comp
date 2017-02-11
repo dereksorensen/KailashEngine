@@ -74,6 +74,7 @@ void main()
 		//------------------------------------------------------
 		
 		vec4 current_color = imageLoad(sampler0, ivec3(volume_TexCoord));
+
 		final.rgb = current_color.rgb + final.rgb;
 		final.a = max(current_color.a, final.a);
 

@@ -65,7 +65,7 @@ namespace KailashEngine.Render.FX
         {
             string[] geometry_extensions = new string[]
             {
-                "#extension GL_ARB_bindless_texture : require"
+                EngineHelper.path_glsl_common_ext_bindlessTextures
             };
             string[] trace_vert_helpers = new string[]
             {
@@ -349,6 +349,10 @@ namespace KailashEngine.Render.FX
             GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthClamp);
 
+
+            GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+
         }
 
 
@@ -398,6 +402,9 @@ namespace KailashEngine.Render.FX
 
                             GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
 
+
+                            GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
                             break;
                         case Light.type_point:
 
@@ -408,7 +415,6 @@ namespace KailashEngine.Render.FX
                     }
                 }
 
-                GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
             });
 
