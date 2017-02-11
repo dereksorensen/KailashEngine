@@ -77,7 +77,7 @@ namespace KailashEngine.Render.Shader
             catch (Exception e)
             {
 
-                Debug.DebugHelper.logError("Shader file not found!?", e.Message);
+                Debug.DebugHelper.logError("Shader file not found!?", filename + "\n" + e.Message);
                 return null;
             }
         }

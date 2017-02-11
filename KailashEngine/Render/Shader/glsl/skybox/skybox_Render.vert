@@ -2,21 +2,6 @@
 
 layout(location = 0) in vec3 position;
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
-
-
 
 out vec4 current_worldPosition;
 out vec4 previous_worldPosition;

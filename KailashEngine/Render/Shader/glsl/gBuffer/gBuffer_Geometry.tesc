@@ -14,19 +14,6 @@ out vec2 tc_TexCoord[];
 out vec3 tc_Normal[];
 out vec3 tc_Tangent[];
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
 
 uniform int enable_displacement_texture;
 uniform vec2 render_size;

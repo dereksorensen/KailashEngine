@@ -32,6 +32,11 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            string[] texture_cube_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials
+            };
+
             _pRenderTexture1D = _pLoader.createProgram_PostProcessing(new ShaderFile[]
             {
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_Texture1D.frag", null)
@@ -61,14 +66,14 @@ namespace KailashEngine.Render.FX
 
             _pRenderTextureCube = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_TextureCube.vert", null),
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_TextureCube.vert", texture_cube_helpers),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_TextureCube.frag", null)
             });
             _pRenderTextureCube.enable_Samplers(1);
 
             _pRenderTextureCubeArray = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_TextureCube.vert", null),
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "render_TextureCube.vert", texture_cube_helpers),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "render_TextureCubeArray.frag", null)
             });
             _pRenderTextureCubeArray.enable_Samplers(1);

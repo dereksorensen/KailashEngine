@@ -5,34 +5,6 @@ layout(location = 1) out vec4 specular;
 in vec3 v_viewRay;
 
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
-
-//------------------------------------------------------
-// Shadow Matrices - Point
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view[6];
-  mat4 perspective;
-  vec3 light_position;
-};
-layout(std140, binding = 4) uniform shadowMatrices
-{
-	ShadowData shadow_data[32];
-};
-
-
 uniform sampler2D sampler0;		// Normal & Depth
 uniform sampler2D sampler1;		// Specular
 uniform samplerCubeArray sampler2;		// Shadow Depth

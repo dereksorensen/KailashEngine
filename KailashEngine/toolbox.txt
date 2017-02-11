@@ -1,7 +1,7 @@
 ﻿
 
 //------------------------------------------------------
-// TEXT
+// COMMENT
 //------------------------------------------------------
 
 
@@ -10,78 +10,5 @@
 // Material IDs
 //------------------------------------------------------
 0 = full treatment
-1 = emissive material; isn't lit by light sources
-
-
-
-//------------------------------------------------------
-// Game Config
-//------------------------------------------------------
-layout(std140, binding = 0) uniform gameConfig
-{
-	vec4 near_far;
-	float target_fps;
-};
-
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
-
-//------------------------------------------------------
-// Bindless Material Textures
-//------------------------------------------------------
-layout(std140, binding = 2) uniform materialTextures
-{
-	sampler2D tex[256];
-};
-
-
-//------------------------------------------------------
-// Shadow Matrices - Spot
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view;
-  mat4 perspective;
-  mat4 viewray;
-  vec3 light_position;
-};
-layout(std140, binding = 3) uniform shadowMatrices
-{
-	ShadowData shadow_data[32];
-};
-
-//------------------------------------------------------
-// Shadow Matrices - Point
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view[6];
-  mat4 perspective;
-  vec3 light_position;
-};
-layout(std140, binding = 4) uniform shadowMatrices
-{
-	ShadowData shadow_data[32];
-};
-
-//------------------------------------------------------
-// Shadow Matrices - Directional
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view[4];
-  mat4 perspective[4];
-  vec3 light_position;
-};
-layout(std140, binding = 5) uniform shadowMatrices
-{
-	ShadowData shadow_data[1];
-};
+1 = emissive material - isn't lit by light sources
+2 = space - blended with atmosphere

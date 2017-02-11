@@ -76,28 +76,45 @@ namespace KailashEngine.Render.FX
             };
             string[] spot_helpers = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot
+            };
+            spot_helpers = spot_helpers.Concat(culling_helpers).ToArray();
+            string[] point_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Point
+            };
+            point_helpers = point_helpers.Concat(culling_helpers).ToArray();
+            string[] directional_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Directional
+            };
+            directional_helpers = directional_helpers.Concat(culling_helpers).ToArray();
+
+
+            string[] shadow_helpers = new string[]
+            {
                 EngineHelper.path_glsl_common_helper_shadowMapping,
                 EngineHelper.path_glsl_common_helper_linearDepth
             };
 
             _pSpot = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Spot.geom", culling_helpers),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", spot_helpers)
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Spot.geom", spot_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Spot.frag", shadow_helpers)
             });
             _pSpot.enable_MeshLoading();
 
             _pPoint = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Point.geom", culling_helpers),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Point.frag", spot_helpers)
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Point.geom", point_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Point.frag", shadow_helpers)
             });
             _pPoint.enable_MeshLoading();
 
             _pDirectional = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Directional.geom", culling_helpers),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Directional.frag", spot_helpers)
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "shadow_Directional.geom", directional_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "shadow_Directional.frag", shadow_helpers)
             });
             _pDirectional.enable_MeshLoading();
         }

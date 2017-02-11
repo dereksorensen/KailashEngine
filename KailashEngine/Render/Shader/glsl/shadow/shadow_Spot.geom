@@ -7,20 +7,6 @@ in vec3 v_worldPosition[];
 
 out vec3 g_viewPosition;
 
-//------------------------------------------------------
-// Shadow Matrices - Spot
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view;
-  mat4 perspective;
-  mat4 viewray;
-  vec3 light_position;
-};
-layout(std140, binding = 3) uniform shadowMatrices
-{
-	ShadowData shadow_data[32];
-};
-
 
 void main()
 {

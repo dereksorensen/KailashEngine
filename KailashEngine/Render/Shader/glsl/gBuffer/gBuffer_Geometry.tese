@@ -15,19 +15,10 @@ out vec2 te_TexCoord;
 out vec3 te_Normal;
 out vec3 te_Tangent;
 
-//------------------------------------------------------
-// Bindless Material Textures
-//------------------------------------------------------
-layout(std140, binding = 2) uniform materialTextures
-{
-	sampler2D tex[256];
-};
-
 
 uniform int displacement_texture_unit;
 uniform int enable_displacement_texture;
 uniform float displacement_strength = 0.1;
-
 
 
 vec2 interpolate2D_triangle(vec2 v0, vec2 v1, vec2 v2)

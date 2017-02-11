@@ -67,8 +67,13 @@ namespace KailashEngine.Render.FX
             {
                 "#extension GL_ARB_bindless_texture : require"
             };
-            string[] cone_trace_helpers = new string[]
+            string[] trace_vert_helpers = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials
+            };
+            string[] trace_frag_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials,
                 EngineHelper.path_glsl_common_helper_positionFromDepth,
                 EngineHelper.path_glsl_common_helper_voxelFunctions
             };
@@ -79,6 +84,12 @@ namespace KailashEngine.Render.FX
                 EngineHelper.path_glsl_common_helper_shadowEvaluation,
                 EngineHelper.path_glsl_common_helper_voxelFunctions
             };
+            string[] voxelize_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_bindlessTextures_Materials
+            };
+            voxelize_helpers = voxelize_helpers.Concat(injection_helpers).ToArray();
+
             string[] spot_injection_helpers = new string[]
             {
                 EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot
@@ -91,7 +102,7 @@ namespace KailashEngine.Render.FX
             {
                 new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Voxelize.vert", null),
                 new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "vxgi_Voxelize.geom", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_Voxelize.frag", injection_helpers, geometry_extensions)
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_Voxelize.frag", voxelize_helpers, geometry_extensions)
             });
             _pVoxelize.enable_MeshLoading();
             _pVoxelize.enable_Samplers(2);
@@ -104,8 +115,8 @@ namespace KailashEngine.Render.FX
             // Cone Trace through voxel volume
             _pConeTrace = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Trace.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ConeTrace.frag", cone_trace_helpers)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Trace.vert", trace_vert_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ConeTrace.frag", trace_frag_helpers)
             });
             _pConeTrace.enable_Samplers(4);
             _pConeTrace.addUniform("vx_volume_dimensions");
@@ -116,8 +127,8 @@ namespace KailashEngine.Render.FX
             // Cone Trace through voxel volume
             _pRayTrace = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Trace.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_RayTrace.frag", cone_trace_helpers)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "vxgi_Trace.vert", trace_vert_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_RayTrace.frag", trace_frag_helpers)
             });
             _pRayTrace.enable_Samplers(1);
             _pRayTrace.addUniform("vx_volume_dimensions");

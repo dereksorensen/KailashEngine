@@ -7,20 +7,6 @@ in vec3 ray;
 in vec2 v_TexCoord;
 
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
-
 
 uniform sampler3D sampler0;		// Voxel Volume
 

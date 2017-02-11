@@ -28,7 +28,7 @@ namespace KailashEngine
                 4, 5,                                           // OpenGL Versions
 
                 // Rendering Config
-                20.0f,                                          // Target FPS
+                60.0f,                                          // Target FPS
                 65.0f,                                          // Field of view
                 0.1f, 1000.0f,                                  // Near / Far Planes
 

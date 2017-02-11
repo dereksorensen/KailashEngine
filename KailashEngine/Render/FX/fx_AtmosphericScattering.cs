@@ -52,7 +52,6 @@ namespace KailashEngine.Render.FX
         private Program _pCopyInscatterN;
 
         private Program _pAtmoshpere;
-        private Program _pBlend;
 
         // Frame Buffers
         private FrameBuffer _fPrecompute;
@@ -124,8 +123,14 @@ namespace KailashEngine.Render.FX
                 _path_glsl_effect + "helpers/ats_Functions.include"
             };
 
-            string[] ats_atmposhere_helpers = new string[]
+            string[] ats_atmposhere_vert_helpers = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials
+            };
+            string[] ats_atmposhere_frag_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials,
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Directional,
                 _path_glsl_effect + "helpers/ats_Functions.include",
                 EngineHelper.path_glsl_common_helper_positionFromDepth,
                 EngineHelper.path_glsl_common_helper_lightingFunctions,
@@ -229,20 +234,14 @@ namespace KailashEngine.Render.FX
 
             _pAtmoshpere = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "ats_Atmoshpere.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "ats_Atmoshpere.frag", ats_atmposhere_helpers)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "ats_Atmoshpere.vert", ats_atmposhere_vert_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "ats_Atmoshpere.frag", ats_atmposhere_frag_helpers)
             });
             _pAtmoshpere.addUniform("transmittanceSampler");
             _pAtmoshpere.addUniform("irradianceSampler");
             _pAtmoshpere.addUniform("inscatterSampler");
             _pAtmoshpere.enable_Samplers(4);
             _pAtmoshpere.addUniform("sun_position");
-
-            _pBlend = _pLoader.createProgram_PostProcessing(new ShaderFile[]
-            {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "ats_blend.frag", null)
-            });
-            _pBlend.enable_Samplers(1);
 
         }
 

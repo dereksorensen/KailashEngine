@@ -35,10 +35,19 @@ namespace KailashEngine.Render.FX
 
         protected override void load_Programs()
         {
+            string[] skybox_vert_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials
+            };
+            string[] skybox_frag_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_gameConfig
+            };
+
             _pSkyBox = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "skybox_Render.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "skybox_Render.frag", null)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "skybox_Render.vert", skybox_vert_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "skybox_Render.frag", skybox_frag_helpers)
             });
             _pSkyBox.enable_Samplers(1);
             _pSkyBox.addUniform("circadian_position");

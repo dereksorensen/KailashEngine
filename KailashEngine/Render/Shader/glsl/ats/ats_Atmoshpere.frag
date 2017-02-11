@@ -3,33 +3,6 @@
 in vec3 ray;
 in vec2 v_TexCoord;
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
-
-//------------------------------------------------------
-// Shadow Matrices - Directional
-//------------------------------------------------------
-struct ShadowData {
-  mat4 view[4];
-  mat4 perspective[4];
-  vec3 light_position;
-};
-layout(std140, binding = 5) uniform shadowMatrices
-{
-	ShadowData shadow_data[1];
-};
-
 
 uniform sampler2D irradianceSampler;	//precomputed skylight irradiance (E table)
 uniform sampler3D inscatterSampler;		//precomputed inscattered light (S table)

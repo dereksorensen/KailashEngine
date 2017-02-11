@@ -16,29 +16,6 @@ in vec4 g_previousPosition;
 noperspective in vec3 g_wireframe_distance;
 
 
-//------------------------------------------------------
-// Camera Spatials
-//------------------------------------------------------
-layout(std140, binding = 1) uniform cameraSpatials
-{
-	mat4 view;
-	mat4 perspective;
-	mat4 inv_view_perspective;
-	mat4 previous_view_persepctive;
-	mat4 inv_previous_view_persepctive;
-	vec3 cam_position;
-	vec3 cam_look;
-};
-
-//------------------------------------------------------
-// Bindless Material Textures
-//------------------------------------------------------
-layout(std140, binding = 2) uniform materialTextures
-{
-	sampler2D tex[256];
-};
-
-
 uniform int enable_Wireframe;
 
 uniform int enable_diffuse_texture;

@@ -93,6 +93,8 @@ namespace KailashEngine.Render.FX
         {
             string[] geometry_helpers = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials,
+                EngineHelper.path_glsl_common_ubo_bindlessTextures_Materials,
                 _path_glsl_effect + "helpers/gBuffer_Functions.include",
                 EngineHelper.path_glsl_common_helper_linearDepth
 
@@ -101,25 +103,54 @@ namespace KailashEngine.Render.FX
             {
                 EngineHelper.path_glsl_common_ext_bindlessTextures
             };
-            string[] culling_helpers = new string[]
+            string[] geom_helpers = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials
+
+            };
+            string[] tesc_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials,
                 EngineHelper.path_glsl_common_helper_culling
 
             };
+            string[] tese_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_bindlessTextures_Materials
+            };
+
+
+            string[] stencil_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials
+            };
+
+
             string[] lighting_helpers = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_cameraSpatials,
                 EngineHelper.path_glsl_common_helper_lightingFunctions,
                 EngineHelper.path_glsl_common_helper_positionFromDepth,
                 EngineHelper.path_glsl_common_helper_shadowEvaluation,
                 EngineHelper.path_glsl_common_helper_linearDepth
             };
+            string[] spot_lighting_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot
+            };
+            spot_lighting_helpers = spot_lighting_helpers.Concat(lighting_helpers).ToArray();
+            string[] point_lighting_helpers = new string[]
+            {
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Point
+            };
+            point_lighting_helpers = point_lighting_helpers.Concat(lighting_helpers).ToArray();
 
             // Rendering Geometry into gBuffer
             _pGeometry = _pLoader.createProgram_Geometry(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", culling_helpers),
-                new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", null, geometry_extensions),
-                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "gBuffer_Geometry.geom", null),
+                new ShaderFile(ShaderType.TessControlShader, _path_glsl_effect + "gBuffer_Geometry.tesc", tesc_helpers),
+                new ShaderFile(ShaderType.TessEvaluationShader, _path_glsl_effect + "gBuffer_Geometry.tese", tese_helpers, geometry_extensions),
+                new ShaderFile(ShaderType.GeometryShader, _path_glsl_effect + "gBuffer_Geometry.geom", geom_helpers),
                 new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Geometry.frag", geometry_helpers, geometry_extensions)
             });
             _pGeometry.enable_MeshLoading();
@@ -129,15 +160,15 @@ namespace KailashEngine.Render.FX
             // Stencil light bounds for lighting pass
             _pStencil = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", stencil_helpers)
             });
             _pStencil.addUniform(RenderHelper.uModel);
 
             // Calculate Lighting for Spot Lights
             _pLighting_SPOT = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SPOT.frag", lighting_helpers)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", stencil_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_SPOT.frag", spot_lighting_helpers)
             });
             _pLighting_SPOT.addUniform(RenderHelper.uModel);
             _pLighting_SPOT.enable_LightCalculation();
@@ -147,8 +178,8 @@ namespace KailashEngine.Render.FX
             // Calculate Lighting for Point Lights
             _pLighting_POINT = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", null),
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_POINT.frag", lighting_helpers)
+                new ShaderFile(ShaderType.VertexShader, _path_glsl_effect + "gBuffer_Stencil.vert", stencil_helpers),
+                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "gBuffer_Lighting_POINT.frag", point_lighting_helpers)
             });
             _pLighting_POINT.addUniform(RenderHelper.uModel);
             _pLighting_POINT.enable_LightCalculation();

@@ -3,15 +3,6 @@ layout(location = 0) out vec4 diffuse_id;
 layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec2 velocity;
 
-//------------------------------------------------------
-// Game Config
-//------------------------------------------------------
-layout(std140, binding = 0) uniform gameConfig
-{
-	vec4 near_far;
-	float target_fps;
-};
-
 
 in vec4 current_worldPosition;
 in vec4 previous_worldPosition;

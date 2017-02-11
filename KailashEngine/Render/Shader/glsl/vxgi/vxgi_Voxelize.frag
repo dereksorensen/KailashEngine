@@ -18,23 +18,12 @@ in mat3 g_SwizzleMatrix;
 in float g_dir;
 
 
-//------------------------------------------------------
-// Bindless Material Textures
-//------------------------------------------------------
-layout(std140, binding = 2) uniform materialTextures
-{
-	sampler2D tex[256];
-};
-
-
 uniform int enable_diffuse_texture;
 uniform int diffuse_texture_unit;
 uniform vec3 diffuse_color;
 uniform float emission_strength;
 
 uniform float emissionStrength;
-
-
 
 
 void main()
