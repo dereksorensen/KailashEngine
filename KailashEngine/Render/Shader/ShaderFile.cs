@@ -93,8 +93,9 @@ namespace KailashEngine.Render.Shader
             int shader_id = GL.CreateShader(_type);
 
             string shader_source = loadShaderFile(_filename);
+            string shader_additions = "";
 
-            int added_line_count = 4;
+            int added_line_count = 0;
 
             // Add any depenancies into the shader file
             if (!(_dependancies == null))
@@ -102,8 +103,8 @@ namespace KailashEngine.Render.Shader
                 foreach (string s in _dependancies)
                 {
                     string dependancy = loadShaderFile(s);
-                    added_line_count += dependancy.Split('\n').Length;
-                    shader_source = dependancy + "\n" + shader_source;
+                    //added_line_count += dependancy.Split('\n').Length;
+                    shader_additions = dependancy + "\n" + shader_additions;
                 }
             }
 
@@ -114,7 +115,7 @@ namespace KailashEngine.Render.Shader
                 foreach (string extension in _extensions)
                 {
                     combined_extensions += extension + "\n";
-                    added_line_count += extension.Split('\n').Length;
+                    //added_line_count += extension.Split('\n').Length;
                 }
             }
 
@@ -123,12 +124,18 @@ namespace KailashEngine.Render.Shader
             string MATH_HALF_PI = "#define MATH_HALF_PI 1.57079632679489661923132169163975";
             string MATH_2_PI = "#define MATH_2_PI 6.283185307179586476925286766559";
 
-            shader_source = 
+            shader_additions =
                 "#version " + glsl_version + "\n" +
                 combined_extensions + "\n" +
-                MATH_PI + "\n" + 
-                MATH_HALF_PI + "\n" + 
-                MATH_2_PI + "\n" + 
+                MATH_PI + "\n" +
+                MATH_HALF_PI + "\n" +
+                MATH_2_PI + "\n" +
+                shader_additions;
+
+            added_line_count = shader_additions.Split('\n').Length;
+
+            shader_source =
+                shader_additions + "\n" + 
                 shader_source;
 
             try
