@@ -166,26 +166,30 @@ namespace KailashEngine.World.Lights
 
         private void updateUBO_Shadow_Spot(sLight light, int shadow_id)
         {
-            int ubo_index = shadow_id * 4;
+            int ubo_index = shadow_id * 7;
 
             _ubo_shadow_spot.update(ubo_index, light.shadow_view_matrix);
             _ubo_shadow_spot.update(ubo_index + 1, light.shadow_perspective_matrix);
             _ubo_shadow_spot.update(ubo_index + 2, light.viewray_matrix);
-            _ubo_shadow_spot.update(ubo_index + 3, light.spatial.position);
+            _ubo_shadow_spot.update(ubo_index + 3, new Vector4(light.spatial.position, light.falloff));
+            _ubo_shadow_spot.update(ubo_index + 4, new Vector4(light.color, light.intensity));
+            _ubo_shadow_spot.update(ubo_index + 5, new Vector4(light.spatial.look, 0.0f));
+            _ubo_shadow_spot.update(ubo_index + 6, new Vector4(light.spot_angle, light.spot_blur, 0.0f, 0.0f));
 
             light.sid = shadow_id;
         }
 
         private void updateUBO_Shadow_Point(pLight light, int shadow_id)
         {
-            int ubo_index = shadow_id * 8;
+            int ubo_index = shadow_id * 9;
 
             for(int i = 0; i < 6; i++)
             {
                 _ubo_shadow_point.update(ubo_index + i, light.shadow_view_matrices[i]);
             }
             _ubo_shadow_point.update(ubo_index + 6, light.spatial.perspective);
-            _ubo_shadow_point.update(ubo_index + 7, light.spatial.position);
+            _ubo_shadow_point.update(ubo_index + 7, new Vector4(light.spatial.position, light.falloff));
+            _ubo_shadow_point.update(ubo_index + 8, new Vector4(light.color, light.intensity));
 
             light.sid = shadow_id;
         }

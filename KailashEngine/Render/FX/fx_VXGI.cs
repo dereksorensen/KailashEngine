@@ -138,7 +138,7 @@ namespace KailashEngine.Render.FX
             // Light Injection
             _pInjection_SPOT = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection_SPOT.comp", spot_injection_helpers)
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection.comp", spot_injection_helpers)
             });
             _pInjection_SPOT.enable_Samplers(4);
             _pInjection_SPOT.enable_LightCalculation();
