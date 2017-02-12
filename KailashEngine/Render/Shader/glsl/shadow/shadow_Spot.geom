@@ -12,7 +12,7 @@ void main()
 {
 	mat4 view_matrix = shadow_data[gl_InvocationID].view;
 	mat4 perspective_matrix = shadow_data[gl_InvocationID].perspective;
-	vec3 light_position = shadow_data[gl_InvocationID].light_position.xyz;
+	vec3 light_position = shadow_data[gl_InvocationID].position_falloff.xyz;
 	
 	vec3 N = normalize(cross(v_worldPosition[1] - v_worldPosition[0], v_worldPosition[2] - v_worldPosition[0]));
 

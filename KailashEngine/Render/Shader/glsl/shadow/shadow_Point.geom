@@ -15,7 +15,7 @@ void main()
 
 	mat4 view_matrix = shadow_data[shadow_data_id].view[view_matrix_id];
 	mat4 perspective_matrix = shadow_data[shadow_data_id].perspective;
-	vec3 light_position = shadow_data[shadow_data_id].light_position.xyz;
+	vec3 light_position = shadow_data[shadow_data_id].position_falloff.xyz;
 	
 	vec3 N = normalize(cross(v_worldPosition[1] - v_worldPosition[0], v_worldPosition[2] - v_worldPosition[0]));
 

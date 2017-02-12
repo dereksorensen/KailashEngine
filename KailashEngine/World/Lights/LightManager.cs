@@ -73,13 +73,27 @@ namespace KailashEngine.World.Lights
             _lights_enabled = new List<Light>();
             _lights_shadowed = new List<Light>();
 
+            //mat4 view
+            //mat4 perspective
+            //mat4 viewray
+            //vec4 - vec3 light_position / float falloff
+            //vec4 - vec3 light_color / float intensity
+            //vec4 - vec3 light_direction
+            //vec4 - float spot_angle / float spot_blur
             _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.vec4,
+                EngineHelper.size.vec4,
+                EngineHelper.size.vec4,
+                EngineHelper.size.vec4,
             }, 32);
 
+            //mat4 view[6]
+            //mat4 perspective
+            //vec4 - vec3 light_position / float falloff
+            //vec4 - vec3 light_color / float intensity
             _ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 4, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
@@ -89,8 +103,12 @@ namespace KailashEngine.World.Lights
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.vec4,
+                EngineHelper.size.vec4,
             }, 32);
 
+            //mat4 view[4]
+            //mat4 perspective[4]
+            //vec4 light_position
             _ubo_shadow_directional = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 5, new EngineHelper.size[]
             {
                 EngineHelper.size.mat4,

@@ -380,10 +380,11 @@ namespace KailashEngine.Render.FX
                             sLight temp_sLight = (sLight)light;
 
                             GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightPosition), light.spatial.position);
-                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
                             GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightColor), light.color);
                             GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightIntensity), light.intensity);
                             GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightFalloff), light.falloff);
+
+                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
                             GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotAngle), light.spot_angle);
                             GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
 
