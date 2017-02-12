@@ -20,7 +20,7 @@ namespace KailashEngine.Render.FX
     class fx_VXGI : RenderEffect
     {
         // Properties
-        private bool _debug_display_voxels = false;
+        private bool _debug_display_voxels = true;
         private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
         private float _vx_volume_scale = 30.0f;
@@ -141,9 +141,8 @@ namespace KailashEngine.Render.FX
                 new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection.comp", spot_injection_helpers)
             });
             _pInjection_SPOT.enable_Samplers(4);
-            _pInjection_SPOT.enable_LightCalculation();
             _pInjection_SPOT.addUniform("texture_size");
-            _pInjection_SPOT.addUniform("light_shadow_id");
+            _pInjection_SPOT.addUniform("shadow_manifest");
             _pInjection_SPOT.addUniform("vx_volume_dimensions");
             _pInjection_SPOT.addUniform("vx_volume_scale");
             _pInjection_SPOT.addUniform("vx_volume_position");
@@ -361,60 +360,33 @@ namespace KailashEngine.Render.FX
             Debug.DebugHelper.time_function("injection", 3, () =>
             {
 
-                int workgroup_size = 32;
+                int workgroup_size = 4;
                 int texture_size = (int)_vx_volume_dimensions * 4;
 
 
                 _tTemp.clear();
 
-                Light[] lights_spot = scene.light_manager.lights_shadowed_spot;
+
+                _pInjection_SPOT.bind();
+
+                GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), new Vector2(texture_size));
+                GL.Uniform1(_pInjection_SPOT.getUniform("shadow_manifest"), 64, scene.light_manager.lights_shadowed_manifest.ToArray());
+
+                GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+                GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
+                GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
+
+                
+
+                _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
+                _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
+                shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(2), 2);
+                _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+
+                GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
 
 
-                foreach (Light light in scene.light_manager.lights_shadowed)
-                {
-                    switch (light.type)
-                    {
-                        case Light.type_spot:
-                            _pInjection_SPOT.bind();
-
-                            sLight temp_sLight = (sLight)light;
-
-                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightPosition), light.spatial.position);
-                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightColor), light.color);
-                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightIntensity), light.intensity);
-                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightFalloff), light.falloff);
-
-                            GL.Uniform3(_pInjection_SPOT.getUniform(RenderHelper.uLightDirection), light.spatial.look);
-                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotAngle), light.spot_angle);
-                            GL.Uniform1(_pInjection_SPOT.getUniform(RenderHelper.uLightSpotBlur), light.spot_blur);
-
-                            GL.Uniform1(_pInjection_SPOT.getUniform("light_shadow_id"), temp_sLight.sid);
-
-                            GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), new Vector2(texture_size));
-
-                            GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
-                            GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
-                            GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
-
-                            _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
-                            _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
-                            shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(2), 2);
-                            _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
-
-                            GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
-
-
-                            GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-
-                            break;
-                        case Light.type_point:
-
-                            break;
-                        case Light.type_directional:
-
-                            break;
-                    }
-                }
+                GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
 
             });

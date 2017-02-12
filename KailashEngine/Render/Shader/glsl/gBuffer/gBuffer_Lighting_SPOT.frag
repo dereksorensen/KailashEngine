@@ -43,7 +43,7 @@ void main()
 	{
 		visibility = calcShadow(
 			sampler2, shadow_id, 
-			shadow_data[shadow_id].view, shadow_data[shadow_id].perspective, world_position, 
+			shadow_data_spot[shadow_id].view, shadow_data_spot[shadow_id].perspective, world_position, 
 			10.0, 0.03);
 	}
 

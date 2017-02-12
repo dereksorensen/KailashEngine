@@ -1,7 +1,7 @@
 ﻿//------------------------------------------------------
 // Shadow Matrices - Spot
 //------------------------------------------------------
-struct ShadowData {
+struct ShadowDataSpot {
   mat4 view;
   mat4 perspective;
   mat4 viewray;
@@ -10,7 +10,7 @@ struct ShadowData {
   vec4 direction;
   vec4 spot_angle_blur;
 };
-layout(std140, binding = 3) uniform shadowMatrices
+layout(std140, binding = 4) uniform shadowMatricesSpot
 {
-	ShadowData shadow_data[32];
+	ShadowDataSpot shadow_data_spot[32];
 };

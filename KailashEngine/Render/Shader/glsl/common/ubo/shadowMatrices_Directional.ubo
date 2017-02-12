@@ -1,12 +1,12 @@
 ﻿//------------------------------------------------------
 // Shadow Matrices - Directional
 //------------------------------------------------------
-struct ShadowData {
+struct ShadowDataDirectional {
   mat4 view[4];
   mat4 perspective[4];
   vec4 light_position;
 };
-layout(std140, binding = 5) uniform shadowMatrices
+layout(std140, binding = 6) uniform shadowMatricesDirectional
 {
-	ShadowData shadow_data[1];
+	ShadowDataDirectional shadow_data_directional[1];
 };

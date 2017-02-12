@@ -303,6 +303,7 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_1, 0.25f, 2);
                 //_fxQuad.render_Texture(_fxGBuffer.tVelocity, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
+                _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 
 
                 // CSM Cascades

@@ -1,13 +1,13 @@
 ﻿//------------------------------------------------------
 // Shadow Matrices - Point
 //------------------------------------------------------
-struct ShadowData {
+struct ShadowDataPoint {
   mat4 view[6];
   mat4 perspective;
   vec4 position_falloff;
   vec4 color_intensity;
 };
-layout(std140, binding = 4) uniform shadowMatrices
+layout(std140, binding = 5) uniform shadowMatricesPoint
 {
-	ShadowData shadow_data[32];
+	ShadowDataPoint shadow_data_point[32];
 };

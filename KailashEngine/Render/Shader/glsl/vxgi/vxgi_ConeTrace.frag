@@ -155,7 +155,7 @@ void main()
 	
 	vec4 final = vec4(0.0);
 
-	vec3 shift = ((normal) / (vx_volume_dimensions));
+	vec3 shift = ((normal) / (vx_volume_dimensions * 1.5));
 	vec3 origin_shifted = world_position_biased + shift;
 	float origin_max = max(origin_shifted.x, max(origin_shifted.y, origin_shifted.z));
 	float origin_min = min(origin_shifted.x, min(origin_shifted.y, origin_shifted.z));

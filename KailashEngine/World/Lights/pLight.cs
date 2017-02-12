@@ -45,6 +45,22 @@ namespace KailashEngine.World.Lights
             }
         }
 
+        public Matrix4[] viewray_matrices
+        {
+            get
+            {
+                return new Matrix4[]
+                {
+                    Matrix4.Invert(_shadow_rotation_matrices[0] * shadow_perspective_matrix),
+                    Matrix4.Invert(_shadow_rotation_matrices[1] * shadow_perspective_matrix),
+                    Matrix4.Invert(_shadow_rotation_matrices[2] * shadow_perspective_matrix),
+                    Matrix4.Invert(_shadow_rotation_matrices[3] * shadow_perspective_matrix),
+                    Matrix4.Invert(_shadow_rotation_matrices[4] * shadow_perspective_matrix),
+                    Matrix4.Invert(_shadow_rotation_matrices[5] * shadow_perspective_matrix),
+                };
+            }
+        }
+
 
 
         public pLight(string id, Vector3 color, float intensity, float falloff, bool shadow, Mesh light_mesh, Matrix4 transformation)

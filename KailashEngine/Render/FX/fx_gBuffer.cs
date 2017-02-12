@@ -139,11 +139,7 @@ namespace KailashEngine.Render.FX
                 EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot
             };
             spot_lighting_helpers = spot_lighting_helpers.Concat(lighting_helpers).ToArray();
-            string[] point_lighting_helpers = new string[]
-            {
-                EngineHelper.path_glsl_common_ubo_shadowMatrices_Point
-            };
-            point_lighting_helpers = point_lighting_helpers.Concat(lighting_helpers).ToArray();
+            string[] point_lighting_helpers = lighting_helpers;
 
             // Rendering Geometry into gBuffer
             _pGeometry = _pLoader.createProgram_Geometry(new ShaderFile[]

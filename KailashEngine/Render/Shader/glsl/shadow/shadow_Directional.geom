@@ -14,9 +14,9 @@ void main()
 	int shadow_data_id = int(floor(gl_InvocationID / 4.0));
 	int shadow_matrix_id = gl_InvocationID % 4;
 
-	mat4 view_matrix = shadow_data[shadow_data_id].view[shadow_matrix_id];
-	mat4 perspective_matrix = shadow_data[shadow_data_id].perspective[shadow_matrix_id];
-	vec3 light_position = shadow_data[shadow_data_id].light_position.xyz;	
+	mat4 view_matrix = shadow_data_directional[shadow_data_id].view[shadow_matrix_id];
+	mat4 perspective_matrix = shadow_data_directional[shadow_data_id].perspective[shadow_matrix_id];
+	vec3 light_position = shadow_data_directional[shadow_data_id].light_position.xyz;	
 
 	vec4 viewPositions[3];
 	vec4 clipPositions[3];

@@ -19,6 +19,7 @@ namespace KailashEngine.World.Lights
         private int _light_count;
 
 
+        //private UniformBuffer _ubo_shadow_manifest;
         private UniformBuffer _ubo_shadow_spot;
         private UniformBuffer _ubo_shadow_point;
         private UniformBuffer _ubo_shadow_directional;
@@ -41,6 +42,17 @@ namespace KailashEngine.World.Lights
         {
             get { return _lights_shadowed; }
         }
+
+        // Manifest of shadowed lights that are shadowed in game
+        // 0 - Spot
+        // 1 - Point
+        // 2 - Directional
+        private List<int> _lights_shadowed_manifest;
+        public List<int> lights_shadowed_manifest
+        {
+            get { return _lights_shadowed_manifest; }
+        }
+
 
         public Light[] lights_shadowed_spot
         {
@@ -72,6 +84,7 @@ namespace KailashEngine.World.Lights
             _lights = new Dictionary<int, Light>();
             _lights_enabled = new List<Light>();
             _lights_shadowed = new List<Light>();
+            _lights_shadowed_manifest = new List<int>();
 
             //mat4 view
             //mat4 perspective
@@ -80,7 +93,7 @@ namespace KailashEngine.World.Lights
             //vec4 - vec3 light_color / float intensity
             //vec4 - vec3 light_direction
             //vec4 - float spot_angle / float spot_blur
-            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
+            _ubo_shadow_spot = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 4, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
@@ -94,7 +107,7 @@ namespace KailashEngine.World.Lights
             //mat4 perspective
             //vec4 - vec3 light_position / float falloff
             //vec4 - vec3 light_color / float intensity
-            _ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 4, new EngineHelper.size[] {
+            _ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 5, new EngineHelper.size[] {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
@@ -109,7 +122,7 @@ namespace KailashEngine.World.Lights
             //mat4 view[4]
             //mat4 perspective[4]
             //vec4 light_position
-            _ubo_shadow_directional = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 5, new EngineHelper.size[]
+            _ubo_shadow_directional = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 6, new EngineHelper.size[]
             {
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
@@ -162,6 +175,7 @@ namespace KailashEngine.World.Lights
             // Sort shadow casters by closest to the camera
             _lights_shadowed = _lights_enabled.Where(light => light.shadowed).OrderBy(light => (light.spatial.position - camera_position).Length).ToList();
             _lights_shadowed.ForEach(light => light.sid = -1);
+            _lights_shadowed_manifest.Clear();
         }
 
         private void updateUBO_Shadow_Spot(sLight light, int shadow_id)
@@ -222,16 +236,24 @@ namespace KailashEngine.World.Lights
                         if (num_shadows_spot >= _max_shadows_spot) break;
                         updateUBO_Shadow_Spot((sLight)light, num_shadows_spot);
                         num_shadows_spot++;
+                        _lights_shadowed_manifest.Add(0);
                         break;
                     case Light.type_point:
                         if (num_shadows_point >= _max_shadows_point) break;
                         updateUBO_Shadow_Point((pLight)light, num_shadows_point);
                         num_shadows_point++;
+                        _lights_shadowed_manifest.Add(1);
+                        _lights_shadowed_manifest.Add(1);
+                        _lights_shadowed_manifest.Add(1);
+                        _lights_shadowed_manifest.Add(1);
+                        _lights_shadowed_manifest.Add(1);
+                        _lights_shadowed_manifest.Add(1);
                         break;
                     case Light.type_directional:
                         if (num_shadows_directional >= _max_shadows_directional) break;
                         updateUBO_Shadow_Directional((dLight)light, num_shadows_directional);
                         num_shadows_directional++;
+                        _lights_shadowed_manifest.Add(2);
                         break;
                 }
             }
