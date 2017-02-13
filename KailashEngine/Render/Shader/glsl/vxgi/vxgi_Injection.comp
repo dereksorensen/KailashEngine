@@ -3,13 +3,13 @@ layout (local_size_x = 4, local_size_y = 4, local_size_z = 17) in;
 
 
 layout(rgba8) uniform image3D sampler0;		// Voxel Volume
-uniform sampler3D sampler1;					// Voxel Volume - Diffuse
-
-
-writeonly uniform image2D sampler3;		// Test Texture
+uniform sampler3D sampler1;					// Voxel Volume - Diffuse Albedo
 
 uniform sampler2DArray sampler2;		// Shadow Depth - Spot
-uniform samplerCubeArray sampler4;		// Shadow Depth - Point
+uniform samplerCubeArray sampler3;		// Shadow Depth - Point
+uniform sampler2DArray sampler4;		// Shadow Depth - Directional
+
+writeonly uniform image2D sampler5;		// Test Texture
 
 
 uniform vec2 texture_size;
@@ -114,7 +114,7 @@ void spot_injection(int shadow_id, vec2 tex_coord)
 	voxel_color.a = ceil(diffuse.a);
 
 	// Debugging
-	//imageStore(sampler3, i_TexCoord, vec4(world_position, 1.0));
+	//imageStore(sampler4, i_TexCoord, vec4(world_position, 1.0));
 
 	//------------------------------------------------------
 	// Inject
@@ -134,13 +134,12 @@ void point_injection(int shadow_id, vec2 tex_coord, int cubemap_id)
 	vec4 position_falloff = shadow_data_point[shadow_id].position_falloff;
 	vec4 color_intensity = shadow_data_point[shadow_id].color_intensity;
 
-
 	//------------------------------------------------------
 	// Calc Injection Coords
 	//------------------------------------------------------
 	vec3 cube_TexCoord = vec3(tex_coord, 0) * 2.0 - 1.0;
 	cube_TexCoord = (viewray * vec4(cube_TexCoord, 1.0)).xyz;
-	vec2 depth_packed = texture(sampler4, vec4(cube_TexCoord, shadow_id)).xy;
+	vec2 depth_packed = texture(sampler3, vec4(cube_TexCoord, shadow_id)).xy;
 	float depth = unpack2(depth_packed);
 
 	vec3 world_position = vec3(0.0);
@@ -166,7 +165,7 @@ void point_injection(int shadow_id, vec2 tex_coord, int cubemap_id)
 	voxel_color.a = ceil(diffuse.a);
 
 	// Debugging
-	//imageStore(sampler3, ivec2(gl_GlobalInvocationID.xy), vec4(world_position, 1.0));
+	//imageStore(sampler4, ivec2(gl_GlobalInvocationID.xy), vec4(world_position, 1.0));
 
 	//------------------------------------------------------
 	// Inject

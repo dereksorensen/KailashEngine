@@ -86,7 +86,7 @@ namespace KailashEngine.World.Lights
             _lights_shadowed = new List<Light>();
             _lights_shadowed_manifest = new List<Vector4>();
 
-            //vec4 info
+            //vec4 info - (light type, id of this type, layer id, --)
             _ubo_shadow_manifest = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
                 EngineHelper.size.vec4
             }, 32);
@@ -274,9 +274,11 @@ namespace KailashEngine.World.Lights
             }
 
             int shadow_manifest_length = _lights_shadowed_manifest.Count;
-            for (int i = 0; i < shadow_manifest_length; i ++)
+            for (int i = 0; i < 32; i ++)
             {
-                _ubo_shadow_manifest.update(i, _lights_shadowed_manifest[i]);
+                Vector4 temp_manifest_entry = new Vector4(-1);
+                if (i < shadow_manifest_length) temp_manifest_entry = _lights_shadowed_manifest[i];
+                _ubo_shadow_manifest.update(i, temp_manifest_entry);
             }
         }
 

@@ -20,7 +20,7 @@ namespace KailashEngine.Render.FX
     class fx_VXGI : RenderEffect
     {
         // Properties
-        private bool _debug_display_voxels = true;
+        private bool _debug_display_voxels = false;
         private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
         private float _vx_volume_scale = 30.0f;
@@ -365,35 +365,28 @@ namespace KailashEngine.Render.FX
                 int workgroup_size = 4;
                 int texture_size = (int)_vx_volume_dimensions * 4;
 
-
                 _tTemp.clear();
-
 
                 _pInjection.bind();
 
-                Console.WriteLine(scene.light_manager.lights_shadowed_manifest.ToArray().Length);
 
                 GL.Uniform2(_pInjection.getUniform("texture_size"), new Vector2(texture_size));
 
                 GL.Uniform1(_pInjection.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
                 GL.Uniform1(_pInjection.getUniform("vx_volume_scale"), _vx_volume_scale);
-                GL.Uniform3(_pInjection.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
-
-                
+                GL.Uniform3(_pInjection.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));            
 
                 _tVoxelVolume.bindImageUnit(_pInjection.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
                 _tVoxelVolume_Diffuse.bind(_pInjection.getSamplerUniform(1), 1);
 
-
-                _tTemp.bindImageUnit(_pInjection.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
-
-
                 shadow.tSpot.bind(_pInjection.getSamplerUniform(2), 2);
-                shadow.tPoint.bind(_pInjection.getSamplerUniform(4), 4);
-                
+                shadow.tPoint.bind(_pInjection.getSamplerUniform(3), 3);
+                shadow.tDirectional.bind(_pInjection.getSamplerUniform(4), 4);
+
+                _tTemp.bindImageUnit(_pInjection.getSamplerUniform(5), 5, TextureAccess.WriteOnly);
+
 
                 GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
-
 
                 GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
