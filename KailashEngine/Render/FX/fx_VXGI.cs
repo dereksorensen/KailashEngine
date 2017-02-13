@@ -20,7 +20,7 @@ namespace KailashEngine.Render.FX
     class fx_VXGI : RenderEffect
     {
         // Properties
-        private bool _debug_display_voxels = true;
+        private bool _debug_display_voxels = false;
         private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
         private float _vx_volume_scale = 30.0f;
@@ -30,7 +30,7 @@ namespace KailashEngine.Render.FX
         private Program _pVoxelize;
         private Program _pRayTrace;
         private Program _pConeTrace;
-        private Program _pInjection_SPOT;
+        private Program _pInjection;
         private Program _pResetAlpha;
         private Program _pMipMap;
 
@@ -90,11 +90,13 @@ namespace KailashEngine.Render.FX
             };
             voxelize_helpers = voxelize_helpers.Concat(injection_helpers).ToArray();
 
-            string[] spot_injection_helpers = new string[]
+            string[] injection_ubos = new string[]
             {
-                EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot,
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Point,
+                EngineHelper.path_glsl_common_ubo_shadowMatrices_Directional,
             };
-            spot_injection_helpers = spot_injection_helpers.Concat(injection_helpers).ToArray();
+            injection_helpers = injection_helpers.Concat(injection_ubos).ToArray();
 
 
             // Rendering Geometry into voxel volume
@@ -136,16 +138,16 @@ namespace KailashEngine.Render.FX
             _pRayTrace.addUniform("displayMipLevel");
 
             // Light Injection
-            _pInjection_SPOT = _pLoader.createProgram(new ShaderFile[]
+            _pInjection = _pLoader.createProgram(new ShaderFile[]
             {
-                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection.comp", spot_injection_helpers)
+                new ShaderFile(ShaderType.ComputeShader, _path_glsl_effect + "vxgi_Injection.comp", injection_helpers)
             });
-            _pInjection_SPOT.enable_Samplers(4);
-            _pInjection_SPOT.addUniform("texture_size");
-            _pInjection_SPOT.addUniform("shadow_manifest");
-            _pInjection_SPOT.addUniform("vx_volume_dimensions");
-            _pInjection_SPOT.addUniform("vx_volume_scale");
-            _pInjection_SPOT.addUniform("vx_volume_position");
+            _pInjection.enable_Samplers(6);
+            _pInjection.addUniform("texture_size");
+            _pInjection.addUniform("shadow_manifest");
+            _pInjection.addUniform("vx_volume_dimensions");
+            _pInjection.addUniform("vx_volume_scale");
+            _pInjection.addUniform("vx_volume_position");
 
             // Reset Alpha
             _pResetAlpha = _pLoader.createProgram_PostProcessing(new ShaderFile[]
@@ -367,21 +369,22 @@ namespace KailashEngine.Render.FX
                 _tTemp.clear();
 
 
-                _pInjection_SPOT.bind();
+                _pInjection.bind();
 
-                GL.Uniform2(_pInjection_SPOT.getUniform("texture_size"), new Vector2(texture_size));
-                GL.Uniform1(_pInjection_SPOT.getUniform("shadow_manifest"), 64, scene.light_manager.lights_shadowed_manifest.ToArray());
+                GL.Uniform2(_pInjection.getUniform("texture_size"), new Vector2(texture_size));
+                GL.Uniform1(_pInjection.getUniform("shadow_manifest"), 64, scene.light_manager.lights_shadowed_manifest.ToArray());
 
-                GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
-                GL.Uniform1(_pInjection_SPOT.getUniform("vx_volume_scale"), _vx_volume_scale);
-                GL.Uniform3(_pInjection_SPOT.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
+                GL.Uniform1(_pInjection.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+                GL.Uniform1(_pInjection.getUniform("vx_volume_scale"), _vx_volume_scale);
+                GL.Uniform3(_pInjection.getUniform("vx_volume_position"), -voxelSnap(camera_spatial.position));
 
                 
 
-                _tVoxelVolume.bindImageUnit(_pInjection_SPOT.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
-                _tVoxelVolume_Diffuse.bind(_pInjection_SPOT.getSamplerUniform(1), 1);
-                shadow.tSpot.bind(_pInjection_SPOT.getSamplerUniform(2), 2);
-                _tTemp.bindImageUnit(_pInjection_SPOT.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+                _tVoxelVolume.bindImageUnit(_pInjection.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
+                _tVoxelVolume_Diffuse.bind(_pInjection.getSamplerUniform(1), 1);
+                shadow.tSpot.bind(_pInjection.getSamplerUniform(2), 2);
+                _tTemp.bindImageUnit(_pInjection.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+                shadow.tPoint.bind(_pInjection.getSamplerUniform(4), 4);
 
                 GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
 

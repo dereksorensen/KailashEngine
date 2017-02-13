@@ -5,12 +5,15 @@ layout (local_size_x = 4, local_size_y = 4, local_size_z = 17) in;
 layout(rgba8) uniform image3D sampler0;		// Voxel Volume
 uniform sampler3D sampler1;		// Voxel Volume - Diffuse
 
-uniform sampler2DArray sampler2;		// Shadow Depth
+
 writeonly uniform image2D sampler3;		// Test Texture
+
+uniform sampler2DArray sampler2;		// Shadow Depth
+uniform samplerCubeArray sampler4;		// Shadow Depth
 
 
 uniform vec2 texture_size;
-uniform int[64] shadow_manifest;
+uniform float[64] shadow_manifest;
 
 uniform float vx_volume_dimensions;
 uniform float vx_volume_scale;
@@ -21,59 +24,19 @@ shared vec4 cache_voxel_color[gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkG
 shared vec3 cache_voxel_coord[gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z];
 
 
-void spot(int shadow_id, vec2 tex_coord)
+void combineAndInject(vec3 volume_TexCoord, vec4 voxel_color)
 {
-
-	mat4 viewray = shadow_data_spot[shadow_id].viewray;
-	vec4 position_falloff = shadow_data_spot[shadow_id].position_falloff;
-	vec4 color_intensity = shadow_data_spot[shadow_id].color_intensity;
-	vec3 light_direction = shadow_data_spot[shadow_id].direction.xyz;
-	vec2 spot_angle_blur = shadow_data_spot[shadow_id].spot_angle_blur.xy;
-
-
-	vec2 depth_packed = texture(sampler2, vec3(tex_coord, shadow_id)).xy;
-	float depth = unpack2(depth_packed);
-
-
-	vec3 world_position = vec3(0.0);
-	vec3 volume_TexCoord = calcVoxelTexCoord(
-		tex_coord, depth,
-		-position_falloff.xyz, viewray,
-		vx_volume_position, vx_volume_dimensions, vx_volume_scale,
-		world_position);
-
-
-	// Albedo Diffuse
-	vec4 diffuse = texelFetch(sampler1, ivec3(volume_TexCoord), 0);
-
-
-	//------------------------------------------------------
-	// Lighting
-	//------------------------------------------------------
-
-	// Light to Object Direction
-	vec3 L = vec3(0.0);
-
-	float attenuation = calcAttenuation(color_intensity.a, position_falloff.a, position_falloff.xyz, world_position, L);
-
-	vec3 voxel_color = color_intensity.xyz * diffuse.xyz * attenuation;
-	voxel_color = voxel_color * calcSpotLightCone(L, light_direction, spot_angle_blur.x, spot_angle_blur.y);
-
-	vec4 final = vec4(voxel_color, ceil(diffuse.a) * 1.0);
-
-	// Debugging
-	//imageStore(sampler3, i_TexCoord, vec4(world_position, 1.0));
-	if(dot(voxel_color,voxel_color) > 0)
+	if(dot(voxel_color.rgb, voxel_color.rgb) > 0)
 	{
-
 		//------------------------------------------------------
 		// Store in color cache
 		//------------------------------------------------------
 		
 		vec4 current_color = imageLoad(sampler0, ivec3(volume_TexCoord));
 
-		final.rgb = current_color.rgb + final.rgb;
-		final.a = max(current_color.a, final.a);
+		vec4 final;
+		final.rgb = current_color.rgb + voxel_color.rgb;
+		final.a = max(current_color.a, voxel_color.a);
 
 		cache_voxel_color[gl_LocalInvocationIndex] = final;
 		cache_voxel_coord[gl_LocalInvocationIndex] = volume_TexCoord;
@@ -85,13 +48,11 @@ void spot(int shadow_id, vec2 tex_coord)
 		//------------------------------------------------------
 
 		vec4 total = vec4(0.0);
+		uint current_id_xy = gl_LocalInvocationID.y * gl_WorkGroupSize.x + gl_LocalInvocationID.x;
 		for(uint i = 0; i < gl_WorkGroupSize.z; i++)
 		{
-			uint id = (
-				i * gl_WorkGroupSize.x * gl_WorkGroupSize.y +
-				gl_LocalInvocationID.y * gl_WorkGroupSize.x +
-				gl_LocalInvocationID.x
-			);
+			// LocalInvocationIndex for each z invocation
+			uint id = i * gl_WorkGroupSize.x * gl_WorkGroupSize.y + current_id_xy;
 
 			// Weight instead of branch (need volume_TexCoord == cache_voxel_coord[id])
 			int weight = int(clamp(1 - ceil(dot(abs(volume_TexCoord - cache_voxel_coord[id]) / vec3(vx_volume_dimensions), vec3(1))), 0, 1));
@@ -104,11 +65,113 @@ void spot(int shadow_id, vec2 tex_coord)
 		//------------------------------------------------------
 
 		final.rgb = total.rgb;
-		final.a = max(total.a, diffuse.a);
+		final.a = max(total.a, final.a);
 
 		imageStore(sampler0, ivec3(volume_TexCoord), final);
-
 	}
+}
+
+
+
+void spot_injection(int shadow_id, vec2 tex_coord)
+{
+	//------------------------------------------------------
+	// Light Properties
+	//------------------------------------------------------
+	mat4 viewray = shadow_data_spot[shadow_id].viewray;
+	vec4 position_falloff = shadow_data_spot[shadow_id].position_falloff;
+	vec4 color_intensity = shadow_data_spot[shadow_id].color_intensity;
+	vec3 light_direction = shadow_data_spot[shadow_id].direction.xyz;
+	vec2 spot_angle_blur = shadow_data_spot[shadow_id].spot_angle_blur.xy;
+
+	//------------------------------------------------------
+	// Calc Injection Coords
+	//------------------------------------------------------
+	vec2 depth_packed = texture(sampler2, vec3(tex_coord, shadow_id)).xy;
+	float depth = unpack2(depth_packed);
+
+	vec3 world_position = vec3(0.0);
+	vec3 volume_TexCoord = calcVoxelTexCoord(
+		tex_coord, depth,
+		-position_falloff.xyz, viewray,
+		vx_volume_position, vx_volume_dimensions, vx_volume_scale,
+		world_position);
+
+
+	//------------------------------------------------------
+	// Lighting
+	//------------------------------------------------------
+	// Albedo Diffuse
+	vec4 diffuse = texelFetch(sampler1, ivec3(volume_TexCoord), 0);
+
+	// Light to Object Direction
+	vec3 L = vec3(0.0);
+
+	float attenuation = calcAttenuation(color_intensity.a, position_falloff.a, position_falloff.xyz, world_position, L);
+
+	vec4 voxel_color;
+	voxel_color.rgb = color_intensity.xyz * diffuse.xyz * attenuation;
+	voxel_color.rgb = voxel_color.rgb * calcSpotLightCone(L, light_direction, spot_angle_blur.x, spot_angle_blur.y);
+	voxel_color.a = ceil(diffuse.a);
+
+	// Debugging
+	//imageStore(sampler3, i_TexCoord, vec4(world_position, 1.0));
+
+	//------------------------------------------------------
+	// Inject
+	//------------------------------------------------------
+	combineAndInject(volume_TexCoord, voxel_color);
+
+}
+
+
+
+void point_injection(int shadow_id, vec2 tex_coord, int cubemap_id)
+{
+	//------------------------------------------------------
+	// Light Properties
+	//------------------------------------------------------
+	mat4 viewray = shadow_data_point[shadow_id].viewray[cubemap_id];
+	vec4 position_falloff = shadow_data_point[shadow_id].position_falloff;
+	vec4 color_intensity = shadow_data_point[shadow_id].color_intensity;
+
+
+	//------------------------------------------------------
+	// Calc Injection Coords
+	//------------------------------------------------------
+	vec2 depth_packed = texture(sampler4, vec4(tex_coord * 2.0 - 1.0, 0, shadow_id)).xy;
+	float depth = unpack2(depth_packed);
+
+	vec3 world_position = vec3(0.0);
+	vec3 volume_TexCoord = calcVoxelTexCoord(
+		tex_coord, depth,
+		-position_falloff.xyz, viewray,
+		vx_volume_position, vx_volume_dimensions, vx_volume_scale,
+		world_position);
+
+	//------------------------------------------------------
+	// Lighting
+	//------------------------------------------------------
+	// Albedo Diffuse
+	vec4 diffuse = texelFetch(sampler1, ivec3(volume_TexCoord), 0);
+
+	// Light to Object Direction
+	vec3 L = vec3(0.0);
+
+	float attenuation = calcAttenuation(color_intensity.a, position_falloff.a, position_falloff.xyz, world_position, L);
+
+	vec4 voxel_color;
+	voxel_color.rgb = color_intensity.xyz * diffuse.xyz * attenuation;
+	voxel_color.a = ceil(diffuse.a);
+
+	// Debugging
+	imageStore(sampler3, ivec2(gl_GlobalInvocationID.xy), vec4(depth_packed,depth_packed));
+
+	//------------------------------------------------------
+	// Inject
+	//------------------------------------------------------
+	combineAndInject(volume_TexCoord, voxel_color);
+
 }
 
 
@@ -123,7 +186,8 @@ void main()
 	vec2 t_TexCoord = i_TexCoord / texture_size;
 
 	int light_shadow_id = int(gl_LocalInvocationID.z);
-	int light_type = int(shadow_manifest[gl_LocalInvocationID.z]);
+	float shadow_manifest_id = shadow_manifest[gl_LocalInvocationID.z];
+	int light_type = int(floor(shadow_manifest_id));
 
 	//------------------------------------------------------
 	// Combine light contributions
@@ -131,11 +195,10 @@ void main()
 	switch(light_type)
 	{
 		case 0:
-			spot(light_shadow_id, t_TexCoord);
+			spot_injection(light_shadow_id, t_TexCoord);
 			break;
 		case 1:
-			cache_voxel_color[gl_LocalInvocationIndex] = vec4(-1.0);
-			cache_voxel_coord[gl_LocalInvocationIndex] = vec3(-1.0);
+			//point_injection(light_shadow_id, t_TexCoord, int(fract(shadow_manifest_id) * 10.0));
 			break;
 		case 2:
 			cache_voxel_color[gl_LocalInvocationIndex] = vec4(-1.0);

@@ -4,6 +4,7 @@
 struct ShadowDataPoint {
   mat4 view[6];
   mat4 perspective;
+  mat4 viewray[6];
   vec4 position_falloff;
   vec4 color_intensity;
 };

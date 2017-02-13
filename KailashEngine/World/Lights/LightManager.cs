@@ -45,10 +45,10 @@ namespace KailashEngine.World.Lights
 
         // Manifest of shadowed lights that are shadowed in game
         // 0 - Spot
-        // 1 - Point
+        // 1 - Point (.0 ... .5 - each cubemap)
         // 2 - Directional
-        private List<int> _lights_shadowed_manifest;
-        public List<int> lights_shadowed_manifest
+        private List<float> _lights_shadowed_manifest;
+        public List<float> lights_shadowed_manifest
         {
             get { return _lights_shadowed_manifest; }
         }
@@ -84,7 +84,7 @@ namespace KailashEngine.World.Lights
             _lights = new Dictionary<int, Light>();
             _lights_enabled = new List<Light>();
             _lights_shadowed = new List<Light>();
-            _lights_shadowed_manifest = new List<int>();
+            _lights_shadowed_manifest = new List<float>();
 
             //mat4 view
             //mat4 perspective
@@ -108,6 +108,12 @@ namespace KailashEngine.World.Lights
             //vec4 - vec3 light_position / float falloff
             //vec4 - vec3 light_color / float intensity
             _ubo_shadow_point = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 5, new EngineHelper.size[] {
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
+                EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
                 EngineHelper.size.mat4,
@@ -195,15 +201,19 @@ namespace KailashEngine.World.Lights
 
         private void updateUBO_Shadow_Point(pLight light, int shadow_id)
         {
-            int ubo_index = shadow_id * 9;
+            int ubo_index = shadow_id * 15;
 
             for(int i = 0; i < 6; i++)
             {
                 _ubo_shadow_point.update(ubo_index + i, light.shadow_view_matrices[i]);
             }
             _ubo_shadow_point.update(ubo_index + 6, light.spatial.perspective);
-            _ubo_shadow_point.update(ubo_index + 7, new Vector4(light.spatial.position, light.falloff));
-            _ubo_shadow_point.update(ubo_index + 8, new Vector4(light.color, light.intensity));
+            for (int i = 0; i < 6; i++)
+            {
+                _ubo_shadow_point.update(ubo_index + i + 7, light.viewray_matrices[i]);
+            }
+            _ubo_shadow_point.update(ubo_index + 13, new Vector4(light.spatial.position, light.falloff));
+            _ubo_shadow_point.update(ubo_index + 14, new Vector4(light.color, light.intensity));
 
             light.sid = shadow_id;
         }
@@ -242,12 +252,12 @@ namespace KailashEngine.World.Lights
                         if (num_shadows_point >= _max_shadows_point) break;
                         updateUBO_Shadow_Point((pLight)light, num_shadows_point);
                         num_shadows_point++;
-                        _lights_shadowed_manifest.Add(1);
-                        _lights_shadowed_manifest.Add(1);
-                        _lights_shadowed_manifest.Add(1);
-                        _lights_shadowed_manifest.Add(1);
-                        _lights_shadowed_manifest.Add(1);
-                        _lights_shadowed_manifest.Add(1);
+                        _lights_shadowed_manifest.Add(1.0f);
+                        _lights_shadowed_manifest.Add(1.1f);
+                        _lights_shadowed_manifest.Add(1.2f);
+                        _lights_shadowed_manifest.Add(1.3f);
+                        _lights_shadowed_manifest.Add(1.4f);
+                        _lights_shadowed_manifest.Add(1.5f);
                         break;
                     case Light.type_directional:
                         if (num_shadows_directional >= _max_shadows_directional) break;
