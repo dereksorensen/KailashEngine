@@ -21,7 +21,7 @@ namespace KailashEngine.Render.FX
     {
         // Properties
         private bool _debug_display_voxels = false;
-        private int _debug_display_voxels_mip_level = 0;
+        private int _debug_display_voxels_mip_level = 2;
         private float _vx_volume_dimensions = 128.0f;
         private float _vx_volume_scale = 30.0f;
         private Matrix4 _vx_shift_matrix;
@@ -163,7 +163,6 @@ namespace KailashEngine.Render.FX
             });
             _pMipMap.enable_Samplers(2);
             _pMipMap.addUniform("source_mip_level");
-            _pMipMap.addUniform("direction");
 
         }
 
@@ -175,7 +174,7 @@ namespace KailashEngine.Render.FX
             _tVoxelVolume = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
                 true, true,
-                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte,
+                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume.load();
 
@@ -270,34 +269,31 @@ namespace KailashEngine.Render.FX
 
         private void mipMap()
         {
-            _tVoxelVolume.generateMipMap();
+            //_tVoxelVolume.generateMipMap();
 
 
-            //_pMipMap.bind();
+            _pMipMap.bind();
 
-            //int[] workGroupSize = new int[3];
-            //GL.GetProgram(_pMipMap.pID, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
-            //if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
+            int[] workGroupSize = new int[3];
+            GL.GetProgram(_pMipMap.pID, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
+            if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
 
-            //for (int direction = 0; direction < _tVoxelVolumes.Length; direction++)
-            //{
-            //    for (int mip_level = 1; mip_level < _tVoxelVolume.getMaxMipMap(); mip_level++)
-            //    {
-            //        GL.Uniform1(_pMipMap.getUniform("direction"), direction);
-            //        GL.Uniform1(_pMipMap.getUniform("source_mip_level"), mip_level - 1);
 
-            //        _tVoxelVolumes[direction].bind(_pMipMap.getSamplerUniform(0), 0);
+            for (int mip_level = 1; mip_level < _tVoxelVolume.getMaxMipMap(); mip_level++)
+            {
+                GL.Uniform1(_pMipMap.getUniform("source_mip_level"), mip_level - 1);
 
-            //        _tVoxelVolumes[direction].bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
+                _tVoxelVolume.bind(_pMipMap.getSamplerUniform(0), 0);
 
-            //        GL.DispatchCompute(
-            //            ((_tVoxelVolume.width >> mip_level) + workGroupSize[0] - 1) / workGroupSize[0],
-            //            ((_tVoxelVolume.width >> mip_level) + workGroupSize[1] - 1) / workGroupSize[1],
-            //            ((_tVoxelVolume.width >> mip_level) + workGroupSize[2] - 1) / workGroupSize[2]);
+                _tVoxelVolume.bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
 
-            //        GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-            //    }
-            //}
+                GL.DispatchCompute(
+                    ((_tVoxelVolume.width >> mip_level) + workGroupSize[0] - 1) / workGroupSize[0],
+                    ((_tVoxelVolume.width >> mip_level) + workGroupSize[1] - 1) / workGroupSize[1],
+                    ((_tVoxelVolume.width >> mip_level) + workGroupSize[2] - 1) / workGroupSize[2]);
+
+                GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            }
         }
 
 
