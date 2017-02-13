@@ -45,10 +45,10 @@ namespace KailashEngine.World.Lights
 
         // Manifest of shadowed lights that are shadowed in game
         // 0 - Spot
-        // 1 - Point (.0 ... .5 - each cubemap)
+        // 1 - Point
         // 2 - Directional
-        private List<float> _lights_shadowed_manifest;
-        public List<float> lights_shadowed_manifest
+        private List<Vector4> _lights_shadowed_manifest;
+        public List<Vector4> lights_shadowed_manifest
         {
             get { return _lights_shadowed_manifest; }
         }
@@ -84,7 +84,7 @@ namespace KailashEngine.World.Lights
             _lights = new Dictionary<int, Light>();
             _lights_enabled = new List<Light>();
             _lights_shadowed = new List<Light>();
-            _lights_shadowed_manifest = new List<float>();
+            _lights_shadowed_manifest = new List<Vector4>();
 
             //vec4 info
             _ubo_shadow_manifest = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
@@ -250,37 +250,34 @@ namespace KailashEngine.World.Lights
                     case Light.type_spot:
                         if (num_shadows_spot >= _max_shadows_spot) break;
                         updateUBO_Shadow_Spot((sLight)light, num_shadows_spot);
+                        _lights_shadowed_manifest.Add(new Vector4(0, num_shadows_spot, 0, 0));
                         num_shadows_spot++;
-                        _lights_shadowed_manifest.Add(0);
                         break;
                     case Light.type_point:
                         if (num_shadows_point >= _max_shadows_point) break;
                         updateUBO_Shadow_Point((pLight)light, num_shadows_point);
+                        _lights_shadowed_manifest.Add(new Vector4(1, num_shadows_point, 0, 0));
+                        _lights_shadowed_manifest.Add(new Vector4(1, num_shadows_point, 1, 0));
+                        _lights_shadowed_manifest.Add(new Vector4(1, num_shadows_point, 2, 0));
+                        _lights_shadowed_manifest.Add(new Vector4(1, num_shadows_point, 3, 0));
+                        _lights_shadowed_manifest.Add(new Vector4(1, num_shadows_point, 4, 0));
+                        _lights_shadowed_manifest.Add(new Vector4(1, num_shadows_point, 5, 0));
                         num_shadows_point++;
-                        _lights_shadowed_manifest.Add(1.0f);
-                        _lights_shadowed_manifest.Add(1.1f);
-                        _lights_shadowed_manifest.Add(1.2f);
-                        _lights_shadowed_manifest.Add(1.3f);
-                        _lights_shadowed_manifest.Add(1.4f);
-                        _lights_shadowed_manifest.Add(1.5f);
                         break;
                     case Light.type_directional:
                         if (num_shadows_directional >= _max_shadows_directional) break;
                         updateUBO_Shadow_Directional((dLight)light, num_shadows_directional);
+                        _lights_shadowed_manifest.Add(new Vector4(2, num_shadows_directional, 0, 0));
                         num_shadows_directional++;
-                        _lights_shadowed_manifest.Add(2);
                         break;
                 }
             }
 
             int shadow_manifest_length = _lights_shadowed_manifest.Count;
-            Console.WriteLine("======================================");
             for (int i = 0; i < shadow_manifest_length; i ++)
             {
-                Console.WriteLine(_lights_shadowed_manifest[i]);
-                _ubo_shadow_manifest.update(i, new Vector4(_lights_shadowed_manifest[i], 0.0f, 0.0f, 0.0f));
+                _ubo_shadow_manifest.update(i, _lights_shadowed_manifest[i]);
             }
-            Console.WriteLine("======================================");
         }
 
         public void update(Vector3 camera_position)
