@@ -3,17 +3,16 @@ layout (local_size_x = 4, local_size_y = 4, local_size_z = 17) in;
 
 
 layout(rgba8) uniform image3D sampler0;		// Voxel Volume
-uniform sampler3D sampler1;		// Voxel Volume - Diffuse
+uniform sampler3D sampler1;					// Voxel Volume - Diffuse
 
 
 writeonly uniform image2D sampler3;		// Test Texture
 
-uniform sampler2DArray sampler2;		// Shadow Depth
-uniform samplerCubeArray sampler4;		// Shadow Depth
+uniform sampler2DArray sampler2;		// Shadow Depth - Spot
+uniform samplerCubeArray sampler4;		// Shadow Depth - Point
 
 
 uniform vec2 texture_size;
-uniform float[64] shadow_manifest;
 
 uniform float vx_volume_dimensions;
 uniform float vx_volume_scale;
@@ -139,7 +138,9 @@ void point_injection(int shadow_id, vec2 tex_coord, int cubemap_id)
 	//------------------------------------------------------
 	// Calc Injection Coords
 	//------------------------------------------------------
-	vec2 depth_packed = texture(sampler4, vec4(tex_coord * 2.0 - 1.0, 0, shadow_id)).xy;
+	vec3 tct = vec3(tex_coord, 0) * 2.0 - 1.0;
+	vec3 tc_cube = (viewray * vec4(tct, 1.0)).xyz;
+	vec2 depth_packed = texture(sampler4, vec4(tc_cube, shadow_id)).xy;
 	float depth = unpack2(depth_packed);
 
 	vec3 world_position = vec3(0.0);
@@ -165,7 +166,8 @@ void point_injection(int shadow_id, vec2 tex_coord, int cubemap_id)
 	voxel_color.a = ceil(diffuse.a);
 
 	// Debugging
-	imageStore(sampler3, ivec2(gl_GlobalInvocationID.xy), vec4(depth_packed,depth_packed));
+	//imageStore(sampler3, ivec2(gl_GlobalInvocationID.xy), vec4(world_position, 1.0));
+	//imageStore(sampler3, ivec2(gl_GlobalInvocationID.xy), vec4(depth_packed, 0.0, 1.0));
 
 	//------------------------------------------------------
 	// Inject
@@ -186,7 +188,7 @@ void main()
 	vec2 t_TexCoord = i_TexCoord / texture_size;
 
 	int light_shadow_id = int(gl_LocalInvocationID.z);
-	float shadow_manifest_id = shadow_manifest[gl_LocalInvocationID.z];
+	float shadow_manifest_id = shadow_manifest[gl_LocalInvocationID.z].info.x;
 	int light_type = int(floor(shadow_manifest_id));
 
 	//------------------------------------------------------
@@ -198,7 +200,7 @@ void main()
 			spot_injection(light_shadow_id, t_TexCoord);
 			break;
 		case 1:
-			//point_injection(light_shadow_id, t_TexCoord, int(fract(shadow_manifest_id) * 10.0));
+			point_injection(light_shadow_id, t_TexCoord, int(fract(shadow_manifest_id) * 10.0));
 			break;
 		case 2:
 			cache_voxel_color[gl_LocalInvocationIndex] = vec4(-1.0);

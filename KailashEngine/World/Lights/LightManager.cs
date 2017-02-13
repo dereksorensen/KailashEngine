@@ -19,7 +19,7 @@ namespace KailashEngine.World.Lights
         private int _light_count;
 
 
-        //private UniformBuffer _ubo_shadow_manifest;
+        private UniformBuffer _ubo_shadow_manifest;
         private UniformBuffer _ubo_shadow_spot;
         private UniformBuffer _ubo_shadow_point;
         private UniformBuffer _ubo_shadow_directional;
@@ -85,6 +85,11 @@ namespace KailashEngine.World.Lights
             _lights_enabled = new List<Light>();
             _lights_shadowed = new List<Light>();
             _lights_shadowed_manifest = new List<float>();
+
+            //vec4 info
+            _ubo_shadow_manifest = new UniformBuffer(OpenTK.Graphics.OpenGL.BufferStorageFlags.DynamicStorageBit, 3, new EngineHelper.size[] {
+                EngineHelper.size.vec4
+            }, 32);
 
             //mat4 view
             //mat4 perspective
@@ -267,6 +272,15 @@ namespace KailashEngine.World.Lights
                         break;
                 }
             }
+
+            int shadow_manifest_length = _lights_shadowed_manifest.Count;
+            Console.WriteLine("======================================");
+            for (int i = 0; i < shadow_manifest_length; i ++)
+            {
+                Console.WriteLine(_lights_shadowed_manifest[i]);
+                _ubo_shadow_manifest.update(i, new Vector4(_lights_shadowed_manifest[i], 0.0f, 0.0f, 0.0f));
+            }
+            Console.WriteLine("======================================");
         }
 
         public void update(Vector3 camera_position)

@@ -567,6 +567,7 @@
     <None Include="Render\Shader\glsl\common\render_Texture2D.frag" />
     <None Include="Render\Shader\glsl\common\render_Texture2D.vert" />
     <None Include="Render\Shader\glsl\common\render_TextureCube.frag" />
+    <None Include="Render\Shader\glsl\common\ubo\3_shadowManifest.ubo" />
     <None Include="Render\Shader\glsl\common\ubo\shadowMatrices_Point.ubo" />
     <None Include="Render\Shader\glsl\common\ubo\shadowMatrices_Directional.ubo" />
     <None Include="Render\Shader\glsl\common\ubo\shadowMatrices_Spot.ubo" />

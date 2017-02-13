@@ -20,7 +20,7 @@ namespace KailashEngine.Render.FX
     class fx_VXGI : RenderEffect
     {
         // Properties
-        private bool _debug_display_voxels = false;
+        private bool _debug_display_voxels = true;
         private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 128.0f;
         private float _vx_volume_scale = 30.0f;
@@ -92,6 +92,7 @@ namespace KailashEngine.Render.FX
 
             string[] injection_ubos = new string[]
             {
+                EngineHelper.path_glsl_common_ubo_shadowManifest,
                 EngineHelper.path_glsl_common_ubo_shadowMatrices_Spot,
                 EngineHelper.path_glsl_common_ubo_shadowMatrices_Point,
                 EngineHelper.path_glsl_common_ubo_shadowMatrices_Directional,
@@ -144,7 +145,6 @@ namespace KailashEngine.Render.FX
             });
             _pInjection.enable_Samplers(6);
             _pInjection.addUniform("texture_size");
-            _pInjection.addUniform("shadow_manifest");
             _pInjection.addUniform("vx_volume_dimensions");
             _pInjection.addUniform("vx_volume_scale");
             _pInjection.addUniform("vx_volume_position");
@@ -371,8 +371,9 @@ namespace KailashEngine.Render.FX
 
                 _pInjection.bind();
 
+                Console.WriteLine(scene.light_manager.lights_shadowed_manifest.ToArray().Length);
+
                 GL.Uniform2(_pInjection.getUniform("texture_size"), new Vector2(texture_size));
-                GL.Uniform1(_pInjection.getUniform("shadow_manifest"), 64, scene.light_manager.lights_shadowed_manifest.ToArray());
 
                 GL.Uniform1(_pInjection.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
                 GL.Uniform1(_pInjection.getUniform("vx_volume_scale"), _vx_volume_scale);
@@ -382,9 +383,14 @@ namespace KailashEngine.Render.FX
 
                 _tVoxelVolume.bindImageUnit(_pInjection.getSamplerUniform(0), 0, TextureAccess.ReadWrite);
                 _tVoxelVolume_Diffuse.bind(_pInjection.getSamplerUniform(1), 1);
-                shadow.tSpot.bind(_pInjection.getSamplerUniform(2), 2);
+
+
                 _tTemp.bindImageUnit(_pInjection.getSamplerUniform(3), 3, TextureAccess.WriteOnly);
+
+
+                shadow.tSpot.bind(_pInjection.getSamplerUniform(2), 2);
                 shadow.tPoint.bind(_pInjection.getSamplerUniform(4), 4);
+                
 
                 GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
 

@@ -1,0 +1,10 @@
+﻿//------------------------------------------------------
+// Shadow Manifest
+//------------------------------------------------------
+struct ShadowManifestData {
+  vec4 info;
+};
+layout(std140, binding = 3) uniform shadowManifest
+{
+	ShadowManifestData shadow_manifest[32];
+};

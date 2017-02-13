@@ -63,6 +63,7 @@ namespace KailashEngine
         public static string path_glsl_common_ubo_gameConfig { get { return path_glsl_common_ubo + "0_gameConfig.ubo"; } }
         public static string path_glsl_common_ubo_cameraSpatials { get { return path_glsl_common_ubo + "1_cameraSpatials.ubo"; } }
         public static string path_glsl_common_ubo_bindlessTextures_Materials { get { return path_glsl_common_ubo + "2_bindlessTextures_Materials.ubo"; } }
+        public static string path_glsl_common_ubo_shadowManifest { get { return path_glsl_common_ubo + "3_shadowManifest.ubo"; } }
         public static string path_glsl_common_ubo_shadowMatrices_Spot { get { return path_glsl_common_ubo + "shadowMatrices_Spot.ubo"; } }
         public static string path_glsl_common_ubo_shadowMatrices_Point { get { return path_glsl_common_ubo + "shadowMatrices_Point.ubo"; } }
         public static string path_glsl_common_ubo_shadowMatrices_Directional { get { return path_glsl_common_ubo + "shadowMatrices_Directional.ubo"; } }
