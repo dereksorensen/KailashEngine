@@ -13,11 +13,11 @@ namespace KailashEngine.Render
     class Program
     {
 
-        private int _pID;
-        public int pID
+        private int _pid;
+        public int pid
         {
-            get { return _pID; }
-            set { _pID = value; }
+            get { return _pid; }
+            set { _pid = value; }
         }
 
         private int _glsl_version;
@@ -115,14 +115,14 @@ namespace KailashEngine.Render
 
         public void bind()
         {
-            GL.UseProgram(_pID);
+            GL.UseProgram(_pid);
         }
 
 
         // Add uniform to the uniforms dictionary
         public void addUniform(string uniform_name)
         {
-            int temp = GL.GetUniformLocation(_pID, uniform_name);
+            int temp = GL.GetUniformLocation(_pid, uniform_name);
             _uniforms.Add(uniform_name, temp);
         }
 
@@ -155,7 +155,7 @@ namespace KailashEngine.Render
         // Loads the shader pipepine into a program
         private void createProgram(ShaderFile[] shaders)
         {
-            _pID = GL.CreateProgram();
+            _pid = GL.CreateProgram();
 
             foreach (ShaderFile sf in shaders)
             {
@@ -164,16 +164,16 @@ namespace KailashEngine.Render
                 {
                     throw new OpenTK.GraphicsException("Shader in pipeline failed to compile :<");
                 }
-                GL.AttachShader(_pID, shader_id);
+                GL.AttachShader(_pid, shader_id);
             }
 
-            GL.LinkProgram(_pID);
+            GL.LinkProgram(_pid);
 
 
             int max_error_length = 2048;
             StringBuilder error_text = new StringBuilder("", max_error_length);
             int error_length;
-            GL.GetProgramInfoLog(_pID, max_error_length, out error_length, error_text);
+            GL.GetProgramInfoLog(_pid, max_error_length, out error_length, error_text);
 
 
             string log_name = " Program Linking";

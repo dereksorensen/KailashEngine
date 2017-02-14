@@ -2,7 +2,7 @@
 layout (local_size_x = 4, local_size_y = 4, local_size_z = 17) in;
 
 
-layout(rgba8) uniform image3D sampler0;		// Voxel Volume
+layout(rgba16f) uniform image3D sampler0;		// Voxel Volume
 uniform sampler3D sampler1;					// Voxel Volume - Diffuse Albedo
 
 uniform sampler2DArray sampler2;		// Shadow Depth - Spot
@@ -19,16 +19,12 @@ uniform float vx_volume_scale;
 uniform vec3 vx_volume_position;
 
 
-shared vec4 cache_voxel_color[gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z];
-shared vec3 cache_voxel_coord[gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z];
-
-
 void combineAndInject(vec3 volume_TexCoord, vec4 voxel_color)
 {
 	if(dot(voxel_color.rgb, voxel_color.rgb) > 0)
 	{
 		//------------------------------------------------------
-		// Store in color cache
+		// Combine and store in volume
 		//------------------------------------------------------
 		
 		vec4 current_color = imageLoad(sampler0, ivec3(volume_TexCoord));
@@ -37,36 +33,7 @@ void combineAndInject(vec3 volume_TexCoord, vec4 voxel_color)
 		final.rgb = current_color.rgb + voxel_color.rgb;
 		final.a = max(current_color.a, voxel_color.a);
 
-		cache_voxel_color[gl_LocalInvocationIndex] = final;
-		cache_voxel_coord[gl_LocalInvocationIndex] = volume_TexCoord;
-		barrier();
-		memoryBarrierShared();
-
-		//------------------------------------------------------
-		// Loop through each z invocation to add up each light's contribution (only if volume coords are the same)
-		//------------------------------------------------------
-
-		vec4 total = vec4(0.0);
-		uint current_id_xy = gl_LocalInvocationID.y * gl_WorkGroupSize.x + gl_LocalInvocationID.x;
-		for(uint i = 0; i < gl_WorkGroupSize.z; i++)
-		{
-			// LocalInvocationIndex for each z invocation
-			uint id = i * gl_WorkGroupSize.x * gl_WorkGroupSize.y + current_id_xy;
-
-			// Weight instead of branch (need volume_TexCoord == cache_voxel_coord[id])
-			int weight = int(clamp(1 - ceil(dot(abs(volume_TexCoord - cache_voxel_coord[id]) / vec3(vx_volume_dimensions), vec3(1))), 0, 1));
-			
-			total += cache_voxel_color[id] * weight;
-		}
-
-		//------------------------------------------------------
-		// Store in volume
-		//------------------------------------------------------
-
-		final.rgb = total.rgb;
-		final.a = max(total.a, final.a);
-
-		imageStore(sampler0, ivec3(volume_TexCoord), final);
+		imageStore(sampler0, ivec3(volume_TexCoord), final);		
 	}
 }
 
@@ -95,7 +62,6 @@ void spot_injection(int shadow_id, vec2 tex_coord)
 		-position_falloff.xyz, viewray,
 		vx_volume_position, vx_volume_dimensions, vx_volume_scale,
 		world_position);
-
 
 	//------------------------------------------------------
 	// Lighting
@@ -203,8 +169,6 @@ void main()
 			point_injection(shadow_id, t_TexCoord, shadow_layer_id);
 			break;
 		case 2:
-			cache_voxel_color[gl_LocalInvocationIndex] = vec4(-1.0);
-			cache_voxel_coord[gl_LocalInvocationIndex] = vec3(-1.0);
 			break;
 	}
 

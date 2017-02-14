@@ -14,8 +14,6 @@ uniform sampler3D sampler0;		// Voxel Volume
 uniform float vx_volume_dimensions;
 uniform mat4 vx_inv_view_perspective;
 
-
-
 uniform int displayMipLevel;
 
 

@@ -1,5 +1,4 @@
 ﻿
-#define MAX_ITERATIONS	500
 
 out vec4 FragColor;
 

@@ -22,7 +22,7 @@ namespace KailashEngine.Render.FX
         // Properties
         private bool _debug_display_voxels = false;
         private int _debug_display_voxels_mip_level = 2;
-        private float _vx_volume_dimensions = 128.0f;
+        private float _vx_volume_dimensions = 256.0f;
         private float _vx_volume_scale = 30.0f;
         private Matrix4 _vx_shift_matrix;
 
@@ -31,7 +31,6 @@ namespace KailashEngine.Render.FX
         private Program _pRayTrace;
         private Program _pConeTrace;
         private Program _pInjection;
-        private Program _pResetAlpha;
         private Program _pMipMap;
 
         // Frame Buffers
@@ -149,12 +148,6 @@ namespace KailashEngine.Render.FX
             _pInjection.addUniform("vx_volume_scale");
             _pInjection.addUniform("vx_volume_position");
 
-            // Reset Alpha
-            _pResetAlpha = _pLoader.createProgram_PostProcessing(new ShaderFile[]
-            {
-                new ShaderFile(ShaderType.FragmentShader, _path_glsl_effect + "vxgi_ResetAlpha.frag", null)
-            });
-            _pResetAlpha.enable_Samplers(2);
 
             // MipMap
             _pMipMap = _pLoader.createProgram(new ShaderFile[]
@@ -174,14 +167,14 @@ namespace KailashEngine.Render.FX
             _tVoxelVolume = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
                 true, true,
-                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume.load();
 
             _tVoxelVolume_Diffuse = new Texture(TextureTarget.Texture3D,
                 (int)_vx_volume_dimensions, (int)_vx_volume_dimensions, (int)_vx_volume_dimensions,
                 false, false,
-                PixelInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.Float,
+                PixelInternalFormat.Rgba16f, PixelFormat.Rgba, PixelType.Float,
                 TextureMinFilter.Linear, TextureMagFilter.Linear, TextureWrapMode.Clamp);
             _tVoxelVolume_Diffuse.load();
 
@@ -252,21 +245,6 @@ namespace KailashEngine.Render.FX
         }
 
 
-        private void resetVoxelAlpha(fx_Quad quad)
-        {
-            GL.Viewport(0, 0, _tVoxelVolume.width, _tVoxelVolume.height);
-
-            _pResetAlpha.bind();
-
-            _tVoxelVolume_Diffuse.bind(_pResetAlpha.getSamplerUniform(0), 0);
-            _tVoxelVolume.bindImageUnit(_pResetAlpha.getSamplerUniform(1), 1, TextureAccess.ReadWrite);
-
-            quad.render3D((int)_vx_volume_dimensions);
-
-            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-        }
-
-
         private void mipMap()
         {
             //_tVoxelVolume.generateMipMap();
@@ -275,7 +253,7 @@ namespace KailashEngine.Render.FX
             _pMipMap.bind();
 
             int[] workGroupSize = new int[3];
-            GL.GetProgram(_pMipMap.pID, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
+            GL.GetProgram(_pMipMap.pid, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
             if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
 
 
@@ -284,7 +262,6 @@ namespace KailashEngine.Render.FX
                 GL.Uniform1(_pMipMap.getUniform("source_mip_level"), mip_level - 1);
 
                 _tVoxelVolume.bind(_pMipMap.getSamplerUniform(0), 0);
-
                 _tVoxelVolume.bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
 
                 GL.DispatchCompute(
@@ -359,14 +336,14 @@ namespace KailashEngine.Render.FX
             {
 
                 int workgroup_size = 4;
-                int texture_size = (int)_vx_volume_dimensions * 4;
+                int texture_size = (int)_vx_volume_dimensions * 8;
 
                 _tTemp.clear();
 
                 _pInjection.bind();
 
 
-                GL.Uniform2(_pInjection.getUniform("texture_size"), new Vector2(texture_size));
+                GL.Uniform2(_pInjection.getUniform("texture_size"), shadow.tSpot.dimensions.Xy);
 
                 GL.Uniform1(_pInjection.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
                 GL.Uniform1(_pInjection.getUniform("vx_volume_scale"), _vx_volume_scale);
@@ -382,7 +359,7 @@ namespace KailashEngine.Render.FX
                 _tTemp.bindImageUnit(_pInjection.getSamplerUniform(5), 5, TextureAccess.WriteOnly);
 
 
-                GL.DispatchCompute((texture_size / workgroup_size), (texture_size / workgroup_size), 1);
+                GL.DispatchCompute(((int)shadow.tSpot.dimensions.X / workgroup_size), ((int)shadow.tSpot.dimensions.Y / workgroup_size), 1);
 
                 GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
