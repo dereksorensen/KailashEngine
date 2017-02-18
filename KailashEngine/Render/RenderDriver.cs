@@ -333,13 +333,6 @@ namespace KailashEngine.Render
             takeScreenshot();
 
 
-            //Debug.DebugHelper.time_function("Blur Test", 3, () =>
-            //{
-            //    _fxSpecial.blur_GaussCompute(200, _fxDepthOfField.tDOF_Scene);
-            //    //_fxSpecial.blur_Gauss(_fxQuad, 75, _fxDepthOfField.tDOF_Scene, _fxDepthOfField._fHalfResolution, DrawBuffersEnum.ColorAttachment4);
-            //    //_fxSpecial.blur_MovingAverage(19, _fxDepthOfField.tDOF_Scene);
-            //});
-
             //------------------------------------------------------
             // Debug Views
             //------------------------------------------------------
@@ -353,12 +346,12 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxMotionBlur.tFinal, 1f, 0);
 
 
-                _fxQuad.render_Texture(_fxVXGI.tConeTrace_Diffuse, 0.5f, 1);
+                //_fxQuad.render_Texture(_fxVXGI.tConeTrace_Diffuse, 0.5f, 1);
                 //_fxQuad.render_Texture(_fxVXGI._tVoxelVolume, 0.33f, 1, 150);
                 //_fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 2);
                 //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_2, 0.25f, 3);
                 //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_1, 0.25f, 2);
-                _fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2);
+                //_fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2);
                 //_fxQuad.render_Texture(_fxVXGI._tTemp, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 
