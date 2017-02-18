@@ -61,9 +61,10 @@ namespace KailashEngine.World.Lights
                     0.0f,
                     -scaler.Z
                 );
-            
+
             // Build full transformation
-            transformation = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter) * transformation.ClearScale();
+            _bounds_matrix = Matrix4.CreateScale(scaler) * Matrix4.CreateTranslation(shifter);
+            transformation = _bounds_matrix * transformation.ClearScale();
             _bounding_unique_mesh = new UniqueMesh(id + "-bounds", light_mesh, transformation);
 
             _spatial.setPerspective(MathHelper.RadiansToDegrees(_spot_angle * 2), 1.0f, 0.1f, 100.0f);

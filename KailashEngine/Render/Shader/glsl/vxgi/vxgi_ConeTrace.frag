@@ -116,7 +116,8 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 	sum += diffuseCone(5, 70, rayOrigin, normal);
 	sum += diffuseCone(3, 30, rayOrigin, normal);
 	
-	sum /= 3.0;
+	sum.a /= 3.0;
+	sum.rgb /= 2.0;
 
 	return sum;	
 }

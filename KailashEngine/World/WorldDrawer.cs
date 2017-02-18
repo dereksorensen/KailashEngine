@@ -172,7 +172,7 @@ namespace KailashEngine.World
         //------------------------------------------------------
         // Light Drawing
         //------------------------------------------------------
-        public static void drawLights(BeginMode begin_mode, List<Light> lights, Program program, Matrix4 transformation, bool display_light_bounds)
+        public static void drawLights(BeginMode begin_mode, List<Light> lights, Program program, Matrix4 transformation, float animation_time, bool display_light_bounds)
         {
             // Disable skinning
             GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 0);
@@ -234,14 +234,9 @@ namespace KailashEngine.World
                     GL.Disable(EnableCap.CullFace);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
-
                     // Load Mesh's pre-transformation Matrix
                     temp_mat = light.bounding_unique_mesh.transformation;
                     GL.UniformMatrix4(program.getUniform(RenderHelper.uModel), false, ref temp_mat);
-                    // Convert matrix for normals
-                    temp_mat = Matrix4.Invert(temp_mat);
-                    temp_mat = Matrix4.Transpose(temp_mat);
-                    GL.UniformMatrix4(program.getUniform(RenderHelper.uModel_Normal), false, ref temp_mat);
 
                     draw(light.bounding_unique_mesh.mesh.submeshes.ElementAt(0), begin_mode, "light bounds");
 

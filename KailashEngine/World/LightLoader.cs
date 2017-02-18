@@ -9,14 +9,26 @@ using OpenTK;
 
 using KailashEngine.World.Lights;
 using KailashEngine.World.Model;
+using KailashEngine.Animation;
 
 namespace KailashEngine.World
 {
     static class LightLoader
     {
+        public struct LightLoaderExtras
+        {
+            public Matrix4 transformation;
+            public ObjectAnimator animator;
+
+            public LightLoaderExtras(Matrix4 transformation, ObjectAnimator animator)
+            {
+                this.transformation = transformation;
+                this.animator = animator;
+            }
+        }
 
 
-        public static List<Light> load(string filename, Dictionary<string, Matrix4> light_matrix_collection, Mesh sLight_mesh, Mesh pLight_mesh)
+        public static List<Light> load(string filename, Dictionary<string, LightLoaderExtras> light_extras, Mesh sLight_mesh, Mesh pLight_mesh)
         {
             if (!File.Exists(filename))
             {
@@ -115,8 +127,9 @@ namespace KailashEngine.World
                 bool shadow = shadows[i];
 
                 Light temp_light;
-                Matrix4 temp_matrix = Matrix4.Identity;
-                light_matrix_collection.TryGetValue(id + "-light", out temp_matrix);
+                LightLoaderExtras temp_light_extras;
+                light_extras.TryGetValue(id + "-light", out temp_light_extras);
+
 
                 switch (type)
                 {
@@ -126,7 +139,9 @@ namespace KailashEngine.World
                             id,
                             color, intensity, falloff, spot_angle, spot_blur,
                             shadow,
-                            sLight_mesh, temp_matrix);
+                            sLight_mesh, temp_light_extras.transformation);
+
+                        if (temp_light_extras.animator != null) temp_light.animator = temp_light_extras.animator;
 
                         // Add Spot Light to List
                         light_list.Add(temp_light);
@@ -136,8 +151,9 @@ namespace KailashEngine.World
                             id,
                             color, intensity, falloff,
                             shadow,
-                            pLight_mesh, temp_matrix);
+                            pLight_mesh, temp_light_extras.transformation);
 
+                        if (temp_light_extras.animator != null) temp_light.animator = temp_light_extras.animator;
 
                         // Add Point Light to List
                         light_list.Add(temp_light);

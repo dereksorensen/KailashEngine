@@ -79,7 +79,8 @@ namespace KailashEngine.World.Lights
                 );
 
             // Build full transformation
-            transformation = Matrix4.CreateScale(scaler) * transformation.ClearScale();
+            _bounds_matrix = Matrix4.CreateScale(scaler);
+            transformation = _bounds_matrix * transformation.ClearScale();
             _bounding_unique_mesh = new UniqueMesh(id + "-bounds", light_mesh, transformation);
 
             // Shadow Matrices

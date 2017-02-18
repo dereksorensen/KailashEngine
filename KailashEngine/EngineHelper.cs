@@ -37,6 +37,7 @@ namespace KailashEngine
         public static string path_resources_scene { get { return Path.GetFullPath(path_resources_base + "Scene/"); } }
         public static string path_resources_textures { get { return Path.GetFullPath(path_resources_base + "Textures/"); } }
         public static string path_resources_textures_static { get { return Path.GetFullPath(path_resources_textures + "_static/"); } }
+        public static string path_resources_screenshots { get { return Path.GetFullPath(path_resources_base + "Screenshots/"); } }
 
         // Shader Paths
         public static string path_glsl_base { get { return Path.GetFullPath(getPath_ProjectBase() + "Render/Shader/glsl/"); } }

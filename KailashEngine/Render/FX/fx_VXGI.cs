@@ -21,7 +21,7 @@ namespace KailashEngine.Render.FX
     {
         // Properties
         private bool _debug_display_voxels = false;
-        private int _debug_display_voxels_mip_level = 2;
+        private int _debug_display_voxels_mip_level = 0;
         private float _vx_volume_dimensions = 256.0f;
         private float _vx_volume_scale = 30.0f;
         private Matrix4 _vx_shift_matrix;
@@ -249,13 +249,7 @@ namespace KailashEngine.Render.FX
         {
             //_tVoxelVolume.generateMipMap();
 
-
             _pMipMap.bind();
-
-            int[] workGroupSize = new int[3];
-            GL.GetProgram(_pMipMap.pid, (GetProgramParameterName)All.ComputeWorkGroupSize, workGroupSize);
-            if (workGroupSize[0] * workGroupSize[1] * workGroupSize[2] == 0) return;
-
 
             for (int mip_level = 1; mip_level < _tVoxelVolume.getMaxMipMap(); mip_level++)
             {
@@ -265,9 +259,9 @@ namespace KailashEngine.Render.FX
                 _tVoxelVolume.bindImageUnit(_pMipMap.getSamplerUniform(1), 1, TextureAccess.WriteOnly, mip_level);
 
                 GL.DispatchCompute(
-                    ((_tVoxelVolume.width >> mip_level) + workGroupSize[0] - 1) / workGroupSize[0],
-                    ((_tVoxelVolume.width >> mip_level) + workGroupSize[1] - 1) / workGroupSize[1],
-                    ((_tVoxelVolume.width >> mip_level) + workGroupSize[2] - 1) / workGroupSize[2]);
+                    ((_tVoxelVolume.width >> mip_level) + _pMipMap.compute_workgroup_size[0] - 1) / _pMipMap.compute_workgroup_size[0],
+                    ((_tVoxelVolume.width >> mip_level) + _pMipMap.compute_workgroup_size[1] - 1) / _pMipMap.compute_workgroup_size[1],
+                    ((_tVoxelVolume.width >> mip_level) + _pMipMap.compute_workgroup_size[2] - 1) / _pMipMap.compute_workgroup_size[2]);
 
                 GL.MemoryBarrier(MemoryBarrierFlags.TextureFetchBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
             }
@@ -281,6 +275,7 @@ namespace KailashEngine.Render.FX
 
         public void voxelizeScene(Scene scene, Vector3 camera_position)
         {
+            if (!_enabled) return;
 
             clearVoxelVolumes();
 
@@ -332,6 +327,8 @@ namespace KailashEngine.Render.FX
 
         public void lightInjection(Scene scene, fx_Shadow shadow, SpatialData camera_spatial)
         {
+            if (!_enabled) return;
+
             Debug.DebugHelper.time_function("injection", 3, () =>
             {
 
@@ -371,6 +368,11 @@ namespace KailashEngine.Render.FX
 
         public void coneTracing(fx_Quad quad, Texture diffuse_texture, Texture normal_texture, Texture specular_texture, SpatialData camera_spatial)
         {
+            if (!_enabled)
+            {
+                _tConeTrace_Diffuse.clear();
+                return;
+            }
 
             Debug.DebugHelper.time_function("Mip Mapping", 1, () =>
             {
@@ -409,38 +411,35 @@ namespace KailashEngine.Render.FX
 
         public void rayTracing(fx_Quad quad, SpatialData camera_spatial)
         {
-            if (_debug_display_voxels)
-            {
+            if (!(_debug_display_voxels && _enabled)) return;
 
-                mipMap();
+            mipMap();
 
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
-                GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-                GL.Viewport(0, 0, _resolution.W, _resolution.H);
-
-
-                _pRayTrace.bind();
-
-                GL.Uniform1(_pRayTrace.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
-
-                Vector3 vx_position_snapped = -voxelSnap(camera_spatial.position);
-                Matrix4 voxel_volume_position = Matrix4.CreateTranslation(vx_position_snapped);
-
-                Matrix4 invMVP = Matrix4.Invert(_vx_shift_matrix * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
-                GL.UniformMatrix4(_pRayTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
-
-                GL.Uniform1(_pRayTrace.getUniform("displayMipLevel"), _debug_display_voxels_mip_level);
+            GL.Viewport(0, 0, _resolution.W, _resolution.H);
 
 
-                _tVoxelVolume.bind(_pRayTrace.getSamplerUniform(0), 0);
+            _pRayTrace.bind();
+
+            GL.Uniform1(_pRayTrace.getUniform("vx_volume_dimensions"), _vx_volume_dimensions);
+
+            Vector3 vx_position_snapped = -voxelSnap(camera_spatial.position);
+            Matrix4 voxel_volume_position = Matrix4.CreateTranslation(vx_position_snapped);
+
+            Matrix4 invMVP = Matrix4.Invert(_vx_shift_matrix * voxel_volume_position * camera_spatial.model_view * camera_spatial.perspective);
+            GL.UniformMatrix4(_pRayTrace.getUniform("vx_inv_view_perspective"), false, ref invMVP);
+
+            GL.Uniform1(_pRayTrace.getUniform("displayMipLevel"), _debug_display_voxels_mip_level);
 
 
-                quad.renderFullQuad();
+            _tVoxelVolume.bind(_pRayTrace.getSamplerUniform(0), 0);
 
-            }
+
+            quad.renderFullQuad();
+
         }
-
 
     }
 }

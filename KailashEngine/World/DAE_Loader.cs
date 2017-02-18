@@ -21,7 +21,7 @@ namespace KailashEngine.World
         
 
 
-        public static void load(string filename, MaterialManager material_manager, out Dictionary<string, UniqueMesh> unique_mesh_collection, out Dictionary<string, Matrix4> light_matrix_collection)
+        public static void load(string filename, MaterialManager material_manager, out Dictionary<string, UniqueMesh> unique_mesh_collection, out Dictionary<string, LightLoader.LightLoaderExtras> light_extras)
         {
             if(!File.Exists(filename))
             {
@@ -207,7 +207,6 @@ namespace KailashEngine.World
                             }
 
                             object_animator_collection.Add(id, temp_animator);
-
                         }
 
 
@@ -278,7 +277,6 @@ namespace KailashEngine.World
             }
 
 
-
             //------------------------------------------------------
             // Create Visual Scene + Skeleton Dictionary
             //------------------------------------------------------
@@ -287,7 +285,7 @@ namespace KailashEngine.World
             List<Grendgine_Collada_Node> controlled_visual_collection = new List<Grendgine_Collada_Node>();
             List<Grendgine_Collada_Node> light_visual_collection = new List<Grendgine_Collada_Node>();
             Dictionary<string, DAE_Skeleton> skeleton_dictionary = new Dictionary<string, DAE_Skeleton>();
-            light_matrix_collection = new Dictionary<string, Matrix4>();
+            light_extras = new Dictionary<string, LightLoader.LightLoaderExtras>();
             foreach (Grendgine_Collada_Node node in dae_file.Library_Visual_Scene.Visual_Scene[0].Node)
             {
                 string id = node.ID;
@@ -317,8 +315,11 @@ namespace KailashEngine.World
                 if (node.Instance_Light != null)
                 {
                     string light_id = node.Instance_Light[0].URL.Replace("#", "");
+                    ObjectAnimator temp_animator = null;
+                    object_animator_collection.TryGetValue(light_id.Replace("-light", ""), out temp_animator);
+                    LightLoader.LightLoaderExtras temp_light_extras = new LightLoader.LightLoaderExtras(temp_corrected_matrix, temp_animator);
                     // Add to light matrix collection
-                    light_matrix_collection.Add(light_id, temp_corrected_matrix);
+                    light_extras.Add(light_id, temp_light_extras);
                     continue;
                 }
 

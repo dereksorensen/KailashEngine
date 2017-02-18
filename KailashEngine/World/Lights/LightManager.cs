@@ -282,8 +282,24 @@ namespace KailashEngine.World.Lights
             }
         }
 
-        public void update(Vector3 camera_position)
+        private void animateLights(float animation_time)
         {
+            foreach(Light light in _lights_enabled)
+            {
+                if (light.animated)
+                {
+                    light.unique_mesh.transformation = light.animator.getKeyFrame(animation_time, -1);
+                    light.spatial.transformation = light.unique_mesh.transformation;
+
+                    Matrix4 transformation = light.bounds_matrix * light.unique_mesh.transformation.ClearScale();
+                    light.bounding_unique_mesh.transformation = transformation;
+                }
+            }
+        }
+
+        public void update(Vector3 camera_position, float animation_time)
+        {
+            animateLights(animation_time);
             updateLists(camera_position);
             updateUBO_Shadow();
         }

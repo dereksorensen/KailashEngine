@@ -189,6 +189,10 @@ namespace KailashEngine
                 case Key.F10:
                     _render_driver.toggleWireframe();
                     break;
+                case Key.Number7:
+                case Key.Keypad7:
+                    _render_driver.toggleEffect(typeof(Render.FX.fx_VXGI));
+                    break;
                 case Key.Escape:
                     Exit();
                     break;
@@ -285,14 +289,15 @@ namespace KailashEngine
             switch (e.Button)
             {
                 case MouseButton.Left:
-
                     Vector3[] picking_vectors = getPickingVectors();
                     _physics_driver.pickObject(EngineHelper.otk2bullet(picking_vectors[0]), EngineHelper.otk2bullet(picking_vectors[1]), !_game.keyboard.getKeyPress(Key.AltLeft));
-
                     break;
                 case MouseButton.Right:
                     //_sound_cow.Play();
                     _sound_goat.Play();
+                    break;
+                case MouseButton.Middle:
+                    _render_driver.triggerScreenshot();
                     break;
             }
         }
@@ -415,20 +420,7 @@ namespace KailashEngine
 
             inputBuffer();
 
-
-
-
-            // Flashlight stuff
-
-            Matrix4 tempMat = _game.scene.flashlight.bounding_unique_mesh.transformation;
-
-            _game.scene.flashlight.unique_mesh.transformation = Matrix4.Invert(_game.player.character.spatial.transformation);
-            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat * Matrix4.Invert(_game.player.character.spatial.transformation);
-            _game.scene.flashlight.spatial.position = -_game.player.character.spatial.position;
-            _game.scene.flashlight.spatial.rotation_matrix = Matrix4.Transpose(_game.player.character.spatial.rotation_matrix);
-
-
-            // Update Scene
+            // Update Scene and its objects
             _game.scene.update(_game.player.camera.spatial);
 
             // Update Dynamic UBOs
@@ -447,15 +439,8 @@ namespace KailashEngine
             _game.player.camera.previous_view_matrix = _game.player.camera.spatial.model_view;
             _game.player.camera.previous_perspective_matrix = _game.player.camera.spatial.perspective;
 
-
-            
-
-
+            // Render dat scene
             _render_driver.render(_game.scene, _game.player.camera.spatial, _fps);
-
-
-            _game.scene.flashlight.bounding_unique_mesh.transformation = tempMat;
-
 
 
             SoundSystem.Instance.Update(e.Time, _game.player.character.spatial.position, _game.player.character.spatial.look, _game.player.character.spatial.up);

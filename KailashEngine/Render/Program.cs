@@ -30,6 +30,14 @@ namespace KailashEngine.Render
         private Dictionary<string, int> _uniforms;
 
 
+        private int[] _compute_workgroup_size;
+        public int[] compute_workgroup_size
+        {
+            get { return _compute_workgroup_size; }
+        }
+
+
+
         public Program(int glsl_version, ShaderFile[] shader_pipeline)
         {
             _glsl_version = glsl_version;
@@ -156,9 +164,11 @@ namespace KailashEngine.Render
         private void createProgram(ShaderFile[] shaders)
         {
             _pid = GL.CreateProgram();
+            bool is_compute = false;
 
             foreach (ShaderFile sf in shaders)
             {
+                if (sf.type == ShaderType.ComputeShader) is_compute = true;
                 int shader_id = sf.compile(_glsl_version);
                 if(shader_id == 0)
                 {
@@ -185,6 +195,10 @@ namespace KailashEngine.Render
             else
             {
                 Debug.DebugHelper.logInfo(2, "[ INFO ]" + log_name, "SUCCESS");
+
+                // Load info from shaders
+                _compute_workgroup_size = new int[3];
+                if(is_compute) GL.GetProgram(_pid, (GetProgramParameterName)All.ComputeWorkGroupSize, _compute_workgroup_size);
             }
 
         }

@@ -57,6 +57,13 @@ namespace KailashEngine.Render.Objects
         private float _max_anisotropy;
 
         private bool _bindless = false;
+        public bool bindless
+        {
+            get
+            {
+                return _bindless;
+            }
+        }
 
         //------------------------------------------------------
         // Pixel Settings

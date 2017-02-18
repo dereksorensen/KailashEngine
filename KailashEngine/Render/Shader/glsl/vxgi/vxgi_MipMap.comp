@@ -4,22 +4,17 @@ layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 uniform int source_mip_level;
 
-uniform sampler3D sampler0;
-writeonly uniform image3D sampler1;
+uniform sampler3D sampler0;			// Source Volume mipmap
+writeonly uniform image3D sampler1;	// Destination Volume mipmap
 
-shared vec4 cache[gl_WorkGroupSize.x * gl_WorkGroupSize.y];
 
 void main()
 {
-	ivec3 dstSize = imageSize(sampler1);
+	ivec3 dst_mipmap_size = imageSize(sampler1);
 
 	uint invocation_max = max(gl_GlobalInvocationID.x, max(gl_GlobalInvocationID.y, gl_GlobalInvocationID.z));
-	if (invocation_max >= dstSize.x)
-	{
-		// out of range, ignore
-		// beware barrier() instructions below due to these threads
-	}
-	else
+	uint dst_mipmap_size_max = max(dst_mipmap_size.x, max(dst_mipmap_size.y, dst_mipmap_size.z));
+	if (invocation_max < dst_mipmap_size_max)
 	{
 		ivec3 dstPos = ivec3(gl_GlobalInvocationID);
 		ivec3 srcPos = dstPos * 2;

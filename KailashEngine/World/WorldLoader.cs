@@ -48,18 +48,18 @@ namespace KailashEngine.World
 
             // Load standard light object meshes
             Dictionary<string, UniqueMesh> light_objects = new Dictionary<string, UniqueMesh>();
-            Dictionary<string, Matrix4> garbage_matrix_collection = new Dictionary<string, Matrix4>();
+            Dictionary<string, LightLoader.LightLoaderExtras> garbage_extras = new Dictionary<string, LightLoader.LightLoaderExtras>();
             try
             {
                 DAE_Loader.load(
                     _path_scene + light_objects_filename + "/" + light_objects_filename + ".dae",
                     _material_manager, 
                     out light_objects,
-                    out garbage_matrix_collection);
+                    out garbage_extras);
                 _sLight_mesh = light_objects["sLight"].mesh;
                 _pLight_mesh = light_objects["pLight"].mesh;
                 light_objects.Clear();
-                garbage_matrix_collection.Clear();
+                garbage_extras.Clear();
             }
             catch (Exception e)
             {
@@ -93,19 +93,19 @@ namespace KailashEngine.World
 
 
             Dictionary<string, UniqueMesh> temp_meshes;
-            Dictionary<string, Matrix4> light_matrix_collection;
+            Dictionary<string, LightLoader.LightLoaderExtras> light_extras;
 
             DAE_Loader.load(
                 mesh_filename,
                 _material_manager,
                 out temp_meshes, 
-                out light_matrix_collection);
-            lights = LightLoader.load(lights_filename, light_matrix_collection, _sLight_mesh, _pLight_mesh);
+                out light_extras);
+            lights = LightLoader.load(lights_filename, light_extras, _sLight_mesh, _pLight_mesh);
             PhysicsLoader.load(physics_filename, _physics_world, temp_meshes);
             meshes = temp_meshes.Values.ToList();
 
             temp_meshes.Clear();
-            light_matrix_collection.Clear();
+            light_extras.Clear();
 
             Debug.DebugHelper.logInfo(1, "", "");
         }

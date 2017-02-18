@@ -35,6 +35,7 @@ namespace KailashEngine.Render.FX
 
         public RenderEffect(ProgramLoader pLoader, StaticImageLoader tLoader, string resource_folder_name,  Resolution full_resolution)
         {
+            _enabled = true;
             _pLoader = pLoader;
             _path_glsl_effect = resource_folder_name;
             _tLoader = tLoader;
@@ -54,5 +55,10 @@ namespace KailashEngine.Render.FX
         public abstract void unload();
 
         public abstract void reload();
+
+        public void toggle()
+        {
+            _enabled = !_enabled;
+        }
     }
 }

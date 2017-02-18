@@ -154,8 +154,9 @@ namespace KailashEngine.Client
             // Load Scenes
             _world_loader.addWorldToScene(new string[]
             {
-                "sponza",
-                //"test_scene"
+                //"sponza",
+                //"test_scene",          
+                "test_scene_2",
             }, _meshes, _light_manager);
 
 
@@ -176,12 +177,23 @@ namespace KailashEngine.Client
             _sun.update_Cascades(camera_spatial, Vector3.Normalize(_circadian_timer.position));
         }
 
+        private void update_Flashlight(SpatialData camera_spatial)
+        {
+            // Flashlight stuff
+            _flashlight.unique_mesh.transformation = Matrix4.Invert(camera_spatial.transformation);
+            _flashlight.bounding_unique_mesh.transformation = _flashlight.bounding_unique_mesh.base_transformation * _flashlight.unique_mesh.transformation;
+            _flashlight.spatial.position = -camera_spatial.position;
+            _flashlight.spatial.rotation_matrix = Matrix4.Transpose(camera_spatial.rotation_matrix);
+        }
+
         public void update(SpatialData camera_spatial)
         {
-            update_Sun(camera_spatial);
-
-            _light_manager.update(-camera_spatial.position);
             _current_animation_time = _animation_timer.seconds;
+
+            update_Sun(camera_spatial);
+            update_Flashlight(camera_spatial);
+
+            _light_manager.update(-camera_spatial.position, _current_animation_time);
         }
 
         //------------------------------------------------------
@@ -224,8 +236,9 @@ namespace KailashEngine.Client
 
         public void renderLightObjects(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawLights(begin_mode, lights, program, Matrix4.Identity, false);
+            WorldDrawer.drawLights(begin_mode, lights, program, Matrix4.Identity, _current_animation_time, true);
         }
+
 
     }
 }

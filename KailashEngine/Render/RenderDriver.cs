@@ -21,6 +21,7 @@ namespace KailashEngine.Render
         private Resolution _resolution;
 
         private bool _enable_debug_views;
+        private bool _take_screenshot;
 
         // Render UBOs
         private UniformBuffer _ubo_camera;
@@ -202,9 +203,54 @@ namespace KailashEngine.Render
             _fxGBuffer.toggleWireframe();
         }
 
-        public void takeScreenShot()
-        {
 
+        public void toggleEffect(Type effect_type)
+        {
+            if(effect_type == typeof(fx_VXGI))
+            {
+                _fxVXGI.toggle();
+            }
+
+            
+        }
+
+
+        public void triggerScreenshot()
+        {
+            _take_screenshot = true;
+        }
+
+
+        private void takeScreenshot()
+        {
+            if (_take_screenshot)
+            {
+                Bitmap bmp = new Bitmap(_resolution.W, _resolution.H);
+                System.Drawing.Imaging.BitmapData data = bmp.LockBits(
+                    new Rectangle(0, 0, _resolution.W, _resolution.H),
+                    System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                GL.ReadPixels(0, 0, _resolution.W, _resolution.H, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+                GL.Finish();
+                bmp.UnlockBits(data);
+                bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                string screenshotFilename = EngineHelper.path_resources_screenshots +
+                                            DateTime.Now.Year.ToString("0000") +
+                                            DateTime.Now.Month.ToString("00") +
+                                            DateTime.Now.Day.ToString("00") + "_" +
+                                            DateTime.Now.Hour.ToString("00") +
+                                            DateTime.Now.Minute.ToString("00") +
+                                            DateTime.Now.Second.ToString("00") +
+                                            ".png";
+
+                bmp.Save(screenshotFilename, System.Drawing.Imaging.ImageFormat.Png);
+                bmp.Dispose();
+
+                Debug.DebugHelper.logInfo(0, "[ INFO ] Screenshot Taken", "OK");
+
+                _take_screenshot = false;
+            }
         }
 
 
@@ -281,6 +327,10 @@ namespace KailashEngine.Render
             _fxFinal.render(_fxQuad);
 
 
+            //------------------------------------------------------
+            // Take Screenshot when requested
+            //------------------------------------------------------
+            takeScreenshot();
 
 
             //Debug.DebugHelper.time_function("Blur Test", 3, () =>
@@ -308,7 +358,7 @@ namespace KailashEngine.Render
                 //_fxQuad.render_Texture(_fxAtmosphericScattering.tAtmosphere, 0.25f, 2);
                 //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_2, 0.25f, 3);
                 //_fxQuad.render_Texture(_fxMotionBlur.tVelocity_1, 0.25f, 2);
-                //_fxQuad.render_Texture(_fxShadow.tPoint, 0.25f, 2);
+                _fxQuad.render_Texture(_fxShadow.tSpot, 0.25f, 2);
                 //_fxQuad.render_Texture(_fxVXGI._tTemp, 0.25f, 1);
                 _fxQuad.render_Texture(_fxGBuffer.tDiffuse_ID, 0.25f, 0);
 

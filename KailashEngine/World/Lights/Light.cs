@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OpenTK;
 
 using KailashEngine.World.Model;
+using KailashEngine.Animation;
 
 namespace KailashEngine.World.Lights
 {
@@ -16,6 +17,7 @@ namespace KailashEngine.World.Lights
         public const string type_spot = "SPOT";
         public const string type_point = "POINT";
         public const string type_directional = "DIRECTIONAL";
+
 
         private int _lid;
         public int lid
@@ -46,6 +48,24 @@ namespace KailashEngine.World.Lights
         {
             get { return _shadowed; }
             set { _shadowed = value; }
+        }
+
+        private ObjectAnimator _animator;
+        public ObjectAnimator animator
+        {
+            get { return _animator; }
+            set
+            {
+                animated = true;
+                _animator = value;
+            }
+        }
+
+        private bool _animated;
+        public bool animated
+        {
+            get { return _animated; }
+            set { _animated = value; }
         }
 
 
@@ -111,6 +131,11 @@ namespace KailashEngine.World.Lights
             get { return _bounding_unique_mesh; }
         }
 
+        protected Matrix4 _bounds_matrix;
+        public Matrix4 bounds_matrix
+        {
+            get { return _bounds_matrix; }
+        }
 
 
 
@@ -119,11 +144,13 @@ namespace KailashEngine.World.Lights
         {
             _lid = _sid = -1;
             _enabled = false;
+            _animated = false;
             _type = type;
             _color = color;
             _intensity = intensity;
             _falloff = falloff;
             _shadowed = shadow;
+            _bounds_matrix = Matrix4.Identity;
 
             _object_emission = _intensity;
         }
