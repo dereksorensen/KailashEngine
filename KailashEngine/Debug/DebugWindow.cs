@@ -138,7 +138,7 @@ namespace KailashEngine.Debug
             _bar_timers.ValueColumnWidth = 90;
             _bar_timers.Position = new Point(10, 70);
             _bar_timers.RefreshRate = 1;
-
+            _bar_timers.Iconified = true;
 
             _timer_1 = new FloatVariable(_bar_timers);
             _timer_2 = new FloatVariable(_bar_timers);

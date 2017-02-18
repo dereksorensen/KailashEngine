@@ -180,13 +180,13 @@ namespace KailashEngine
                         centerMouse();
                     }
                     break;
-                case Key.F8:
+                case Key.F6:
                     _debug_window.toggleTimers();
                     break;
-                case Key.F9:
+                case Key.F7:
                     _render_driver.toggleDebugViews();
                     break;
-                case Key.F10:
+                case Key.F8:
                     _render_driver.toggleWireframe();
                     break;
                 case Key.Number7:

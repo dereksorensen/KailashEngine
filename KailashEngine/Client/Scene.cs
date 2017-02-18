@@ -100,7 +100,7 @@ namespace KailashEngine.Client
             _meshes = new List<UniqueMesh>();
 
             _animation_timer = new Timer();
-            _circadian_timer = new CircadianTimer(1.0f, 2.0f);
+            _circadian_timer = new CircadianTimer(22.0f, 5.0f);
         }
 
 
@@ -154,8 +154,8 @@ namespace KailashEngine.Client
             // Load Scenes
             _world_loader.addWorldToScene(new string[]
             {
-                //"sponza",
-                "test_scene",          
+                "sponza",
+                //"test_scene",          
                 //"test_scene_2",
             }, _meshes, _light_manager);
 
