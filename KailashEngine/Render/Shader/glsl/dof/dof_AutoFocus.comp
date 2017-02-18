@@ -1,0 +1,31 @@
+﻿
+layout (local_size_x = 1) in;
+
+layout (std430, binding=0) buffer fd
+{
+	vec2 focus_distance[];
+};
+
+uniform sampler2D sampler0;
+
+
+uniform float focus_delay;
+
+
+void main() 
+{
+	ivec2 texture_size = textureSize(sampler0, 0);
+	ivec2 texture_size_half = texture_size / ivec2(2);
+
+	float curFocusDistance = texelFetch(sampler0, texture_size_half, 0).a;
+	float oldFocusDistance = focus_distance[0].x;
+
+    curFocusDistance = slerp(oldFocusDistance, curFocusDistance, 0.1);
+	oldFocusDistance = curFocusDistance;
+
+	focus_distance[0] = vec2(oldFocusDistance, curFocusDistance);
+}
+
+
+
+

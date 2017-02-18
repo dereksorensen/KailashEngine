@@ -1,0 +1,31 @@
+﻿
+
+//------------------------------------------------------
+// Helpers
+//------------------------------------------------------
+
+vec2 pack2(float d)
+{
+	vec2 bias = vec2(1.0 / 255.0, 0.0);
+	vec2 color = vec2(d, fract(d * 255.0));
+	return color - (color.yy * bias);
+}
+
+//------------------------------------------------------
+// VSM
+//------------------------------------------------------
+
+vec2 computeMoments(float depth)
+{
+	vec2 moments;
+
+	moments.x = depth;
+	moments.y = depth * depth;
+
+	float dx = dFdx(depth);
+	float dy = dFdy(depth);
+	moments.y += 0.25*(dx*dx + dy*dy);
+
+	return moments;
+}
+

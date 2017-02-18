@@ -1,0 +1,11 @@
+﻿
+
+//------------------------------------------------------
+// Interpolation
+//------------------------------------------------------
+float slerp(float start, float dest, float delay)
+{
+	float start2 = max(start, 0.00000001);
+	float dest2 = max(dest, 0.00000001);
+    return pow(dest2 / start2, delay) * start2;
+}

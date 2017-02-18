@@ -1,0 +1,31 @@
+﻿
+layout (local_size_x = 1) in;
+
+layout (std430, binding=0) buffer ex
+{
+	vec2 exposure[];
+};
+
+uniform sampler2D sampler0;
+uniform int luminosity_lod;
+
+
+void main() 
+{
+	float oldLuminosity = exposure[0].x;
+	float curLuminosity = textureLod(sampler0, vec2(0.5), luminosity_lod).r;
+	curLuminosity += textureLod(sampler0, vec2(0.0, 0.5), luminosity_lod).r;
+	curLuminosity += textureLod(sampler0, vec2(1.0, 0.5), luminosity_lod).r;
+	curLuminosity /= 3.0;
+
+	oldLuminosity = max(oldLuminosity, 0.000001);
+	curLuminosity = max(curLuminosity, 0.0000011);
+
+	curLuminosity = slerp(oldLuminosity, curLuminosity, 0.03);
+	oldLuminosity = curLuminosity;
+	
+	exposure[0] = vec2(oldLuminosity, curLuminosity);
+}
+
+
+

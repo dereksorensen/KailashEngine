@@ -1,0 +1,75 @@
+﻿
+layout (local_size_x = 512, local_size_y = 1) in;
+
+
+uniform sampler2D sampler0;				// Source Texture
+writeonly uniform image2D sampler1;		// Destination Texture
+
+
+shared vec2 cache[gl_WorkGroupSize.x];
+
+
+uniform int direction_selector;
+uniform int blur_amount;
+uniform vec2 texture_size;
+
+
+void gaussian() 
+{
+	uint id = gl_LocalInvocationID.x;
+	uint fragmentation = gl_NumWorkGroups.y;
+	uint current_fragment = gl_WorkGroupID.y;
+
+	ivec2 texCoord = ivec2(id * fragmentation + current_fragment, gl_WorkGroupID.x);
+
+	// Swizzle with uniform so we don't have to branch
+	texCoord = ivec2(texCoord[direction_selector], texCoord[abs(direction_selector-1)]);
+	float texture_size_early_out = texture_size[direction_selector] / fragmentation;
+
+	vec2 velocity = texture(sampler0, texCoord / texture_size).xy;
+	cache[id] = velocity;
+	
+	barrier();
+	memoryBarrierShared();
+
+	if(id > texture_size_early_out)
+	{
+		imageStore(sampler1, texCoord, vec4(0.0));
+		return;
+	}
+
+	float SIGMA = float(blur_amount) / 18.7;
+	float SIGMA_2 = SIGMA * SIGMA;
+
+	vec3 guass_increment;
+	guass_increment.x = 1.0 / (sqrt(MATH_2_PI) * SIGMA);
+	guass_increment.y = exp(-0.5 / SIGMA_2);
+	guass_increment.z = guass_increment.y * guass_increment.y;
+	
+	vec2 final = velocity * guass_increment.x;
+	float increment_sum = guass_increment.x;
+	guass_increment.xy *= guass_increment.yz;
+
+	for (int i = 1; i < blur_amount; i++)
+	{
+		int index = i;
+		ivec2 samplerCoord = ivec2(id - index, id + index);
+
+		vec2 velocity_left = cache[samplerCoord.x].xy;
+		vec2 velocity_right = cache[samplerCoord.y].xy;
+
+		final += velocity_left * guass_increment.x;
+		final += velocity_right * guass_increment.x;
+
+		increment_sum += (2.0 * guass_increment.x);
+		guass_increment.xy *= guass_increment.yz;
+	}
+
+	final /= increment_sum;
+
+	imageStore(sampler1, texCoord, vec4(final, vec2(0.0)));
+}
+void main() 
+{
+	gaussian();
+}

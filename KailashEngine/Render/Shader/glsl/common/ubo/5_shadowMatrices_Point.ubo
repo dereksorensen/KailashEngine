@@ -1,0 +1,14 @@
+﻿//------------------------------------------------------
+// Shadow Matrices - Point
+//------------------------------------------------------
+struct ShadowDataPoint {
+  mat4 view[6];
+  mat4 perspective;
+  mat4 viewray[6];
+  vec4 position_falloff;
+  vec4 color_intensity;
+};
+layout(std140, binding = 5) uniform shadowMatricesPoint
+{
+	ShadowDataPoint shadow_data_point[32];
+};

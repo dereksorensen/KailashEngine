@@ -1,0 +1,31 @@
+﻿
+
+//------------------------------------------------------
+// Frustum Culling
+//------------------------------------------------------
+bool edgeInFrustum(vec4 p, vec4 q)
+{
+	return !( (p.x < -p.w && q.x < -q.w) || (p.x > p.w && q.x > q.w) 
+			|| (p.z < -p.w && q.z < -q.w) || (p.z > p.w && q.z > q.w) );
+}
+
+bool frustumCullTest(vec4 vertex_position[3])
+{
+	return (
+		edgeInFrustum(vertex_position[1], vertex_position[0]) || 
+		edgeInFrustum(vertex_position[2], vertex_position[0]) || 
+		edgeInFrustum(vertex_position[2], vertex_position[1])
+	);
+}
+
+//------------------------------------------------------
+// BackFace Culling
+//------------------------------------------------------
+bool backfaceCullTest(vec3 world_position, vec3 eye_position, vec3 normal)
+{
+	vec3 L = normalize(eye_position - world_position);
+	float angle_of_inc = dot(L, normal);
+	return angle_of_inc > 0;
+}
+
+

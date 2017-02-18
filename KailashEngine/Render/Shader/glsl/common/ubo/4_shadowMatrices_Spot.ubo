@@ -1,0 +1,16 @@
+﻿//------------------------------------------------------
+// Shadow Matrices - Spot
+//------------------------------------------------------
+struct ShadowDataSpot {
+  mat4 view;
+  mat4 perspective;
+  mat4 viewray;
+  vec4 position_falloff;
+  vec4 color_intensity;
+  vec4 direction;
+  vec4 spot_angle_blur;
+};
+layout(std140, binding = 4) uniform shadowMatricesSpot
+{
+	ShadowDataSpot shadow_data_spot[32];
+};

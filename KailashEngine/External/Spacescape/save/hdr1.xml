@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<spacescapelayers>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.5</gain>
+        <hdrMultiplier>0.1</hdrMultiplier>
+        <hdrPower>1</hdrPower>
+        <innerColor>0.141176 0.329412 0.517647 1</innerColor>
+        <lacunarity>2.5</lacunarity>
+        <name>Blue Nebula</name>
+        <noiseType>ridged</noiseType>
+        <octaves>9</octaves>
+        <offset>1.01</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <powerAmount>0.1</powerAmount>
+        <previewTextureSize>256</previewTextureSize>
+        <scale>0.75</scale>
+        <seed>2</seed>
+        <shelfAmount>0.75</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0</ditherAmount>
+        <gain>0.5</gain>
+        <hdrMultiplier>0.3</hdrMultiplier>
+        <hdrPower>1</hdrPower>
+        <innerColor>0.317647 0.203922 0.227451 1</innerColor>
+        <lacunarity>2.5</lacunarity>
+        <name>Blue Nebula copy</name>
+        <noiseType>ridged</noiseType>
+        <octaves>9</octaves>
+        <offset>1.01</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <powerAmount>0.2</powerAmount>
+        <previewTextureSize>256</previewTextureSize>
+        <scale>0.72</scale>
+        <seed>2</seed>
+        <shelfAmount>0.9</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <dataFile>F:/workspace/Spacescape/stars-all.csv</dataFile>
+        <destBlendFactor>one_minus_src_colour</destBlendFactor>
+        <farColor>1 1 1 1</farColor>
+        <hdrMultiplier>0.5</hdrMultiplier>
+        <hdrPower>4</hdrPower>
+        <maskEnabled>false</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType></maskNoiseType>
+        <maskOctaves>1</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0</maskThreshold>
+        <maxSize>0.2</maxSize>
+        <minSize>0.2</minSize>
+        <name>NamedStars</name>
+        <nearColor>1 1 1 1</nearColor>
+        <numBillboards>100</numBillboards>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>hdr-flare-white2.exr</texture>
+        <type>billboards</type>
+    </layer>
+    <layer>
+        <dataFile></dataFile>
+        <destBlendFactor>one_minus_src_colour</destBlendFactor>
+        <farColor>0 0 0.498039 1</farColor>
+        <hdrMultiplier>0.1</hdrMultiplier>
+        <hdrPower>6</hdrPower>
+        <maskEnabled>false</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType></maskNoiseType>
+        <maskOctaves>1</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0</maskThreshold>
+        <maxSize>0.2</maxSize>
+        <minSize>0.2</minSize>
+        <name>Background Random Stars</name>
+        <nearColor>1 1 1 1</nearColor>
+        <numBillboards>2000</numBillboards>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>hdr-flare-white2.exr</texture>
+        <type>billboards</type>
+    </layer>
+</spacescapelayers>

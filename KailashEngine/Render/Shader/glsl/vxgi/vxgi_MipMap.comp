@@ -1,0 +1,40 @@
+﻿
+
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+uniform int source_mip_level;
+
+uniform sampler3D sampler0;			// Source Volume mipmap
+writeonly uniform image3D sampler1;	// Destination Volume mipmap
+
+
+void main()
+{
+	ivec3 dst_mipmap_size = imageSize(sampler1);
+
+	uint invocation_max = max(gl_GlobalInvocationID.x, max(gl_GlobalInvocationID.y, gl_GlobalInvocationID.z));
+	uint dst_mipmap_size_max = max(dst_mipmap_size.x, max(dst_mipmap_size.y, dst_mipmap_size.z));
+	if (invocation_max < dst_mipmap_size_max)
+	{
+		ivec3 dstPos = ivec3(gl_GlobalInvocationID);
+		ivec3 srcPos = dstPos * 2;
+		
+		vec4 srcColor0 = texelFetch(sampler0, srcPos + ivec3(0, 0, 0), source_mip_level);
+		vec4 srcColor1 = texelFetch(sampler0, srcPos + ivec3(1, 0, 0), source_mip_level);
+		vec4 srcColor2 = texelFetch(sampler0, srcPos + ivec3(0, 1, 0), source_mip_level);
+		vec4 srcColor3 = texelFetch(sampler0, srcPos + ivec3(1, 1, 0), source_mip_level);
+		vec4 srcColor4 = texelFetch(sampler0, srcPos + ivec3(0, 0, 1), source_mip_level);
+		vec4 srcColor5 = texelFetch(sampler0, srcPos + ivec3(1, 0, 1), source_mip_level);
+		vec4 srcColor6 = texelFetch(sampler0, srcPos + ivec3(0, 1, 1), source_mip_level);
+		vec4 srcColor7 = texelFetch(sampler0, srcPos + ivec3(1, 1, 1), source_mip_level);
+
+		vec4 outColor = srcColor4 + srcColor0
+			+ srcColor5 + srcColor1
+			+ srcColor6 + srcColor2
+			+ srcColor7 + srcColor3;
+
+		outColor /= 8.0;
+		
+		imageStore(sampler1, dstPos, outColor);
+	}
+}

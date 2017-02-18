@@ -1,0 +1,76 @@
+﻿
+layout (local_size_x = 8, local_size_y = 1, local_size_z = 1) in;
+
+
+uniform sampler2D sampler0;				// Source Texture
+writeonly uniform image2D sampler1;		// Destination Texture
+
+
+
+uniform int direction_selector;
+uniform int kernel;
+uniform vec2 texture_size;
+
+void blur()
+{
+	int cKernelSize = kernel;
+	int cKernelHalfDist = cKernelSize/2;
+	float recKernelSize = 1.0 / float(cKernelSize);
+
+	vec2 screenSize = texture_size;
+	vec2 rec_screenSize = vec2(1.0) / screenSize;
+
+	int y = int(gl_GlobalInvocationID.x);
+
+	int x_selector = direction_selector;
+	int y_selector = abs(direction_selector-1);
+
+	screenSize = vec2(screenSize[x_selector], screenSize[y_selector]);
+
+	if(y >= screenSize.y) return;
+
+	ivec2 xy_selector = ivec2(0, y);
+	ivec2 temp_coord = ivec2(xy_selector[x_selector], xy_selector[y_selector]);
+
+	vec3 colourSum = texelFetch(sampler0, temp_coord, 0).xyz * float(cKernelHalfDist);
+	for( int x = 0; x <= cKernelHalfDist; x++ )
+	{
+		xy_selector = ivec2(x, y);
+		temp_coord = ivec2(xy_selector[x_selector], xy_selector[y_selector]);
+
+		colourSum += texelFetch(sampler0, temp_coord, 0).xyz;
+	}
+
+	for( int x = 0; x < screenSize.x; x++ )
+    {
+		xy_selector = ivec2(x, y);
+		temp_coord = ivec2(xy_selector[x_selector], xy_selector[y_selector]);
+
+		imageStore(sampler1, temp_coord, vec4(colourSum * recKernelSize, 1.0));
+
+		ivec2 xy_selector_left = ivec2(max(x-cKernelHalfDist, 0), y);
+		ivec2 xy_selector_right = ivec2(min(x+cKernelHalfDist+1, screenSize.x-1), y);
+
+		// move window to the next 
+		vec3 leftBorder = texelFetch(sampler0, ivec2(xy_selector_left[x_selector], xy_selector_left[y_selector]), 0).xyz;
+		vec3 rightBorder = texelFetch(sampler0,  ivec2(xy_selector_right[x_selector], xy_selector_right[y_selector]), 0).xyz;
+
+		colourSum -= leftBorder;
+		colourSum += rightBorder;
+	}
+}
+
+void main() 
+{
+/*
+	if ( direction_selector == 0 )
+	{
+		h_blur();
+	}
+	else
+	{
+		v_blur();
+	}
+*/
+	blur();
+}

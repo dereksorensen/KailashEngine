@@ -1,0 +1,18 @@
+﻿
+layout (local_size_x = 1) in;
+
+layout (std430, binding=0) buffer bokehCounter
+{
+	uint count[1];
+	uint primCount[1];
+	uint first[1];
+	uint reservedMustBeZero[1];
+};
+
+void main() 
+{
+	primCount[0] = 0;
+}
+
+
+
