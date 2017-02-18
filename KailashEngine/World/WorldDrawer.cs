@@ -121,7 +121,7 @@ namespace KailashEngine.World
                     DAE_Skeleton temp_skeleton = unique_mesh.mesh.skeleton;
                     if(temp_skeleton.animated)
                     {
-                        temp_skeleton.updateBones(temp_skeleton.root, temp_skeleton.animator.getKeyFrame(animation_time, 2));
+                        temp_skeleton.updateBones(temp_skeleton.root, temp_skeleton.animator.getKeyFrame(animation_time, -1));
                     }
                     Matrix4[] skinning_matrices = temp_skeleton.getBoneMatrices();
                     GL.Uniform1(program.getUniform(RenderHelper.uEnableSkinning), 1);

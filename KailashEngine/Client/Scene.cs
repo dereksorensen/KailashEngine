@@ -155,8 +155,8 @@ namespace KailashEngine.Client
             _world_loader.addWorldToScene(new string[]
             {
                 //"sponza",
-                //"test_scene",          
-                "test_scene_2",
+                "test_scene",          
+                //"test_scene_2",
             }, _meshes, _light_manager);
 
 
@@ -236,7 +236,7 @@ namespace KailashEngine.Client
 
         public void renderLightObjects(BeginMode begin_mode, Program program)
         {
-            WorldDrawer.drawLights(begin_mode, lights, program, Matrix4.Identity, _current_animation_time, true);
+            WorldDrawer.drawLights(begin_mode, lights, program, Matrix4.Identity, _current_animation_time, false);
         }
 
 
