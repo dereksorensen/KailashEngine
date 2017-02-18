@@ -3,7 +3,6 @@
 
 ## KaillashEngine Ignores
 KailashEngine/Resources/Textures
-KailashEngine/Resources/*/sponza*
 KailashEngine/Resources/Blender/_working
 *.blend1
 *.blend@

@@ -113,10 +113,10 @@ vec4 ct_diffuse(vec3 rayOrigin, vec3 normal)
 	vec4 sum = vec4(0.0);
 
 	sum = coneTrace(rayOrigin, normal, vec3(vx_volume_dimensions), 0.6, 0.7);
-	sum += diffuseCone(7, 70, rayOrigin, normal);
+	sum += diffuseCone(5, 70, rayOrigin, normal);
 	sum += diffuseCone(3, 30, rayOrigin, normal);
 	
-	sum.a /= 3.0;
+	sum /= 3.0;
 
 	return sum;	
 }

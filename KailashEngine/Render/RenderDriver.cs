@@ -182,7 +182,9 @@ namespace KailashEngine.Render
             _ubo_camera.update(6, look);
         }
 
-
+        //------------------------------------------------------
+        // Helpers
+        //------------------------------------------------------
         public void handle_MouseState(bool locked)
         {
             _fxCrosshair.enabled = locked;
@@ -198,6 +200,11 @@ namespace KailashEngine.Render
         public void toggleWireframe()
         {
             _fxGBuffer.toggleWireframe();
+        }
+
+        public void takeScreenShot()
+        {
+
         }
 
 
