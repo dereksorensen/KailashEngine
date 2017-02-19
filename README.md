@@ -1,5 +1,22 @@
 # **KailashEngine** #
 
+### **Features** ###
+
+* Collada importing from Blender via custom python export script (triggers Blender's collada loader + some addons for lights and physics) supporting:
+  * Mesh, lights, rigid body physics
+  * Mesh movement and skeletal animation
+  * Light movement animation
+  * Diffuse, normal, specular, parallax, displacement mapping. Textures are imported as bindless GL textures
+* Bullet Physics integration for rigid bodies (BulletSharp)
+* Deferred Rendering pipeline
+* Spot, point and directional soft shadows with variable penumbra (VSM + mipmaps + pcss style stuff)
+* HDR with adaptive exposure
+* Lens effects like bloom and lens flare
+* Depth of Field with Bokeh
+* Camera and object motion blur
+* Precomputed Atmospheric Scattering
+* Voxel based global illumination
+* ..and maybe some other things, I don't know :)
 
 # **Controls:** #
 
