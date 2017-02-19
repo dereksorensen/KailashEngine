@@ -21,7 +21,7 @@
 * Right Click = Zoom camera / Poke the Goat!
 * MIddle Click = Take Screenshot
 
-# **Exporting for Kaillash** #
+# **Exporting for Kaillash in Blender** #
 
 ### **Notes** ###
 Blender meshes must have the following to work with Kailash:
@@ -43,7 +43,7 @@ The script will create 3 files in KailashEngine2/KailashEngine/Resources/Scene/<
 ### Workarounds ####
 Blender's Collada exporter misses a lot of things. Below are some workarounds I've used to get things to export
 
-##### **Textures** #####
+**Textures**
 Set the following texture influences for effect in Kailash
 
 * Parallax Mapping: Diffuse > Intensity
